@@ -19,6 +19,11 @@ function EpisodeMenu({ novel, profile, onEpisodeSelect, onBack }: EpisodeMenuPro
            novel.currentEpisodeId === episodeId ? 50 : 0;
   };
 
+  const isEpisodeUnlocked = (index: number) => {
+    if (index === 0) return true;
+    return profile.completedEpisodes.includes(novel.episodes[index - 1].id);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 p-4 dark">
       <div className="container mx-auto max-w-4xl">
@@ -33,7 +38,7 @@ function EpisodeMenu({ novel, profile, onEpisodeSelect, onBack }: EpisodeMenuPro
         <div className="space-y-4">
           {novel.episodes.map((episode, index) => {
             const progress = getEpisodeProgress(episode.id);
-            const isLocked = index > 0 && getEpisodeProgress(novel.episodes[index - 1].id) === 0;
+            const isLocked = !isEpisodeUnlocked(index);
             const isCurrent = novel.currentEpisodeId === episode.id;
             
             return (

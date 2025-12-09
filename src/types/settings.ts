@@ -7,6 +7,30 @@ export interface UserSettings {
   theme: 'dark' | 'light';
 }
 
+export interface Bookmark {
+  id: string;
+  episodeId: string;
+  paragraphIndex: number;
+  comment: string;
+  createdAt: string;
+}
+
+export interface CollectedItem {
+  id: string;
+  name: string;
+  description: string;
+  imageUrl?: string;
+  episodeId: string;
+}
+
+export interface MetCharacter {
+  id: string;
+  name: string;
+  image?: string;
+  episodeId: string;
+  firstMetAt: string;
+}
+
 export interface UserProfile {
   name: string;
   avatar?: string;
@@ -14,6 +38,9 @@ export interface UserProfile {
   totalReadTime: number;
   completedEpisodes: string[];
   achievements: string[];
+  bookmarks: Bookmark[];
+  collectedItems: CollectedItem[];
+  metCharacters: MetCharacter[];
 }
 
 export interface ReadProgress {
@@ -37,5 +64,8 @@ export const defaultProfile: UserProfile = {
   createdAt: new Date().toISOString(),
   totalReadTime: 0,
   completedEpisodes: [],
-  achievements: []
+  achievements: [],
+  bookmarks: [],
+  collectedItems: [],
+  metCharacters: []
 };

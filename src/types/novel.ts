@@ -3,6 +3,7 @@ export type ParagraphType = 'text' | 'image' | 'choice' | 'item' | 'dialogue';
 export interface BaseParagraph {
   id: string;
   type: ParagraphType;
+  order?: number;
 }
 
 export interface TextParagraph extends BaseParagraph {
@@ -55,6 +56,25 @@ export interface Episode {
   backgroundMusic?: string;
 }
 
+export interface LibraryItem {
+  id: string;
+  name: string;
+  description: string;
+  imageUrl?: string;
+}
+
+export interface LibraryCharacter {
+  id: string;
+  name: string;
+  image?: string;
+}
+
+export interface LibraryChoice {
+  id: string;
+  text: string;
+  nextEpisodeId?: string;
+}
+
 export interface Novel {
   id: string;
   title: string;
@@ -62,4 +82,9 @@ export interface Novel {
   episodes: Episode[];
   currentEpisodeId: string;
   currentParagraphIndex: number;
+  library: {
+    items: LibraryItem[];
+    characters: LibraryCharacter[];
+    choices: LibraryChoice[];
+  };
 }

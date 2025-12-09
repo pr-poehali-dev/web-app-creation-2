@@ -1,28 +1,103 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Novel } from '@/types/novel';
-import { UserSettings } from '@/types/settings';
+import { UserSettings, UserProfile, Bookmark } from '@/types/settings';
 import TypewriterText from './TypewriterText';
 import DialogueBox from './DialogueBox';
 import ChoiceBox from './ChoiceBox';
 import ItemBox from './ItemBox';
 import ImageBox from './ImageBox';
 import MusicPlayer from './MusicPlayer';
+import BookmarkButton from './BookmarkButton';
 
 interface NovelReaderProps {
   novel: Novel;
   settings: UserSettings;
+  profile: UserProfile;
   onUpdate: (novel: Novel) => void;
+  onProfileUpdate: (profile: UserProfile) => void;
 }
 
-function NovelReader({ novel, settings, onUpdate }: NovelReaderProps) {
+function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate }: NovelReaderProps) {
   const [isTyping, setIsTyping] = useState(true);
   const [skipTyping, setSkipTyping] = useState(false);
 
   const currentEpisode = novel.episodes.find(ep => ep.id === novel.currentEpisodeId);
   const currentParagraph = currentEpisode?.paragraphs[novel.currentParagraphIndex];
 
+  const existingBookmark = profile.bookmarks.find(
+    b => b.episodeId === novel.currentEpisodeId && b.paragraphIndex === novel.currentParagraphIndex
+  );
+
+  const handleAddBookmark = (comment: string) => {
+    const newBookmark: Bookmark = {
+      id: `bm${Date.now()}`,
+      episodeId: novel.currentEpisodeId,
+      paragraphIndex: novel.currentParagraphIndex,
+      comment,
+      createdAt: new Date().toISOString()
+    };
+
+    const updatedBookmarks = existingBookmark
+      ? profile.bookmarks.map(b => b.id === existingBookmark.id ? { ...b, comment } : b)
+      : [...profile.bookmarks, newBookmark];
+
+    onProfileUpdate({
+      ...profile,
+      bookmarks: updatedBookmarks
+    });
+  };
+
+  const handleRemoveBookmark = () => {
+    onProfileUpdate({
+      ...profile,
+      bookmarks: profile.bookmarks.filter(b => b.id !== existingBookmark?.id)
+    });
+  };
+
   const goToNextParagraph = useCallback(() => {
     if (!currentEpisode) return;
+
+    // Сохранить предмет в коллекцию
+    if (currentParagraph?.type === 'item') {
+      const itemExists = profile.collectedItems.some(i => i.id === currentParagraph.id);
+      if (!itemExists) {
+        onProfileUpdate({
+          ...profile,
+          collectedItems: [
+            ...profile.collectedItems,
+            {
+              id: currentParagraph.id,
+              name: currentParagraph.name,
+              description: currentParagraph.description,
+              imageUrl: currentParagraph.imageUrl,
+              episodeId: novel.currentEpisodeId
+            }
+          ]
+        });
+      }
+    }
+
+    // Сохранить персонажа при встрече
+    if (currentParagraph?.type === 'dialogue') {
+      const characterExists = profile.metCharacters.some(
+        c => c.name === currentParagraph.characterName && c.episodeId === novel.currentEpisodeId
+      );
+      if (!characterExists) {
+        onProfileUpdate({
+          ...profile,
+          metCharacters: [
+            ...profile.metCharacters,
+            {
+              id: `char${Date.now()}`,
+              name: currentParagraph.characterName,
+              image: currentParagraph.characterImage,
+              episodeId: novel.currentEpisodeId,
+              firstMetAt: new Date().toISOString()
+            }
+          ]
+        });
+      }
+    }
 
     if (novel.currentParagraphIndex < currentEpisode.paragraphs.length - 1) {
       onUpdate({
@@ -32,7 +107,7 @@ function NovelReader({ novel, settings, onUpdate }: NovelReaderProps) {
       setIsTyping(true);
       setSkipTyping(false);
     }
-  }, [novel, currentEpisode, onUpdate]);
+  }, [novel, currentEpisode, currentParagraph, profile, onUpdate, onProfileUpdate]);
 
   const goToPreviousParagraph = useCallback(() => {
     if (novel.currentParagraphIndex > 0) {
@@ -164,8 +239,17 @@ function NovelReader({ novel, settings, onUpdate }: NovelReaderProps) {
           />
         )}
 
-        <div className="fixed bottom-4 right-4 text-xs text-muted-foreground bg-card/50 backdrop-blur-sm px-3 py-2 rounded-lg border border-border">
-          {novel.currentParagraphIndex + 1} / {currentEpisode.paragraphs.length}
+        <div className="fixed bottom-4 right-4 flex flex-col gap-2 items-end">
+          <BookmarkButton
+            episodeId={novel.currentEpisodeId}
+            paragraphIndex={novel.currentParagraphIndex}
+            existingBookmark={existingBookmark}
+            onAdd={handleAddBookmark}
+            onRemove={handleRemoveBookmark}
+          />
+          <div className="text-xs text-muted-foreground bg-card/50 backdrop-blur-sm px-3 py-2 rounded-lg border border-border">
+            {novel.currentParagraphIndex + 1} / {currentEpisode.paragraphs.length}
+          </div>
         </div>
 
         {!isTyping && currentParagraph.type !== 'choice' && (

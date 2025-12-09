@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Episode, Paragraph, ParagraphType } from '@/types/novel';
+import { Episode, Paragraph, ParagraphType, Novel } from '@/types/novel';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,14 +8,17 @@ import { Label } from '@/components/ui/label';
 import Icon from '@/components/ui/icon';
 import { selectAndConvertImage, selectAndConvertAudio } from '@/utils/fileHelpers';
 import { parseMarkdownToEpisode, getMarkdownTemplate } from '@/utils/markdownImport';
+import { getParagraphNumber } from '@/utils/paragraphNumbers';
 
 interface EpisodeEditorProps {
   episode: Episode;
+  novel: Novel;
   onUpdate: (episode: Episode) => void;
 }
 
-function EpisodeEditor({ episode, onUpdate }: EpisodeEditorProps) {
+function EpisodeEditor({ episode, novel, onUpdate }: EpisodeEditorProps) {
   const [editingTitle, setEditingTitle] = useState(false);
+  const [insertingAt, setInsertingAt] = useState<number | null>(null);
 
   const handleTitleUpdate = (newTitle: string) => {
     onUpdate({ ...episode, title: newTitle });
@@ -60,7 +63,7 @@ function EpisodeEditor({ episode, onUpdate }: EpisodeEditorProps) {
     URL.revokeObjectURL(url);
   };
 
-  const handleAddParagraph = (type: ParagraphType) => {
+  const handleAddParagraph = (type: ParagraphType, insertIndex?: number) => {
     let newParagraph: Paragraph;
     const id = `p${Date.now()}`;
 
@@ -92,10 +95,19 @@ function EpisodeEditor({ episode, onUpdate }: EpisodeEditorProps) {
         return;
     }
 
+    const newParagraphs = [...episode.paragraphs];
+    if (insertIndex !== undefined) {
+      newParagraphs.splice(insertIndex + 1, 0, newParagraph);
+    } else {
+      newParagraphs.push(newParagraph);
+    }
+
     onUpdate({
       ...episode,
-      paragraphs: [...episode.paragraphs, newParagraph]
+      paragraphs: newParagraphs
     });
+    
+    setInsertingAt(null);
   };
 
   const handleUpdateParagraph = (index: number, updatedParagraph: Paragraph) => {
@@ -217,44 +229,60 @@ function EpisodeEditor({ episode, onUpdate }: EpisodeEditorProps) {
 
       <div className="space-y-3">
         {episode.paragraphs.map((paragraph, index) => (
-          <Card key={paragraph.id} className="animate-fade-in">
-            <CardContent className="p-4">
-              <div className="flex items-start gap-3">
-                <div className="flex flex-col gap-1">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8"
-                    onClick={() => handleMoveParagraph(index, 'up')}
-                    disabled={index === 0}
-                  >
-                    <Icon name="ChevronUp" size={16} />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8"
-                    onClick={() => handleMoveParagraph(index, 'down')}
-                    disabled={index === episode.paragraphs.length - 1}
-                  >
-                    <Icon name="ChevronDown" size={16} />
-                  </Button>
-                </div>
-
-                <div className="flex-1 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-medium text-muted-foreground uppercase">
-                      {paragraph.type}
-                    </span>
+          <div key={paragraph.id}>
+            <Card className="animate-fade-in">
+              <CardContent className="p-4">
+                <div className="flex items-start gap-3">
+                  <div className="flex flex-col gap-1">
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8 text-destructive"
-                      onClick={() => handleDeleteParagraph(index)}
+                      className="h-8 w-8"
+                      onClick={() => handleMoveParagraph(index, 'up')}
+                      disabled={index === 0}
                     >
-                      <Icon name="Trash2" size={16} />
+                      <Icon name="ChevronUp" size={16} />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={() => handleMoveParagraph(index, 'down')}
+                      disabled={index === episode.paragraphs.length - 1}
+                    >
+                      <Icon name="ChevronDown" size={16} />
                     </Button>
                   </div>
+
+                  <div className="flex-1 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-bold text-primary">
+                          {getParagraphNumber(novel, episode.id, index)}
+                        </span>
+                        <span className="text-xs font-medium text-muted-foreground uppercase">
+                          {paragraph.type}
+                        </span>
+                      </div>
+                      <div className="flex gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={() => setInsertingAt(insertingAt === index ? null : index)}
+                        >
+                          <Icon name="Plus" size={16} />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-destructive"
+                          onClick={() => handleDeleteParagraph(index)}
+                        >
+                          <Icon name="Trash2" size={16} />
+                        </Button>
+                      </div>
+                    </div>
 
                   {paragraph.type === 'text' && (
                     <Textarea
@@ -450,6 +478,32 @@ function EpisodeEditor({ episode, onUpdate }: EpisodeEditorProps) {
               </div>
             </CardContent>
           </Card>
+          
+          {insertingAt === index && (
+            <div className="flex gap-2 justify-center my-2 p-2 bg-secondary/20 rounded-lg">
+              <Button size="sm" variant="secondary" onClick={() => handleAddParagraph('text', index)}>
+                <Icon name="FileText" size={14} className="mr-1" />
+                Текст
+              </Button>
+              <Button size="sm" variant="secondary" onClick={() => handleAddParagraph('dialogue', index)}>
+                <Icon name="MessageSquare" size={14} className="mr-1" />
+                Диалог
+              </Button>
+              <Button size="sm" variant="secondary" onClick={() => handleAddParagraph('choice', index)}>
+                <Icon name="GitBranch" size={14} className="mr-1" />
+                Выбор
+              </Button>
+              <Button size="sm" variant="secondary" onClick={() => handleAddParagraph('item', index)}>
+                <Icon name="Package" size={14} className="mr-1" />
+                Предмет
+              </Button>
+              <Button size="sm" variant="secondary" onClick={() => handleAddParagraph('image', index)}>
+                <Icon name="Image" size={14} className="mr-1" />
+                Картинка
+              </Button>
+            </div>
+          )}
+        </div>
         ))}
       </div>
 

@@ -7,18 +7,28 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Icon from '@/components/ui/icon';
 import { selectAndConvertImage } from '@/utils/fileHelpers';
+import { getParagraphNumber } from '@/utils/paragraphNumbers';
 
 interface UserProfilePanelProps {
   profile: UserProfile;
   novel: Novel;
   onUpdate: (profile: UserProfile) => void;
   onBack: () => void;
+  onNavigateTo?: (episodeId: string, paragraphIndex: number) => void;
 }
 
-function UserProfilePanel({ profile, novel, onUpdate, onBack }: UserProfilePanelProps) {
+function UserProfilePanel({ profile, novel, onUpdate, onBack, onNavigateTo }: UserProfilePanelProps) {
   const [isEditingName, setIsEditingName] = useState(false);
+
+  const handleDeleteBookmark = (bookmarkId: string) => {
+    onUpdate({
+      ...profile,
+      bookmarks: profile.bookmarks.filter(b => b.id !== bookmarkId)
+    });
+  };
 
   const totalEpisodes = novel.episodes.length;
   const completedEpisodes = profile.completedEpisodes.length;
@@ -165,40 +175,174 @@ function UserProfilePanel({ profile, novel, onUpdate, onBack }: UserProfilePanel
         </Card>
 
         <Card className="animate-fade-in" style={{ animationDelay: '200ms' }}>
-          <CardHeader>
-            <CardTitle className="text-foreground">Достижения</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {achievements.map((achievement) => (
-                <div
-                  key={achievement.id}
-                  className={`p-4 rounded-lg border transition-all ${
-                    achievement.completed
-                      ? 'bg-primary/10 border-primary/30'
-                      : 'bg-muted/30 border-border opacity-50'
-                  }`}
-                >
-                  <div className="flex items-start gap-3">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                      achievement.completed
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-muted text-muted-foreground'
-                    }`}>
-                      {achievement.completed ? (
-                        <Icon name="Trophy" size={20} />
-                      ) : (
-                        <Icon name="Lock" size={20} />
-                      )}
+          <CardContent className="p-6">
+            <Tabs defaultValue="achievements" className="w-full">
+              <TabsList className="grid w-full grid-cols-4">
+                <TabsTrigger value="achievements">Достижения</TabsTrigger>
+                <TabsTrigger value="bookmarks">Закладки</TabsTrigger>
+                <TabsTrigger value="items">Предметы</TabsTrigger>
+                <TabsTrigger value="characters">Персонажи</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="achievements" className="mt-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {achievements.map((achievement) => (
+                    <div
+                      key={achievement.id}
+                      className={`p-4 rounded-lg border transition-all ${
+                        achievement.completed
+                          ? 'bg-primary/10 border-primary/30'
+                          : 'bg-muted/30 border-border opacity-50'
+                      }`}
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                          achievement.completed
+                            ? 'bg-primary text-primary-foreground'
+                            : 'bg-muted text-muted-foreground'
+                        }`}>
+                          {achievement.completed ? (
+                            <Icon name="Trophy" size={20} />
+                          ) : (
+                            <Icon name="Lock" size={20} />
+                          )}
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-foreground mb-1">{achievement.name}</h4>
+                          <p className="text-xs text-muted-foreground">{achievement.description}</p>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-foreground mb-1">{achievement.name}</h4>
-                      <p className="text-xs text-muted-foreground">{achievement.description}</p>
-                    </div>
-                  </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </TabsContent>
+
+              <TabsContent value="bookmarks" className="mt-6 space-y-3">
+                {profile.bookmarks.length > 0 ? (
+                  profile.bookmarks.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).map((bookmark) => {
+                    const episode = novel.episodes.find(ep => ep.id === bookmark.episodeId);
+                    return (
+                      <Card key={bookmark.id} className="hover:shadow-md transition-shadow">
+                        <CardContent className="p-4">
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-2">
+                                <Icon name="Bookmark" size={16} className="text-primary" />
+                                <span className="text-sm font-medium text-foreground">
+                                  {episode?.title || 'Неизвестный эпизод'}
+                                </span>
+                                <span className="text-xs text-muted-foreground">
+                                  {getParagraphNumber(novel, bookmark.episodeId, bookmark.paragraphIndex)}
+                                </span>
+                              </div>
+                              {bookmark.comment && (
+                                <p className="text-sm text-muted-foreground">{bookmark.comment}</p>
+                              )}
+                              <p className="text-xs text-muted-foreground mt-2">
+                                {new Date(bookmark.createdAt).toLocaleDateString('ru-RU')}
+                              </p>
+                            </div>
+                            <div className="flex gap-1">
+                              {onNavigateTo && (
+                                <Button
+                                  size="icon"
+                                  variant="ghost"
+                                  onClick={() => onNavigateTo(bookmark.episodeId, bookmark.paragraphIndex)}
+                                >
+                                  <Icon name="Play" size={16} />
+                                </Button>
+                              )}
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="text-destructive"
+                                onClick={() => handleDeleteBookmark(bookmark.id)}
+                              >
+                                <Icon name="Trash2" size={16} />
+                              </Button>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  })
+                ) : (
+                  <p className="text-center py-8 text-muted-foreground">Нет сохранённых закладок</p>
+                )}
+              </TabsContent>
+
+              <TabsContent value="items" className="mt-6">
+                {profile.collectedItems.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {profile.collectedItems.map((item) => {
+                      const episode = novel.episodes.find(ep => ep.id === item.episodeId);
+                      return (
+                        <Card key={item.id}>
+                          <CardContent className="p-4">
+                            <div className="flex items-start gap-3">
+                              <div className="w-12 h-12 flex items-center justify-center bg-secondary/30 rounded-lg">
+                                {item.imageUrl?.startsWith('data:') ? (
+                                  <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover rounded-lg" />
+                                ) : (
+                                  <span className="text-2xl">{item.imageUrl || '📦'}</span>
+                                )}
+                              </div>
+                              <div className="flex-1">
+                                <h4 className="font-semibold text-foreground mb-1">{item.name}</h4>
+                                <p className="text-xs text-muted-foreground mb-2">{item.description}</p>
+                                <p className="text-xs text-muted-foreground">
+                                  <Icon name="MapPin" size={12} className="inline mr-1" />
+                                  {episode?.title || 'Неизвестный эпизод'}
+                                </p>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <p className="text-center py-8 text-muted-foreground">Предметы ещё не найдены</p>
+                )}
+              </TabsContent>
+
+              <TabsContent value="characters" className="mt-6">
+                {profile.metCharacters.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {profile.metCharacters.map((character) => {
+                      const episode = novel.episodes.find(ep => ep.id === character.episodeId);
+                      return (
+                        <Card key={character.id}>
+                          <CardContent className="p-4">
+                            <div className="flex items-start gap-3">
+                              <div className="w-16 h-16 flex items-center justify-center bg-secondary/30 rounded-full">
+                                {character.image?.startsWith('data:') ? (
+                                  <img src={character.image} alt={character.name} className="w-full h-full object-cover rounded-full" />
+                                ) : (
+                                  <span className="text-3xl">{character.image || '👤'}</span>
+                                )}
+                              </div>
+                              <div className="flex-1">
+                                <h4 className="font-semibold text-foreground mb-1">{character.name}</h4>
+                                <p className="text-xs text-muted-foreground mb-2">
+                                  Впервые встречен: {new Date(character.firstMetAt).toLocaleDateString('ru-RU')}
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                  <Icon name="MapPin" size={12} className="inline mr-1" />
+                                  {episode?.title || 'Неизвестный эпизод'}
+                                </p>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <p className="text-center py-8 text-muted-foreground">Вы ещё не встретили персонажей</p>
+                )}
+              </TabsContent>
+            </Tabs>
           </CardContent>
         </Card>
       </div>

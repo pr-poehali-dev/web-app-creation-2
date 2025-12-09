@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Icon from '@/components/ui/icon';
 import EpisodeEditor from './EpisodeEditor';
 import NovelVisualization from './NovelVisualization';
+import LibraryManager from './LibraryManager';
 
 interface AdminPanelProps {
   novel: Novel;
@@ -86,10 +87,14 @@ function AdminPanel({ novel, onUpdate, onLogout }: AdminPanelProps) {
 
       <div className="container mx-auto px-4 py-8">
         <Tabs defaultValue="editor" className="w-full">
-          <TabsList className="grid w-full max-w-md grid-cols-2 mb-8">
+          <TabsList className="grid w-full max-w-2xl grid-cols-3 mb-8">
             <TabsTrigger value="editor">
               <Icon name="Edit" size={16} className="mr-2" />
               Редактор
+            </TabsTrigger>
+            <TabsTrigger value="library">
+              <Icon name="BookMarked" size={16} className="mr-2" />
+              Библиотека
             </TabsTrigger>
             <TabsTrigger value="visualization">
               <Icon name="Network" size={16} className="mr-2" />
@@ -143,6 +148,7 @@ function AdminPanel({ novel, onUpdate, onLogout }: AdminPanelProps) {
                 {selectedEpisode ? (
                   <EpisodeEditor
                     episode={selectedEpisode}
+                    novel={novel}
                     onUpdate={handleUpdateEpisode}
                   />
                 ) : (
@@ -152,6 +158,10 @@ function AdminPanel({ novel, onUpdate, onLogout }: AdminPanelProps) {
                 )}
               </div>
             </div>
+          </TabsContent>
+
+          <TabsContent value="library">
+            <LibraryManager novel={novel} onUpdate={onUpdate} />
           </TabsContent>
 
           <TabsContent value="visualization">

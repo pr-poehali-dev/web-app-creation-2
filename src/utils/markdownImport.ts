@@ -23,6 +23,24 @@ export const parseMarkdownToEpisode = (markdown: string, episodeId: string): Epi
       continue;
     }
     
+    if (!line || !line.startsWith('[')) {
+      // Обычный текст без тега [TEXT]
+      let content = '';
+      while (i < lines.length && lines[i].trim() && !lines[i].trim().startsWith('[')) {
+        content += (content ? '\n\n' : '') + lines[i].trim();
+        i++;
+      }
+      if (content) {
+        paragraphs.push({
+          id: `p${Date.now()}_${paragraphs.length}`,
+          type: 'text',
+          content
+        });
+      }
+      if (i < lines.length && !lines[i].trim()) i++;
+      continue;
+    }
+    
     if (line.startsWith('[TEXT]')) {
       i++;
       let content = '';
@@ -159,9 +177,10 @@ export const getMarkdownTemplate = (): string => {
 
 [MUSIC:url_или_base64_музыки]
 
-[TEXT]
 Обычный текст параграфа. Можно писать несколько строк.
-Пустая строка создаст новый абзац внутри параграфа.
+Пустая строка создаёт новый текстовый параграф.
+
+Это уже второй параграф.
 
 [DIALOGUE:Имя персонажа] [IMG:эмодзи_или_url]
 Текст диалога персонажа.
@@ -178,6 +197,5 @@ export const getMarkdownTemplate = (): string => {
 - Вариант 2 [GOTO:another_episode_id]
 - Вариант 3
 
-[TEXT]
-Следующий текстовый параграф...`;
+Продолжение текста после выбора...`;
 };

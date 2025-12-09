@@ -94,7 +94,12 @@ const initialNovel: Novel = {
         }
       ]
     }
-  ]
+  ],
+  library: {
+    items: [],
+    characters: [],
+    choices: []
+  }
 };
 
 type View = 'reader' | 'admin' | 'episodes' | 'profile' | 'settings';
@@ -176,6 +181,15 @@ function Index() {
     setActiveView('reader');
   }, [novel]);
 
+  const handleNavigateToBookmark = useCallback((episodeId: string, paragraphIndex: number) => {
+    setNovel({
+      ...novel,
+      currentEpisodeId: episodeId,
+      currentParagraphIndex: paragraphIndex
+    });
+    setActiveView('reader');
+  }, [novel]);
+
   if (activeView === 'admin') {
     return (
       <AdminPanel 
@@ -204,6 +218,7 @@ function Index() {
         novel={novel}
         onUpdate={handleProfileUpdate}
         onBack={() => setActiveView('reader')}
+        onNavigateTo={handleNavigateToBookmark}
       />
     );
   }
@@ -223,7 +238,9 @@ function Index() {
       <NovelReader 
         novel={novel} 
         settings={settings}
-        onUpdate={handleNovelUpdate} 
+        profile={profile}
+        onUpdate={handleNovelUpdate}
+        onProfileUpdate={handleProfileUpdate}
       />
       
       <div className="fixed top-4 left-4 flex gap-2 z-50">
