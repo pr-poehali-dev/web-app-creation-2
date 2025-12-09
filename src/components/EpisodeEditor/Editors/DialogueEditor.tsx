@@ -144,15 +144,20 @@ function DialogueEditor({
           </Button>
         </div>
       )}
-      <Textarea
-        placeholder="Текст диалога"
-        value={paragraph.text}
-        onChange={(e) =>
-          onUpdate(index, { ...paragraph, text: e.target.value })
-        }
-        rows={3}
-        className="text-foreground"
-      />
+      <div className="space-y-2">
+        <Textarea
+          placeholder="Текст диалога"
+          value={paragraph.text}
+          onChange={(e) =>
+            onUpdate(index, { ...paragraph, text: e.target.value })
+          }
+          rows={3}
+          className="text-foreground"
+        />
+        <p className="text-xs text-muted-foreground">
+          💡 Подсказка: используйте <code className="bg-secondary px-1 rounded">[слово|подсказка]</code> для интерактивных подсказок
+        </p>
+      </div>
     </div>
   );
 }

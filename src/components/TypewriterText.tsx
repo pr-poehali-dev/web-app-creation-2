@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import InteractiveText from './InteractiveText';
 
 interface TypewriterTextProps {
   text: string;
@@ -36,7 +37,7 @@ function TypewriterText({ text, speed = 50, skipTyping = false, onComplete }: Ty
     setCurrentIndex(0);
   }, [text]);
 
-  return <>{displayedText}</>;
+  return <InteractiveText text={displayedText} />;
 }
 
 export default TypewriterText;
