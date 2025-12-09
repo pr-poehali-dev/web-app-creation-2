@@ -23,11 +23,17 @@ export const parseMarkdownToEpisode = (markdown: string, episodeId: string): Epi
       continue;
     }
     
-    if (!line || !line.startsWith('[')) {
-      // Обычный текст без тега [TEXT]
+    if (!line) {
+      // Пустая строка - пропускаем
+      i++;
+      continue;
+    }
+    
+    if (!line.startsWith('[')) {
+      // Обычный текст без тега - один абзац = один параграф
       let content = '';
       while (i < lines.length && lines[i].trim() && !lines[i].trim().startsWith('[')) {
-        content += (content ? '\n\n' : '') + lines[i].trim();
+        content += (content ? ' ' : '') + lines[i].trim();
         i++;
       }
       if (content) {
@@ -37,7 +43,6 @@ export const parseMarkdownToEpisode = (markdown: string, episodeId: string): Epi
           content
         });
       }
-      if (i < lines.length && !lines[i].trim()) i++;
       continue;
     }
     
