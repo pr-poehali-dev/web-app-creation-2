@@ -45,8 +45,8 @@ function ParagraphsDialog({
                   isCurrentPara
                     ? 'bg-primary text-primary-foreground font-semibold shadow-md'
                     : isLocked
-                    ? 'bg-muted/50 text-muted-foreground cursor-not-allowed opacity-50'
-                    : 'bg-card hover:bg-card/80 text-foreground hover:shadow-md'
+                    ? 'bg-muted text-muted-foreground cursor-not-allowed opacity-50'
+                    : 'bg-muted hover:bg-muted/80 text-foreground hover:shadow-md'
                 }`}
               >
                 <div className="flex items-center gap-3">
