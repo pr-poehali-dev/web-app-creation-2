@@ -21,6 +21,8 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate }: No
   const [isTyping, setIsTyping] = useState(true);
   const [skipTyping, setSkipTyping] = useState(false);
   const [isFading, setIsFading] = useState(false);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
 
   const currentEpisode = novel.episodes.find(ep => ep.id === novel.currentEpisodeId);
   const currentParagraph = currentEpisode?.paragraphs[novel.currentParagraphIndex];
@@ -208,6 +210,33 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate }: No
     setIsTyping(false);
   }, []);
 
+  const minSwipeDistance = 50;
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe && !isTyping && currentParagraph?.type !== 'choice') {
+      goToNextParagraph();
+    }
+    
+    if (isRightSwipe) {
+      goToPreviousParagraph();
+    }
+  };
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'ArrowRight') {
@@ -245,6 +274,9 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate }: No
     <div 
       className="min-h-screen bg-background flex items-start justify-center pt-16 p-4 md:pl-8 md:pr-8 cursor-pointer"
       onClick={handleClick}
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEnd}
       style={{
         fontFamily: settings.fontFamily === 'merriweather' ? '"Merriweather", serif' :
                     settings.fontFamily === 'montserrat' ? '"Montserrat", sans-serif' :
