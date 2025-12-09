@@ -124,7 +124,7 @@ function DialogueEditor({
                   <span className="bg-background px-2 text-muted-foreground">или</span>
                 </div>
               </div>
-              <Button onClick={() => handleImageUpload('dialogue')} variant="outline" className="w-full">
+              <Button onClick={() => handleImageUpload('dialogue')} className="w-full">
                 <Icon name="Upload" size={14} className="mr-2" />
                 Загрузить файл
               </Button>
