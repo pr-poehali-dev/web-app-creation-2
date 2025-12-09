@@ -318,77 +318,81 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
 
       <div className="w-full max-w-4xl">
         {/* Текущий параграф */}
-        {currentParagraph.type === 'text' && (
-          <div className={`leading-relaxed text-left text-foreground px-2 py-4 md:p-8 transition-opacity duration-300 ${
-            isFading ? 'opacity-0' : 'opacity-100'
-          } ${
-            settings.textSize === 'small' ? 'text-base md:text-lg' :
-            settings.textSize === 'large' ? 'text-xl md:text-2xl' :
-            'text-lg md:text-xl'
-          }`}>
-            <TypewriterText 
-              text={currentParagraph.content}
-              speed={settings.textSpeed}
-              skipTyping={skipTyping}
-              onComplete={handleTypingComplete}
-            />
-          </div>
-        )}
+        {currentParagraph.type === 'fade' ? null : (
+          <>
+            {currentParagraph.type === 'text' && (
+              <div className={`leading-relaxed text-left text-foreground px-2 py-4 md:p-8 transition-opacity duration-300 ${
+                isFading ? 'opacity-0' : 'opacity-100'
+              } ${
+                settings.textSize === 'small' ? 'text-base md:text-lg' :
+                settings.textSize === 'large' ? 'text-xl md:text-2xl' :
+                'text-lg md:text-xl'
+              }`}>
+                <TypewriterText 
+                  text={currentParagraph.content}
+                  speed={settings.textSpeed}
+                  skipTyping={skipTyping}
+                  onComplete={handleTypingComplete}
+                />
+              </div>
+            )}
 
-        {currentParagraph.type === 'dialogue' && (
-          <DialogueBox
-            characterName={currentParagraph.characterName}
-            characterImage={currentParagraph.characterImage}
-            text={currentParagraph.text}
-            skipTyping={skipTyping}
-            onComplete={handleTypingComplete}
-            textSpeed={settings.textSpeed}
-            existingComment={profile.metCharacters?.find(
-              c => c.name === currentParagraph.characterName
-            )?.comment}
-            onCommentSave={(comment) => {
-              const characterIndex = profile.metCharacters?.findIndex(
-                c => c.name === currentParagraph.characterName
-              );
-              if (characterIndex !== undefined && characterIndex >= 0) {
-                const updatedCharacters = [...(profile.metCharacters || [])];
-                updatedCharacters[characterIndex] = {
-                  ...updatedCharacters[characterIndex],
-                  comment
-                };
-                onProfileUpdate({
-                  ...profile,
-                  metCharacters: updatedCharacters
-                });
-              }
-            }}
-          />
-        )}
+            {currentParagraph.type === 'dialogue' && (
+              <DialogueBox
+                characterName={currentParagraph.characterName}
+                characterImage={currentParagraph.characterImage}
+                text={currentParagraph.text}
+                skipTyping={skipTyping}
+                onComplete={handleTypingComplete}
+                textSpeed={settings.textSpeed}
+                existingComment={profile.metCharacters?.find(
+                  c => c.name === currentParagraph.characterName
+                )?.comment}
+                onCommentSave={(comment) => {
+                  const characterIndex = profile.metCharacters?.findIndex(
+                    c => c.name === currentParagraph.characterName
+                  );
+                  if (characterIndex !== undefined && characterIndex >= 0) {
+                    const updatedCharacters = [...(profile.metCharacters || [])];
+                    updatedCharacters[characterIndex] = {
+                      ...updatedCharacters[characterIndex],
+                      comment
+                    };
+                    onProfileUpdate({
+                      ...profile,
+                      metCharacters: updatedCharacters
+                    });
+                  }
+                }}
+              />
+            )}
 
-        {currentParagraph.type === 'choice' && (
-          <ChoiceBox
-            question={currentParagraph.question}
-            options={currentParagraph.options}
-            onChoice={handleChoice}
-          />
-        )}
+            {currentParagraph.type === 'choice' && (
+              <ChoiceBox
+                question={currentParagraph.question}
+                options={currentParagraph.options}
+                onChoice={handleChoice}
+              />
+            )}
 
-        {currentParagraph.type === 'item' && (
-          <ItemBox
-            name={currentParagraph.name}
-            description={currentParagraph.description}
-            imageUrl={currentParagraph.imageUrl}
-            skipTyping={skipTyping}
-            onComplete={handleTypingComplete}
-            textSpeed={settings.textSpeed}
-          />
-        )}
+            {currentParagraph.type === 'item' && (
+              <ItemBox
+                name={currentParagraph.name}
+                description={currentParagraph.description}
+                imageUrl={currentParagraph.imageUrl}
+                skipTyping={skipTyping}
+                onComplete={handleTypingComplete}
+                textSpeed={settings.textSpeed}
+              />
+            )}
 
-        {currentParagraph.type === 'image' && (
-          <ImageBox
-            url={currentParagraph.url}
-            alt={currentParagraph.alt}
-          />
+            {currentParagraph.type === 'image' && (
+              <ImageBox
+                url={currentParagraph.url}
+                alt={currentParagraph.alt}
+              />
+            )}
+          </>
         )}
 
 
