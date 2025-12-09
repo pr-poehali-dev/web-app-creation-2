@@ -20,14 +20,14 @@ export const selectFile = (accept: string): Promise<File | null> => {
   });
 };
 
-const MAX_FILE_SIZE = 1024 * 1024; // 1MB
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
 export const selectAndConvertImage = async (): Promise<string | null> => {
   const file = await selectFile('image/*');
   if (!file) return null;
   
   if (file.size > MAX_FILE_SIZE) {
-    alert(`Файл слишком большой (${(file.size / 1024 / 1024).toFixed(2)} МБ). Максимум: 1 МБ`);
+    alert(`Файл слишком большой (${(file.size / 1024 / 1024).toFixed(2)} МБ). Максимум: 10 МБ`);
     return null;
   }
   
@@ -39,7 +39,7 @@ export const selectAndConvertAudio = async (): Promise<string | null> => {
   if (!file) return null;
   
   if (file.size > MAX_FILE_SIZE) {
-    alert(`Файл слишком большой (${(file.size / 1024 / 1024).toFixed(2)} МБ). Максимум: 1 МБ`);
+    alert(`Файл слишком большой (${(file.size / 1024 / 1024).toFixed(2)} МБ). Максимум: 10 МБ`);
     return null;
   }
   

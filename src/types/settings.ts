@@ -30,6 +30,7 @@ export interface MetCharacter {
   image?: string;
   episodeId: string;
   firstMetAt: string;
+  comment?: string;
 }
 
 export interface UserProfile {

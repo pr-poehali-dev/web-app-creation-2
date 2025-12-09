@@ -1,19 +1,21 @@
 import { useState } from 'react';
-import { Episode } from '@/types/novel';
+import { Episode, Novel } from '@/types/novel';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Icon from '@/components/ui/icon';
 import { selectAndConvertAudio } from '@/utils/fileHelpers';
 import { parseMarkdownToEpisode, getMarkdownTemplate } from '@/utils/markdownImport';
 
 interface EpisodeHeaderProps {
   episode: Episode;
+  novel: Novel;
   onUpdate: (episode: Episode) => void;
 }
 
-function EpisodeHeader({ episode, onUpdate }: EpisodeHeaderProps) {
+function EpisodeHeader({ episode, novel, onUpdate }: EpisodeHeaderProps) {
   const [editingTitle, setEditingTitle] = useState(false);
 
   const handleTitleUpdate = (newTitle: string) => {
@@ -102,6 +104,24 @@ function EpisodeHeader({ episode, onUpdate }: EpisodeHeaderProps) {
               </Button>
             )}
           </div>
+        </div>
+
+        <div>
+          <Label className="text-foreground">Следующий эпизод</Label>
+          <Select 
+            value={episode.nextEpisodeId || 'none'} 
+            onValueChange={(value) => onUpdate({ ...episode, nextEpisodeId: value === 'none' ? undefined : value })}
+          >
+            <SelectTrigger className="text-foreground mt-2">
+              <SelectValue placeholder="Не выбран" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">Не выбран</SelectItem>
+              {novel.episodes.filter(ep => ep.id !== episode.id).map((ep) => (
+                <SelectItem key={ep.id} value={ep.id}>{ep.title}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
         
         <div className="flex gap-2">

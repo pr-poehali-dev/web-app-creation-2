@@ -106,6 +106,15 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate }: No
       });
       setIsTyping(true);
       setSkipTyping(false);
+    } else if (currentEpisode.nextEpisodeId) {
+      // Переход к следующему эпизоду
+      onUpdate({
+        ...novel,
+        currentEpisodeId: currentEpisode.nextEpisodeId,
+        currentParagraphIndex: 0
+      });
+      setIsTyping(true);
+      setSkipTyping(false);
     }
   }, [novel, currentEpisode, currentParagraph, profile, onUpdate, onProfileUpdate]);
 
@@ -227,6 +236,25 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate }: No
             skipTyping={skipTyping}
             onComplete={handleTypingComplete}
             textSpeed={settings.textSpeed}
+            existingComment={profile.metCharacters?.find(
+              c => c.name === currentParagraph.characterName
+            )?.comment}
+            onCommentSave={(comment) => {
+              const characterIndex = profile.metCharacters?.findIndex(
+                c => c.name === currentParagraph.characterName
+              );
+              if (characterIndex !== undefined && characterIndex >= 0) {
+                const updatedCharacters = [...(profile.metCharacters || [])];
+                updatedCharacters[characterIndex] = {
+                  ...updatedCharacters[characterIndex],
+                  comment
+                };
+                onProfileUpdate({
+                  ...profile,
+                  metCharacters: updatedCharacters
+                });
+              }
+            }}
           />
         )}
 

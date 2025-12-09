@@ -1,8 +1,10 @@
-import { Paragraph, Novel } from '@/types/novel';
+import { useState } from 'react';
+import { Paragraph, Novel, ParagraphType } from '@/types/novel';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Icon from '@/components/ui/icon';
 import { selectAndConvertImage } from '@/utils/fileHelpers';
 import { getParagraphNumber } from '@/utils/paragraphNumbers';
@@ -30,6 +32,47 @@ function ParagraphEditor({
   onMove,
   onToggleInsert
 }: ParagraphEditorProps) {
+  const [isChangingType, setIsChangingType] = useState(false);
+
+  const handleTypeChange = (newType: ParagraphType) => {
+    let newParagraph: Paragraph;
+    const id = paragraph.id;
+
+    switch (newType) {
+      case 'text':
+        newParagraph = { id, type: 'text', content: 'Новый текст' };
+        break;
+      case 'dialogue':
+        newParagraph = { id, type: 'dialogue', characterName: 'Персонаж', text: 'Текст диалога' };
+        break;
+      case 'choice':
+        newParagraph = { 
+          id, 
+          type: 'choice', 
+          question: 'Ваш выбор?',
+          options: [
+            { id: `opt${Date.now()}1`, text: 'Вариант 1' },
+            { id: `opt${Date.now()}2`, text: 'Вариант 2' }
+          ]
+        };
+        break;
+      case 'item':
+        newParagraph = { id, type: 'item', name: 'Предмет', description: 'Описание предмета' };
+        break;
+      case 'image':
+        newParagraph = { id, type: 'image', url: 'https://via.placeholder.com/800x600' };
+        break;
+      case 'fade':
+        newParagraph = { id, type: 'fade' };
+        break;
+      default:
+        return;
+    }
+
+    onUpdate(index, newParagraph);
+    setIsChangingType(false);
+  };
+
   const handleImageUpload = async () => {
     const imageBase64 = await selectAndConvertImage();
     if (imageBase64) {
@@ -74,9 +117,28 @@ function ParagraphEditor({
                 <span className="text-sm font-bold text-primary">
                   {getParagraphNumber(novel, episodeId, index)}
                 </span>
-                <span className="text-xs font-medium text-muted-foreground uppercase">
-                  {paragraph.type}
-                </span>
+                {isChangingType ? (
+                  <Select value={paragraph.type} onValueChange={handleTypeChange}>
+                    <SelectTrigger className="h-7 w-32 text-xs">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="text">TEXT</SelectItem>
+                      <SelectItem value="dialogue">DIALOGUE</SelectItem>
+                      <SelectItem value="choice">CHOICE</SelectItem>
+                      <SelectItem value="item">ITEM</SelectItem>
+                      <SelectItem value="image">IMAGE</SelectItem>
+                      <SelectItem value="fade">FADE</SelectItem>
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <button
+                    onClick={() => setIsChangingType(true)}
+                    className="text-xs font-medium text-muted-foreground uppercase hover:text-primary transition-colors cursor-pointer"
+                  >
+                    {paragraph.type}
+                  </button>
+                )}
               </div>
               <div className="flex gap-1">
                 <Button

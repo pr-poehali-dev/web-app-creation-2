@@ -125,7 +125,7 @@ function EpisodeEditor({ episode, novel, onUpdate, onNovelUpdate }: EpisodeEdito
 
   return (
     <div className="space-y-4">
-      <EpisodeHeader episode={episode} onUpdate={onUpdate} />
+      <EpisodeHeader episode={episode} novel={novel} onUpdate={onUpdate} />
 
       <ParagraphTypeButtons onAddParagraph={(type) => handleAddParagraph(type)} />
 

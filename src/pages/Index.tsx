@@ -268,18 +268,18 @@ function Index() {
         >
           <Icon name="Settings" size={20} />
         </Button>
+        
+        {!showAdminButton && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="bg-card/50 backdrop-blur-sm hover:bg-card/80 opacity-30 hover:opacity-100 transition-opacity"
+            onClick={() => setShowAdminButton(true)}
+          >
+            <Icon name="Lock" size={20} />
+          </Button>
+        )}
       </div>
-
-      {!showAdminButton && (
-        <Button
-          variant="ghost"
-          size="icon"
-          className="fixed bottom-4 right-4 opacity-20 hover:opacity-100 transition-opacity z-50"
-          onClick={() => setShowAdminButton(true)}
-        >
-          <Icon name="Lock" size={20} />
-        </Button>
-      )}
 
       {showAdminButton && (
         <div className="fixed bottom-4 right-4 bg-card border border-border rounded-lg p-4 shadow-lg animate-scale-in z-50">

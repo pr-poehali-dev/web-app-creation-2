@@ -59,6 +59,7 @@ export interface Episode {
   paragraphs: Paragraph[];
   position: { x: number; y: number };
   backgroundMusic?: string;
+  nextEpisodeId?: string;
 }
 
 export interface LibraryItem {

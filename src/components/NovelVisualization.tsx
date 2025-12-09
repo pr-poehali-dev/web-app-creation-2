@@ -88,20 +88,28 @@ function NovelVisualization({ novel, onUpdate }: NovelVisualizationProps) {
     return connections;
   };
 
-  const allConnections: { from: Episode; to: Episode }[] = [];
+  const allConnections: { from: Episode; to: Episode; type: 'choice' | 'next' }[] = [];
   novel.episodes.forEach(episode => {
+    // Связи из выборов
     episode.paragraphs.forEach(paragraph => {
       if (paragraph.type === 'choice') {
         paragraph.options.forEach(option => {
           if (option.nextEpisodeId) {
             const toEpisode = novel.episodes.find(ep => ep.id === option.nextEpisodeId);
             if (toEpisode) {
-              allConnections.push({ from: episode, to: toEpisode });
+              allConnections.push({ from: episode, to: toEpisode, type: 'choice' });
             }
           }
         });
       }
     });
+    // Связь следующего эпизода
+    if (episode.nextEpisodeId) {
+      const toEpisode = novel.episodes.find(ep => ep.id === episode.nextEpisodeId);
+      if (toEpisode) {
+        allConnections.push({ from: episode, to: toEpisode, type: 'next' });
+      }
+    }
   });
 
   return (
@@ -144,9 +152,10 @@ function NovelVisualization({ novel, onUpdate }: NovelVisualizationProps) {
                     y1={fromY}
                     x2={toX}
                     y2={toY}
-                    stroke="hsl(var(--primary))"
-                    strokeWidth="2"
-                    strokeOpacity="0.3"
+                    stroke={conn.type === 'next' ? "hsl(var(--secondary))" : "hsl(var(--primary))"}
+                    strokeWidth={conn.type === 'next' ? "3" : "2"}
+                    strokeOpacity={conn.type === 'next' ? "0.6" : "0.3"}
+                    strokeDasharray={conn.type === 'next' ? "5,5" : "0"}
                     markerEnd="url(#arrowhead)"
                   />
                 </g>

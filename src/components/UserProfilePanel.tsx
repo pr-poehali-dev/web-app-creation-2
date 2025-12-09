@@ -327,10 +327,15 @@ function UserProfilePanel({ profile, novel, onUpdate, onBack, onNavigateTo }: Us
                                 <p className="text-xs text-muted-foreground mb-2">
                                   Впервые встречен: {new Date(character.firstMetAt).toLocaleDateString('ru-RU')}
                                 </p>
-                                <p className="text-xs text-muted-foreground">
+                                <p className="text-xs text-muted-foreground mb-2">
                                   <Icon name="MapPin" size={12} className="inline mr-1" />
                                   {episode?.title || 'Неизвестный эпизод'}
                                 </p>
+                                {character.comment && (
+                                  <p className="text-sm text-foreground mt-2 p-2 bg-secondary/20 rounded">
+                                    {character.comment}
+                                  </p>
+                                )}
                               </div>
                             </div>
                           </CardContent>
