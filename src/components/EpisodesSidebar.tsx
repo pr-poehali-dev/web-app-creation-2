@@ -4,18 +4,19 @@ import Icon from '@/components/ui/icon';
 
 interface EpisodesSidebarProps {
   novel: Novel;
+  currentEpisodeId: string;
   onEpisodeSelect: (episodeId: string, paragraphIndex?: number) => void;
   onShowParagraphs: (episodeId: string) => void;
 }
 
-function EpisodesSidebar({ novel, onEpisodeSelect, onShowParagraphs }: EpisodesSidebarProps) {
+function EpisodesSidebar({ novel, currentEpisodeId, onEpisodeSelect, onShowParagraphs }: EpisodesSidebarProps) {
   return (
-    <div className="w-80 h-full bg-background border-r border-border overflow-y-auto flex-shrink-0">
+    <div className="w-80 h-full bg-card border-r border-border overflow-y-auto flex-shrink-0">
       <div className="p-4">
         <h2 className="text-lg font-bold text-foreground mb-4">Эпизоды</h2>
         <div className="space-y-2">
           {novel.episodes.map((episode, index) => {
-            const isCurrent = novel.currentEpisodeId === episode.id;
+            const isCurrent = currentEpisodeId === episode.id;
             
             return (
               <div key={episode.id} className="space-y-1">

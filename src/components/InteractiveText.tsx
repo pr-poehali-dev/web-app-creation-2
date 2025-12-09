@@ -95,16 +95,14 @@ function InteractiveText({ text, className = '' }: InteractiveTextProps) {
       </span>
 
       {/* Dialog для мобильных */}
-      {isMobile && mobileHint && (
-        <Dialog open={!!mobileHint} onOpenChange={() => setMobileHint(null)}>
-          <DialogContent onClick={(e) => e.stopPropagation()}>
-            <DialogHeader>
-              <DialogTitle>{mobileHint.content}</DialogTitle>
-            </DialogHeader>
-            <p className="text-foreground">{mobileHint.hint}</p>
-          </DialogContent>
-        </Dialog>
-      )}
+      <Dialog open={!!mobileHint} onOpenChange={() => setMobileHint(null)}>
+        <DialogContent onClick={(e) => e.stopPropagation()}>
+          <DialogHeader>
+            <DialogTitle>{mobileHint?.content || ''}</DialogTitle>
+          </DialogHeader>
+          <p className="text-foreground">{mobileHint?.hint || ''}</p>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

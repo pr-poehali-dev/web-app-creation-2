@@ -340,8 +340,12 @@ function Index() {
         <HomePage 
           homePage={novel.homePage || { greeting: 'Добро пожаловать', news: [] }}
           onStart={() => {
-            // Устанавливаем первый эпизод и первый параграф при старте для новых пользователей
-            if (!profile.currentEpisodeId || profile.currentEpisodeId === 'ep1') {
+            // Если нет прогресса или некорректные данные - начинаем с первого эпизода
+            const hasValidProgress = profile.currentEpisodeId && 
+              novel.episodes.some(ep => ep.id === profile.currentEpisodeId) &&
+              profile.currentParagraphIndex !== undefined;
+            
+            if (!hasValidProgress) {
               const firstEpisode = novel.episodes[0];
               if (firstEpisode) {
                 setProfile({
@@ -437,6 +441,7 @@ function Index() {
       <div className={`fixed md:relative inset-y-0 left-0 z-50 transform transition-transform duration-300 ${showSidebar ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
         <EpisodesSidebar
           novel={novel}
+          currentEpisodeId={profile.currentEpisodeId}
           onEpisodeSelect={(episodeId, paragraphIndex) => {
             handleEpisodeSelect(episodeId, paragraphIndex);
             setShowSidebar(false);

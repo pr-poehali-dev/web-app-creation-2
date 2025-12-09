@@ -300,7 +300,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
 
   return (
     <div 
-      className="min-h-screen bg-background flex items-start justify-center pt-24 md:pt-20 px-2 md:px-4 pb-20 md:pb-4 md:pr-32 md:pl-8 cursor-pointer"
+      className="min-h-screen bg-background flex items-start justify-center pt-16 md:pt-20 px-2 md:px-4 pb-32 md:pb-4 md:pr-32 md:pl-8 cursor-pointer"
       onClick={handleClick}
       onTouchStart={onTouchStart}
       onTouchMove={onTouchMove}
