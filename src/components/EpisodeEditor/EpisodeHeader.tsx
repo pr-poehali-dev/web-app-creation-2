@@ -70,6 +70,8 @@ function EpisodeHeader({ episode, novel, onUpdate, onNovelUpdate }: EpisodeHeade
           const shouldGenerate = !para.characterImage || (!para.characterImage.startsWith('data:') && 
                                  !para.characterImage.startsWith('http') && para.characterImage.length <= 2);
           
+          console.log(`Персонаж "${para.characterName}": изображение="${para.characterImage}", генерировать=${shouldGenerate}`);
+          
           if (!exists) {
             const charId = `char${Date.now()}_${para.characterName}`;
             newCharacters.push({
