@@ -150,6 +150,7 @@ function AdminPanel({ novel, onUpdate, onLogout }: AdminPanelProps) {
                     episode={selectedEpisode}
                     novel={novel}
                     onUpdate={handleUpdateEpisode}
+                    onNovelUpdate={onUpdate}
                   />
                 ) : (
                   <div className="text-center py-16 text-muted-foreground">

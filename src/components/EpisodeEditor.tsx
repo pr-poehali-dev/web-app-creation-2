@@ -10,9 +10,10 @@ interface EpisodeEditorProps {
   episode: Episode;
   novel: Novel;
   onUpdate: (episode: Episode) => void;
+  onNovelUpdate: (novel: Novel) => void;
 }
 
-function EpisodeEditor({ episode, novel, onUpdate }: EpisodeEditorProps) {
+function EpisodeEditor({ episode, novel, onUpdate, onNovelUpdate }: EpisodeEditorProps) {
   const [insertingAt, setInsertingAt] = useState<number | null>(null);
 
   const handleAddParagraph = (type: ParagraphType, insertIndex?: number) => {
@@ -25,6 +26,17 @@ function EpisodeEditor({ episode, novel, onUpdate }: EpisodeEditorProps) {
         break;
       case 'dialogue':
         newParagraph = { id, type: 'dialogue', characterName: 'Персонаж', text: 'Текст диалога' };
+        // Добавляем персонажа в библиотеку
+        const characterExists = novel.library.characters.some(c => c.name === 'Персонаж');
+        if (!characterExists) {
+          onNovelUpdate({
+            ...novel,
+            library: {
+              ...novel.library,
+              characters: [...novel.library.characters, { id: `char${Date.now()}`, name: 'Персонаж' }]
+            }
+          });
+        }
         break;
       case 'choice':
         newParagraph = { 
@@ -36,12 +48,35 @@ function EpisodeEditor({ episode, novel, onUpdate }: EpisodeEditorProps) {
             { id: `opt${Date.now()}2`, text: 'Вариант 2' }
           ]
         };
+        // Добавляем варианты в библиотеку
+        const newChoices = [
+          { id: `choice${Date.now()}1`, text: 'Вариант 1' },
+          { id: `choice${Date.now()}2`, text: 'Вариант 2' }
+        ];
+        onNovelUpdate({
+          ...novel,
+          library: {
+            ...novel.library,
+            choices: [...novel.library.choices, ...newChoices]
+          }
+        });
         break;
       case 'item':
         newParagraph = { id, type: 'item', name: 'Предмет', description: 'Описание предмета' };
+        // Добавляем предмет в библиотеку
+        onNovelUpdate({
+          ...novel,
+          library: {
+            ...novel.library,
+            items: [...novel.library.items, { id: `item${Date.now()}`, name: 'Предмет', description: 'Описание предмета' }]
+          }
+        });
         break;
       case 'image':
         newParagraph = { id, type: 'image', url: 'https://via.placeholder.com/800x600' };
+        break;
+      case 'fade':
+        newParagraph = { id, type: 'fade' };
         break;
       default:
         return;
@@ -130,6 +165,10 @@ function EpisodeEditor({ episode, novel, onUpdate }: EpisodeEditorProps) {
                 <Button size="sm" variant="secondary" onClick={() => handleAddParagraph('image', index)}>
                   <Icon name="Image" size={14} className="mr-1" />
                   Картинка
+                </Button>
+                <Button size="sm" variant="outline" onClick={() => handleAddParagraph('fade', index)}>
+                  <Icon name="Minus" size={14} className="mr-1" />
+                  Затухание
                 </Button>
               </div>
             )}

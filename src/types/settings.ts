@@ -5,6 +5,7 @@ export interface UserSettings {
   autoPlay: boolean;
   textSize: 'small' | 'medium' | 'large';
   theme: 'dark' | 'light';
+  fontFamily: 'merriweather' | 'montserrat' | 'georgia' | 'arial';
 }
 
 export interface Bookmark {
@@ -56,7 +57,8 @@ export const defaultSettings: UserSettings = {
   soundEffects: true,
   autoPlay: false,
   textSize: 'medium',
-  theme: 'dark'
+  theme: 'dark',
+  fontFamily: 'merriweather'
 };
 
 export const defaultProfile: UserProfile = {

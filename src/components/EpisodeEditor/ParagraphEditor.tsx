@@ -98,6 +98,13 @@ function ParagraphEditor({
               </div>
             </div>
 
+            {paragraph.type === 'fade' && (
+              <div className="text-center py-4 text-muted-foreground">
+                <Icon name="Minus" size={24} className="mx-auto mb-2" />
+                <p className="text-sm">Затухание (пустая строка в MD)</p>
+              </div>
+            )}
+
             {paragraph.type === 'text' && (
               <Textarea
                 value={paragraph.content}

@@ -177,18 +177,35 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate }: No
     );
   }
 
+  const fontClass = settings.fontFamily === 'merriweather' ? 'font-serif' :
+                    settings.fontFamily === 'georgia' ? 'font-serif' :
+                    settings.fontFamily === 'arial' ? 'font-sans' :
+                    'font-sans';
+
   return (
     <div 
       className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex items-center justify-center p-4 cursor-pointer"
       onClick={handleClick}
+      style={{
+        fontFamily: settings.fontFamily === 'merriweather' ? '"Merriweather", serif' :
+                    settings.fontFamily === 'montserrat' ? '"Montserrat", sans-serif' :
+                    settings.fontFamily === 'georgia' ? 'Georgia, serif' :
+                    'Arial, sans-serif'
+      }}
     >
       {currentEpisode.backgroundMusic && (
         <MusicPlayer audioSrc={currentEpisode.backgroundMusic} volume={settings.musicVolume} />
       )}
 
       <div className="w-full max-w-4xl">
+        {currentParagraph.type === 'fade' && (
+          <div className="h-32 flex items-center justify-center animate-fade-out">
+            <div className="w-16 h-1 bg-muted-foreground/30 rounded-full" />
+          </div>
+        )}
+
         {currentParagraph.type === 'text' && (
-          <div className={`novel-text leading-relaxed text-foreground p-8 ${
+          <div className={`leading-relaxed text-foreground p-8 ${
             settings.textSize === 'small' ? 'text-lg md:text-xl' :
             settings.textSize === 'large' ? 'text-2xl md:text-3xl' :
             'text-xl md:text-2xl'

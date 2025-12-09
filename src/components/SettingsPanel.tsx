@@ -42,7 +42,8 @@ function SettingsPanel({ settings, onUpdate, onBack }: SettingsPanelProps) {
         soundEffects: true,
         autoPlay: false,
         textSize: 'medium',
-        theme: 'dark'
+        theme: 'dark',
+        fontFamily: 'merriweather'
       });
     }
   };
@@ -103,6 +104,29 @@ function SettingsPanel({ settings, onUpdate, onBack }: SettingsPanelProps) {
                     settings.textSize === 'small' ? 'text-base' :
                     settings.textSize === 'large' ? 'text-2xl' : 'text-xl'
                   }>Пример текста новеллы</span>
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                <Label className="text-foreground">Шрифт текста</Label>
+                <Select value={settings.fontFamily} onValueChange={(value) => onUpdate({ ...settings, fontFamily: value as any })}>
+                  <SelectTrigger className="text-foreground">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="merriweather">Merriweather (Serif)</SelectItem>
+                    <SelectItem value="montserrat">Montserrat (Sans)</SelectItem>
+                    <SelectItem value="georgia">Georgia (Serif)</SelectItem>
+                    <SelectItem value="arial">Arial (Sans)</SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground" style={{
+                  fontFamily: settings.fontFamily === 'merriweather' ? '"Merriweather", serif' :
+                             settings.fontFamily === 'montserrat' ? '"Montserrat", sans-serif' :
+                             settings.fontFamily === 'georgia' ? 'Georgia, serif' :
+                             'Arial, sans-serif'
+                }}>
+                  Предпросмотр: Пример текста новеллы
                 </p>
               </div>
 

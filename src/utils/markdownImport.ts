@@ -24,25 +24,23 @@ export const parseMarkdownToEpisode = (markdown: string, episodeId: string): Epi
     }
     
     if (!line) {
-      // Пустая строка - пропускаем
+      // Пустая строка - добавляем fade параграф
+      paragraphs.push({
+        id: `p${Date.now()}_${paragraphs.length}`,
+        type: 'fade'
+      });
       i++;
       continue;
     }
     
     if (!line.startsWith('[')) {
-      // Обычный текст без тега - один абзац = один параграф
-      let content = '';
-      while (i < lines.length && lines[i].trim() && !lines[i].trim().startsWith('[')) {
-        content += (content ? ' ' : '') + lines[i].trim();
-        i++;
-      }
-      if (content) {
-        paragraphs.push({
-          id: `p${Date.now()}_${paragraphs.length}`,
-          type: 'text',
-          content
-        });
-      }
+      // Обычный текст без тега - каждая строка = отдельный параграф
+      paragraphs.push({
+        id: `p${Date.now()}_${paragraphs.length}`,
+        type: 'text',
+        content: line
+      });
+      i++;
       continue;
     }
     
