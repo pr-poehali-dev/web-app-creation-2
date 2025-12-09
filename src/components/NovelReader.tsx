@@ -1,5 +1,6 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Novel } from '@/types/novel';
+import { UserSettings } from '@/types/settings';
 import TypewriterText from './TypewriterText';
 import DialogueBox from './DialogueBox';
 import ChoiceBox from './ChoiceBox';
@@ -9,10 +10,11 @@ import MusicPlayer from './MusicPlayer';
 
 interface NovelReaderProps {
   novel: Novel;
+  settings: UserSettings;
   onUpdate: (novel: Novel) => void;
 }
 
-function NovelReader({ novel, onUpdate }: NovelReaderProps) {
+function NovelReader({ novel, settings, onUpdate }: NovelReaderProps) {
   const [isTyping, setIsTyping] = useState(true);
   const [skipTyping, setSkipTyping] = useState(false);
 
@@ -106,15 +108,19 @@ function NovelReader({ novel, onUpdate }: NovelReaderProps) {
       onClick={handleClick}
     >
       {currentEpisode.backgroundMusic && (
-        <MusicPlayer audioSrc={currentEpisode.backgroundMusic} />
+        <MusicPlayer audioSrc={currentEpisode.backgroundMusic} volume={settings.musicVolume} />
       )}
 
       <div className="w-full max-w-4xl">
         {currentParagraph.type === 'text' && (
-          <div className="novel-text text-xl md:text-2xl leading-relaxed text-foreground p-8">
+          <div className={`novel-text leading-relaxed text-foreground p-8 ${
+            settings.textSize === 'small' ? 'text-lg md:text-xl' :
+            settings.textSize === 'large' ? 'text-2xl md:text-3xl' :
+            'text-xl md:text-2xl'
+          }`}>
             <TypewriterText 
               text={currentParagraph.content}
-              speed={50}
+              speed={settings.textSpeed}
               skipTyping={skipTyping}
               onComplete={handleTypingComplete}
             />
@@ -128,6 +134,7 @@ function NovelReader({ novel, onUpdate }: NovelReaderProps) {
             text={currentParagraph.text}
             skipTyping={skipTyping}
             onComplete={handleTypingComplete}
+            textSpeed={settings.textSpeed}
           />
         )}
 
@@ -146,6 +153,7 @@ function NovelReader({ novel, onUpdate }: NovelReaderProps) {
             imageUrl={currentParagraph.imageUrl}
             skipTyping={skipTyping}
             onComplete={handleTypingComplete}
+            textSpeed={settings.textSpeed}
           />
         )}
 

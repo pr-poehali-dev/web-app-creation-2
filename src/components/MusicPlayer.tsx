@@ -6,13 +6,18 @@ import { Card } from '@/components/ui/card';
 
 interface MusicPlayerProps {
   audioSrc: string;
+  volume?: number;
 }
 
-function MusicPlayer({ audioSrc }: MusicPlayerProps) {
+function MusicPlayer({ audioSrc, volume: initialVolume = 70 }: MusicPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(true);
-  const [volume, setVolume] = useState(70);
+  const [volume, setVolume] = useState(initialVolume);
   const [showControls, setShowControls] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
+
+  useEffect(() => {
+    setVolume(initialVolume);
+  }, [initialVolume]);
 
   useEffect(() => {
     if (audioRef.current) {

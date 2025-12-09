@@ -8,9 +8,10 @@ interface ItemBoxProps {
   imageUrl?: string;
   skipTyping?: boolean;
   onComplete?: () => void;
+  textSpeed?: number;
 }
 
-function ItemBox({ name, description, imageUrl, skipTyping, onComplete }: ItemBoxProps) {
+function ItemBox({ name, description, imageUrl, skipTyping, onComplete, textSpeed = 50 }: ItemBoxProps) {
   return (
     <Card className="bg-card/95 backdrop-blur-sm border-accent/50 shadow-2xl animate-scale-in">
       <CardContent className="p-8 text-center">
@@ -36,7 +37,7 @@ function ItemBox({ name, description, imageUrl, skipTyping, onComplete }: ItemBo
         <p className="novel-text text-lg leading-relaxed text-muted-foreground">
           <TypewriterText 
             text={description}
-            speed={50}
+            speed={textSpeed}
             skipTyping={skipTyping}
             onComplete={onComplete}
           />

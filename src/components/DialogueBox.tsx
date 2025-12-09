@@ -7,9 +7,10 @@ interface DialogueBoxProps {
   text: string;
   skipTyping?: boolean;
   onComplete?: () => void;
+  textSpeed?: number;
 }
 
-function DialogueBox({ characterName, characterImage, text, skipTyping, onComplete }: DialogueBoxProps) {
+function DialogueBox({ characterName, characterImage, text, skipTyping, onComplete, textSpeed = 50 }: DialogueBoxProps) {
   return (
     <Card className="bg-card/95 backdrop-blur-sm border-primary/30 shadow-2xl animate-scale-in">
       <CardContent className="p-6">
@@ -34,7 +35,7 @@ function DialogueBox({ characterName, characterImage, text, skipTyping, onComple
             <p className="novel-text text-lg leading-relaxed text-foreground">
               <TypewriterText 
                 text={text}
-                speed={50}
+                speed={textSpeed}
                 skipTyping={skipTyping}
                 onComplete={onComplete}
               />

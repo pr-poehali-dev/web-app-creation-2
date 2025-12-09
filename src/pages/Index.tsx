@@ -1,7 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Novel } from '@/types/novel';
+import { UserSettings, UserProfile, defaultSettings, defaultProfile } from '@/types/settings';
 import NovelReader from '@/components/NovelReader';
 import AdminPanel from '@/components/AdminPanel';
+import EpisodeMenu from '@/components/EpisodeMenu';
+import UserProfilePanel from '@/components/UserProfilePanel';
+import SettingsPanel from '@/components/SettingsPanel';
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
 
@@ -93,18 +97,41 @@ const initialNovel: Novel = {
   ]
 };
 
+type View = 'reader' | 'admin' | 'episodes' | 'profile' | 'settings';
+
 function Index() {
   const [novel, setNovel] = useState<Novel>(initialNovel);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [settings, setSettings] = useState<UserSettings>(defaultSettings);
+  const [profile, setProfile] = useState<UserProfile>(defaultProfile);
+  const [activeView, setActiveView] = useState<View>('reader');
   const [showAdminButton, setShowAdminButton] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem('visualNovel');
-    if (saved) {
+    const savedNovel = localStorage.getItem('visualNovel');
+    const savedSettings = localStorage.getItem('userSettings');
+    const savedProfile = localStorage.getItem('userProfile');
+    
+    if (savedNovel) {
       try {
-        setNovel(JSON.parse(saved));
+        setNovel(JSON.parse(savedNovel));
       } catch (e) {
         console.error('Failed to load novel', e);
+      }
+    }
+    
+    if (savedSettings) {
+      try {
+        setSettings(JSON.parse(savedSettings));
+      } catch (e) {
+        console.error('Failed to load settings', e);
+      }
+    }
+    
+    if (savedProfile) {
+      try {
+        setProfile(JSON.parse(savedProfile));
+      } catch (e) {
+        console.error('Failed to load profile', e);
       }
     }
   }, []);
@@ -113,35 +140,119 @@ function Index() {
     localStorage.setItem('visualNovel', JSON.stringify(novel));
   }, [novel]);
 
+  useEffect(() => {
+    localStorage.setItem('userSettings', JSON.stringify(settings));
+  }, [settings]);
+
+  useEffect(() => {
+    localStorage.setItem('userProfile', JSON.stringify(profile));
+  }, [profile]);
+
   const handleNovelUpdate = useCallback((updatedNovel: Novel) => {
     setNovel(updatedNovel);
   }, []);
 
+  const handleSettingsUpdate = useCallback((updatedSettings: UserSettings) => {
+    setSettings(updatedSettings);
+  }, []);
+
+  const handleProfileUpdate = useCallback((updatedProfile: UserProfile) => {
+    setProfile(updatedProfile);
+  }, []);
+
   const handleAdminLogin = useCallback((password: string) => {
     if (password === '7859624') {
-      setIsAdmin(true);
+      setActiveView('admin');
       setShowAdminButton(false);
     }
   }, []);
 
-  const handleAdminLogout = useCallback(() => {
-    setIsAdmin(false);
-  }, []);
+  const handleEpisodeSelect = useCallback((episodeId: string) => {
+    setNovel({
+      ...novel,
+      currentEpisodeId: episodeId,
+      currentParagraphIndex: 0
+    });
+    setActiveView('reader');
+  }, [novel]);
 
-  if (isAdmin) {
+  if (activeView === 'admin') {
     return (
       <AdminPanel 
         novel={novel} 
         onUpdate={handleNovelUpdate}
-        onLogout={handleAdminLogout}
+        onLogout={() => setActiveView('reader')}
+      />
+    );
+  }
+
+  if (activeView === 'episodes') {
+    return (
+      <EpisodeMenu
+        novel={novel}
+        profile={profile}
+        onEpisodeSelect={handleEpisodeSelect}
+        onBack={() => setActiveView('reader')}
+      />
+    );
+  }
+
+  if (activeView === 'profile') {
+    return (
+      <UserProfilePanel
+        profile={profile}
+        novel={novel}
+        onUpdate={handleProfileUpdate}
+        onBack={() => setActiveView('reader')}
+      />
+    );
+  }
+
+  if (activeView === 'settings') {
+    return (
+      <SettingsPanel
+        settings={settings}
+        onUpdate={handleSettingsUpdate}
+        onBack={() => setActiveView('reader')}
       />
     );
   }
 
   return (
     <div className="relative min-h-screen dark">
-      <NovelReader novel={novel} onUpdate={handleNovelUpdate} />
+      <NovelReader 
+        novel={novel} 
+        settings={settings}
+        onUpdate={handleNovelUpdate} 
+      />
       
+      <div className="fixed top-4 left-4 flex gap-2 z-50">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="bg-card/50 backdrop-blur-sm hover:bg-card/80"
+          onClick={() => setActiveView('episodes')}
+        >
+          <Icon name="List" size={20} />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="bg-card/50 backdrop-blur-sm hover:bg-card/80"
+          onClick={() => setActiveView('profile')}
+        >
+          <Icon name="User" size={20} />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="bg-card/50 backdrop-blur-sm hover:bg-card/80"
+          onClick={() => setActiveView('settings')}
+        >
+          <Icon name="Settings" size={20} />
+        </Button>
+      </div>
+
       {!showAdminButton && (
         <Button
           variant="ghost"
@@ -149,7 +260,7 @@ function Index() {
           className="fixed bottom-4 right-4 opacity-20 hover:opacity-100 transition-opacity z-50"
           onClick={() => setShowAdminButton(true)}
         >
-          <Icon name="Settings" size={20} />
+          <Icon name="Lock" size={20} />
         </Button>
       )}
 
