@@ -60,17 +60,28 @@ function EpisodeHeader({ episode, novel, onUpdate, onNovelUpdate }: EpisodeHeade
       const newItems = [...novel.library.items];
       const newChoices = [...novel.library.choices];
 
+      // Сначала собираем уникальных персонажей для генерации изображений
+      const charactersToGenerate: { name: string; needsImage: boolean }[] = [];
+      
       importedEpisode.paragraphs.forEach(para => {
         // Импорт персонажей из диалогов
         if (para.type === 'dialogue' && para.characterName) {
           const exists = newCharacters.some(c => c.name === para.characterName);
+          const shouldGenerate = !para.characterImage || (!para.characterImage.startsWith('data:') && 
+                                 !para.characterImage.startsWith('http') && para.characterImage.length <= 2);
+          
           if (!exists) {
+            const charId = `char${Date.now()}_${para.characterName}`;
             newCharacters.push({
-              id: `char${Date.now()}_${para.characterName}`,
+              id: charId,
               name: para.characterName,
-              images: para.characterImage ? [{ id: `img${Date.now()}`, url: para.characterImage }] : []
+              images: para.characterImage && !shouldGenerate ? [{ id: `img${Date.now()}`, url: para.characterImage }] : []
             });
-          } else if (para.characterImage) {
+            
+            if (shouldGenerate && !charactersToGenerate.some(c => c.name === para.characterName)) {
+              charactersToGenerate.push({ name: para.characterName, needsImage: true });
+            }
+          } else if (para.characterImage && !shouldGenerate) {
             // Добавляем изображение к существующему персонажу
             const char = newCharacters.find(c => c.name === para.characterName);
             if (char && !char.images?.some(img => img.url === para.characterImage)) {
@@ -106,6 +117,59 @@ function EpisodeHeader({ episode, novel, onUpdate, onNovelUpdate }: EpisodeHeade
           });
         }
       });
+      
+      // Генерируем изображения для персонажей без картинок
+      if (charactersToGenerate.length > 0) {
+        console.log('Генерируем изображения для персонажей:', charactersToGenerate.map(c => c.name));
+        
+        Promise.all(
+          charactersToGenerate.map(async ({ name }) => {
+            try {
+              const response = await fetch('https://api.poehali.dev/v1/generate-image', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  prompt: `Portrait of character named ${name}, fantasy art style, detailed face, dramatic lighting, high quality, professional digital art`
+                })
+              });
+              
+              if (response.ok) {
+                const data = await response.json();
+                if (data.url) {
+                  const char = newCharacters.find(c => c.name === name);
+                  if (char) {
+                    char.images = [{ id: `img${Date.now()}`, url: data.url }];
+                  }
+                }
+              }
+            } catch (error) {
+              console.error(`Ошибка генерации изображения для ${name}:`, error);
+            }
+          })
+        ).then(() => {
+          // После генерации обновляем novel
+          const updatedEpisode = {
+            ...episode,
+            title: importedEpisode.title,
+            paragraphs: importedEpisode.paragraphs,
+            backgroundMusic: importedEpisode.backgroundMusic || episode.backgroundMusic
+          };
+          
+          onNovelUpdate({
+            ...novel,
+            library: {
+              characters: newCharacters,
+              items: newItems,
+              choices: newChoices
+            },
+            episodes: novel.episodes.map(ep => 
+              ep.id === episode.id ? updatedEpisode : ep
+            )
+          });
+        });
+        
+        return; // Выходим, чтобы не делать двойное обновление
+      }
 
       // Обновляем novel с новой библиотекой И эпизод одновременно
       console.log('Импортировано в библиотеку:');
