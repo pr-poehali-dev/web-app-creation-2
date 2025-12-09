@@ -6,7 +6,9 @@ import AdminPanel from '@/components/AdminPanel';
 import EpisodeMenu from '@/components/EpisodeMenu';
 import UserProfilePanel from '@/components/UserProfilePanel';
 import SettingsPanel from '@/components/SettingsPanel';
+import HomePage from '@/components/HomePage';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import Icon from '@/components/ui/icon';
 
 const initialNovel: Novel = {
@@ -99,16 +101,32 @@ const initialNovel: Novel = {
     items: [],
     characters: [],
     choices: []
+  },
+  homePage: {
+    greeting: 'Добро пожаловать в интерактивную визуальную новеллу',
+    news: [
+      {
+        id: 'news1',
+        title: 'Добро пожаловать!',
+        content: 'Это ваша первая визуальная новелла. Исследуйте старый особняк, встречайте персонажей и принимайте решения, которые повлияют на историю.',
+        date: new Date().toISOString()
+      }
+    ]
+  },
+  fileStorage: {
+    images: [],
+    audio: []
   }
 };
 
-type View = 'reader' | 'admin' | 'episodes' | 'profile' | 'settings';
+type View = 'home' | 'reader' | 'admin' | 'episodes' | 'profile' | 'settings';
 
 function Index() {
   const [novel, setNovel] = useState<Novel>(initialNovel);
   const [settings, setSettings] = useState<UserSettings>(defaultSettings);
   const [profile, setProfile] = useState<UserProfile>(defaultProfile);
-  const [activeView, setActiveView] = useState<View>('reader');
+  const [activeView, setActiveView] = useState<View>('home');
+  const [adminPassword, setAdminPassword] = useState('');
   const [showAdminButton, setShowAdminButton] = useState(false);
 
   useEffect(() => {
@@ -165,18 +183,21 @@ function Index() {
     setProfile(updatedProfile);
   }, []);
 
-  const handleAdminLogin = useCallback((password: string) => {
-    if (password === '7859624') {
+  const handleAdminLogin = useCallback(() => {
+    if (adminPassword === '7859624') {
       setActiveView('admin');
       setShowAdminButton(false);
+      setAdminPassword('');
+    } else {
+      alert('Неверный пароль');
     }
-  }, []);
+  }, [adminPassword]);
 
-  const handleEpisodeSelect = useCallback((episodeId: string) => {
+  const handleEpisodeSelect = useCallback((episodeId: string, paragraphIndex?: number) => {
     setNovel({
       ...novel,
       currentEpisodeId: episodeId,
-      currentParagraphIndex: 0
+      currentParagraphIndex: paragraphIndex !== undefined ? paragraphIndex : 0
     });
     setActiveView('reader');
   }, [novel]);
@@ -233,6 +254,65 @@ function Index() {
     );
   }
 
+  if (activeView === 'home') {
+    return (
+      <div className="relative min-h-screen dark">
+        <HomePage 
+          homePage={novel.homePage || { greeting: 'Добро пожаловать', news: [] }}
+          onStart={() => setActiveView('reader')}
+        />
+        
+        <div className="fixed top-4 right-4 flex gap-2 z-50">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="bg-card/50 backdrop-blur-sm hover:bg-card/80"
+            onClick={() => setActiveView('settings')}
+          >
+            <Icon name="Settings" size={20} />
+          </Button>
+          
+          {!showAdminButton ? (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="bg-card/50 backdrop-blur-sm hover:bg-card/80 opacity-30 hover:opacity-100 transition-opacity"
+              onClick={() => setShowAdminButton(true)}
+            >
+              <Icon name="Lock" size={20} />
+            </Button>
+          ) : (
+            <div className="flex gap-2 bg-card/90 backdrop-blur-sm rounded-lg p-2">
+              <Input
+                type="password"
+                placeholder="Пароль"
+                value={adminPassword}
+                onChange={(e) => setAdminPassword(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') handleAdminLogin();
+                }}
+                className="w-32 text-foreground"
+              />
+              <Button size="sm" onClick={handleAdminLogin}>
+                <Icon name="LogIn" size={16} />
+              </Button>
+              <Button 
+                size="sm" 
+                variant="ghost"
+                onClick={() => {
+                  setShowAdminButton(false);
+                  setAdminPassword('');
+                }}
+              >
+                <Icon name="X" size={16} />
+              </Button>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="relative min-h-screen dark">
       <NovelReader 
@@ -244,6 +324,14 @@ function Index() {
       />
       
       <div className="fixed top-4 left-4 flex gap-2 z-50">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="bg-card/50 backdrop-blur-sm hover:bg-card/80"
+          onClick={() => setActiveView('home')}
+        >
+          <Icon name="Home" size={20} />
+        </Button>
         <Button
           variant="ghost"
           size="icon"
@@ -269,7 +357,7 @@ function Index() {
           <Icon name="Settings" size={20} />
         </Button>
         
-        {!showAdminButton && (
+        {!showAdminButton ? (
           <Button
             variant="ghost"
             size="icon"
@@ -278,41 +366,35 @@ function Index() {
           >
             <Icon name="Lock" size={20} />
           </Button>
-        )}
-      </div>
-
-      {showAdminButton && (
-        <div className="fixed bottom-4 right-4 bg-card border border-border rounded-lg p-4 shadow-lg animate-scale-in z-50">
-          <input
-            type="password"
-            placeholder="Пароль администратора"
-            className="bg-background text-foreground border border-border rounded px-3 py-2 mb-2 w-full"
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                handleAdminLogin(e.currentTarget.value);
-              }
-            }}
-          />
-          <div className="flex gap-2">
-            <Button
-              size="sm"
+        ) : (
+          <div className="flex gap-2 bg-card/90 backdrop-blur-sm rounded-lg p-2">
+            <Input
+              type="password"
+              placeholder="Пароль"
+              value={adminPassword}
+              onChange={(e) => setAdminPassword(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleAdminLogin();
+              }}
+              className="w-32 text-foreground"
+              autoFocus
+            />
+            <Button size="sm" onClick={handleAdminLogin}>
+              <Icon name="LogIn" size={16} />
+            </Button>
+            <Button 
+              size="sm" 
+              variant="ghost"
               onClick={() => {
-                const input = document.querySelector('input[type="password"]') as HTMLInputElement;
-                if (input) handleAdminLogin(input.value);
+                setShowAdminButton(false);
+                setAdminPassword('');
               }}
             >
-              Войти
-            </Button>
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={() => setShowAdminButton(false)}
-            >
-              Отмена
+              <Icon name="X" size={16} />
             </Button>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

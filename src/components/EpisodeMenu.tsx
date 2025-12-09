@@ -1,19 +1,23 @@
+import { useState } from 'react';
 import { Novel } from '@/types/novel';
 import { UserProfile } from '@/types/settings';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Icon from '@/components/ui/icon';
 
 interface EpisodeMenuProps {
   novel: Novel;
   profile: UserProfile;
-  onEpisodeSelect: (episodeId: string) => void;
+  onEpisodeSelect: (episodeId: string, paragraphIndex?: number) => void;
   onBack: () => void;
 }
 
 function EpisodeMenu({ novel, profile, onEpisodeSelect, onBack }: EpisodeMenuProps) {
+  const [expandedEpisode, setExpandedEpisode] = useState<string | null>(null);
+
   const getEpisodeProgress = (episodeId: string) => {
     return profile.completedEpisodes.includes(episodeId) ? 100 : 
            novel.currentEpisodeId === episodeId ? 50 : 0;
@@ -81,16 +85,30 @@ function EpisodeMenu({ novel, profile, onEpisodeSelect, onBack }: EpisodeMenuPro
                         <h3 className="text-xl font-bold text-foreground">
                           {episode.title}
                         </h3>
-                        {isCurrent && (
-                          <Badge variant="default">
-                            Текущий
-                          </Badge>
-                        )}
-                        {progress === 100 && (
-                          <Badge variant="secondary" className="bg-green-500/20 text-green-500">
-                            Пройден
-                          </Badge>
-                        )}
+                        <div className="flex gap-2">
+                          {isCurrent && (
+                            <Badge variant="default">
+                              Текущий
+                            </Badge>
+                          )}
+                          {progress === 100 && (
+                            <Badge variant="secondary" className="bg-green-500/20 text-green-500">
+                              Пройден
+                            </Badge>
+                          )}
+                          {!isLocked && (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setExpandedEpisode(expandedEpisode === episode.id ? null : episode.id);
+                              }}
+                            >
+                              <Icon name={expandedEpisode === episode.id ? "ChevronUp" : "ChevronDown"} size={16} />
+                            </Button>
+                          )}
+                        </div>
                       </div>
 
                       <p className="text-sm text-muted-foreground mb-3">
@@ -111,6 +129,26 @@ function EpisodeMenu({ novel, profile, onEpisodeSelect, onBack }: EpisodeMenuPro
                         <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
                           <Icon name="Music" size={14} />
                           <span>С музыкой</span>
+                        </div>
+                      )}
+
+                      {expandedEpisode === episode.id && (
+                        <div className="mt-4 pt-4 border-t border-border space-y-2">
+                          <p className="text-sm font-medium text-foreground mb-2">Перейти к параграфу:</p>
+                          <Select onValueChange={(value) => onEpisodeSelect(episode.id, parseInt(value))}>
+                            <SelectTrigger className="text-foreground">
+                              <SelectValue placeholder="Выберите параграф" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {episode.paragraphs.map((para, pIndex) => (
+                                <SelectItem key={para.id} value={pIndex.toString()}>
+                                  #{pIndex + 1} - {para.type.toUpperCase()}
+                                  {para.type === 'text' && para.content ? ` - ${para.content.slice(0, 30)}...` : ''}
+                                  {para.type === 'dialogue' && para.characterName ? ` - ${para.characterName}` : ''}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                         </div>
                       )}
                     </div>

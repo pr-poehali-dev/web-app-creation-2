@@ -81,6 +81,18 @@ export interface LibraryChoice {
   nextEpisodeId?: string;
 }
 
+export interface NewsItem {
+  id: string;
+  title: string;
+  content: string;
+  date: string;
+}
+
+export interface HomePage {
+  greeting: string;
+  news: NewsItem[];
+}
+
 export interface Novel {
   id: string;
   title: string;
@@ -92,5 +104,10 @@ export interface Novel {
     items: LibraryItem[];
     characters: LibraryCharacter[];
     choices: LibraryChoice[];
+  };
+  homePage?: HomePage;
+  fileStorage: {
+    images: { id: string; name: string; url: string }[];
+    audio: { id: string; name: string; url: string }[];
   };
 }

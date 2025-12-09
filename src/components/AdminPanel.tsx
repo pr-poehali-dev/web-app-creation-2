@@ -6,6 +6,8 @@ import Icon from '@/components/ui/icon';
 import EpisodeEditor from './EpisodeEditor';
 import NovelVisualization from './NovelVisualization';
 import LibraryManager from './LibraryManager';
+import HomePageEditor from './HomePageEditor';
+import FileStorageManager from './FileStorageManager';
 
 interface AdminPanelProps {
   novel: Novel;
@@ -86,8 +88,12 @@ function AdminPanel({ novel, onUpdate, onLogout }: AdminPanelProps) {
       </header>
 
       <div className="container mx-auto px-4 py-8">
-        <Tabs defaultValue="editor" className="w-full">
-          <TabsList className="grid w-full max-w-2xl grid-cols-3 mb-8">
+        <Tabs defaultValue="home" className="w-full">
+          <TabsList className="grid w-full max-w-4xl grid-cols-5 mb-8">
+            <TabsTrigger value="home">
+              <Icon name="Home" size={16} className="mr-2" />
+              Главная
+            </TabsTrigger>
             <TabsTrigger value="editor">
               <Icon name="Edit" size={16} className="mr-2" />
               Редактор
@@ -96,11 +102,22 @@ function AdminPanel({ novel, onUpdate, onLogout }: AdminPanelProps) {
               <Icon name="BookMarked" size={16} className="mr-2" />
               Библиотека
             </TabsTrigger>
+            <TabsTrigger value="files">
+              <Icon name="FolderOpen" size={16} className="mr-2" />
+              Файлы
+            </TabsTrigger>
             <TabsTrigger value="visualization">
               <Icon name="Network" size={16} className="mr-2" />
               Визуализация
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="home">
+            <HomePageEditor 
+              homePage={novel.homePage || { greeting: 'Добро пожаловать', news: [] }} 
+              onUpdate={(homePage) => onUpdate({ ...novel, homePage })}
+            />
+          </TabsContent>
 
           <TabsContent value="editor" className="space-y-6">
             <div className="flex items-center justify-between">
@@ -163,6 +180,10 @@ function AdminPanel({ novel, onUpdate, onLogout }: AdminPanelProps) {
 
           <TabsContent value="library">
             <LibraryManager novel={novel} onUpdate={onUpdate} />
+          </TabsContent>
+
+          <TabsContent value="files">
+            <FileStorageManager novel={novel} onUpdate={onUpdate} />
           </TabsContent>
 
           <TabsContent value="visualization">
