@@ -99,9 +99,9 @@ function InteractiveText({ text, className = '' }: InteractiveTextProps) {
         <Dialog open={true} onOpenChange={(open) => { if (!open) setMobileHint(null); }}>
           <DialogContent onClick={(e) => e.stopPropagation()} className="max-w-[90vw]">
             <DialogHeader>
-              <DialogTitle className="text-left">{mobileHint.content}</DialogTitle>
+              <DialogTitle className="text-left text-white">{mobileHint.content}</DialogTitle>
             </DialogHeader>
-            <p className="text-foreground text-left">{mobileHint.hint}</p>
+            <p className="text-white text-left">{mobileHint.hint}</p>
           </DialogContent>
         </Dialog>
       )}
