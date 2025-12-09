@@ -16,7 +16,7 @@ function HomePage({ homePage, onStart }: HomePageProps) {
             <img 
               src={homePage.greetingImage} 
               alt="Greeting" 
-              className="w-full max-w-2xl mx-auto rounded-lg shadow-lg animate-fade-in"
+              className="w-full max-w-md mx-auto rounded-lg shadow-lg animate-fade-in"
             />
           )}
           <h1 className="text-5xl font-bold text-foreground animate-scale-in whitespace-pre-wrap leading-tight">

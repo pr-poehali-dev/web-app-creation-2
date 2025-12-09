@@ -10,6 +10,7 @@ import HomePage from '@/components/HomePage';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Icon from '@/components/ui/icon';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 const initialNovel: Novel = {
   id: '1',
@@ -129,6 +130,8 @@ function Index() {
   const [adminPassword, setAdminPassword] = useState('');
   const [showAdminButton, setShowAdminButton] = useState(false);
   const [expandedEpisode, setExpandedEpisode] = useState<string | null>(null);
+  const [showParagraphsDialog, setShowParagraphsDialog] = useState(false);
+  const [selectedEpisodeForParagraphs, setSelectedEpisodeForParagraphs] = useState<string | null>(null);
 
   useEffect(() => {
     const savedNovel = localStorage.getItem('visualNovel');
@@ -343,12 +346,23 @@ function Index() {
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-1">
                         <span className="font-bold text-sm">{index + 1}.</span>
                         <span className="text-sm font-medium">{episode.title}</span>
                       </div>
                       {isCurrent && (
-                        <Icon name={isExpanded ? "ChevronUp" : "ChevronDown"} size={16} />
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 flex-shrink-0"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedEpisodeForParagraphs(episode.id);
+                            setShowParagraphsDialog(true);
+                          }}
+                        >
+                          <Icon name="List" size={14} />
+                        </Button>
                       )}
                     </div>
                     <div className="text-xs opacity-70 mt-1">
@@ -356,39 +370,7 @@ function Index() {
                     </div>
                   </button>
                   
-                  {isCurrent && isExpanded && (
-                    <div className="ml-4 space-y-1 animate-fade-in">
-                      {episode.paragraphs.map((para, pIndex) => {
-                        const isCurrentPara = novel.currentParagraphIndex === pIndex;
-                        return (
-                          <button
-                            key={para.id}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleEpisodeSelect(episode.id, pIndex);
-                            }}
-                            className={`w-full text-left p-2 rounded text-xs transition-all ${
-                              isCurrentPara
-                                ? 'bg-primary/20 text-primary-foreground font-semibold'
-                                : 'bg-card/30 hover:bg-card/50 text-foreground/80'
-                            }`}
-                          >
-                            <span className="font-mono mr-2">#{pIndex + 1}</span>
-                            <span className="uppercase font-bold mr-1">{para.type}</span>
-                            {para.type === 'text' && para.content && (
-                              <span className="opacity-70">- {para.content.slice(0, 30)}...</span>
-                            )}
-                            {para.type === 'dialogue' && para.characterName && (
-                              <span className="opacity-70">- {para.characterName}</span>
-                            )}
-                            {para.type === 'item' && para.name && (
-                              <span className="opacity-70">- {para.name}</span>
-                            )}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  )}
+
                 </div>
               );
             })}
@@ -472,6 +454,66 @@ function Index() {
           </div>
         )}
       </div>
+
+      {/* Диалог выбора параграфов */}
+      <Dialog open={showParagraphsDialog} onOpenChange={setShowParagraphsDialog}>
+        <DialogContent className="max-w-2xl max-h-[80vh]">
+          <DialogHeader>
+            <DialogTitle>
+              Параграфы: {novel.episodes.find(ep => ep.id === selectedEpisodeForParagraphs)?.title}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="overflow-y-auto max-h-[60vh] space-y-2 pr-2">
+            {selectedEpisodeForParagraphs && novel.episodes.find(ep => ep.id === selectedEpisodeForParagraphs)?.paragraphs.map((para, pIndex) => {
+              const isCurrentPara = novel.currentEpisodeId === selectedEpisodeForParagraphs && novel.currentParagraphIndex === pIndex;
+              const isVisited = novel.currentEpisodeId === selectedEpisodeForParagraphs && pIndex <= novel.currentParagraphIndex;
+              const isLocked = !isVisited;
+              
+              return (
+                <button
+                  key={para.id}
+                  onClick={() => {
+                    if (!isLocked) {
+                      handleEpisodeSelect(selectedEpisodeForParagraphs, pIndex);
+                      setShowParagraphsDialog(false);
+                    }
+                  }}
+                  disabled={isLocked}
+                  className={`w-full text-left p-3 rounded-lg transition-all ${
+                    isCurrentPara
+                      ? 'bg-primary text-primary-foreground font-semibold shadow-md'
+                      : isLocked
+                      ? 'bg-muted/50 text-muted-foreground cursor-not-allowed opacity-50'
+                      : 'bg-card hover:bg-card/80 text-foreground hover:shadow-md'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="font-mono text-sm font-bold">#{pIndex + 1}</span>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="uppercase text-xs font-bold opacity-70">{para.type}</span>
+                        {isLocked && <Icon name="Lock" size={12} />}
+                      </div>
+                      {para.type === 'text' && para.content && (
+                        <p className="text-sm opacity-80 line-clamp-2">{para.content}</p>
+                      )}
+                      {para.type === 'dialogue' && para.characterName && (
+                        <p className="text-sm opacity-80">{para.characterName}: {para.text?.slice(0, 50)}...</p>
+                      )}
+                      {para.type === 'item' && para.name && (
+                        <p className="text-sm opacity-80">{para.name}</p>
+                      )}
+                      {para.type === 'choice' && para.question && (
+                        <p className="text-sm opacity-80">{para.question}</p>
+                      )}
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

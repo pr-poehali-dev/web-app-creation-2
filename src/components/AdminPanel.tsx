@@ -71,6 +71,23 @@ function AdminPanel({ novel, onUpdate, onLogout }: AdminPanelProps) {
     });
   };
 
+  const handleMoveEpisode = (episodeId: string, direction: 'up' | 'down') => {
+    const currentIndex = novel.episodes.findIndex(ep => ep.id === episodeId);
+    if (currentIndex === -1) return;
+    
+    const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+    if (newIndex < 0 || newIndex >= novel.episodes.length) return;
+    
+    const newEpisodes = [...novel.episodes];
+    const [movedEpisode] = newEpisodes.splice(currentIndex, 1);
+    newEpisodes.splice(newIndex, 0, movedEpisode);
+    
+    onUpdate({
+      ...novel,
+      episodes: newEpisodes
+    });
+  };
+
   return (
     <div className="min-h-screen bg-background dark">
       <header className="border-b border-border bg-card sticky top-0 z-10">
@@ -125,7 +142,7 @@ function AdminPanel({ novel, onUpdate, onLogout }: AdminPanelProps) {
 
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
               <div className="lg:col-span-1 space-y-2">
-                {novel.episodes.map((episode) => (
+                {novel.episodes.map((episode, index) => (
                   <div
                     key={episode.id}
                     className={`p-3 rounded-lg border cursor-pointer transition-all ${
@@ -135,19 +152,45 @@ function AdminPanel({ novel, onUpdate, onLogout }: AdminPanelProps) {
                     }`}
                     onClick={() => setSelectedEpisodeId(episode.id)}
                   >
-                    <div className="flex items-center justify-between">
-                      <span className="font-medium truncate">{episode.title}</span>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-6 w-6 flex-shrink-0"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteEpisode(episode.id);
-                        }}
-                      >
-                        <Icon name="Trash2" size={14} />
-                      </Button>
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-medium truncate flex-1">{episode.title}</span>
+                      <div className="flex gap-1 flex-shrink-0">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6"
+                          disabled={index === 0}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleMoveEpisode(episode.id, 'up');
+                          }}
+                        >
+                          <Icon name="ChevronUp" size={14} />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6"
+                          disabled={index === novel.episodes.length - 1}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleMoveEpisode(episode.id, 'down');
+                          }}
+                        >
+                          <Icon name="ChevronDown" size={14} />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteEpisode(episode.id);
+                          }}
+                        >
+                          <Icon name="Trash2" size={14} />
+                        </Button>
+                      </div>
                     </div>
                     <p className="text-xs opacity-70 mt-1">
                       {episode.paragraphs.length} параграфов
