@@ -121,58 +121,8 @@ function EpisodeHeader({ episode, novel, onUpdate, onNovelUpdate }: EpisodeHeade
         }
       });
       
-      // Генерируем изображения для персонажей без картинок
-      if (charactersToGenerate.length > 0) {
-        console.log('Генерируем изображения для персонажей:', charactersToGenerate.map(c => c.name));
-        
-        Promise.all(
-          charactersToGenerate.map(async ({ name }) => {
-            try {
-              const response = await fetch('https://api.poehali.dev/v1/generate-image', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  prompt: `Portrait of character named ${name}, fantasy art style, detailed face, dramatic lighting, high quality, professional digital art`
-                })
-              });
-              
-              if (response.ok) {
-                const data = await response.json();
-                if (data.url) {
-                  const char = newCharacters.find(c => c.name === name);
-                  if (char) {
-                    char.images = [{ id: `img${Date.now()}`, url: data.url }];
-                  }
-                }
-              }
-            } catch (error) {
-              console.error(`Ошибка генерации изображения для ${name}:`, error);
-            }
-          })
-        ).then(() => {
-          // После генерации обновляем novel
-          const updatedEpisode = {
-            ...episode,
-            title: importedEpisode.title,
-            paragraphs: importedEpisode.paragraphs,
-            backgroundMusic: importedEpisode.backgroundMusic || episode.backgroundMusic
-          };
-          
-          onNovelUpdate({
-            ...novel,
-            library: {
-              characters: newCharacters,
-              items: newItems,
-              choices: newChoices
-            },
-            episodes: novel.episodes.map(ep => 
-              ep.id === episode.id ? updatedEpisode : ep
-            )
-          });
-        });
-        
-        return; // Выходим, чтобы не делать двойное обновление
-      }
+      // Обновляем без генерации - генерация будет позже через DialogueBox
+      console.log('Персонажи добавлены в библиотеку. Генерация изображений будет при первом показе диалога.');
 
       // Обновляем novel с новой библиотекой И эпизод одновременно
       console.log('Импортировано в библиотеку:');
