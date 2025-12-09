@@ -79,16 +79,17 @@ function EpisodeHeader({ episode, novel, onUpdate, onNovelUpdate }: EpisodeHeade
               name: para.characterName,
               images: para.characterImage && !shouldGenerate ? [{ id: `img${Date.now()}`, url: para.characterImage }] : []
             });
-            
-            if (shouldGenerate && !charactersToGenerate.some(c => c.name === para.characterName)) {
-              charactersToGenerate.push({ name: para.characterName, needsImage: true });
-            }
           } else if (para.characterImage && !shouldGenerate) {
             // Добавляем изображение к существующему персонажу
             const char = newCharacters.find(c => c.name === para.characterName);
             if (char && !char.images?.some(img => img.url === para.characterImage)) {
               char.images = [...(char.images || []), { id: `img${Date.now()}`, url: para.characterImage }];
             }
+          }
+          
+          // Добавляем в список для генерации, если нужно
+          if (shouldGenerate && !charactersToGenerate.some(c => c.name === para.characterName)) {
+            charactersToGenerate.push({ name: para.characterName, needsImage: true });
           }
         }
 
