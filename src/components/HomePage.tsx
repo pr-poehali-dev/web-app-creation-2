@@ -11,8 +11,8 @@ function HomePage({ homePage, onStart }: HomePageProps) {
   return (
     <div className="min-h-screen bg-background dark flex items-center justify-center p-4">
       <div className="max-w-3xl w-full space-y-8 animate-fade-in">
-        <div className="text-center space-y-4">
-          <h1 className="text-5xl font-bold text-foreground animate-scale-in">
+        <div className="text-center space-y-6">
+          <h1 className="text-5xl font-bold text-foreground animate-scale-in whitespace-pre-wrap leading-tight">
             {homePage.greeting || 'Добро пожаловать'}
           </h1>
           <Button size="lg" onClick={onStart} className="mt-8">

@@ -134,21 +134,46 @@ function EpisodeMenu({ novel, profile, onEpisodeSelect, onBack }: EpisodeMenuPro
 
                       {expandedEpisode === episode.id && (
                         <div className="mt-4 pt-4 border-t border-border space-y-2">
-                          <p className="text-sm font-medium text-foreground mb-2">Перейти к параграфу:</p>
+                          <div className="flex items-center justify-between mb-2">
+                            <p className="text-sm font-medium text-foreground">Перейти к параграфу:</p>
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onEpisodeSelect(episode.id, 0);
+                              }}
+                            >
+                              <Icon name="Play" size={14} className="mr-1" />
+                              С начала
+                            </Button>
+                          </div>
                           <Select onValueChange={(value) => onEpisodeSelect(episode.id, parseInt(value))}>
                             <SelectTrigger className="text-foreground">
-                              <SelectValue placeholder="Выберите параграф" />
+                              <SelectValue placeholder="Выберите конкретный параграф" />
                             </SelectTrigger>
                             <SelectContent>
                               {episode.paragraphs.map((para, pIndex) => (
                                 <SelectItem key={para.id} value={pIndex.toString()}>
-                                  #{pIndex + 1} - {para.type.toUpperCase()}
-                                  {para.type === 'text' && para.content ? ` - ${para.content.slice(0, 30)}...` : ''}
-                                  {para.type === 'dialogue' && para.characterName ? ` - ${para.characterName}` : ''}
+                                  <span className="font-mono text-xs mr-2">#{pIndex + 1}</span>
+                                  <span className="font-bold mr-2">{para.type.toUpperCase()}</span>
+                                  {para.type === 'text' && para.content && (
+                                    <span className="text-muted-foreground">- {para.content.slice(0, 40)}...</span>
+                                  )}
+                                  {para.type === 'dialogue' && para.characterName && (
+                                    <span className="text-muted-foreground">- {para.characterName}</span>
+                                  )}
+                                  {para.type === 'choice' && para.question && (
+                                    <span className="text-muted-foreground">- {para.question.slice(0, 30)}...</span>
+                                  )}
+                                  {para.type === 'item' && para.name && (
+                                    <span className="text-muted-foreground">- {para.name}</span>
+                                  )}
                                 </SelectItem>
                               ))}
                             </SelectContent>
                           </Select>
+                          <p className="text-xs text-muted-foreground">Или выберите конкретный параграф из списка выше</p>
                         </div>
                       )}
                     </div>

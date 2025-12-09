@@ -61,12 +61,14 @@ function HomePageEditor({ homePage, onUpdate }: HomePageEditorProps) {
           <CardTitle>Приветствие</CardTitle>
         </CardHeader>
         <CardContent>
-          <Input
+          <Textarea
             value={homePage.greeting || ''}
             onChange={(e) => onUpdate({ ...homePage, greeting: e.target.value })}
             placeholder="Добро пожаловать"
+            rows={3}
             className="text-foreground text-lg"
           />
+          <p className="text-xs text-muted-foreground mt-2">Можно использовать несколько строк</p>
         </CardContent>
       </Card>
 
