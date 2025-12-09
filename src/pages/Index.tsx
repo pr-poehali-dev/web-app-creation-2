@@ -133,6 +133,7 @@ function Index() {
   const [showAdminButton, setShowAdminButton] = useState(false);
   const [showParagraphsDialog, setShowParagraphsDialog] = useState(false);
   const [selectedEpisodeForParagraphs, setSelectedEpisodeForParagraphs] = useState<string | null>(null);
+  const [showSidebar, setShowSidebar] = useState(false);
 
   useEffect(() => {
     const savedNovel = localStorage.getItem('visualNovel');
@@ -325,11 +326,36 @@ function Index() {
 
   return (
     <div className="relative min-h-screen dark flex">
-      <EpisodesSidebar
-        novel={novel}
-        onEpisodeSelect={handleEpisodeSelect}
-        onShowParagraphs={handleShowParagraphs}
-      />
+      {/* Mobile sidebar toggle */}
+      <button
+        onClick={() => setShowSidebar(!showSidebar)}
+        className="md:hidden fixed top-4 left-4 z-50 bg-card/90 backdrop-blur-sm p-2 rounded-lg shadow-lg text-white"
+      >
+        <Icon name={showSidebar ? 'X' : 'Menu'} size={20} />
+      </button>
+
+      {/* Sidebar - hidden on mobile by default */}
+      <div className={`fixed md:relative inset-y-0 left-0 z-40 transform transition-transform duration-300 ${showSidebar ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
+        <EpisodesSidebar
+          novel={novel}
+          onEpisodeSelect={(episodeId, paragraphIndex) => {
+            handleEpisodeSelect(episodeId, paragraphIndex);
+            setShowSidebar(false);
+          }}
+          onShowParagraphs={(episodeId) => {
+            handleShowParagraphs(episodeId);
+            setShowSidebar(false);
+          }}
+        />
+      </div>
+
+      {/* Overlay for mobile */}
+      {showSidebar && (
+        <div
+          className="md:hidden fixed inset-0 bg-black/50 z-30"
+          onClick={() => setShowSidebar(false)}
+        />
+      )}
 
       <div className="flex-1 relative">
         <NovelReader 

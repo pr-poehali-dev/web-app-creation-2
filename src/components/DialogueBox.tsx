@@ -37,7 +37,7 @@ function DialogueBox({
 
   return (
     <>
-      <div className="relative flex items-center gap-6">
+      <div className="relative flex flex-col md:flex-row items-center gap-4 md:gap-6">
         {characterImage && (
           <div className="flex flex-col items-center gap-3 animate-scale-in">
             <div className="flex items-center justify-center">
@@ -45,10 +45,10 @@ function DialogueBox({
                 <ZoomableImage
                   src={characterImage}
                   alt={characterName}
-                  className="w-48 h-48 object-cover rounded-3xl shadow-2xl"
+                  className="w-32 h-32 md:w-48 md:h-48 object-cover rounded-3xl shadow-2xl"
                 />
               ) : (
-                <div className="text-9xl">{characterImage}</div>
+                <div className="text-6xl md:text-9xl">{characterImage}</div>
               )}
             </div>
             
@@ -64,8 +64,8 @@ function DialogueBox({
           </div>
         )}
         
-        <Card className="flex-1 bg-card/95 backdrop-blur-sm border-0 shadow-xl animate-scale-in">
-          <CardContent className="p-8">
+        <Card className="flex-1 w-full bg-card/95 backdrop-blur-sm border-0 shadow-xl animate-scale-in">
+          <CardContent className="p-4 md:p-8">
             {!characterImage && (
               <h3 className="text-lg font-bold text-primary mb-3">
                 {characterName}

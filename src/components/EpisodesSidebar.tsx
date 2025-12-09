@@ -10,7 +10,7 @@ interface EpisodesSidebarProps {
 
 function EpisodesSidebar({ novel, onEpisodeSelect, onShowParagraphs }: EpisodesSidebarProps) {
   return (
-    <div className="w-80 bg-background border-r border-border overflow-y-auto flex-shrink-0">
+    <div className="w-80 h-full bg-background border-r border-border overflow-y-auto flex-shrink-0">
       <div className="p-4">
         <h2 className="text-lg font-bold text-foreground mb-4">Эпизоды</h2>
         <div className="space-y-2">

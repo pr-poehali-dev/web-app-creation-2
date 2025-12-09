@@ -243,7 +243,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate }: No
 
   return (
     <div 
-      className="min-h-screen bg-background flex items-start justify-center pt-16 p-4 pl-8 pr-8 cursor-pointer"
+      className="min-h-screen bg-background flex items-start justify-center pt-16 p-4 md:pl-8 md:pr-8 cursor-pointer"
       onClick={handleClick}
       style={{
         fontFamily: settings.fontFamily === 'merriweather' ? '"Merriweather", serif' :
@@ -259,7 +259,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate }: No
       <div className="w-full max-w-4xl">
         {/* Текущий параграф */}
         {currentParagraph.type === 'fade' ? null : currentParagraph.type === 'text' && (
-          <div className={`leading-relaxed text-foreground p-8 transition-opacity duration-300 ${
+          <div className={`leading-relaxed text-foreground p-4 md:p-8 transition-opacity duration-300 ${
             isFading ? 'opacity-0' : 'opacity-100'
           } ${
             settings.textSize === 'small' ? 'text-lg md:text-xl' :
@@ -345,7 +345,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate }: No
         </div>
 
         {!isTyping && currentParagraph.type !== 'choice' && (
-          <div className="fixed bottom-4 left-1/2 -translate-x-1/2 text-sm text-muted-foreground animate-pulse">
+          <div className="fixed bottom-4 left-1/2 -translate-x-1/2 text-xs md:text-sm text-muted-foreground animate-pulse text-center px-4">
             Нажмите или → для продолжения
           </div>
         )}
