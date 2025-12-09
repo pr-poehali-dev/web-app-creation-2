@@ -291,7 +291,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate }: No
       <div className="w-full max-w-4xl">
         {/* Текущий параграф */}
         {currentParagraph.type === 'fade' ? null : currentParagraph.type === 'text' && (
-          <div className={`leading-relaxed text-justify text-foreground p-4 md:p-8 transition-opacity duration-300 ${
+          <div className={`leading-relaxed text-justify text-foreground p-4 pr-8 md:p-8 transition-opacity duration-300 ${
             isFading ? 'opacity-0' : 'opacity-100'
           } ${
             settings.textSize === 'small' ? 'text-lg md:text-xl' :
