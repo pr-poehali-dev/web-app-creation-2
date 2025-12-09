@@ -110,6 +110,6 @@
   }
 
   .animate-fade-out {
-    animation: fade-out 2s ease-in-out forwards;
+    animation: fade-out 1.5s ease-in-out forwards;
   }
 }

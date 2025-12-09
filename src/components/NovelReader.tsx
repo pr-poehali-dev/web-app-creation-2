@@ -20,6 +20,8 @@ interface NovelReaderProps {
 function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate }: NovelReaderProps) {
   const [isTyping, setIsTyping] = useState(true);
   const [skipTyping, setSkipTyping] = useState(false);
+  const [isFading, setIsFading] = useState(false);
+  const [previousParagraph, setPreviousParagraph] = useState<typeof currentParagraph | null>(null);
 
   const currentEpisode = novel.episodes.find(ep => ep.id === novel.currentEpisodeId);
   const currentParagraph = currentEpisode?.paragraphs[novel.currentParagraphIndex];
@@ -99,15 +101,39 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate }: No
       }
     }
 
-    if (novel.currentParagraphIndex < currentEpisode.paragraphs.length - 1) {
+    let nextIndex = novel.currentParagraphIndex + 1;
+    
+    // Пропускаем fade параграфы
+    while (nextIndex < currentEpisode.paragraphs.length && currentEpisode.paragraphs[nextIndex].type === 'fade') {
+      nextIndex++;
+    }
+
+    if (nextIndex < currentEpisode.paragraphs.length) {
+      // Если следующий параграф не fade, запускаем анимацию растворения
+      if (currentParagraph?.type !== 'fade') {
+        setPreviousParagraph(currentParagraph);
+        setIsFading(true);
+        setTimeout(() => {
+          setIsFading(false);
+          setPreviousParagraph(null);
+        }, 1500);
+      }
+      
       onUpdate({
         ...novel,
-        currentParagraphIndex: novel.currentParagraphIndex + 1
+        currentParagraphIndex: nextIndex
       });
       setIsTyping(true);
       setSkipTyping(false);
     } else if (currentEpisode.nextEpisodeId) {
       // Переход к следующему эпизоду
+      setPreviousParagraph(currentParagraph);
+      setIsFading(true);
+      setTimeout(() => {
+        setIsFading(false);
+        setPreviousParagraph(null);
+      }, 1500);
+      
       onUpdate({
         ...novel,
         currentEpisodeId: currentEpisode.nextEpisodeId,
@@ -120,14 +146,25 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate }: No
 
   const goToPreviousParagraph = useCallback(() => {
     if (novel.currentParagraphIndex > 0) {
-      onUpdate({
-        ...novel,
-        currentParagraphIndex: novel.currentParagraphIndex - 1
-      });
-      setIsTyping(true);
-      setSkipTyping(false);
+      let prevIndex = novel.currentParagraphIndex - 1;
+      
+      // Пропускаем fade параграфы при движении назад
+      while (prevIndex >= 0 && currentEpisode?.paragraphs[prevIndex].type === 'fade') {
+        prevIndex--;
+      }
+      
+      if (prevIndex >= 0) {
+        onUpdate({
+          ...novel,
+          currentParagraphIndex: prevIndex
+        });
+        setIsTyping(true);
+        setSkipTyping(false);
+        setIsFading(false);
+        setPreviousParagraph(null);
+      }
     }
-  }, [novel, onUpdate]);
+  }, [novel, currentEpisode, onUpdate]);
 
   const handleChoice = useCallback((nextEpisodeId?: string, nextParagraphIndex?: number) => {
     if (nextEpisodeId) {
@@ -206,14 +243,24 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate }: No
         <MusicPlayer audioSrc={currentEpisode.backgroundMusic} volume={settings.musicVolume} />
       )}
 
-      <div className="w-full max-w-4xl">
-        {currentParagraph.type === 'fade' && (
-          <div className="h-32 flex items-center justify-center animate-fade-out">
-            <div className="w-16 h-1 bg-muted-foreground/30 rounded-full" />
+      <div className="w-full max-w-4xl relative">
+        {/* Растворяющийся предыдущий параграф */}
+        {isFading && previousParagraph && (
+          <div className="absolute inset-0 animate-fade-out pointer-events-none">
+            {previousParagraph.type === 'text' && (
+              <div className={`leading-relaxed text-foreground p-8 ${
+                settings.textSize === 'small' ? 'text-lg md:text-xl' :
+                settings.textSize === 'large' ? 'text-2xl md:text-3xl' :
+                'text-xl md:text-2xl'
+              }`}>
+                {previousParagraph.content}
+              </div>
+            )}
           </div>
         )}
 
-        {currentParagraph.type === 'text' && (
+        {/* Текущий параграф */}
+        {currentParagraph.type === 'fade' ? null : currentParagraph.type === 'text' && (
           <div className={`leading-relaxed text-foreground p-8 ${
             settings.textSize === 'small' ? 'text-lg md:text-xl' :
             settings.textSize === 'large' ? 'text-2xl md:text-3xl' :
