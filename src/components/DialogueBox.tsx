@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -29,6 +29,42 @@ function DialogueBox({
 }: DialogueBoxProps) {
   const [showCommentDialog, setShowCommentDialog] = useState(false);
   const [comment, setComment] = useState(existingComment || '');
+  const [generatedImage, setGeneratedImage] = useState<string | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  useEffect(() => {
+    const shouldGenerate = !characterImage || (!characterImage.startsWith('data:') && characterImage.length <= 2);
+    
+    if (shouldGenerate && !generatedImage && !isGenerating) {
+      setIsGenerating(true);
+      
+      // Запускаем генерацию через небольшую задержку чтобы не блокировать UI
+      setTimeout(async () => {
+        try {
+          const response = await fetch('https://api.poehali.dev/v1/generate-image', {
+            method: 'POST',
+            headers: { 
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              prompt: `Portrait of character named ${characterName}, fantasy art style, detailed face, dramatic lighting, high quality, professional digital art`
+            })
+          });
+          
+          if (response.ok) {
+            const data = await response.json();
+            if (data.url) {
+              setGeneratedImage(data.url);
+            }
+          }
+        } catch (err) {
+          console.error('Failed to generate image:', err);
+        } finally {
+          setIsGenerating(false);
+        }
+      }, 500);
+    }
+  }, [characterName, characterImage, generatedImage, isGenerating]);
 
   const handleSaveComment = () => {
     onCommentSave?.(comment);
@@ -38,15 +74,25 @@ function DialogueBox({
   return (
     <>
       <div className="relative flex flex-col md:flex-row items-center gap-4 md:gap-6">
-        {characterImage && (
+        {(characterImage || generatedImage) && (
           <div className="flex flex-col items-center gap-3 animate-scale-in">
             <div className="flex items-center justify-center">
-              {characterImage.startsWith('data:') ? (
+              {generatedImage ? (
+                <ZoomableImage
+                  src={generatedImage}
+                  alt={characterName}
+                  className="w-32 h-32 md:w-48 md:h-48 object-cover rounded-3xl shadow-2xl"
+                />
+              ) : characterImage && characterImage.startsWith('data:') ? (
                 <ZoomableImage
                   src={characterImage}
                   alt={characterName}
                   className="w-32 h-32 md:w-48 md:h-48 object-cover rounded-3xl shadow-2xl"
                 />
+              ) : isGenerating ? (
+                <div className="w-32 h-32 md:w-48 md:h-48 bg-muted rounded-3xl shadow-2xl flex items-center justify-center">
+                  <div className="animate-spin text-2xl">⏳</div>
+                </div>
               ) : (
                 <div className="text-6xl md:text-9xl">{characterImage}</div>
               )}
