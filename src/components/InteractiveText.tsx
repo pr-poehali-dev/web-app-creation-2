@@ -54,7 +54,7 @@ function InteractiveText({ text, className = '' }: InteractiveTextProps) {
                   {part.content}
                 </span>
               </HoverCardTrigger>
-              <HoverCardContent className="w-80 bg-card/95 backdrop-blur-sm border-primary/20">
+              <HoverCardContent className="w-80 bg-card/95 backdrop-blur-sm border-primary/20 mr-20">
                 <p className="text-sm text-foreground">{part.hint}</p>
               </HoverCardContent>
             </HoverCard>
