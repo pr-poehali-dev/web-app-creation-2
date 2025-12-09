@@ -14,9 +14,10 @@ interface EpisodeHeaderProps {
   episode: Episode;
   novel: Novel;
   onUpdate: (episode: Episode) => void;
+  onNovelUpdate: (novel: Novel) => void;
 }
 
-function EpisodeHeader({ episode, novel, onUpdate }: EpisodeHeaderProps) {
+function EpisodeHeader({ episode, novel, onUpdate, onNovelUpdate }: EpisodeHeaderProps) {
   const [editingTitle, setEditingTitle] = useState(false);
 
   const handleTitleUpdate = (newTitle: string) => {
@@ -53,6 +54,70 @@ function EpisodeHeader({ episode, novel, onUpdate }: EpisodeHeaderProps) {
 
       const text = await file.text();
       const importedEpisode = parseMarkdownToEpisode(text, episode.id);
+      
+      // Автоматический импорт в библиотеку
+      const newCharacters = [...novel.library.characters];
+      const newItems = [...novel.library.items];
+      const newChoices = [...novel.library.choices];
+
+      importedEpisode.paragraphs.forEach(para => {
+        // Импорт персонажей из диалогов
+        if (para.type === 'dialogue' && para.characterName) {
+          const exists = newCharacters.some(c => c.name === para.characterName);
+          if (!exists) {
+            newCharacters.push({
+              id: `char${Date.now()}_${para.characterName}`,
+              name: para.characterName,
+              images: para.characterImage ? [{ id: `img${Date.now()}`, url: para.characterImage }] : []
+            });
+          } else if (para.characterImage) {
+            // Добавляем изображение к существующему персонажу
+            const char = newCharacters.find(c => c.name === para.characterName);
+            if (char && !char.images?.some(img => img.url === para.characterImage)) {
+              char.images = [...(char.images || []), { id: `img${Date.now()}`, url: para.characterImage }];
+            }
+          }
+        }
+
+        // Импорт предметов
+        if (para.type === 'item' && para.name) {
+          const exists = newItems.some(i => i.name === para.name);
+          if (!exists) {
+            newItems.push({
+              id: `item${Date.now()}_${para.name}`,
+              name: para.name,
+              description: para.description,
+              imageUrl: para.imageUrl
+            });
+          }
+        }
+
+        // Импорт выборов
+        if (para.type === 'choice' && para.options) {
+          para.options.forEach(opt => {
+            const exists = newChoices.some(c => c.text === opt.text);
+            if (!exists) {
+              newChoices.push({
+                id: `choice${Date.now()}_${opt.id}`,
+                text: opt.text,
+                nextEpisodeId: opt.nextEpisodeId
+              });
+            }
+          });
+        }
+      });
+
+      // Обновляем novel с новой библиотекой
+      onNovelUpdate({
+        ...novel,
+        library: {
+          characters: newCharacters,
+          items: newItems,
+          choices: newChoices
+        }
+      });
+
+      // Обновляем эпизод
       onUpdate({
         ...episode,
         title: importedEpisode.title,
