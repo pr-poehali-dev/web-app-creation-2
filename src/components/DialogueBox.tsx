@@ -44,10 +44,10 @@ function DialogueBox({
                 <img 
                   src={characterImage} 
                   alt={characterName}
-                  className="w-32 h-32 object-cover rounded-lg shadow-2xl border-2 border-primary/30"
+                  className="w-48 h-48 object-cover rounded-lg shadow-2xl"
                 />
               ) : (
-                <div className="text-8xl">{characterImage}</div>
+                <div className="text-9xl">{characterImage}</div>
               )}
             </div>
             
