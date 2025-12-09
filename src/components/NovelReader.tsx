@@ -8,6 +8,9 @@ import ItemBox from './ItemBox';
 import ImageBox from './ImageBox';
 import MusicPlayer from './MusicPlayer';
 import BookmarkButton from './BookmarkButton';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import Icon from '@/components/ui/icon';
 
 interface NovelReaderProps {
   novel: Novel;
@@ -277,7 +280,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
 
   return (
     <div 
-      className="min-h-screen bg-background flex items-start justify-center pt-16 md:pt-20 p-4 pr-32 md:pl-8 md:pr-8 cursor-pointer"
+      className="min-h-screen bg-background flex items-start justify-center pt-24 md:pt-20 p-4 pb-20 md:pb-4 pr-32 md:pl-8 md:pr-8 cursor-pointer"
       onClick={handleClick}
       onTouchStart={onTouchStart}
       onTouchMove={onTouchMove}
@@ -370,10 +373,53 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
 
 
 
+        {/* Навигация для мобильных */}
         {!isTyping && currentParagraph.type !== 'choice' && (
-          <div className="fixed bottom-4 left-1/2 -translate-x-1/2 text-xs md:text-sm text-muted-foreground animate-pulse text-center px-4">
-            Нажмите или → для продолжения
+          <div className="md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 flex gap-3 z-50">
+            <Button
+              size="icon"
+              variant="secondary"
+              onClick={(e) => {
+                e.stopPropagation();
+                goToPreviousParagraph();
+              }}
+              className="bg-card/90 backdrop-blur-sm shadow-xl"
+            >
+              <Icon name="ChevronLeft" size={24} />
+            </Button>
+            <Button
+              size="icon"
+              variant="secondary"
+              onClick={(e) => {
+                e.stopPropagation();
+                goToNextParagraph();
+              }}
+              className="bg-card/90 backdrop-blur-sm shadow-xl"
+            >
+              <Icon name="ChevronRight" size={24} />
+            </Button>
           </div>
+        )}
+
+        {/* Подсказка для десктопа */}
+        {!isTyping && currentParagraph.type !== 'choice' && (
+          <Dialog>
+            <DialogTrigger asChild>
+              <div className="hidden md:block fixed bottom-4 left-1/2 -translate-x-1/2 text-xs text-muted-foreground animate-pulse text-center px-4 cursor-help">
+                Нажмите или → для продолжения
+              </div>
+            </DialogTrigger>
+            <DialogContent onClick={(e) => e.stopPropagation()}>
+              <DialogHeader>
+                <DialogTitle>Управление</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-3">
+                <p className="text-foreground">• Клик или → - следующий параграф</p>
+                <p className="text-foreground">• ← - предыдущий параграф</p>
+                <p className="text-foreground">• Swipe влево/вправо - навигация</p>
+              </div>
+            </DialogContent>
+          </Dialog>
         )}
       </div>
     </div>

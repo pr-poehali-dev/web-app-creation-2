@@ -156,7 +156,8 @@ function Index() {
     
     if (savedProfile) {
       try {
-        setProfile(JSON.parse(savedProfile));
+        const parsedProfile = JSON.parse(savedProfile);
+        setProfile(parsedProfile);
       } catch (e) {
         console.error('Failed to load profile', e);
       }
@@ -338,7 +339,20 @@ function Index() {
       <div className="relative min-h-screen dark">
         <HomePage 
           homePage={novel.homePage || { greeting: 'Добро пожаловать', news: [] }}
-          onStart={() => setActiveView('reader')}
+          onStart={() => {
+            // Устанавливаем первый эпизод и первый параграф при старте для новых пользователей
+            if (!profile.currentEpisodeId || profile.currentEpisodeId === 'ep1') {
+              const firstEpisode = novel.episodes[0];
+              if (firstEpisode) {
+                setProfile({
+                  ...profile,
+                  currentEpisodeId: firstEpisode.id,
+                  currentParagraphIndex: 0
+                });
+              }
+            }
+            setActiveView('reader');
+          }}
         />
         
         <div className="fixed top-4 right-4 flex gap-2 z-50">

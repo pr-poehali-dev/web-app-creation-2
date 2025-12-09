@@ -178,10 +178,22 @@ function UserProfilePanel({ profile, novel, onUpdate, onBack, onNavigateTo }: Us
           <CardContent className="p-6">
             <Tabs defaultValue="achievements" className="w-full">
               <TabsList className="grid w-full grid-cols-4">
-                <TabsTrigger value="achievements">Достижения</TabsTrigger>
-                <TabsTrigger value="bookmarks">Закладки</TabsTrigger>
-                <TabsTrigger value="items">Предметы</TabsTrigger>
-                <TabsTrigger value="characters">Персонажи</TabsTrigger>
+                <TabsTrigger value="achievements" className="flex items-center gap-1">
+                  <Icon name="Trophy" size={16} />
+                  <span className="hidden md:inline">Достижения</span>
+                </TabsTrigger>
+                <TabsTrigger value="bookmarks" className="flex items-center gap-1">
+                  <Icon name="Bookmark" size={16} />
+                  <span className="hidden md:inline">Закладки</span>
+                </TabsTrigger>
+                <TabsTrigger value="items" className="flex items-center gap-1">
+                  <Icon name="Package" size={16} />
+                  <span className="hidden md:inline">Предметы</span>
+                </TabsTrigger>
+                <TabsTrigger value="characters" className="flex items-center gap-1">
+                  <Icon name="Users" size={16} />
+                  <span className="hidden md:inline">Персонажи</span>
+                </TabsTrigger>
               </TabsList>
 
               <TabsContent value="achievements" className="mt-6">
