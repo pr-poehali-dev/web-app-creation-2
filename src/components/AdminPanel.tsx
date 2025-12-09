@@ -105,7 +105,7 @@ function AdminPanel({ novel, onUpdate, onLogout }: AdminPanelProps) {
 
       <div className="container mx-auto px-4 py-8">
         <Tabs defaultValue="home" className="w-full">
-          <TabsList className="grid w-full max-w-4xl grid-cols-4 mb-8">
+          <TabsList className="grid w-full max-w-4xl grid-cols-5 mb-8">
             <TabsTrigger value="home">
               <Icon name="Home" size={16} className="mr-2" />
               Главная
@@ -121,6 +121,10 @@ function AdminPanel({ novel, onUpdate, onLogout }: AdminPanelProps) {
             <TabsTrigger value="visualization">
               <Icon name="Network" size={16} className="mr-2" />
               Визуализация
+            </TabsTrigger>
+            <TabsTrigger value="system">
+              <Icon name="Settings" size={16} className="mr-2" />
+              Система
             </TabsTrigger>
           </TabsList>
 
@@ -222,6 +226,34 @@ function AdminPanel({ novel, onUpdate, onLogout }: AdminPanelProps) {
 
           <TabsContent value="visualization">
             <NovelVisualization novel={novel} onUpdate={onUpdate} />
+          </TabsContent>
+
+          <TabsContent value="system">
+            <div className="max-w-2xl mx-auto space-y-6">
+              <div className="bg-card border border-border rounded-lg p-6">
+                <h3 className="text-lg font-bold text-foreground mb-4">Системные действия</h3>
+                <div className="space-y-4">
+                  <Button
+                    variant="destructive"
+                    className="w-full justify-start"
+                    onClick={() => {
+                      if (confirm('Удалить все данные? Это действие нельзя отменить!')) {
+                        localStorage.removeItem('visualNovel');
+                        localStorage.removeItem('userSettings');
+                        localStorage.removeItem('userProfile');
+                        window.location.reload();
+                      }
+                    }}
+                  >
+                    <Icon name="Trash2" size={16} className="mr-2" />
+                    Очистить все данные приложения
+                  </Button>
+                  <p className="text-xs text-muted-foreground">
+                    Удаляет все данные новеллы, настройки и профиль игрока. Приложение вернется к начальному состоянию.
+                  </p>
+                </div>
+              </div>
+            </div>
           </TabsContent>
         </Tabs>
       </div>

@@ -222,21 +222,7 @@ function SettingsPanel({ settings, onUpdate, onBack }: SettingsPanelProps) {
                 Сбросить настройки
               </Button>
 
-              <Button
-                variant="destructive"
-                className="w-full justify-start"
-                onClick={() => {
-                  if (confirm('Удалить все данные? Это действие нельзя отменить!')) {
-                    localStorage.removeItem('visualNovel');
-                    localStorage.removeItem('userSettings');
-                    localStorage.removeItem('userProfile');
-                    window.location.reload();
-                  }
-                }}
-              >
-                <Icon name="Trash2" size={16} className="mr-2" />
-                Удалить все данные
-              </Button>
+
             </CardContent>
           </Card>
 

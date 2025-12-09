@@ -350,6 +350,37 @@ function UserProfilePanel({ profile, novel, onUpdate, onBack, onNavigateTo }: Us
             </Tabs>
           </CardContent>
         </Card>
+
+        <Card className="animate-fade-in mt-6" style={{ animationDelay: '300ms' }}>
+          <CardHeader>
+            <CardTitle className="text-foreground">Управление прогрессом</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Button
+              variant="destructive"
+              className="w-full justify-start"
+              onClick={() => {
+                if (confirm('Сбросить весь прогресс игрока? Это действие нельзя отменить!')) {
+                  onUpdate({
+                    name: profile.name,
+                    avatar: profile.avatar,
+                    level: 1,
+                    completedEpisodes: [],
+                    totalReadTime: 0,
+                    bookmarks: [],
+                    achievements: [],
+                    collectedItems: [],
+                    metCharacters: [],
+                    createdAt: profile.createdAt
+                  });
+                }
+              }}
+            >
+              <Icon name="RotateCcw" size={16} className="mr-2" />
+              Сбросить весь прогресс
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
