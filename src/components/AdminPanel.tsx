@@ -153,7 +153,7 @@ function AdminPanel({ novel, onUpdate, onLogout }: AdminPanelProps) {
                     onClick={() => setSelectedEpisodeId(episode.id)}
                   >
                     <div className="flex items-center justify-between gap-2">
-                      <span className="font-medium truncate flex-1">{episode.title}</span>
+                      <span className="font-medium truncate flex-1 text-slate-50">{episode.title}</span>
                       <div className="flex gap-1 flex-shrink-0">
                         <Button
                           variant="ghost"
@@ -192,7 +192,7 @@ function AdminPanel({ novel, onUpdate, onLogout }: AdminPanelProps) {
                         </Button>
                       </div>
                     </div>
-                    <p className="text-xs opacity-70 mt-1">
+                    <p className="text-xs opacity-70 mt-1 text-slate-50">
                       {episode.paragraphs.length} параграфов
                     </p>
                   </div>
