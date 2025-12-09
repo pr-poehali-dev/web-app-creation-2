@@ -11,7 +11,7 @@ function ImageBox({ url, alt }: ImageBoxProps) {
       <ZoomableImage
         src={url}
         alt={alt || 'Novel image'}
-        className="max-w-full max-h-[80vh] rounded-lg shadow-2xl object-contain"
+        className="max-w-full max-h-[80vh] rounded-3xl shadow-2xl object-contain"
       />
     </div>
   );

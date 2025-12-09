@@ -45,7 +45,7 @@ function DialogueBox({
                 <ZoomableImage
                   src={characterImage}
                   alt={characterName}
-                  className="w-48 h-48 object-cover rounded-lg shadow-2xl"
+                  className="w-48 h-48 object-cover rounded-3xl shadow-2xl"
                 />
               ) : (
                 <div className="text-9xl">{characterImage}</div>
@@ -57,15 +57,15 @@ function DialogueBox({
                 e.stopPropagation();
                 setShowCommentDialog(true);
               }}
-              className="text-sm font-bold text-primary bg-card/80 backdrop-blur-sm px-3 py-1 rounded-full border border-primary/30 hover:bg-primary/20 transition-colors cursor-pointer"
+              className="text-sm font-bold text-primary-foreground bg-primary/90 backdrop-blur-sm px-4 py-2 rounded-full border-0 hover:bg-primary transition-all shadow-lg cursor-pointer"
             >
               {characterName}
             </button>
           </div>
         )}
         
-        <Card className="flex-1 bg-card/95 backdrop-blur-sm border-primary/30 shadow-2xl animate-scale-in">
-          <CardContent className="p-6">
+        <Card className="flex-1 bg-card/95 backdrop-blur-sm border-0 shadow-xl animate-scale-in">
+          <CardContent className="p-8">
             {!characterImage && (
               <h3 className="text-lg font-bold text-primary mb-3">
                 {characterName}
