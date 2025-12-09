@@ -108,6 +108,12 @@ function EpisodeHeader({ episode, novel, onUpdate, onNovelUpdate }: EpisodeHeade
       });
 
       // Обновляем novel с новой библиотекой
+      console.log('Импортировано в библиотеку:', {
+        characters: newCharacters.length,
+        items: newItems.length,
+        choices: newChoices.length
+      });
+      
       onNovelUpdate({
         ...novel,
         library: {
