@@ -163,7 +163,7 @@ function CharactersLibrary({ novel, onUpdate }: CharactersLibraryProps) {
                           <p className="text-sm text-muted-foreground mt-1">{character.description}</p>
                         )}
                         <p className="text-xs text-muted-foreground mt-2">
-                          {character.images.length} изображений
+                          {character.images?.length || 0} изображений
                         </p>
                       </>
                     )}
@@ -249,7 +249,7 @@ function CharactersLibrary({ novel, onUpdate }: CharactersLibraryProps) {
                       </Dialog>
                     </div>
 
-                    {character.images.length > 0 && (
+                    {character.images?.length > 0 && (
                       <div className="grid grid-cols-3 gap-2">
                         {character.images.map((image) => (
                           <div key={image.id} className="relative group">
