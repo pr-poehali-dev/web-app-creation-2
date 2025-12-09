@@ -24,7 +24,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate }: No
   const currentEpisode = novel.episodes.find(ep => ep.id === novel.currentEpisodeId);
   const currentParagraph = currentEpisode?.paragraphs[novel.currentParagraphIndex];
 
-  const existingBookmark = profile.bookmarks.find(
+  const existingBookmark = profile?.bookmarks?.find(
     b => b.episodeId === novel.currentEpisodeId && b.paragraphIndex === novel.currentParagraphIndex
   );
 
@@ -58,13 +58,13 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate }: No
     if (!currentEpisode) return;
 
     // Сохранить предмет в коллекцию
-    if (currentParagraph?.type === 'item') {
-      const itemExists = profile.collectedItems.some(i => i.id === currentParagraph.id);
+    if (currentParagraph?.type === 'item' && profile) {
+      const itemExists = profile.collectedItems?.some(i => i.id === currentParagraph.id);
       if (!itemExists) {
         onProfileUpdate({
           ...profile,
           collectedItems: [
-            ...profile.collectedItems,
+            ...(profile.collectedItems || []),
             {
               id: currentParagraph.id,
               name: currentParagraph.name,
@@ -78,15 +78,15 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate }: No
     }
 
     // Сохранить персонажа при встрече
-    if (currentParagraph?.type === 'dialogue') {
-      const characterExists = profile.metCharacters.some(
+    if (currentParagraph?.type === 'dialogue' && profile) {
+      const characterExists = profile.metCharacters?.some(
         c => c.name === currentParagraph.characterName && c.episodeId === novel.currentEpisodeId
       );
       if (!characterExists) {
         onProfileUpdate({
           ...profile,
           metCharacters: [
-            ...profile.metCharacters,
+            ...(profile.metCharacters || []),
             {
               id: `char${Date.now()}`,
               name: currentParagraph.characterName,
