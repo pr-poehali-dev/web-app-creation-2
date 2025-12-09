@@ -26,7 +26,7 @@ function NavigationMenu({
       <Button
         variant="ghost"
         size="icon"
-        className="bg-card/50 backdrop-blur-sm hover:bg-card/80"
+        className="bg-card/50 backdrop-blur-sm hover:bg-card/80 text-white"
         onClick={() => onSetActiveView('home')}
       >
         <Icon name="Home" size={20} />
@@ -34,7 +34,7 @@ function NavigationMenu({
       <Button
         variant="ghost"
         size="icon"
-        className="bg-card/50 backdrop-blur-sm hover:bg-card/80"
+        className="bg-card/50 backdrop-blur-sm hover:bg-card/80 text-white"
         onClick={() => onSetActiveView('profile')}
       >
         <Icon name="User" size={20} />
@@ -42,7 +42,7 @@ function NavigationMenu({
       <Button
         variant="ghost"
         size="icon"
-        className="bg-card/50 backdrop-blur-sm hover:bg-card/80"
+        className="bg-card/50 backdrop-blur-sm hover:bg-card/80 text-white"
         onClick={() => onSetActiveView('settings')}
       >
         <Icon name="Settings" size={20} />
@@ -52,7 +52,7 @@ function NavigationMenu({
         <Button
           variant="ghost"
           size="icon"
-          className="bg-card/50 backdrop-blur-sm hover:bg-card/80 opacity-30 hover:opacity-100 transition-opacity"
+          className="bg-card/50 backdrop-blur-sm hover:bg-card/80 opacity-30 hover:opacity-100 transition-opacity text-white"
           onClick={() => onSetShowAdminButton(true)}
         >
           <Icon name="Lock" size={20} />
