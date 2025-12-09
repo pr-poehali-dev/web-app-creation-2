@@ -373,6 +373,15 @@ function Index() {
         <Icon name={showSidebar ? 'X' : 'Menu'} size={20} />
       </button>
 
+      {/* Paragraph counter - left top */}
+      {novel.currentEpisodeId && (
+        <div className="hidden md:block fixed top-4 left-[340px] z-50">
+          <div className="text-xs text-muted-foreground bg-card/50 backdrop-blur-sm px-3 py-2 rounded-lg border border-border">
+            {novel.currentParagraphIndex + 1} / {novel.episodes.find(ep => ep.id === novel.currentEpisodeId)?.paragraphs.length}
+          </div>
+        </div>
+      )}
+
       {/* Sidebar - hidden on mobile by default */}
       <div className={`fixed md:relative inset-y-0 left-0 z-40 transform transition-transform duration-300 ${showSidebar ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
         <EpisodesSidebar

@@ -105,20 +105,13 @@ function NavigationMenu({
       </div>
 
       {episodeId && paragraphIndex !== undefined && onAddBookmark && onRemoveBookmark && (
-        <>
-          <BookmarkButton
-            episodeId={episodeId}
-            paragraphIndex={paragraphIndex}
-            existingBookmark={existingBookmark}
-            onAdd={onAddBookmark}
-            onRemove={onRemoveBookmark}
-          />
-          {currentParagraph !== undefined && totalParagraphs !== undefined && (
-            <div className="text-xs text-muted-foreground bg-card/50 backdrop-blur-sm px-3 py-2 rounded-lg border border-border">
-              {currentParagraph} / {totalParagraphs}
-            </div>
-          )}
-        </>
+        <BookmarkButton
+          episodeId={episodeId}
+          paragraphIndex={paragraphIndex}
+          existingBookmark={existingBookmark}
+          onAdd={onAddBookmark}
+          onRemove={onRemoveBookmark}
+        />
       )}
     </div>
   );

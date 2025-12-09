@@ -272,7 +272,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate }: No
 
   return (
     <div 
-      className="min-h-screen bg-background flex items-start justify-center pt-16 p-4 pr-32 md:pl-8 md:pr-8 cursor-pointer"
+      className="min-h-screen bg-background flex items-start justify-center pt-20 p-4 pr-32 md:pl-8 md:pr-8 cursor-pointer"
       onClick={handleClick}
       onTouchStart={onTouchStart}
       onTouchMove={onTouchMove}
