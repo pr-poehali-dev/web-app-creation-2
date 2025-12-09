@@ -128,6 +128,7 @@ function Index() {
   const [activeView, setActiveView] = useState<View>('home');
   const [adminPassword, setAdminPassword] = useState('');
   const [showAdminButton, setShowAdminButton] = useState(false);
+  const [expandedEpisode, setExpandedEpisode] = useState<string | null>(null);
 
   useEffect(() => {
     const savedNovel = localStorage.getItem('visualNovel');
@@ -322,24 +323,73 @@ function Index() {
           <div className="space-y-2">
             {novel.episodes.map((episode, index) => {
               const isCurrent = novel.currentEpisodeId === episode.id;
+              const isExpanded = expandedEpisode === episode.id;
+              
               return (
-                <button
-                  key={episode.id}
-                  onClick={() => handleEpisodeSelect(episode.id)}
-                  className={`w-full text-left p-3 rounded-lg transition-all ${
-                    isCurrent 
-                      ? 'bg-primary text-primary-foreground shadow-lg' 
-                      : 'bg-card/50 hover:bg-card text-foreground hover:shadow-md'
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold text-sm">{index + 1}.</span>
-                    <span className="text-sm font-medium">{episode.title}</span>
-                  </div>
-                  <div className="text-xs opacity-70 mt-1">
-                    {episode.paragraphs.length} параграфов
-                  </div>
-                </button>
+                <div key={episode.id} className="space-y-1">
+                  <button
+                    onClick={() => {
+                      if (isCurrent) {
+                        setExpandedEpisode(isExpanded ? null : episode.id);
+                      } else {
+                        handleEpisodeSelect(episode.id);
+                        setExpandedEpisode(null);
+                      }
+                    }}
+                    className={`w-full text-left p-3 rounded-lg transition-all ${
+                      isCurrent 
+                        ? 'bg-primary text-primary-foreground shadow-lg' 
+                        : 'bg-card/50 hover:bg-card text-foreground hover:shadow-md'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-sm">{index + 1}.</span>
+                        <span className="text-sm font-medium">{episode.title}</span>
+                      </div>
+                      {isCurrent && (
+                        <Icon name={isExpanded ? "ChevronUp" : "ChevronDown"} size={16} />
+                      )}
+                    </div>
+                    <div className="text-xs opacity-70 mt-1">
+                      {episode.paragraphs.length} параграфов
+                    </div>
+                  </button>
+                  
+                  {isCurrent && isExpanded && (
+                    <div className="ml-4 space-y-1 animate-fade-in">
+                      {episode.paragraphs.map((para, pIndex) => {
+                        const isCurrentPara = novel.currentParagraphIndex === pIndex;
+                        return (
+                          <button
+                            key={para.id}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleEpisodeSelect(episode.id, pIndex);
+                            }}
+                            className={`w-full text-left p-2 rounded text-xs transition-all ${
+                              isCurrentPara
+                                ? 'bg-primary/20 text-primary-foreground font-semibold'
+                                : 'bg-card/30 hover:bg-card/50 text-foreground/80'
+                            }`}
+                          >
+                            <span className="font-mono mr-2">#{pIndex + 1}</span>
+                            <span className="uppercase font-bold mr-1">{para.type}</span>
+                            {para.type === 'text' && para.content && (
+                              <span className="opacity-70">- {para.content.slice(0, 30)}...</span>
+                            )}
+                            {para.type === 'dialogue' && para.characterName && (
+                              <span className="opacity-70">- {para.characterName}</span>
+                            )}
+                            {para.type === 'item' && para.name && (
+                              <span className="opacity-70">- {para.name}</span>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
               );
             })}
           </div>
