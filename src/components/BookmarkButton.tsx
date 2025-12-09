@@ -32,7 +32,7 @@ function BookmarkButton({ episodeId, paragraphIndex, existingBookmark, onAdd, on
       <Button
         variant="ghost"
         size="icon"
-        className={`bg-card/50 backdrop-blur-sm hover:bg-card/80 ${existingBookmark ? 'text-primary' : ''}`}
+        className={`bg-card/50 backdrop-blur-sm hover:bg-card/80 ${existingBookmark ? 'text-primary' : 'text-white'}`}
         onClick={() => setShowDialog(!showDialog)}
       >
         <Icon name={existingBookmark ? 'Bookmark' : 'BookmarkPlus'} size={20} />
