@@ -1,6 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import TypewriterText from './TypewriterText';
+import ZoomableImage from './ZoomableImage';
 
 interface ItemBoxProps {
   name: string;
@@ -21,8 +22,8 @@ function ItemBox({ name, description, imageUrl, skipTyping, onComplete, textSpee
         {imageUrl && (
           <div className="mb-6 animate-scale-in flex justify-center p-4 bg-background/40 rounded-xl border border-primary/30">
             {imageUrl.startsWith('data:') ? (
-              <img 
-                src={imageUrl} 
+              <ZoomableImage
+                src={imageUrl}
                 alt={name}
                 className="max-w-xs max-h-64 object-contain rounded-lg drop-shadow-2xl"
               />

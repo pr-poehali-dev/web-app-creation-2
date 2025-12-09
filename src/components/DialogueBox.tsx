@@ -4,6 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import TypewriterText from './TypewriterText';
+import ZoomableImage from './ZoomableImage';
 
 interface DialogueBoxProps {
   characterName: string;
@@ -41,8 +42,8 @@ function DialogueBox({
           <div className="flex flex-col items-center gap-3 animate-scale-in">
             <div className="flex items-center justify-center">
               {characterImage.startsWith('data:') ? (
-                <img 
-                  src={characterImage} 
+                <ZoomableImage
+                  src={characterImage}
                   alt={characterName}
                   className="w-48 h-48 object-cover rounded-lg shadow-2xl"
                 />
