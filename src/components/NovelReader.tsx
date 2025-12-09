@@ -225,7 +225,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
 
   // Сохранить персонажа при показе диалога
   useEffect(() => {
-    if (currentParagraph?.type === 'dialogue' && profile) {
+    if (currentParagraph?.type === 'dialogue') {
       const characterExists = profile.metCharacters?.some(
         c => c.name === currentParagraph.characterName && c.episodeId === currentEpisodeId
       );
@@ -245,11 +245,11 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
         });
       }
     }
-  }, [currentParagraph, currentEpisodeId, profile, onProfileUpdate]);
+  }, [currentParagraph?.type, currentParagraph?.characterName, currentEpisodeId]);
 
   // Сохранить предмет при показе
   useEffect(() => {
-    if (currentParagraph?.type === 'item' && profile) {
+    if (currentParagraph?.type === 'item') {
       const itemExists = profile.collectedItems?.some(i => i.id === currentParagraph.id);
       if (!itemExists) {
         onProfileUpdate({
@@ -267,7 +267,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
         });
       }
     }
-  }, [currentParagraph, currentEpisodeId, profile, onProfileUpdate]);
+  }, [currentParagraph?.type, currentParagraph?.id, currentEpisodeId]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
