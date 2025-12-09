@@ -300,7 +300,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
 
   return (
     <div 
-      className="min-h-screen bg-background flex items-start justify-center pt-16 md:pt-20 px-2 md:px-4 pb-32 md:pb-4 md:pr-32 md:pl-8 cursor-pointer"
+      className="min-h-screen bg-background flex items-start justify-center pt-32 md:pt-20 px-2 md:px-4 pb-32 md:pb-4 md:pr-32 md:pl-8 cursor-pointer"
       onClick={handleClick}
       onTouchStart={onTouchStart}
       onTouchMove={onTouchMove}
@@ -318,7 +318,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
 
       <div className="w-full max-w-4xl">
         {/* Текущий параграф */}
-        {currentParagraph.type === 'fade' ? null : currentParagraph.type === 'text' && (
+        {currentParagraph.type === 'text' && (
           <div className={`leading-relaxed text-left text-foreground px-2 py-4 md:p-8 transition-opacity duration-300 ${
             isFading ? 'opacity-0' : 'opacity-100'
           } ${
