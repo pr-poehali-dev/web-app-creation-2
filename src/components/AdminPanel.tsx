@@ -7,7 +7,6 @@ import EpisodeEditor from './EpisodeEditor';
 import NovelVisualization from './NovelVisualization';
 import LibraryManager from './LibraryManager';
 import HomePageEditor from './HomePageEditor';
-import FileStorageManager from './FileStorageManager';
 
 interface AdminPanelProps {
   novel: Novel;
@@ -89,7 +88,7 @@ function AdminPanel({ novel, onUpdate, onLogout }: AdminPanelProps) {
 
       <div className="container mx-auto px-4 py-8">
         <Tabs defaultValue="home" className="w-full">
-          <TabsList className="grid w-full max-w-4xl grid-cols-5 mb-8">
+          <TabsList className="grid w-full max-w-4xl grid-cols-4 mb-8">
             <TabsTrigger value="home">
               <Icon name="Home" size={16} className="mr-2" />
               Главная
@@ -101,10 +100,6 @@ function AdminPanel({ novel, onUpdate, onLogout }: AdminPanelProps) {
             <TabsTrigger value="library">
               <Icon name="BookMarked" size={16} className="mr-2" />
               Библиотека
-            </TabsTrigger>
-            <TabsTrigger value="files">
-              <Icon name="FolderOpen" size={16} className="mr-2" />
-              Файлы
             </TabsTrigger>
             <TabsTrigger value="visualization">
               <Icon name="Network" size={16} className="mr-2" />
@@ -180,10 +175,6 @@ function AdminPanel({ novel, onUpdate, onLogout }: AdminPanelProps) {
 
           <TabsContent value="library">
             <LibraryManager novel={novel} onUpdate={onUpdate} />
-          </TabsContent>
-
-          <TabsContent value="files">
-            <FileStorageManager novel={novel} onUpdate={onUpdate} />
           </TabsContent>
 
           <TabsContent value="visualization">

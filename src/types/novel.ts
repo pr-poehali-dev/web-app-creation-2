@@ -74,7 +74,8 @@ export interface LibraryItem {
 export interface LibraryCharacter {
   id: string;
   name: string;
-  image?: string;
+  images: { id: string; url: string; name?: string }[];
+  description?: string;
 }
 
 export interface LibraryChoice {
@@ -88,10 +89,12 @@ export interface NewsItem {
   title: string;
   content: string;
   date: string;
+  imageUrl?: string;
 }
 
 export interface HomePage {
   greeting: string;
+  greetingImage?: string;
   news: NewsItem[];
 }
 

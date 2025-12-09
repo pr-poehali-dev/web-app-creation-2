@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import Icon from '@/components/ui/icon';
 import { selectAndConvertImage } from '@/utils/fileHelpers';
 import { getParagraphNumber } from '@/utils/paragraphNumbers';
@@ -20,6 +21,7 @@ interface ParagraphEditorProps {
   onDelete: (index: number) => void;
   onMove: (index: number, direction: 'up' | 'down') => void;
   onToggleInsert: (index: number) => void;
+  onNovelUpdate: (novel: Novel) => void;
 }
 
 function ParagraphEditor({
@@ -31,9 +33,11 @@ function ParagraphEditor({
   onUpdate,
   onDelete,
   onMove,
-  onToggleInsert
+  onToggleInsert,
+  onNovelUpdate
 }: ParagraphEditorProps) {
   const [isChangingType, setIsChangingType] = useState(false);
+  const [imageUrl, setImageUrl] = useState('');
 
   const handleTypeChange = (newType: ParagraphType) => {
     let newParagraph: Paragraph;
@@ -74,17 +78,117 @@ function ParagraphEditor({
     setIsChangingType(false);
   };
 
-  const handleImageUpload = async () => {
+  const handleImageUpload = async (target: 'dialogue' | 'item' | 'image') => {
     const imageBase64 = await selectAndConvertImage();
     if (imageBase64) {
-      if (paragraph.type === 'dialogue') {
+      if (target === 'dialogue' && paragraph.type === 'dialogue') {
         onUpdate(index, { ...paragraph, characterImage: imageBase64 });
-      } else if (paragraph.type === 'item') {
+      } else if (target === 'item' && paragraph.type === 'item') {
         onUpdate(index, { ...paragraph, imageUrl: imageBase64 });
-      } else if (paragraph.type === 'image') {
+      } else if (target === 'image' && paragraph.type === 'image') {
         onUpdate(index, { ...paragraph, url: imageBase64 });
       }
     }
+    setImageUrl('');
+  };
+
+  const handleImageUrl = (target: 'dialogue' | 'item' | 'image') => {
+    if (!imageUrl) return;
+    
+    if (target === 'dialogue' && paragraph.type === 'dialogue') {
+      onUpdate(index, { ...paragraph, characterImage: imageUrl });
+    } else if (target === 'item' && paragraph.type === 'item') {
+      onUpdate(index, { ...paragraph, imageUrl });
+    } else if (target === 'image' && paragraph.type === 'image') {
+      onUpdate(index, { ...paragraph, url: imageUrl });
+    }
+    setImageUrl('');
+  };
+
+  const handleSelectCharacter = (characterId: string) => {
+    if (paragraph.type !== 'dialogue') return;
+    const character = novel.library.characters.find(c => c.id === characterId);
+    if (character) {
+      onUpdate(index, { 
+        ...paragraph, 
+        characterName: character.name,
+        characterImage: character.images[0]?.url
+      });
+    }
+  };
+
+  const handleSelectItem = (itemId: string) => {
+    if (paragraph.type !== 'item') return;
+    const item = novel.library.items.find(i => i.id === itemId);
+    if (item) {
+      onUpdate(index, { 
+        ...paragraph, 
+        name: item.name,
+        description: item.description,
+        imageUrl: item.imageUrl
+      });
+      
+      const exists = novel.library.items.some(i => i.id === itemId);
+      if (!exists) {
+        onNovelUpdate({
+          ...novel,
+          library: {
+            ...novel.library,
+            items: [...novel.library.items, { id: itemId, name: item.name, description: item.description, imageUrl: item.imageUrl }]
+          }
+        });
+      }
+    }
+  };
+
+  const handleSelectChoice = (optIndex: number, choiceId: string) => {
+    if (paragraph.type !== 'choice') return;
+    const choice = novel.library.choices.find(c => c.id === choiceId);
+    if (choice) {
+      const newOptions = [...paragraph.options];
+      newOptions[optIndex] = { 
+        ...newOptions[optIndex], 
+        text: choice.text, 
+        nextEpisodeId: choice.nextEpisodeId 
+      };
+      onUpdate(index, { ...paragraph, options: newOptions });
+    }
+  };
+
+  const addItemToLibrary = () => {
+    if (paragraph.type !== 'item') return;
+    const newItem = {
+      id: `item${Date.now()}`,
+      name: paragraph.name,
+      description: paragraph.description,
+      imageUrl: paragraph.imageUrl
+    };
+    
+    onNovelUpdate({
+      ...novel,
+      library: {
+        ...novel.library,
+        items: [...novel.library.items, newItem]
+      }
+    });
+  };
+
+  const addChoiceToLibrary = (optIndex: number) => {
+    if (paragraph.type !== 'choice') return;
+    const option = paragraph.options[optIndex];
+    const newChoice = {
+      id: `choice${Date.now()}`,
+      text: option.text,
+      nextEpisodeId: option.nextEpisodeId
+    };
+    
+    onNovelUpdate({
+      ...novel,
+      library: {
+        ...novel.library,
+        choices: [...novel.library.choices, newChoice]
+      }
+    });
   };
 
   return (
@@ -182,6 +286,24 @@ function ParagraphEditor({
             {paragraph.type === 'dialogue' && (
               <div className="space-y-2">
                 <div className="flex gap-2">
+                  <Select
+                    value="manual"
+                    onValueChange={(value) => {
+                      if (value !== 'manual') handleSelectCharacter(value);
+                    }}
+                  >
+                    <SelectTrigger className="text-foreground">
+                      <SelectValue placeholder="Выбрать из библиотеки" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="manual">Ввести вручную</SelectItem>
+                      {novel.library.characters.map((char) => (
+                        <SelectItem key={char.id} value={char.id}>{char.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex gap-2">
                   <Input
                     placeholder="Имя персонажа"
                     value={paragraph.characterName}
@@ -190,21 +312,81 @@ function ParagraphEditor({
                     }
                     className="text-foreground"
                   />
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={handleImageUpload}
-                  >
-                    <Icon name="Upload" size={14} />
-                  </Button>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button size="sm" variant="outline">
+                        <Icon name="Image" size={14} />
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Добавить изображение персонажа</DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        {(() => {
+                          const character = novel.library.characters.find(c => c.name === paragraph.characterName);
+                          if (character && character.images.length > 0) {
+                            return (
+                              <div>
+                                <Label>Выбрать из персонажа</Label>
+                                <div className="grid grid-cols-3 gap-2 mt-2">
+                                  {character.images.map((img) => (
+                                    <div
+                                      key={img.id}
+                                      className="cursor-pointer border rounded hover:border-primary transition-colors"
+                                      onClick={() => {
+                                        onUpdate(index, { ...paragraph, characterImage: img.url });
+                                      }}
+                                    >
+                                      <img src={img.url} alt={img.name || ''} className="w-full h-20 object-cover rounded" />
+                                      <p className="text-xs text-center p-1">{img.name}</p>
+                                    </div>
+                                  ))}
+                                </div>
+                                <div className="relative my-4">
+                                  <div className="absolute inset-0 flex items-center">
+                                    <span className="w-full border-t" />
+                                  </div>
+                                  <div className="relative flex justify-center text-xs uppercase">
+                                    <span className="bg-background px-2 text-muted-foreground">или</span>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          }
+                          return null;
+                        })()}
+                        <div>
+                          <Label>URL изображения</Label>
+                          <Input
+                            placeholder="https://example.com/character.jpg"
+                            value={imageUrl}
+                            onChange={(e) => setImageUrl(e.target.value)}
+                            className="text-foreground mt-1"
+                          />
+                          <Button onClick={() => handleImageUrl('dialogue')} className="w-full mt-2" disabled={!imageUrl}>
+                            Добавить по URL
+                          </Button>
+                        </div>
+                        <div className="relative">
+                          <div className="absolute inset-0 flex items-center">
+                            <span className="w-full border-t" />
+                          </div>
+                          <div className="relative flex justify-center text-xs uppercase">
+                            <span className="bg-background px-2 text-muted-foreground">или</span>
+                          </div>
+                        </div>
+                        <Button onClick={() => handleImageUpload('dialogue')} variant="outline" className="w-full">
+                          <Icon name="Upload" size={14} className="mr-2" />
+                          Загрузить файл
+                        </Button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                 </div>
                 {paragraph.characterImage && (
                   <div className="flex items-center gap-2">
-                    {paragraph.characterImage.startsWith('data:') ? (
-                      <img src={paragraph.characterImage} alt="Character" className="w-12 h-12 object-cover rounded" />
-                    ) : (
-                      <span className="text-3xl">{paragraph.characterImage}</span>
-                    )}
+                    <img src={paragraph.characterImage} alt="Character" className="w-12 h-12 object-cover rounded" />
                     <Button
                       size="sm"
                       variant="ghost"
@@ -238,6 +420,32 @@ function ParagraphEditor({
                 />
                 {paragraph.options.map((option, optIndex) => (
                   <div key={option.id} className="space-y-2 p-3 border border-border rounded-lg">
+                    <div className="flex gap-2">
+                      <Select
+                        value="manual"
+                        onValueChange={(value) => {
+                          if (value !== 'manual') handleSelectChoice(optIndex, value);
+                        }}
+                      >
+                        <SelectTrigger className="text-foreground">
+                          <SelectValue placeholder="Из библиотеки" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="manual">Ввести вручную</SelectItem>
+                          {novel.library.choices.map((choice) => (
+                            <SelectItem key={choice.id} value={choice.id}>{choice.text}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => addChoiceToLibrary(optIndex)}
+                        title="Добавить в библиотеку"
+                      >
+                        <Icon name="BookmarkPlus" size={14} />
+                      </Button>
+                    </div>
                     <Input
                       placeholder="Текст варианта"
                       value={option.text}
@@ -295,6 +503,7 @@ function ParagraphEditor({
                                     #{pIndex + 1} - {para.type.toUpperCase()}
                                     {para.type === 'text' && para.content ? ` - ${para.content.slice(0, 20)}...` : ''}
                                     {para.type === 'dialogue' && para.characterName ? ` - ${para.characterName}` : ''}
+                                    {para.type === 'choice' && para.question ? ` - ${para.question.slice(0, 20)}...` : ''}
                                   </SelectItem>
                                 ))}
                               </SelectContent>
@@ -317,17 +526,17 @@ function ParagraphEditor({
                   </div>
                 ))}
                 <Button
-                  size="sm"
                   variant="outline"
+                  size="sm"
                   onClick={() => {
-                    const newOptions = [
-                      ...paragraph.options,
-                      { id: `opt${Date.now()}`, text: 'Новый вариант' }
-                    ];
-                    onUpdate(index, { ...paragraph, options: newOptions });
+                    onUpdate(index, {
+                      ...paragraph,
+                      options: [...paragraph.options, { id: `opt${Date.now()}`, text: 'Новый вариант' }]
+                    });
                   }}
+                  className="w-full"
                 >
-                  <Icon name="Plus" size={14} className="mr-1" />
+                  <Icon name="Plus" size={14} className="mr-2" />
                   Добавить вариант
                 </Button>
               </div>
@@ -335,6 +544,32 @@ function ParagraphEditor({
 
             {paragraph.type === 'item' && (
               <div className="space-y-2">
+                <div className="flex gap-2">
+                  <Select
+                    value="manual"
+                    onValueChange={(value) => {
+                      if (value !== 'manual') handleSelectItem(value);
+                    }}
+                  >
+                    <SelectTrigger className="text-foreground">
+                      <SelectValue placeholder="Выбрать из библиотеки" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="manual">Ввести вручную</SelectItem>
+                      {novel.library.items.map((item) => (
+                        <SelectItem key={item.id} value={item.id}>{item.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={addItemToLibrary}
+                    title="Добавить в библиотеку"
+                  >
+                    <Icon name="BookmarkPlus" size={14} />
+                  </Button>
+                </div>
                 <div className="flex gap-2">
                   <Input
                     placeholder="Название предмета"
@@ -344,21 +579,48 @@ function ParagraphEditor({
                     }
                     className="text-foreground"
                   />
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={handleImageUpload}
-                  >
-                    <Icon name="Upload" size={14} />
-                  </Button>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button size="sm" variant="outline">
+                        <Icon name="Image" size={14} />
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Добавить изображение предмета</DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <div>
+                          <Label>URL изображения</Label>
+                          <Input
+                            placeholder="https://example.com/item.jpg"
+                            value={imageUrl}
+                            onChange={(e) => setImageUrl(e.target.value)}
+                            className="text-foreground mt-1"
+                          />
+                          <Button onClick={() => handleImageUrl('item')} className="w-full mt-2" disabled={!imageUrl}>
+                            Добавить по URL
+                          </Button>
+                        </div>
+                        <div className="relative">
+                          <div className="absolute inset-0 flex items-center">
+                            <span className="w-full border-t" />
+                          </div>
+                          <div className="relative flex justify-center text-xs uppercase">
+                            <span className="bg-background px-2 text-muted-foreground">или</span>
+                          </div>
+                        </div>
+                        <Button onClick={() => handleImageUpload('item')} variant="outline" className="w-full">
+                          <Icon name="Upload" size={14} className="mr-2" />
+                          Загрузить файл
+                        </Button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                 </div>
                 {paragraph.imageUrl && (
                   <div className="flex items-center gap-2">
-                    {paragraph.imageUrl.startsWith('data:') ? (
-                      <img src={paragraph.imageUrl} alt="Item" className="w-12 h-12 object-cover rounded" />
-                    ) : (
-                      <span className="text-3xl">{paragraph.imageUrl}</span>
-                    )}
+                    <img src={paragraph.imageUrl} alt="Item" className="w-12 h-12 object-cover rounded" />
                     <Button
                       size="sm"
                       variant="ghost"
@@ -369,7 +631,7 @@ function ParagraphEditor({
                   </div>
                 )}
                 <Textarea
-                  placeholder="Описание"
+                  placeholder="Описание предмета"
                   value={paragraph.description}
                   onChange={(e) =>
                     onUpdate(index, { ...paragraph, description: e.target.value })
@@ -391,17 +653,56 @@ function ParagraphEditor({
                     }
                     className="text-foreground"
                   />
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={handleImageUpload}
-                  >
-                    <Icon name="Upload" size={14} />
-                  </Button>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button size="sm" variant="outline">
+                        <Icon name="Upload" size={14} />
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Добавить изображение</DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <div>
+                          <Label>URL изображения</Label>
+                          <Input
+                            placeholder="https://example.com/image.jpg"
+                            value={imageUrl}
+                            onChange={(e) => setImageUrl(e.target.value)}
+                            className="text-foreground mt-1"
+                          />
+                          <Button onClick={() => handleImageUrl('image')} className="w-full mt-2" disabled={!imageUrl}>
+                            Добавить по URL
+                          </Button>
+                        </div>
+                        <div className="relative">
+                          <div className="absolute inset-0 flex items-center">
+                            <span className="w-full border-t" />
+                          </div>
+                          <div className="relative flex justify-center text-xs uppercase">
+                            <span className="bg-background px-2 text-muted-foreground">или</span>
+                          </div>
+                        </div>
+                        <Button onClick={() => handleImageUpload('image')} variant="outline" className="w-full">
+                          <Icon name="Upload" size={14} className="mr-2" />
+                          Загрузить файл
+                        </Button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                 </div>
                 {paragraph.url && (
-                  <img src={paragraph.url} alt="Preview" className="w-full max-h-48 object-contain rounded" />
+                  <img src={paragraph.url} alt="Preview" className="w-full rounded-lg" />
                 )}
+                <Input
+                  placeholder="Альтернативный текст (опционально)"
+                  value={paragraph.alt || ''}
+                  onChange={(e) =>
+                    onUpdate(index, { ...paragraph, alt: e.target.value })
+                  }
+                  className="text-foreground"
+                />
               </div>
             )}
           </div>

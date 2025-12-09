@@ -12,6 +12,13 @@ function HomePage({ homePage, onStart }: HomePageProps) {
     <div className="min-h-screen bg-background dark flex items-center justify-center p-4">
       <div className="max-w-3xl w-full space-y-8 animate-fade-in">
         <div className="text-center space-y-6">
+          {homePage.greetingImage && (
+            <img 
+              src={homePage.greetingImage} 
+              alt="Greeting" 
+              className="w-full max-w-2xl mx-auto rounded-lg shadow-lg animate-fade-in"
+            />
+          )}
           <h1 className="text-5xl font-bold text-foreground animate-scale-in whitespace-pre-wrap leading-tight">
             {homePage.greeting || 'Добро пожаловать'}
           </h1>
@@ -33,7 +40,10 @@ function HomePage({ homePage, onStart }: HomePageProps) {
                     </span>
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="space-y-3">
+                  {item.imageUrl && (
+                    <img src={item.imageUrl} alt={item.title} className="w-full rounded-lg" />
+                  )}
                   <p className="text-foreground whitespace-pre-wrap">{item.content}</p>
                 </CardContent>
               </Card>

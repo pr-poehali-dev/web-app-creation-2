@@ -60,15 +60,30 @@ function HomePageEditor({ homePage, onUpdate }: HomePageEditorProps) {
         <CardHeader>
           <CardTitle>Приветствие</CardTitle>
         </CardHeader>
-        <CardContent>
-          <Textarea
-            value={homePage.greeting || ''}
-            onChange={(e) => onUpdate({ ...homePage, greeting: e.target.value })}
-            placeholder="Добро пожаловать"
-            rows={3}
-            className="text-foreground text-lg"
-          />
-          <p className="text-xs text-muted-foreground mt-2">Можно использовать несколько строк</p>
+        <CardContent className="space-y-3">
+          <div>
+            <Label>Изображение (URL)</Label>
+            <Input
+              placeholder="https://example.com/image.jpg"
+              value={homePage.greetingImage || ''}
+              onChange={(e) => onUpdate({ ...homePage, greetingImage: e.target.value })}
+              className="text-foreground mt-1"
+            />
+          </div>
+          {homePage.greetingImage && (
+            <img src={homePage.greetingImage} alt="Greeting" className="w-full max-w-md rounded-lg" />
+          )}
+          <div>
+            <Label>Текст приветствия</Label>
+            <Textarea
+              value={homePage.greeting || ''}
+              onChange={(e) => onUpdate({ ...homePage, greeting: e.target.value })}
+              placeholder="Добро пожаловать"
+              rows={3}
+              className="text-foreground text-lg mt-1"
+            />
+            <p className="text-xs text-muted-foreground mt-2">Можно использовать несколько строк</p>
+          </div>
         </CardContent>
       </Card>
 
@@ -120,6 +135,18 @@ function HomePageEditor({ homePage, onUpdate }: HomePageEditorProps) {
                             />
                           </div>
                           <div className="space-y-2">
+                            <Label>Изображение (URL)</Label>
+                            <Input
+                              placeholder="https://example.com/news-image.jpg"
+                              value={news.imageUrl || ''}
+                              onChange={(e) => handleUpdateNews(news.id, { imageUrl: e.target.value })}
+                              className="text-foreground"
+                            />
+                          </div>
+                          {news.imageUrl && (
+                            <img src={news.imageUrl} alt={news.title} className="w-full rounded-lg" />
+                          )}
+                          <div className="space-y-2">
                             <Label>Содержание</Label>
                             <Textarea
                               value={news.content}
@@ -146,6 +173,9 @@ function HomePageEditor({ homePage, onUpdate }: HomePageEditorProps) {
                               {new Date(news.date).toLocaleDateString('ru-RU')}
                             </span>
                           </div>
+                          {news.imageUrl && (
+                            <img src={news.imageUrl} alt={news.title} className="w-full rounded-lg mt-2" />
+                          )}
                           <p className="text-foreground whitespace-pre-wrap">{news.content}</p>
                         </>
                       )}
