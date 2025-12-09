@@ -115,28 +115,28 @@ function EpisodeEditor({ episode, novel, onUpdate, onNovelUpdate }: EpisodeEdito
             />
             
             {insertingAt === index && (
-              <div className="flex gap-2 justify-center my-2 p-3 bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 rounded-2xl border-2 border-primary/20 shadow-lg backdrop-blur-sm">
-                <Button size="sm" variant="secondary" onClick={() => handleAddParagraph('text', index)} className="rounded-xl hover:scale-105 transition-transform">
+              <div className="flex gap-2 justify-center my-2 p-2 bg-secondary/20 rounded-lg">
+                <Button size="sm" variant="secondary" onClick={() => handleAddParagraph('text', index)}>
                   <Icon name="FileText" size={14} className="mr-1" />
                   Текст
                 </Button>
-                <Button size="sm" variant="secondary" onClick={() => handleAddParagraph('dialogue', index)} className="rounded-xl hover:scale-105 transition-transform">
+                <Button size="sm" variant="secondary" onClick={() => handleAddParagraph('dialogue', index)}>
                   <Icon name="MessageSquare" size={14} className="mr-1" />
                   Диалог
                 </Button>
-                <Button size="sm" variant="secondary" onClick={() => handleAddParagraph('choice', index)} className="rounded-xl hover:scale-105 transition-transform">
+                <Button size="sm" variant="secondary" onClick={() => handleAddParagraph('choice', index)}>
                   <Icon name="GitBranch" size={14} className="mr-1" />
                   Выбор
                 </Button>
-                <Button size="sm" variant="secondary" onClick={() => handleAddParagraph('item', index)} className="rounded-xl hover:scale-105 transition-transform">
+                <Button size="sm" variant="secondary" onClick={() => handleAddParagraph('item', index)}>
                   <Icon name="Package" size={14} className="mr-1" />
                   Предмет
                 </Button>
-                <Button size="sm" variant="secondary" onClick={() => handleAddParagraph('image', index)} className="rounded-xl hover:scale-105 transition-transform">
+                <Button size="sm" variant="secondary" onClick={() => handleAddParagraph('image', index)}>
                   <Icon name="Image" size={14} className="mr-1" />
                   Картинка
                 </Button>
-                <Button size="sm" variant="outline" onClick={() => handleAddParagraph('fade', index)} className="rounded-xl hover:scale-105 transition-transform">
+                <Button size="sm" variant="outline" onClick={() => handleAddParagraph('fade', index)}>
                   <Icon name="Minus" size={14} className="mr-1" />
                   Затухание
                 </Button>
