@@ -8,36 +8,47 @@ interface TypewriterTextProps {
   onComplete?: () => void;
 }
 
+// Функция для удаления интерактивных подсказок из текста
+const removeHints = (text: string): string => {
+  return text.replace(/\[([^\|]+)\|([^\]]+)\]/g, '$1');
+};
+
 function TypewriterText({ text, speed = 50, skipTyping = false, onComplete }: TypewriterTextProps) {
   const [displayedText, setDisplayedText] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
+  
+  // Текст без подсказок для эффекта печати
+  const cleanText = removeHints(text);
 
   useEffect(() => {
     if (skipTyping) {
-      setDisplayedText(text);
-      setCurrentIndex(text.length);
+      setDisplayedText(cleanText);
+      setCurrentIndex(cleanText.length);
       onComplete?.();
       return;
     }
 
-    if (currentIndex < text.length) {
+    if (currentIndex < cleanText.length) {
       const timeout = setTimeout(() => {
-        setDisplayedText(text.slice(0, currentIndex + 1));
+        setDisplayedText(cleanText.slice(0, currentIndex + 1));
         setCurrentIndex(currentIndex + 1);
       }, speed);
 
       return () => clearTimeout(timeout);
-    } else if (currentIndex === text.length && currentIndex > 0) {
+    } else if (currentIndex === cleanText.length && currentIndex > 0) {
       onComplete?.();
     }
-  }, [currentIndex, text, speed, skipTyping, onComplete]);
+  }, [currentIndex, cleanText, speed, skipTyping, onComplete]);
 
   useEffect(() => {
     setDisplayedText('');
     setCurrentIndex(0);
   }, [text]);
 
-  return <InteractiveText text={displayedText} />;
+  // Показываем полный текст с подсказками когда печать завершена
+  const finalText = currentIndex === cleanText.length ? text : displayedText;
+
+  return <InteractiveText text={finalText} />;
 }
 
 export default TypewriterText;

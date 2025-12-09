@@ -121,7 +121,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate }: No
           setTimeout(() => {
             setIsFading(false);
           }, 50);
-        }, 500);
+        }, 300);
       } else {
         onUpdate({
           ...novel,
@@ -145,7 +145,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate }: No
           setTimeout(() => {
             setIsFading(false);
           }, 50);
-        }, 500);
+        }, 300);
       } else {
         onUpdate({
           ...novel,
@@ -259,7 +259,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate }: No
       <div className="w-full max-w-4xl">
         {/* Текущий параграф */}
         {currentParagraph.type === 'fade' ? null : currentParagraph.type === 'text' && (
-          <div className={`leading-relaxed text-foreground p-8 transition-opacity duration-500 ${
+          <div className={`leading-relaxed text-foreground p-8 transition-opacity duration-300 ${
             isFading ? 'opacity-0' : 'opacity-100'
           } ${
             settings.textSize === 'small' ? 'text-lg md:text-xl' :
