@@ -65,48 +65,6 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
   const goToNextParagraph = useCallback(() => {
     if (!currentEpisode) return;
 
-    // Сохранить предмет в коллекцию
-    if (currentParagraph?.type === 'item' && profile) {
-      const itemExists = profile.collectedItems?.some(i => i.id === currentParagraph.id);
-      if (!itemExists) {
-        onProfileUpdate({
-          ...profile,
-          collectedItems: [
-            ...(profile.collectedItems || []),
-            {
-              id: currentParagraph.id,
-              name: currentParagraph.name,
-              description: currentParagraph.description,
-              imageUrl: currentParagraph.imageUrl,
-              episodeId: currentEpisodeId
-            }
-          ]
-        });
-      }
-    }
-
-    // Сохранить персонажа при встрече
-    if (currentParagraph?.type === 'dialogue' && profile) {
-      const characterExists = profile.metCharacters?.some(
-        c => c.name === currentParagraph.characterName && c.episodeId === currentEpisodeId
-      );
-      if (!characterExists) {
-        onProfileUpdate({
-          ...profile,
-          metCharacters: [
-            ...(profile.metCharacters || []),
-            {
-              id: `char${Date.now()}`,
-              name: currentParagraph.characterName,
-              image: currentParagraph.characterImage,
-              episodeId: currentEpisodeId,
-              firstMetAt: new Date().toISOString()
-            }
-          ]
-        });
-      }
-    }
-
     let nextIndex = currentParagraphIndex + 1;
     
     // Пропускаем fade параграфы
@@ -264,6 +222,52 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
     setTouchStart(null);
     setTouchEnd(null);
   };
+
+  // Сохранить персонажа при показе диалога
+  useEffect(() => {
+    if (currentParagraph?.type === 'dialogue' && profile) {
+      const characterExists = profile.metCharacters?.some(
+        c => c.name === currentParagraph.characterName && c.episodeId === currentEpisodeId
+      );
+      if (!characterExists) {
+        onProfileUpdate({
+          ...profile,
+          metCharacters: [
+            ...(profile.metCharacters || []),
+            {
+              id: `char${Date.now()}`,
+              name: currentParagraph.characterName,
+              image: currentParagraph.characterImage,
+              episodeId: currentEpisodeId,
+              firstMetAt: new Date().toISOString()
+            }
+          ]
+        });
+      }
+    }
+  }, [currentParagraph, currentEpisodeId, profile, onProfileUpdate]);
+
+  // Сохранить предмет при показе
+  useEffect(() => {
+    if (currentParagraph?.type === 'item' && profile) {
+      const itemExists = profile.collectedItems?.some(i => i.id === currentParagraph.id);
+      if (!itemExists) {
+        onProfileUpdate({
+          ...profile,
+          collectedItems: [
+            ...(profile.collectedItems || []),
+            {
+              id: currentParagraph.id,
+              name: currentParagraph.name,
+              description: currentParagraph.description,
+              imageUrl: currentParagraph.imageUrl,
+              episodeId: currentEpisodeId
+            }
+          ]
+        });
+      }
+    }
+  }, [currentParagraph, currentEpisodeId, profile, onProfileUpdate]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
