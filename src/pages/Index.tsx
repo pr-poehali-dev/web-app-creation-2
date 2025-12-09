@@ -200,8 +200,12 @@ function Index() {
     setSettings(updatedSettings);
   }, []);
 
-  const handleProfileUpdate = useCallback((updatedProfile: UserProfile) => {
-    setProfile(updatedProfile);
+  const handleProfileUpdate = useCallback((updatedProfile: UserProfile | ((prev: UserProfile) => UserProfile)) => {
+    if (typeof updatedProfile === 'function') {
+      setProfile(updatedProfile);
+    } else {
+      setProfile(updatedProfile);
+    }
   }, []);
 
   const handleAdminLogin = useCallback(() => {
@@ -216,22 +220,22 @@ function Index() {
   }, [adminPassword]);
 
   const handleEpisodeSelect = useCallback((episodeId: string, paragraphIndex?: number) => {
-    setProfile({
-      ...profile,
+    setProfile(prev => ({
+      ...prev,
       currentEpisodeId: episodeId,
       currentParagraphIndex: paragraphIndex !== undefined ? paragraphIndex : 0
-    });
+    }));
     setActiveView('reader');
-  }, [profile]);
+  }, []);
 
   const handleNavigateToBookmark = useCallback((episodeId: string, paragraphIndex: number) => {
-    setProfile({
-      ...profile,
+    setProfile(prev => ({
+      ...prev,
       currentEpisodeId: episodeId,
       currentParagraphIndex: paragraphIndex
-    });
+    }));
     setActiveView('reader');
-  }, [profile]);
+  }, []);
 
   const handleShowParagraphs = useCallback((episodeId: string) => {
     setSelectedEpisodeForParagraphs(episodeId);
@@ -239,43 +243,47 @@ function Index() {
   }, []);
 
   const handleAddBookmark = useCallback((comment: string) => {
-    const currentEpisode = novel.episodes.find(ep => ep.id === profile.currentEpisodeId);
-    if (!currentEpisode) return;
+    setProfile(prev => {
+      const currentEpisode = novel.episodes.find(ep => ep.id === prev.currentEpisodeId);
+      if (!currentEpisode) return prev;
 
-    const existingBookmark = profile.bookmarks.find(
-      b => b.episodeId === profile.currentEpisodeId && b.paragraphIndex === profile.currentParagraphIndex
-    );
+      const existingBookmark = prev.bookmarks.find(
+        b => b.episodeId === prev.currentEpisodeId && b.paragraphIndex === prev.currentParagraphIndex
+      );
 
-    const newBookmark = {
-      id: existingBookmark?.id || `bm${Date.now()}`,
-      episodeId: profile.currentEpisodeId,
-      paragraphIndex: profile.currentParagraphIndex,
-      comment,
-      createdAt: existingBookmark?.createdAt || new Date().toISOString()
-    };
+      const newBookmark = {
+        id: existingBookmark?.id || `bm${Date.now()}`,
+        episodeId: prev.currentEpisodeId,
+        paragraphIndex: prev.currentParagraphIndex,
+        comment,
+        createdAt: existingBookmark?.createdAt || new Date().toISOString()
+      };
 
-    const updatedBookmarks = existingBookmark
-      ? profile.bookmarks.map(b => b.id === existingBookmark.id ? newBookmark : b)
-      : [...profile.bookmarks, newBookmark];
+      const updatedBookmarks = existingBookmark
+        ? prev.bookmarks.map(b => b.id === existingBookmark.id ? newBookmark : b)
+        : [...prev.bookmarks, newBookmark];
 
-    setProfile({
-      ...profile,
-      bookmarks: updatedBookmarks
+      return {
+        ...prev,
+        bookmarks: updatedBookmarks
+      };
     });
-  }, [novel, profile]);
+  }, [novel]);
 
   const handleRemoveBookmark = useCallback(() => {
-    const existingBookmark = profile.bookmarks.find(
-      b => b.episodeId === profile.currentEpisodeId && b.paragraphIndex === profile.currentParagraphIndex
-    );
+    setProfile(prev => {
+      const existingBookmark = prev.bookmarks.find(
+        b => b.episodeId === prev.currentEpisodeId && b.paragraphIndex === prev.currentParagraphIndex
+      );
 
-    if (existingBookmark) {
-      setProfile({
-        ...profile,
-        bookmarks: profile.bookmarks.filter(b => b.id !== existingBookmark.id)
-      });
-    }
-  }, [profile]);
+      if (!existingBookmark) return prev;
+
+      return {
+        ...prev,
+        bookmarks: prev.bookmarks.filter(b => b.id !== existingBookmark.id)
+      };
+    });
+  }, []);
 
   if (isLoading) {
     return (

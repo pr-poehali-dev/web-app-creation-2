@@ -17,7 +17,7 @@ interface NovelReaderProps {
   settings: UserSettings;
   profile: UserProfile;
   onUpdate: (novel: Novel) => void;
-  onProfileUpdate: (profile: UserProfile) => void;
+  onProfileUpdate: (profile: UserProfile | ((prev: UserProfile) => UserProfile)) => void;
   currentEpisodeId: string;
   currentParagraphIndex: number;
 }
@@ -77,11 +77,11 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
       if (currentParagraph?.type === 'text') {
         setIsFading(true);
         setTimeout(() => {
-          onProfileUpdate({
-            ...profile,
+          onProfileUpdate(prev => ({
+            ...prev,
             currentEpisodeId,
             currentParagraphIndex: nextIndex
-          });
+          }));
           setIsTyping(true);
           setSkipTyping(false);
           setTimeout(() => {
@@ -89,11 +89,11 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
           }, 50);
         }, 300);
       } else {
-        onProfileUpdate({
-          ...profile,
+        onProfileUpdate(prev => ({
+          ...prev,
           currentEpisodeId,
           currentParagraphIndex: nextIndex
-        });
+        }));
         setIsTyping(true);
         setSkipTyping(false);
       }
@@ -102,11 +102,11 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
       if (currentParagraph?.type === 'text') {
         setIsFading(true);
         setTimeout(() => {
-          onProfileUpdate({
-            ...profile,
+          onProfileUpdate(prev => ({
+            ...prev,
             currentEpisodeId: currentEpisode.nextEpisodeId,
             currentParagraphIndex: currentEpisode.nextParagraphIndex || 0
-          });
+          }));
           setIsTyping(true);
           setSkipTyping(false);
           setTimeout(() => {
@@ -114,16 +114,16 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
           }, 50);
         }, 300);
       } else {
-        onProfileUpdate({
-          ...profile,
+        onProfileUpdate(prev => ({
+          ...prev,
           currentEpisodeId: currentEpisode.nextEpisodeId,
           currentParagraphIndex: currentEpisode.nextParagraphIndex || 0
-        });
+        }));
         setIsTyping(true);
         setSkipTyping(false);
       }
     }
-  }, [currentEpisodeId, currentParagraphIndex, currentEpisode, currentParagraph, profile, onProfileUpdate]);
+  }, [currentEpisodeId, currentParagraphIndex, currentEpisode, currentParagraph, onProfileUpdate]);
 
   const goToPreviousParagraph = useCallback(() => {
     if (currentParagraphIndex > 0) {
@@ -135,31 +135,31 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
       }
       
       if (prevIndex >= 0) {
-        onProfileUpdate({
-          ...profile,
+        onProfileUpdate(prev => ({
+          ...prev,
           currentEpisodeId,
           currentParagraphIndex: prevIndex
-        });
+        }));
         setIsTyping(true);
         setSkipTyping(false);
         setIsFading(false);
       }
     }
-  }, [currentParagraphIndex, currentEpisode, currentEpisodeId, profile, onProfileUpdate]);
+  }, [currentParagraphIndex, currentEpisode, currentEpisodeId, onProfileUpdate]);
 
   const handleChoice = useCallback((nextEpisodeId?: string, nextParagraphIndex?: number) => {
     if (nextEpisodeId) {
-      onProfileUpdate({
-        ...profile,
+      onProfileUpdate(prev => ({
+        ...prev,
         currentEpisodeId: nextEpisodeId,
         currentParagraphIndex: nextParagraphIndex || 0
-      });
+      }));
       setIsTyping(true);
       setSkipTyping(false);
     } else {
       goToNextParagraph();
     }
-  }, [profile, onProfileUpdate, goToNextParagraph]);
+  }, [onProfileUpdate, goToNextParagraph]);
 
   const handleClick = useCallback((e: React.MouseEvent) => {
     // Игнорируем клики по кнопкам и интерактивным элементам
@@ -226,48 +226,54 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
   // Сохранить персонажа при показе диалога
   useEffect(() => {
     if (currentParagraph?.type === 'dialogue') {
-      const characterExists = profile.metCharacters?.some(
-        c => c.name === currentParagraph.characterName && c.episodeId === currentEpisodeId
-      );
-      if (!characterExists) {
-        onProfileUpdate({
-          ...profile,
-          metCharacters: [
-            ...(profile.metCharacters || []),
-            {
-              id: `char${Date.now()}`,
-              name: currentParagraph.characterName,
-              image: currentParagraph.characterImage,
-              episodeId: currentEpisodeId,
-              firstMetAt: new Date().toISOString()
-            }
-          ]
-        });
-      }
+      onProfileUpdate(prev => {
+        const characterExists = prev.metCharacters?.some(
+          c => c.name === currentParagraph.characterName && c.episodeId === currentEpisodeId
+        );
+        if (!characterExists) {
+          return {
+            ...prev,
+            metCharacters: [
+              ...(prev.metCharacters || []),
+              {
+                id: `char${Date.now()}`,
+                name: currentParagraph.characterName,
+                image: currentParagraph.characterImage,
+                episodeId: currentEpisodeId,
+                firstMetAt: new Date().toISOString()
+              }
+            ]
+          };
+        }
+        return prev;
+      });
     }
-  }, [currentParagraph?.type, currentParagraph?.characterName, currentEpisodeId]);
+  }, [currentParagraph?.type, currentParagraph?.characterName, currentEpisodeId, onProfileUpdate]);
 
   // Сохранить предмет при показе
   useEffect(() => {
     if (currentParagraph?.type === 'item') {
-      const itemExists = profile.collectedItems?.some(i => i.id === currentParagraph.id);
-      if (!itemExists) {
-        onProfileUpdate({
-          ...profile,
-          collectedItems: [
-            ...(profile.collectedItems || []),
-            {
-              id: currentParagraph.id,
-              name: currentParagraph.name,
-              description: currentParagraph.description,
-              imageUrl: currentParagraph.imageUrl,
-              episodeId: currentEpisodeId
-            }
-          ]
-        });
-      }
+      onProfileUpdate(prev => {
+        const itemExists = prev.collectedItems?.some(i => i.id === currentParagraph.id);
+        if (!itemExists) {
+          return {
+            ...prev,
+            collectedItems: [
+              ...(prev.collectedItems || []),
+              {
+                id: currentParagraph.id,
+                name: currentParagraph.name,
+                description: currentParagraph.description,
+                imageUrl: currentParagraph.imageUrl,
+                episodeId: currentEpisodeId
+              }
+            ]
+          };
+        }
+        return prev;
+      });
     }
-  }, [currentParagraph?.type, currentParagraph?.id, currentEpisodeId]);
+  }, [currentParagraph?.type, currentParagraph?.id, currentEpisodeId, onProfileUpdate]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
