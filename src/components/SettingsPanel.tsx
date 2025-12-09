@@ -52,7 +52,7 @@ function SettingsPanel({ settings, onUpdate, onBack }: SettingsPanelProps) {
                          settings.textSpeed < 70 ? 'Средне' : 'Быстро';
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 p-4 dark">
+    <div className="min-h-screen bg-background p-4 dark">
       <div className="container mx-auto max-w-3xl">
         <header className="mb-8 flex items-center justify-between">
           <Button variant="ghost" size="icon" onClick={onBack}>

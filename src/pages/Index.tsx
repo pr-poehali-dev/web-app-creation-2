@@ -317,7 +317,7 @@ function Index() {
   return (
     <div className="relative min-h-screen dark flex">
       {/* Список эпизодов слева */}
-      <div className="w-80 bg-card/50 backdrop-blur-sm border-r border-border overflow-y-auto flex-shrink-0">
+      <div className="w-80 bg-background border-r border-border overflow-y-auto flex-shrink-0">
         <div className="p-4">
           <h2 className="text-lg font-bold text-foreground mb-4">Эпизоды</h2>
           <div className="space-y-2">
@@ -339,7 +339,7 @@ function Index() {
                     className={`w-full text-left p-3 rounded-lg transition-all ${
                       isCurrent 
                         ? 'bg-primary text-primary-foreground shadow-lg' 
-                        : 'bg-card/50 hover:bg-card text-foreground hover:shadow-md'
+                        : 'bg-card hover:bg-card/80 text-foreground hover:shadow-md'
                     }`}
                   >
                     <div className="flex items-center justify-between">

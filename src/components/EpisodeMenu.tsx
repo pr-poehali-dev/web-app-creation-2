@@ -29,7 +29,7 @@ function EpisodeMenu({ novel, profile, onEpisodeSelect, onBack }: EpisodeMenuPro
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 p-4 dark">
+    <div className="min-h-screen bg-background p-4 dark">
       <div className="container mx-auto max-w-4xl">
         <header className="mb-8 flex items-center justify-between">
           <Button variant="ghost" size="icon" onClick={onBack}>
