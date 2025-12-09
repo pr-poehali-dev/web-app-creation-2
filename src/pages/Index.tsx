@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Novel } from '@/types/novel';
 import { UserSettings, UserProfile, defaultSettings, defaultProfile } from '@/types/settings';
+
+const API_URL = 'https://functions.poehali.dev/a5862c6f-ca89-4789-b680-9ca4719c90a1';
 import NovelReader from '@/components/NovelReader';
 import AdminPanel from '@/components/AdminPanel';
 import EpisodeMenu from '@/components/EpisodeMenu';
@@ -134,19 +136,34 @@ function Index() {
   const [showParagraphsDialog, setShowParagraphsDialog] = useState(false);
   const [selectedEpisodeForParagraphs, setSelectedEpisodeForParagraphs] = useState<string | null>(null);
   const [showSidebar, setShowSidebar] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
+  // Загрузка новеллы из БД при старте
   useEffect(() => {
-    const savedNovel = localStorage.getItem('visualNovel');
+    const loadNovel = async () => {
+      try {
+        const response = await fetch(API_URL);
+        if (response.ok) {
+          const novelData = await response.json();
+          setNovel(novelData);
+        } else {
+          console.error('Failed to load novel from database');
+          setNovel(initialNovel);
+        }
+      } catch (error) {
+        console.error('Error loading novel:', error);
+        setNovel(initialNovel);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadNovel();
+
+    // Загружаем настройки и профиль из localStorage (они остаются локальными)
     const savedSettings = localStorage.getItem('userSettings');
     const savedProfile = localStorage.getItem('userProfile');
-    
-    if (savedNovel) {
-      try {
-        setNovel(JSON.parse(savedNovel));
-      } catch (e) {
-        console.error('Failed to load novel', e);
-      }
-    }
     
     if (savedSettings) {
       try {
@@ -165,9 +182,25 @@ function Index() {
     }
   }, []);
 
+  // Автосохранение новеллы в БД только для админа
   useEffect(() => {
-    localStorage.setItem('visualNovel', JSON.stringify(novel));
-  }, [novel]);
+    if (!isLoading && isAdmin) {
+      const saveNovel = async () => {
+        try {
+          await fetch(`${API_URL}?admin=true`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(novel)
+          });
+        } catch (error) {
+          console.error('Error saving novel:', error);
+        }
+      };
+
+      const timeoutId = setTimeout(saveNovel, 1000);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [novel, isAdmin, isLoading]);
 
   useEffect(() => {
     localStorage.setItem('userSettings', JSON.stringify(settings));
@@ -191,6 +224,7 @@ function Index() {
 
   const handleAdminLogin = useCallback(() => {
     if (adminPassword === '7859624') {
+      setIsAdmin(true);
       setActiveView('admin');
       setShowAdminButton(false);
       setAdminPassword('');
@@ -261,12 +295,26 @@ function Index() {
     }
   }, [novel, profile]);
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background dark flex items-center justify-center">
+        <div className="text-center">
+          <Icon name="Loader2" size={48} className="animate-spin text-primary mx-auto mb-4" />
+          <p className="text-foreground">Загрузка новеллы...</p>
+        </div>
+      </div>
+    );
+  }
+
   if (activeView === 'admin') {
     return (
       <AdminPanel 
         novel={novel} 
         onUpdate={handleNovelUpdate}
-        onLogout={() => setActiveView('reader')}
+        onLogout={() => {
+          setActiveView('reader');
+          setIsAdmin(false);
+        }}
       />
     );
   }

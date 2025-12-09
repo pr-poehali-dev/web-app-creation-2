@@ -1,0 +1,52 @@
+{
+  "tests": [
+    {
+      "name": "Update novel requires admin",
+      "method": "PUT",
+      "path": "/",
+      "body": {
+        "title": "Test Novel",
+        "episodes": []
+      },
+      "expectedStatus": 403,
+      "expectedBody": {
+        "error": "Admin access required"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Update novel with admin access",
+      "method": "PUT",
+      "path": "/?admin=true",
+      "body": {
+        "title": "Test Novel Updated",
+        "episodes": [],
+        "library": {
+          "characters": [],
+          "items": [],
+          "choices": []
+        },
+        "currentEpisodeId": "ep1",
+        "homePage": {
+          "greeting": "Test",
+          "news": []
+        }
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": true
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Get novel from database",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "title": "Test Novel Updated"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
