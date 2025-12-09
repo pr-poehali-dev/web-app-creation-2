@@ -7,10 +7,12 @@ import EpisodeMenu from '@/components/EpisodeMenu';
 import UserProfilePanel from '@/components/UserProfilePanel';
 import SettingsPanel from '@/components/SettingsPanel';
 import HomePage from '@/components/HomePage';
+import EpisodesSidebar from '@/components/EpisodesSidebar';
+import NavigationMenu from '@/components/NavigationMenu';
+import ParagraphsDialog from '@/components/ParagraphsDialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Icon from '@/components/ui/icon';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 const initialNovel: Novel = {
   id: '1',
@@ -129,7 +131,6 @@ function Index() {
   const [activeView, setActiveView] = useState<View>('home');
   const [adminPassword, setAdminPassword] = useState('');
   const [showAdminButton, setShowAdminButton] = useState(false);
-  const [expandedEpisode, setExpandedEpisode] = useState<string | null>(null);
   const [showParagraphsDialog, setShowParagraphsDialog] = useState(false);
   const [selectedEpisodeForParagraphs, setSelectedEpisodeForParagraphs] = useState<string | null>(null);
 
@@ -214,6 +215,11 @@ function Index() {
     });
     setActiveView('reader');
   }, [novel]);
+
+  const handleShowParagraphs = useCallback((episodeId: string) => {
+    setSelectedEpisodeForParagraphs(episodeId);
+    setShowParagraphsDialog(true);
+  }, []);
 
   if (activeView === 'admin') {
     return (
@@ -319,66 +325,12 @@ function Index() {
 
   return (
     <div className="relative min-h-screen dark flex">
-      {/* Список эпизодов слева */}
-      <div className="w-80 bg-background border-r border-border overflow-y-auto flex-shrink-0">
-        <div className="p-4">
-          <h2 className="text-lg font-bold text-foreground mb-4">Эпизоды</h2>
-          <div className="space-y-2">
-            {novel.episodes.map((episode, index) => {
-              const isCurrent = novel.currentEpisodeId === episode.id;
-              const isExpanded = expandedEpisode === episode.id;
-              
-              return (
-                <div key={episode.id} className="space-y-1">
-                  <button
-                    onClick={() => {
-                      if (isCurrent) {
-                        setExpandedEpisode(isExpanded ? null : episode.id);
-                      } else {
-                        handleEpisodeSelect(episode.id);
-                        setExpandedEpisode(null);
-                      }
-                    }}
-                    className={`w-full text-left p-3 rounded-lg transition-all ${
-                      isCurrent 
-                        ? 'bg-primary text-primary-foreground shadow-lg' 
-                        : 'bg-card hover:bg-card/80 text-foreground hover:shadow-md'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 flex-1">
-                        <span className="font-bold text-sm">{index + 1}.</span>
-                        <span className="text-sm font-medium">{episode.title}</span>
-                      </div>
-                      {isCurrent && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6 flex-shrink-0"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedEpisodeForParagraphs(episode.id);
-                            setShowParagraphsDialog(true);
-                          }}
-                        >
-                          <Icon name="List" size={14} />
-                        </Button>
-                      )}
-                    </div>
-                    <div className="text-xs opacity-70 mt-1">
-                      {episode.paragraphs.length} параграфов
-                    </div>
-                  </button>
-                  
+      <EpisodesSidebar
+        novel={novel}
+        onEpisodeSelect={handleEpisodeSelect}
+        onShowParagraphs={handleShowParagraphs}
+      />
 
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-
-      {/* Читалка справа */}
       <div className="flex-1 relative">
         <NovelReader 
           novel={novel} 
@@ -389,131 +341,22 @@ function Index() {
         />
       </div>
       
-      {/* Меню справа */}
-      <div className="fixed top-4 right-4 flex gap-2 z-50">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="bg-card/50 backdrop-blur-sm hover:bg-card/80"
-          onClick={() => setActiveView('home')}
-        >
-          <Icon name="Home" size={20} />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="bg-card/50 backdrop-blur-sm hover:bg-card/80"
-          onClick={() => setActiveView('profile')}
-        >
-          <Icon name="User" size={20} />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="bg-card/50 backdrop-blur-sm hover:bg-card/80"
-          onClick={() => setActiveView('settings')}
-        >
-          <Icon name="Settings" size={20} />
-        </Button>
-        
-        {!showAdminButton ? (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="bg-card/50 backdrop-blur-sm hover:bg-card/80 opacity-30 hover:opacity-100 transition-opacity"
-            onClick={() => setShowAdminButton(true)}
-          >
-            <Icon name="Lock" size={20} />
-          </Button>
-        ) : (
-          <div className="flex gap-2 bg-card/90 backdrop-blur-sm rounded-lg p-2">
-            <Input
-              type="password"
-              placeholder="Пароль"
-              value={adminPassword}
-              onChange={(e) => setAdminPassword(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') handleAdminLogin();
-              }}
-              className="w-32 text-foreground"
-              autoFocus
-            />
-            <Button size="sm" onClick={handleAdminLogin}>
-              <Icon name="LogIn" size={16} />
-            </Button>
-            <Button 
-              size="sm" 
-              variant="ghost"
-              onClick={() => {
-                setShowAdminButton(false);
-                setAdminPassword('');
-              }}
-            >
-              <Icon name="X" size={16} />
-            </Button>
-          </div>
-        )}
-      </div>
+      <NavigationMenu
+        showAdminButton={showAdminButton}
+        adminPassword={adminPassword}
+        onSetActiveView={setActiveView}
+        onSetShowAdminButton={setShowAdminButton}
+        onSetAdminPassword={setAdminPassword}
+        onAdminLogin={handleAdminLogin}
+      />
 
-      {/* Диалог выбора параграфов */}
-      <Dialog open={showParagraphsDialog} onOpenChange={setShowParagraphsDialog}>
-        <DialogContent className="max-w-2xl max-h-[80vh]">
-          <DialogHeader>
-            <DialogTitle>
-              Параграфы: {novel.episodes.find(ep => ep.id === selectedEpisodeForParagraphs)?.title}
-            </DialogTitle>
-          </DialogHeader>
-          <div className="overflow-y-auto max-h-[60vh] space-y-2 pr-2">
-            {selectedEpisodeForParagraphs && novel.episodes.find(ep => ep.id === selectedEpisodeForParagraphs)?.paragraphs.map((para, pIndex) => {
-              const isCurrentPara = novel.currentEpisodeId === selectedEpisodeForParagraphs && novel.currentParagraphIndex === pIndex;
-              const isVisited = novel.currentEpisodeId === selectedEpisodeForParagraphs && pIndex <= novel.currentParagraphIndex;
-              const isLocked = !isVisited;
-              
-              return (
-                <button
-                  key={para.id}
-                  onClick={() => {
-                    if (!isLocked) {
-                      handleEpisodeSelect(selectedEpisodeForParagraphs, pIndex);
-                      setShowParagraphsDialog(false);
-                    }
-                  }}
-                  disabled={isLocked}
-                  className={`w-full text-left p-3 rounded-lg transition-all ${
-                    isCurrentPara
-                      ? 'bg-primary text-primary-foreground font-semibold shadow-md'
-                      : isLocked
-                      ? 'bg-muted/50 text-muted-foreground cursor-not-allowed opacity-50'
-                      : 'bg-card hover:bg-card/80 text-foreground hover:shadow-md'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="font-mono text-sm font-bold">#{pIndex + 1}</span>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="uppercase text-xs font-bold opacity-70">{para.type}</span>
-                        {isLocked && <Icon name="Lock" size={12} />}
-                      </div>
-                      {para.type === 'text' && para.content && (
-                        <p className="text-sm opacity-80 line-clamp-2">{para.content}</p>
-                      )}
-                      {para.type === 'dialogue' && para.characterName && (
-                        <p className="text-sm opacity-80">{para.characterName}: {para.text?.slice(0, 50)}...</p>
-                      )}
-                      {para.type === 'item' && para.name && (
-                        <p className="text-sm opacity-80">{para.name}</p>
-                      )}
-                      {para.type === 'choice' && para.question && (
-                        <p className="text-sm opacity-80">{para.question}</p>
-                      )}
-                    </div>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        </DialogContent>
-      </Dialog>
+      <ParagraphsDialog
+        open={showParagraphsDialog}
+        novel={novel}
+        selectedEpisodeId={selectedEpisodeForParagraphs}
+        onOpenChange={setShowParagraphsDialog}
+        onEpisodeSelect={handleEpisodeSelect}
+      />
     </div>
   );
 }

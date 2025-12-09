@@ -1,0 +1,92 @@
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import Icon from '@/components/ui/icon';
+
+type View = 'home' | 'reader' | 'admin' | 'episodes' | 'profile' | 'settings';
+
+interface NavigationMenuProps {
+  showAdminButton: boolean;
+  adminPassword: string;
+  onSetActiveView: (view: View) => void;
+  onSetShowAdminButton: (show: boolean) => void;
+  onSetAdminPassword: (password: string) => void;
+  onAdminLogin: () => void;
+}
+
+function NavigationMenu({
+  showAdminButton,
+  adminPassword,
+  onSetActiveView,
+  onSetShowAdminButton,
+  onSetAdminPassword,
+  onAdminLogin
+}: NavigationMenuProps) {
+  return (
+    <div className="fixed top-4 right-4 flex gap-2 z-50">
+      <Button
+        variant="ghost"
+        size="icon"
+        className="bg-card/50 backdrop-blur-sm hover:bg-card/80"
+        onClick={() => onSetActiveView('home')}
+      >
+        <Icon name="Home" size={20} />
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="bg-card/50 backdrop-blur-sm hover:bg-card/80"
+        onClick={() => onSetActiveView('profile')}
+      >
+        <Icon name="User" size={20} />
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="bg-card/50 backdrop-blur-sm hover:bg-card/80"
+        onClick={() => onSetActiveView('settings')}
+      >
+        <Icon name="Settings" size={20} />
+      </Button>
+      
+      {!showAdminButton ? (
+        <Button
+          variant="ghost"
+          size="icon"
+          className="bg-card/50 backdrop-blur-sm hover:bg-card/80 opacity-30 hover:opacity-100 transition-opacity"
+          onClick={() => onSetShowAdminButton(true)}
+        >
+          <Icon name="Lock" size={20} />
+        </Button>
+      ) : (
+        <div className="flex gap-2 bg-card/90 backdrop-blur-sm rounded-lg p-2">
+          <Input
+            type="password"
+            placeholder="Пароль"
+            value={adminPassword}
+            onChange={(e) => onSetAdminPassword(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') onAdminLogin();
+            }}
+            className="w-32 text-foreground"
+            autoFocus
+          />
+          <Button size="sm" onClick={onAdminLogin}>
+            <Icon name="LogIn" size={16} />
+          </Button>
+          <Button 
+            size="sm" 
+            variant="ghost"
+            onClick={() => {
+              onSetShowAdminButton(false);
+              onSetAdminPassword('');
+            }}
+          >
+            <Icon name="X" size={16} />
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default NavigationMenu;
