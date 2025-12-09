@@ -107,12 +107,19 @@ function EpisodeHeader({ episode, novel, onUpdate, onNovelUpdate }: EpisodeHeade
         }
       });
 
-      // Обновляем novel с новой библиотекой
+      // Обновляем novel с новой библиотекой И эпизод одновременно
       console.log('Импортировано в библиотеку:');
       console.log('Characters:', newCharacters);
       console.log('Items:', newItems);
       console.log('Choices:', newChoices);
       console.log('Всего параграфов для импорта:', importedEpisode.paragraphs.length);
+      
+      const updatedEpisode = {
+        ...episode,
+        title: importedEpisode.title,
+        paragraphs: importedEpisode.paragraphs,
+        backgroundMusic: importedEpisode.backgroundMusic || episode.backgroundMusic
+      };
       
       onNovelUpdate({
         ...novel,
@@ -120,15 +127,10 @@ function EpisodeHeader({ episode, novel, onUpdate, onNovelUpdate }: EpisodeHeade
           characters: newCharacters,
           items: newItems,
           choices: newChoices
-        }
-      });
-
-      // Обновляем эпизод
-      onUpdate({
-        ...episode,
-        title: importedEpisode.title,
-        paragraphs: importedEpisode.paragraphs,
-        backgroundMusic: importedEpisode.backgroundMusic || episode.backgroundMusic
+        },
+        episodes: novel.episodes.map(ep => 
+          ep.id === episode.id ? updatedEpisode : ep
+        )
       });
     };
     input.click();
