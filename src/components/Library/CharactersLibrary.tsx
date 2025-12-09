@@ -102,10 +102,10 @@ function CharactersLibrary({ novel, onUpdate }: CharactersLibraryProps) {
   };
 
   return (
-    <div className="space-y-4 mt-6">
-      <Card>
+    <div className="space-y-6 mt-6">
+      <Card className="bg-gradient-to-br from-card to-card/50 backdrop-blur-sm border-2 border-accent/20 shadow-xl rounded-2xl">
         <CardHeader>
-          <CardTitle className="text-foreground">Добавить персонажа</CardTitle>
+          <CardTitle className="text-foreground text-xl">Добавить персонажа</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <div>
@@ -134,10 +134,10 @@ function CharactersLibrary({ novel, onUpdate }: CharactersLibraryProps) {
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 gap-4">
+      <div className="grid grid-cols-1 gap-6">
         {novel.library.characters.map((character) => (
-          <Card key={character.id}>
-            <CardContent className="p-4">
+          <Card key={character.id} className="bg-card/50 backdrop-blur-sm border-2 border-border/50 shadow-lg rounded-2xl hover:shadow-xl hover:border-accent/30 hover:scale-[1.01] transition-all">
+            <CardContent className="p-6">
               <div className="space-y-4">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">

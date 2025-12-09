@@ -72,14 +72,14 @@ function AdminPanel({ novel, onUpdate, onLogout }: AdminPanelProps) {
   };
 
   return (
-    <div className="min-h-screen bg-background dark">
-      <header className="border-b border-border bg-card sticky top-0 z-10">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 dark">
+      <header className="border-b border-border/50 bg-card/80 backdrop-blur-xl sticky top-0 z-10 shadow-lg">
+        <div className="container mx-auto px-4 py-5 flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-foreground">Админ-панель</h1>
-            <p className="text-sm text-muted-foreground">{novel.title}</p>
+            <h1 className="text-3xl font-bold text-foreground bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Админ-панель</h1>
+            <p className="text-sm text-muted-foreground mt-1">{novel.title}</p>
           </div>
-          <Button variant="outline" onClick={onLogout}>
+          <Button variant="outline" onClick={onLogout} className="border-2 hover:bg-primary/10">
             <Icon name="LogOut" size={16} className="mr-2" />
             Выйти
           </Button>
@@ -88,7 +88,7 @@ function AdminPanel({ novel, onUpdate, onLogout }: AdminPanelProps) {
 
       <div className="container mx-auto px-4 py-8">
         <Tabs defaultValue="home" className="w-full">
-          <TabsList className="grid w-full max-w-4xl grid-cols-4 mb-8">
+          <TabsList className="grid w-full max-w-4xl grid-cols-4 mb-8 bg-card/50 backdrop-blur-sm border border-border/50 p-2 rounded-2xl shadow-xl">
             <TabsTrigger value="home">
               <Icon name="Home" size={16} className="mr-2" />
               Главная
@@ -128,10 +128,10 @@ function AdminPanel({ novel, onUpdate, onLogout }: AdminPanelProps) {
                 {novel.episodes.map((episode) => (
                   <div
                     key={episode.id}
-                    className={`p-3 rounded-lg border cursor-pointer transition-all ${
+                    className={`p-4 rounded-xl border-2 cursor-pointer transition-all shadow-lg hover:shadow-xl ${
                       selectedEpisodeId === episode.id
-                        ? 'bg-primary text-primary-foreground border-primary'
-                        : 'bg-card border-border hover:border-primary/50'
+                        ? 'bg-gradient-to-br from-primary to-primary/80 text-primary-foreground border-primary shadow-primary/30'
+                        : 'bg-card/80 backdrop-blur-sm border-border/50 hover:border-primary/50 hover:scale-[1.02]'
                     }`}
                     onClick={() => setSelectedEpisodeId(episode.id)}
                   >

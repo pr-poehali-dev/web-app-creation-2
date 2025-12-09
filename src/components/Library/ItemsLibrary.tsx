@@ -55,10 +55,10 @@ function ItemsLibrary({ novel, onUpdate }: ItemsLibraryProps) {
   };
 
   return (
-    <div className="space-y-4 mt-6">
-      <Card>
+    <div className="space-y-6 mt-6">
+      <Card className="bg-gradient-to-br from-card to-card/50 backdrop-blur-sm border-2 border-primary/20 shadow-xl rounded-2xl">
         <CardHeader>
-          <CardTitle className="text-foreground">Добавить предмет</CardTitle>
+          <CardTitle className="text-foreground text-xl">Добавить предмет</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <div>
@@ -104,13 +104,13 @@ function ItemsLibrary({ novel, onUpdate }: ItemsLibraryProps) {
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {novel.library.items.map((item) => (
-          <Card key={item.id}>
-            <CardContent className="p-4">
+          <Card key={item.id} className="bg-card/50 backdrop-blur-sm border-2 border-border/50 shadow-lg rounded-2xl hover:shadow-xl hover:border-primary/30 hover:scale-[1.02] transition-all">
+            <CardContent className="p-5">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-start gap-3 flex-1">
-                  <div className="w-12 h-12 flex items-center justify-center bg-secondary/30 rounded-lg">
+                  <div className="w-16 h-16 flex items-center justify-center bg-gradient-to-br from-primary/20 to-accent/20 rounded-xl shadow-md">
                     {item.imageUrl ? (
                       <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover rounded-lg" />
                     ) : (

@@ -46,10 +46,10 @@ function ChoicesLibrary({ novel, onUpdate }: ChoicesLibraryProps) {
   };
 
   return (
-    <div className="space-y-4 mt-6">
-      <Card>
+    <div className="space-y-6 mt-6">
+      <Card className="bg-gradient-to-br from-card to-card/50 backdrop-blur-sm border-2 border-primary/20 shadow-xl rounded-2xl">
         <CardHeader>
-          <CardTitle className="text-foreground">Добавить вариант выбора</CardTitle>
+          <CardTitle className="text-foreground text-xl">Добавить вариант выбора</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <div>
@@ -85,10 +85,10 @@ function ChoicesLibrary({ novel, onUpdate }: ChoicesLibraryProps) {
         </CardContent>
       </Card>
 
-      <div className="space-y-2">
+      <div className="space-y-4">
         {novel.library.choices.map((choice) => (
-          <Card key={choice.id}>
-            <CardContent className="p-4">
+          <Card key={choice.id} className="bg-card/50 backdrop-blur-sm border-2 border-border/50 shadow-lg rounded-2xl hover:shadow-xl hover:border-primary/30 hover:scale-[1.01] transition-all">
+            <CardContent className="p-5">
               <div className="flex items-center justify-between gap-3">
                 <div className="flex-1">
                   <p className="text-foreground font-medium">{choice.text}</p>
