@@ -314,16 +314,51 @@ function Index() {
   }
 
   return (
-    <div className="relative min-h-screen dark">
-      <NovelReader 
-        novel={novel} 
-        settings={settings}
-        profile={profile}
-        onUpdate={handleNovelUpdate}
-        onProfileUpdate={handleProfileUpdate}
-      />
+    <div className="relative min-h-screen dark flex">
+      {/* Список эпизодов слева */}
+      <div className="w-80 bg-card/50 backdrop-blur-sm border-r border-border overflow-y-auto flex-shrink-0">
+        <div className="p-4">
+          <h2 className="text-lg font-bold text-foreground mb-4">Эпизоды</h2>
+          <div className="space-y-2">
+            {novel.episodes.map((episode, index) => {
+              const isCurrent = novel.currentEpisodeId === episode.id;
+              return (
+                <button
+                  key={episode.id}
+                  onClick={() => handleEpisodeSelect(episode.id)}
+                  className={`w-full text-left p-3 rounded-lg transition-all ${
+                    isCurrent 
+                      ? 'bg-primary text-primary-foreground shadow-lg' 
+                      : 'bg-card/50 hover:bg-card text-foreground hover:shadow-md'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-sm">{index + 1}.</span>
+                    <span className="text-sm font-medium">{episode.title}</span>
+                  </div>
+                  <div className="text-xs opacity-70 mt-1">
+                    {episode.paragraphs.length} параграфов
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Читалка справа */}
+      <div className="flex-1 relative">
+        <NovelReader 
+          novel={novel} 
+          settings={settings}
+          profile={profile}
+          onUpdate={handleNovelUpdate}
+          onProfileUpdate={handleProfileUpdate}
+        />
+      </div>
       
-      <div className="fixed top-4 left-4 flex gap-2 z-50">
+      {/* Меню справа */}
+      <div className="fixed top-4 right-4 flex gap-2 z-50">
         <Button
           variant="ghost"
           size="icon"
@@ -331,14 +366,6 @@ function Index() {
           onClick={() => setActiveView('home')}
         >
           <Icon name="Home" size={20} />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="bg-card/50 backdrop-blur-sm hover:bg-card/80"
-          onClick={() => setActiveView('episodes')}
-        >
-          <Icon name="List" size={20} />
         </Button>
         <Button
           variant="ghost"
