@@ -17,11 +17,7 @@ import { Input } from '@/components/ui/input';
 import Icon from '@/components/ui/icon';
 
 const initialNovel: Novel = {
-  id: '1',
   title: 'Тайна старого особняка',
-  description: 'Интерактивная визуальная новелла',
-  currentEpisodeId: 'ep1',
-  currentParagraphIndex: 0,
   episodes: [
     {
       id: 'ep1',
@@ -106,21 +102,6 @@ const initialNovel: Novel = {
     items: [],
     characters: [],
     choices: []
-  },
-  homePage: {
-    greeting: 'Добро пожаловать в интерактивную визуальную новеллу',
-    news: [
-      {
-        id: 'news1',
-        title: 'Добро пожаловать!',
-        content: 'Это ваша первая визуальная новелла. Исследуйте старый особняк, встречайте персонажей и принимайте решения, которые повлияют на историю.',
-        date: new Date().toISOString()
-      }
-    ]
-  },
-  fileStorage: {
-    images: [],
-    audio: []
   }
 };
 
@@ -234,22 +215,22 @@ function Index() {
   }, [adminPassword]);
 
   const handleEpisodeSelect = useCallback((episodeId: string, paragraphIndex?: number) => {
-    setNovel({
-      ...novel,
+    setProfile({
+      ...profile,
       currentEpisodeId: episodeId,
       currentParagraphIndex: paragraphIndex !== undefined ? paragraphIndex : 0
     });
     setActiveView('reader');
-  }, [novel]);
+  }, [profile]);
 
   const handleNavigateToBookmark = useCallback((episodeId: string, paragraphIndex: number) => {
-    setNovel({
-      ...novel,
+    setProfile({
+      ...profile,
       currentEpisodeId: episodeId,
       currentParagraphIndex: paragraphIndex
     });
     setActiveView('reader');
-  }, [novel]);
+  }, [profile]);
 
   const handleShowParagraphs = useCallback((episodeId: string) => {
     setSelectedEpisodeForParagraphs(episodeId);
@@ -257,17 +238,17 @@ function Index() {
   }, []);
 
   const handleAddBookmark = useCallback((comment: string) => {
-    const currentEpisode = novel.episodes.find(ep => ep.id === novel.currentEpisodeId);
+    const currentEpisode = novel.episodes.find(ep => ep.id === profile.currentEpisodeId);
     if (!currentEpisode) return;
 
     const existingBookmark = profile.bookmarks.find(
-      b => b.episodeId === novel.currentEpisodeId && b.paragraphIndex === novel.currentParagraphIndex
+      b => b.episodeId === profile.currentEpisodeId && b.paragraphIndex === profile.currentParagraphIndex
     );
 
     const newBookmark = {
       id: existingBookmark?.id || `bm${Date.now()}`,
-      episodeId: novel.currentEpisodeId,
-      paragraphIndex: novel.currentParagraphIndex,
+      episodeId: profile.currentEpisodeId,
+      paragraphIndex: profile.currentParagraphIndex,
       comment,
       createdAt: existingBookmark?.createdAt || new Date().toISOString()
     };
@@ -284,7 +265,7 @@ function Index() {
 
   const handleRemoveBookmark = useCallback(() => {
     const existingBookmark = profile.bookmarks.find(
-      b => b.episodeId === novel.currentEpisodeId && b.paragraphIndex === novel.currentParagraphIndex
+      b => b.episodeId === profile.currentEpisodeId && b.paragraphIndex === profile.currentParagraphIndex
     );
 
     if (existingBookmark) {
@@ -293,7 +274,7 @@ function Index() {
         bookmarks: profile.bookmarks.filter(b => b.id !== existingBookmark.id)
       });
     }
-  }, [novel, profile]);
+  }, [profile]);
 
   if (isLoading) {
     return (
@@ -422,10 +403,10 @@ function Index() {
       </button>
 
       {/* Paragraph counter - left top */}
-      {novel.currentEpisodeId && (
+      {profile.currentEpisodeId && (
         <div className="hidden md:block fixed top-4 left-[340px] z-50">
           <div className="text-xs text-muted-foreground bg-card/50 backdrop-blur-sm px-3 py-2 rounded-lg border border-border">
-            {novel.currentParagraphIndex + 1} / {novel.episodes.find(ep => ep.id === novel.currentEpisodeId)?.paragraphs.length}
+            {profile.currentParagraphIndex + 1} / {novel.episodes.find(ep => ep.id === profile.currentEpisodeId)?.paragraphs.length}
           </div>
         </div>
       )}
@@ -460,6 +441,8 @@ function Index() {
           profile={profile}
           onUpdate={handleNovelUpdate}
           onProfileUpdate={handleProfileUpdate}
+          currentEpisodeId={profile.currentEpisodeId}
+          currentParagraphIndex={profile.currentParagraphIndex}
         />
       </div>
       
@@ -470,12 +453,12 @@ function Index() {
         onSetShowAdminButton={setShowAdminButton}
         onSetAdminPassword={setAdminPassword}
         onAdminLogin={handleAdminLogin}
-        episodeId={novel.currentEpisodeId}
-        paragraphIndex={novel.currentParagraphIndex}
-        currentParagraph={novel.currentParagraphIndex + 1}
-        totalParagraphs={novel.episodes.find(ep => ep.id === novel.currentEpisodeId)?.paragraphs.length}
+        episodeId={profile.currentEpisodeId}
+        paragraphIndex={profile.currentParagraphIndex}
+        currentParagraph={profile.currentParagraphIndex + 1}
+        totalParagraphs={novel.episodes.find(ep => ep.id === profile.currentEpisodeId)?.paragraphs.length}
         existingBookmark={profile.bookmarks.find(
-          b => b.episodeId === novel.currentEpisodeId && b.paragraphIndex === novel.currentParagraphIndex
+          b => b.episodeId === profile.currentEpisodeId && b.paragraphIndex === profile.currentParagraphIndex
         )}
         onAddBookmark={handleAddBookmark}
         onRemoveBookmark={handleRemoveBookmark}

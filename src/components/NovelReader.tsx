@@ -15,27 +15,29 @@ interface NovelReaderProps {
   profile: UserProfile;
   onUpdate: (novel: Novel) => void;
   onProfileUpdate: (profile: UserProfile) => void;
+  currentEpisodeId: string;
+  currentParagraphIndex: number;
 }
 
-function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate }: NovelReaderProps) {
+function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, currentEpisodeId, currentParagraphIndex }: NovelReaderProps) {
   const [isTyping, setIsTyping] = useState(true);
   const [skipTyping, setSkipTyping] = useState(false);
   const [isFading, setIsFading] = useState(false);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
 
-  const currentEpisode = novel.episodes.find(ep => ep.id === novel.currentEpisodeId);
-  const currentParagraph = currentEpisode?.paragraphs[novel.currentParagraphIndex];
+  const currentEpisode = novel.episodes.find(ep => ep.id === currentEpisodeId);
+  const currentParagraph = currentEpisode?.paragraphs[currentParagraphIndex];
 
   const existingBookmark = profile?.bookmarks?.find(
-    b => b.episodeId === novel.currentEpisodeId && b.paragraphIndex === novel.currentParagraphIndex
+    b => b.episodeId === currentEpisodeId && b.paragraphIndex === currentParagraphIndex
   );
 
   const handleAddBookmark = (comment: string) => {
     const newBookmark: Bookmark = {
       id: `bm${Date.now()}`,
-      episodeId: novel.currentEpisodeId,
-      paragraphIndex: novel.currentParagraphIndex,
+      episodeId: currentEpisodeId,
+      paragraphIndex: currentParagraphIndex,
       comment,
       createdAt: new Date().toISOString()
     };
@@ -73,7 +75,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate }: No
               name: currentParagraph.name,
               description: currentParagraph.description,
               imageUrl: currentParagraph.imageUrl,
-              episodeId: novel.currentEpisodeId
+              episodeId: currentEpisodeId
             }
           ]
         });
@@ -83,7 +85,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate }: No
     // Сохранить персонажа при встрече
     if (currentParagraph?.type === 'dialogue' && profile) {
       const characterExists = profile.metCharacters?.some(
-        c => c.name === currentParagraph.characterName && c.episodeId === novel.currentEpisodeId
+        c => c.name === currentParagraph.characterName && c.episodeId === currentEpisodeId
       );
       if (!characterExists) {
         onProfileUpdate({
@@ -94,7 +96,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate }: No
               id: `char${Date.now()}`,
               name: currentParagraph.characterName,
               image: currentParagraph.characterImage,
-              episodeId: novel.currentEpisodeId,
+              episodeId: currentEpisodeId,
               firstMetAt: new Date().toISOString()
             }
           ]
@@ -102,7 +104,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate }: No
       }
     }
 
-    let nextIndex = novel.currentParagraphIndex + 1;
+    let nextIndex = currentParagraphIndex + 1;
     
     // Пропускаем fade параграфы
     while (nextIndex < currentEpisode.paragraphs.length && currentEpisode.paragraphs[nextIndex].type === 'fade') {
@@ -114,8 +116,9 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate }: No
       if (currentParagraph?.type === 'text') {
         setIsFading(true);
         setTimeout(() => {
-          onUpdate({
-            ...novel,
+          onProfileUpdate({
+            ...profile,
+            currentEpisodeId,
             currentParagraphIndex: nextIndex
           });
           setIsTyping(true);
@@ -125,8 +128,9 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate }: No
           }, 50);
         }, 300);
       } else {
-        onUpdate({
-          ...novel,
+        onProfileUpdate({
+          ...profile,
+          currentEpisodeId,
           currentParagraphIndex: nextIndex
         });
         setIsTyping(true);
@@ -137,8 +141,8 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate }: No
       if (currentParagraph?.type === 'text') {
         setIsFading(true);
         setTimeout(() => {
-          onUpdate({
-            ...novel,
+          onProfileUpdate({
+            ...profile,
             currentEpisodeId: currentEpisode.nextEpisodeId,
             currentParagraphIndex: currentEpisode.nextParagraphIndex || 0
           });
@@ -149,8 +153,8 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate }: No
           }, 50);
         }, 300);
       } else {
-        onUpdate({
-          ...novel,
+        onProfileUpdate({
+          ...profile,
           currentEpisodeId: currentEpisode.nextEpisodeId,
           currentParagraphIndex: currentEpisode.nextParagraphIndex || 0
         });
@@ -158,11 +162,11 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate }: No
         setSkipTyping(false);
       }
     }
-  }, [novel, currentEpisode, currentParagraph, profile, onUpdate, onProfileUpdate]);
+  }, [currentEpisodeId, currentParagraphIndex, currentEpisode, currentParagraph, profile, onProfileUpdate]);
 
   const goToPreviousParagraph = useCallback(() => {
-    if (novel.currentParagraphIndex > 0) {
-      let prevIndex = novel.currentParagraphIndex - 1;
+    if (currentParagraphIndex > 0) {
+      let prevIndex = currentParagraphIndex - 1;
       
       // Пропускаем fade параграфы при движении назад
       while (prevIndex >= 0 && currentEpisode?.paragraphs[prevIndex].type === 'fade') {
@@ -170,8 +174,9 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate }: No
       }
       
       if (prevIndex >= 0) {
-        onUpdate({
-          ...novel,
+        onProfileUpdate({
+          ...profile,
+          currentEpisodeId,
           currentParagraphIndex: prevIndex
         });
         setIsTyping(true);
@@ -179,12 +184,12 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate }: No
         setIsFading(false);
       }
     }
-  }, [novel, currentEpisode, onUpdate]);
+  }, [currentParagraphIndex, currentEpisode, currentEpisodeId, profile, onProfileUpdate]);
 
   const handleChoice = useCallback((nextEpisodeId?: string, nextParagraphIndex?: number) => {
     if (nextEpisodeId) {
-      onUpdate({
-        ...novel,
+      onProfileUpdate({
+        ...profile,
         currentEpisodeId: nextEpisodeId,
         currentParagraphIndex: nextParagraphIndex || 0
       });
@@ -193,7 +198,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate }: No
     } else {
       goToNextParagraph();
     }
-  }, [novel, onUpdate, goToNextParagraph]);
+  }, [profile, onProfileUpdate, goToNextParagraph]);
 
   const handleClick = useCallback(() => {
     if (isTyping) {
@@ -272,7 +277,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate }: No
 
   return (
     <div 
-      className="min-h-screen bg-background flex items-start justify-center pt-20 p-4 pr-32 md:pl-8 md:pr-8 cursor-pointer"
+      className="min-h-screen bg-background flex items-start justify-center pt-16 md:pt-20 p-4 pr-32 md:pl-8 md:pr-8 cursor-pointer"
       onClick={handleClick}
       onTouchStart={onTouchStart}
       onTouchMove={onTouchMove}
@@ -294,9 +299,9 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate }: No
           <div className={`leading-relaxed text-left text-foreground p-4 pr-8 md:p-8 transition-opacity duration-300 ${
             isFading ? 'opacity-0' : 'opacity-100'
           } ${
-            settings.textSize === 'small' ? 'text-lg md:text-xl' :
-            settings.textSize === 'large' ? 'text-2xl md:text-3xl' :
-            'text-xl md:text-2xl'
+            settings.textSize === 'small' ? 'text-base md:text-lg' :
+            settings.textSize === 'large' ? 'text-xl md:text-2xl' :
+            'text-lg md:text-xl'
           }`}>
             <TypewriterText 
               text={currentParagraph.content}

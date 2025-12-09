@@ -67,11 +67,11 @@ function DialogueBox({
         <Card className="flex-1 w-full bg-card/95 backdrop-blur-sm border-0 shadow-xl animate-scale-in">
           <CardContent className="p-4 md:p-8">
             {!characterImage && (
-              <h3 className="text-lg font-bold text-primary mb-3">
+              <h3 className="text-base md:text-lg font-bold text-primary mb-3">
                 {characterName}
               </h3>
             )}
-            <p className="novel-text text-lg leading-relaxed text-foreground">
+            <p className="novel-text text-base md:text-lg leading-relaxed text-foreground">
               <TypewriterText 
                 text={text}
                 speed={textSpeed}

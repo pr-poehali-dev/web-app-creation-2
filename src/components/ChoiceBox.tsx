@@ -16,7 +16,7 @@ function ChoiceBox({ question, options, onChoice }: ChoiceBoxProps) {
   return (
     <Card className="bg-card/95 backdrop-blur-sm border-0 shadow-2xl animate-scale-in">
       <CardContent className="p-4 md:p-10">
-        <h3 className="text-xl md:text-3xl font-bold text-center mb-6 md:mb-8 text-foreground">
+        <h3 className="text-lg md:text-2xl font-bold text-center mb-6 md:mb-8 text-foreground">
           {question}
         </h3>
         <div className="space-y-3 md:space-y-4">
@@ -25,7 +25,7 @@ function ChoiceBox({ question, options, onChoice }: ChoiceBoxProps) {
               key={option.id}
               variant="outline"
               size="lg"
-              className="w-full text-base md:text-lg py-6 md:py-8 rounded-2xl border-2 hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all hover:scale-[1.02] hover:shadow-xl animate-fade-in text-foreground font-semibold"
+              className="w-full text-sm md:text-base py-4 md:py-6 rounded-2xl border-2 hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all hover:scale-[1.02] hover:shadow-xl animate-fade-in text-foreground font-semibold"
               style={{ animationDelay: `${index * 100}ms` }}
               onClick={(e) => {
                 e.stopPropagation();

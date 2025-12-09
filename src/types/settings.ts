@@ -43,6 +43,8 @@ export interface UserProfile {
   bookmarks: Bookmark[];
   collectedItems: CollectedItem[];
   metCharacters: MetCharacter[];
+  currentEpisodeId: string;
+  currentParagraphIndex: number;
 }
 
 export interface ReadProgress {
@@ -70,5 +72,7 @@ export const defaultProfile: UserProfile = {
   achievements: [],
   bookmarks: [],
   collectedItems: [],
-  metCharacters: []
+  metCharacters: [],
+  currentEpisodeId: 'ep1',
+  currentParagraphIndex: 0
 };

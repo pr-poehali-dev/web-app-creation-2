@@ -99,19 +99,19 @@ export interface HomePage {
 }
 
 export interface Novel {
-  id: string;
+  id?: string;
   title: string;
-  description: string;
+  description?: string;
   episodes: Episode[];
-  currentEpisodeId: string;
-  currentParagraphIndex: number;
+  currentEpisodeId?: string;
+  currentParagraphIndex?: number;
   library: {
     items: LibraryItem[];
     characters: LibraryCharacter[];
     choices: LibraryChoice[];
   };
   homePage?: HomePage;
-  fileStorage: {
+  fileStorage?: {
     images: { id: string; name: string; url: string }[];
     audio: { id: string; name: string; url: string }[];
   };

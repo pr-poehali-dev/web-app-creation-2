@@ -35,10 +35,10 @@ function ItemBox({ name, description, imageUrl, skipTyping, onComplete, textSpee
             </div>
           )}
         </div>
-        <h3 className="text-2xl md:text-4xl font-bold text-primary mb-4 md:mb-6 drop-shadow-lg">
+        <h3 className="text-xl md:text-3xl font-bold text-primary mb-4 md:mb-6 drop-shadow-lg">
           {name}
         </h3>
-        <p className="novel-text text-lg leading-relaxed text-foreground font-medium">
+        <p className="novel-text text-base md:text-lg leading-relaxed text-foreground font-medium">
           <TypewriterText 
             text={description}
             speed={textSpeed}
