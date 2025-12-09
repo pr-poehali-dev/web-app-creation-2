@@ -73,7 +73,7 @@ function DialogueEditor({
             <div className="space-y-4">
               {(() => {
                 const character = novel.library.characters.find(c => c.name === paragraph.characterName);
-                if (character && character.images.length > 0) {
+                if (character && character.images?.length > 0) {
                   return (
                     <div>
                       <Label>Выбрать из персонажа</Label>
