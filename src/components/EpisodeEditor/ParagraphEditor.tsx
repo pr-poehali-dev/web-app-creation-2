@@ -2,14 +2,15 @@ import { useState } from 'react';
 import { Paragraph, Novel, ParagraphType } from '@/types/novel';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import Icon from '@/components/ui/icon';
 import { selectAndConvertImage } from '@/utils/fileHelpers';
 import { getParagraphNumber } from '@/utils/paragraphNumbers';
+import TextEditor from './Editors/TextEditor';
+import DialogueEditor from './Editors/DialogueEditor';
+import ChoiceEditor from './Editors/ChoiceEditor';
+import ItemEditor from './Editors/ItemEditor';
+import ImageEditor from './Editors/ImageEditor';
 
 interface ParagraphEditorProps {
   paragraph: Paragraph;
@@ -273,437 +274,63 @@ function ParagraphEditor({
             )}
 
             {paragraph.type === 'text' && (
-              <Textarea
-                value={paragraph.content}
-                onChange={(e) =>
-                  onUpdate(index, { ...paragraph, content: e.target.value })
-                }
-                rows={3}
-                className="text-foreground"
+              <TextEditor
+                paragraph={paragraph}
+                index={index}
+                onUpdate={onUpdate}
               />
             )}
 
             {paragraph.type === 'dialogue' && (
-              <div className="space-y-2">
-                <div className="flex gap-2">
-                  <Select
-                    value="manual"
-                    onValueChange={(value) => {
-                      if (value !== 'manual') handleSelectCharacter(value);
-                    }}
-                  >
-                    <SelectTrigger className="text-foreground">
-                      <SelectValue placeholder="Выбрать из библиотеки" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="manual">Ввести вручную</SelectItem>
-                      {novel.library.characters.map((char) => (
-                        <SelectItem key={char.id} value={char.id}>{char.name}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="flex gap-2">
-                  <Input
-                    placeholder="Имя персонажа"
-                    value={paragraph.characterName}
-                    onChange={(e) =>
-                      onUpdate(index, { ...paragraph, characterName: e.target.value })
-                    }
-                    className="text-foreground"
-                  />
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button size="sm" variant="outline">
-                        <Icon name="Image" size={14} />
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Добавить изображение персонажа</DialogTitle>
-                      </DialogHeader>
-                      <div className="space-y-4">
-                        {(() => {
-                          const character = novel.library.characters.find(c => c.name === paragraph.characterName);
-                          if (character && character.images.length > 0) {
-                            return (
-                              <div>
-                                <Label>Выбрать из персонажа</Label>
-                                <div className="grid grid-cols-3 gap-2 mt-2">
-                                  {character.images.map((img) => (
-                                    <div
-                                      key={img.id}
-                                      className="cursor-pointer border rounded hover:border-primary transition-colors"
-                                      onClick={() => {
-                                        onUpdate(index, { ...paragraph, characterImage: img.url });
-                                      }}
-                                    >
-                                      <img src={img.url} alt={img.name || ''} className="w-full h-20 object-cover rounded" />
-                                      <p className="text-xs text-center p-1">{img.name}</p>
-                                    </div>
-                                  ))}
-                                </div>
-                                <div className="relative my-4">
-                                  <div className="absolute inset-0 flex items-center">
-                                    <span className="w-full border-t" />
-                                  </div>
-                                  <div className="relative flex justify-center text-xs uppercase">
-                                    <span className="bg-background px-2 text-muted-foreground">или</span>
-                                  </div>
-                                </div>
-                              </div>
-                            );
-                          }
-                          return null;
-                        })()}
-                        <div>
-                          <Label>URL изображения</Label>
-                          <Input
-                            placeholder="https://example.com/character.jpg"
-                            value={imageUrl}
-                            onChange={(e) => setImageUrl(e.target.value)}
-                            className="text-foreground mt-1"
-                          />
-                          <Button onClick={() => handleImageUrl('dialogue')} className="w-full mt-2" disabled={!imageUrl}>
-                            Добавить по URL
-                          </Button>
-                        </div>
-                        <div className="relative">
-                          <div className="absolute inset-0 flex items-center">
-                            <span className="w-full border-t" />
-                          </div>
-                          <div className="relative flex justify-center text-xs uppercase">
-                            <span className="bg-background px-2 text-muted-foreground">или</span>
-                          </div>
-                        </div>
-                        <Button onClick={() => handleImageUpload('dialogue')} variant="outline" className="w-full">
-                          <Icon name="Upload" size={14} className="mr-2" />
-                          Загрузить файл
-                        </Button>
-                      </div>
-                    </DialogContent>
-                  </Dialog>
-                </div>
-                {paragraph.characterImage && (
-                  <div className="flex items-center gap-2">
-                    <img src={paragraph.characterImage} alt="Character" className="w-12 h-12 object-cover rounded" />
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => onUpdate(index, { ...paragraph, characterImage: undefined })}
-                    >
-                      <Icon name="X" size={14} />
-                    </Button>
-                  </div>
-                )}
-                <Textarea
-                  placeholder="Текст диалога"
-                  value={paragraph.text}
-                  onChange={(e) =>
-                    onUpdate(index, { ...paragraph, text: e.target.value })
-                  }
-                  rows={3}
-                  className="text-foreground"
-                />
-              </div>
+              <DialogueEditor
+                paragraph={paragraph}
+                index={index}
+                novel={novel}
+                imageUrl={imageUrl}
+                setImageUrl={setImageUrl}
+                onUpdate={onUpdate}
+                handleImageUrl={handleImageUrl}
+                handleImageUpload={handleImageUpload}
+                handleSelectCharacter={handleSelectCharacter}
+              />
             )}
 
             {paragraph.type === 'choice' && (
-              <div className="space-y-2">
-                <Input
-                  placeholder="Вопрос"
-                  value={paragraph.question}
-                  onChange={(e) =>
-                    onUpdate(index, { ...paragraph, question: e.target.value })
-                  }
-                  className="text-foreground"
-                />
-                {paragraph.options.map((option, optIndex) => (
-                  <div key={option.id} className="space-y-2 p-3 border border-border rounded-lg">
-                    <div className="flex gap-2">
-                      <Select
-                        value="manual"
-                        onValueChange={(value) => {
-                          if (value !== 'manual') handleSelectChoice(optIndex, value);
-                        }}
-                      >
-                        <SelectTrigger className="text-foreground">
-                          <SelectValue placeholder="Из библиотеки" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="manual">Ввести вручную</SelectItem>
-                          {novel.library.choices.map((choice) => (
-                            <SelectItem key={choice.id} value={choice.id}>{choice.text}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => addChoiceToLibrary(optIndex)}
-                        title="Добавить в библиотеку"
-                      >
-                        <Icon name="BookmarkPlus" size={14} />
-                      </Button>
-                    </div>
-                    <Input
-                      placeholder="Текст варианта"
-                      value={option.text}
-                      onChange={(e) => {
-                        const newOptions = [...paragraph.options];
-                        newOptions[optIndex] = { ...option, text: e.target.value };
-                        onUpdate(index, { ...paragraph, options: newOptions });
-                      }}
-                      className="text-foreground"
-                    />
-                    <div className="flex gap-2 items-start">
-                      <div className="flex-1 space-y-2">
-                        <Label className="text-xs">Следующий эпизод</Label>
-                        <Select
-                          value={option.nextEpisodeId || 'none'}
-                          onValueChange={(value) => {
-                            const newOptions = [...paragraph.options];
-                            if (value === 'none') {
-                              newOptions[optIndex] = { ...option, nextEpisodeId: undefined, nextParagraphIndex: undefined };
-                            } else {
-                              newOptions[optIndex] = { ...option, nextEpisodeId: value };
-                            }
-                            onUpdate(index, { ...paragraph, options: newOptions });
-                          }}
-                        >
-                          <SelectTrigger className="text-foreground">
-                            <SelectValue placeholder="Не выбран" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="none">Не выбран</SelectItem>
-                            {novel.episodes.map((ep) => (
-                              <SelectItem key={ep.id} value={ep.id}>{ep.title}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-
-                        {option.nextEpisodeId && (
-                          <div>
-                            <Label className="text-xs">Параграф</Label>
-                            <Select
-                              value={option.nextParagraphIndex?.toString() || '0'}
-                              onValueChange={(value) => {
-                                const newOptions = [...paragraph.options];
-                                newOptions[optIndex] = { ...option, nextParagraphIndex: parseInt(value) };
-                                onUpdate(index, { ...paragraph, options: newOptions });
-                              }}
-                            >
-                              <SelectTrigger className="text-foreground">
-                                <SelectValue placeholder="С начала" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="0">С начала</SelectItem>
-                                {novel.episodes.find(ep => ep.id === option.nextEpisodeId)?.paragraphs.map((para, pIndex) => (
-                                  <SelectItem key={para.id} value={(pIndex).toString()}>
-                                    #{pIndex + 1} - {para.type.toUpperCase()}
-                                    {para.type === 'text' && para.content ? ` - ${para.content.slice(0, 20)}...` : ''}
-                                    {para.type === 'dialogue' && para.characterName ? ` - ${para.characterName}` : ''}
-                                    {para.type === 'choice' && para.question ? ` - ${para.question.slice(0, 20)}...` : ''}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        )}
-                      </div>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="text-destructive mt-5"
-                        onClick={() => {
-                          const newOptions = paragraph.options.filter((_, i) => i !== optIndex);
-                          onUpdate(index, { ...paragraph, options: newOptions });
-                        }}
-                      >
-                        <Icon name="Trash2" size={14} />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    onUpdate(index, {
-                      ...paragraph,
-                      options: [...paragraph.options, { id: `opt${Date.now()}`, text: 'Новый вариант' }]
-                    });
-                  }}
-                  className="w-full"
-                >
-                  <Icon name="Plus" size={14} className="mr-2" />
-                  Добавить вариант
-                </Button>
-              </div>
+              <ChoiceEditor
+                paragraph={paragraph}
+                index={index}
+                novel={novel}
+                onUpdate={onUpdate}
+                handleSelectChoice={handleSelectChoice}
+                addChoiceToLibrary={addChoiceToLibrary}
+              />
             )}
 
             {paragraph.type === 'item' && (
-              <div className="space-y-2">
-                <div className="flex gap-2">
-                  <Select
-                    value="manual"
-                    onValueChange={(value) => {
-                      if (value !== 'manual') handleSelectItem(value);
-                    }}
-                  >
-                    <SelectTrigger className="text-foreground">
-                      <SelectValue placeholder="Выбрать из библиотеки" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="manual">Ввести вручную</SelectItem>
-                      {novel.library.items.map((item) => (
-                        <SelectItem key={item.id} value={item.id}>{item.name}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={addItemToLibrary}
-                    title="Добавить в библиотеку"
-                  >
-                    <Icon name="BookmarkPlus" size={14} />
-                  </Button>
-                </div>
-                <div className="flex gap-2">
-                  <Input
-                    placeholder="Название предмета"
-                    value={paragraph.name}
-                    onChange={(e) =>
-                      onUpdate(index, { ...paragraph, name: e.target.value })
-                    }
-                    className="text-foreground"
-                  />
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button size="sm" variant="outline">
-                        <Icon name="Image" size={14} />
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Добавить изображение предмета</DialogTitle>
-                      </DialogHeader>
-                      <div className="space-y-4">
-                        <div>
-                          <Label>URL изображения</Label>
-                          <Input
-                            placeholder="https://example.com/item.jpg"
-                            value={imageUrl}
-                            onChange={(e) => setImageUrl(e.target.value)}
-                            className="text-foreground mt-1"
-                          />
-                          <Button onClick={() => handleImageUrl('item')} className="w-full mt-2" disabled={!imageUrl}>
-                            Добавить по URL
-                          </Button>
-                        </div>
-                        <div className="relative">
-                          <div className="absolute inset-0 flex items-center">
-                            <span className="w-full border-t" />
-                          </div>
-                          <div className="relative flex justify-center text-xs uppercase">
-                            <span className="bg-background px-2 text-muted-foreground">или</span>
-                          </div>
-                        </div>
-                        <Button onClick={() => handleImageUpload('item')} variant="outline" className="w-full">
-                          <Icon name="Upload" size={14} className="mr-2" />
-                          Загрузить файл
-                        </Button>
-                      </div>
-                    </DialogContent>
-                  </Dialog>
-                </div>
-                {paragraph.imageUrl && (
-                  <div className="flex items-center gap-2">
-                    <img src={paragraph.imageUrl} alt="Item" className="w-12 h-12 object-cover rounded" />
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => onUpdate(index, { ...paragraph, imageUrl: undefined })}
-                    >
-                      <Icon name="X" size={14} />
-                    </Button>
-                  </div>
-                )}
-                <Textarea
-                  placeholder="Описание предмета"
-                  value={paragraph.description}
-                  onChange={(e) =>
-                    onUpdate(index, { ...paragraph, description: e.target.value })
-                  }
-                  rows={2}
-                  className="text-foreground"
-                />
-              </div>
+              <ItemEditor
+                paragraph={paragraph}
+                index={index}
+                novel={novel}
+                imageUrl={imageUrl}
+                setImageUrl={setImageUrl}
+                onUpdate={onUpdate}
+                handleImageUrl={handleImageUrl}
+                handleImageUpload={handleImageUpload}
+                handleSelectItem={handleSelectItem}
+                addItemToLibrary={addItemToLibrary}
+              />
             )}
 
             {paragraph.type === 'image' && (
-              <div className="space-y-2">
-                <div className="flex gap-2">
-                  <Input
-                    placeholder="URL изображения"
-                    value={paragraph.url}
-                    onChange={(e) =>
-                      onUpdate(index, { ...paragraph, url: e.target.value })
-                    }
-                    className="text-foreground"
-                  />
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button size="sm" variant="outline">
-                        <Icon name="Upload" size={14} />
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Добавить изображение</DialogTitle>
-                      </DialogHeader>
-                      <div className="space-y-4">
-                        <div>
-                          <Label>URL изображения</Label>
-                          <Input
-                            placeholder="https://example.com/image.jpg"
-                            value={imageUrl}
-                            onChange={(e) => setImageUrl(e.target.value)}
-                            className="text-foreground mt-1"
-                          />
-                          <Button onClick={() => handleImageUrl('image')} className="w-full mt-2" disabled={!imageUrl}>
-                            Добавить по URL
-                          </Button>
-                        </div>
-                        <div className="relative">
-                          <div className="absolute inset-0 flex items-center">
-                            <span className="w-full border-t" />
-                          </div>
-                          <div className="relative flex justify-center text-xs uppercase">
-                            <span className="bg-background px-2 text-muted-foreground">или</span>
-                          </div>
-                        </div>
-                        <Button onClick={() => handleImageUpload('image')} variant="outline" className="w-full">
-                          <Icon name="Upload" size={14} className="mr-2" />
-                          Загрузить файл
-                        </Button>
-                      </div>
-                    </DialogContent>
-                  </Dialog>
-                </div>
-                {paragraph.url && (
-                  <img src={paragraph.url} alt="Preview" className="w-full rounded-lg" />
-                )}
-                <Input
-                  placeholder="Альтернативный текст (опционально)"
-                  value={paragraph.alt || ''}
-                  onChange={(e) =>
-                    onUpdate(index, { ...paragraph, alt: e.target.value })
-                  }
-                  className="text-foreground"
-                />
-              </div>
+              <ImageEditor
+                paragraph={paragraph}
+                index={index}
+                imageUrl={imageUrl}
+                setImageUrl={setImageUrl}
+                onUpdate={onUpdate}
+                handleImageUrl={handleImageUrl}
+                handleImageUpload={handleImageUpload}
+              />
             )}
           </div>
         </div>
