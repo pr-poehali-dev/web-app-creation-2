@@ -36,23 +36,40 @@ function DialogueBox({
 
   return (
     <>
-      <div className="relative flex flex-col items-center gap-3">
+      <div className="relative flex items-center gap-6">
         {characterImage && (
-          <div className="flex flex-col items-center animate-scale-in">
-            {characterImage.startsWith('data:') ? (
-              <img 
-                src={characterImage} 
-                alt={characterName}
-                className="w-32 h-32 object-cover rounded-lg shadow-2xl border-2 border-primary/30"
-              />
-            ) : (
-              <div className="text-8xl">{characterImage}</div>
-            )}
+          <div className="flex flex-col items-center gap-3 animate-scale-in">
+            <div className="flex items-center justify-center">
+              {characterImage.startsWith('data:') ? (
+                <img 
+                  src={characterImage} 
+                  alt={characterName}
+                  className="w-32 h-32 object-cover rounded-lg shadow-2xl border-2 border-primary/30"
+                />
+              ) : (
+                <div className="text-8xl">{characterImage}</div>
+              )}
+            </div>
+            
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowCommentDialog(true);
+              }}
+              className="text-sm font-bold text-primary bg-card/80 backdrop-blur-sm px-3 py-1 rounded-full border border-primary/30 hover:bg-primary/20 transition-colors cursor-pointer"
+            >
+              {characterName}
+            </button>
           </div>
         )}
         
-        <Card className="w-full max-w-3xl bg-card/95 backdrop-blur-sm border-primary/30 shadow-2xl animate-scale-in">
+        <Card className="flex-1 bg-card/95 backdrop-blur-sm border-primary/30 shadow-2xl animate-scale-in">
           <CardContent className="p-6">
+            {!characterImage && (
+              <h3 className="text-lg font-bold text-primary mb-3">
+                {characterName}
+              </h3>
+            )}
             <p className="novel-text text-lg leading-relaxed text-foreground">
               <TypewriterText 
                 text={text}
@@ -63,16 +80,6 @@ function DialogueBox({
             </p>
           </CardContent>
         </Card>
-
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            setShowCommentDialog(true);
-          }}
-          className="text-sm font-bold text-primary bg-card/80 backdrop-blur-sm px-3 py-1 rounded-full border border-primary/30 hover:bg-primary/20 transition-colors cursor-pointer"
-        >
-          {characterName}
-        </button>
       </div>
 
       <Dialog open={showCommentDialog} onOpenChange={setShowCommentDialog}>
