@@ -111,7 +111,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate }: No
       onUpdate({
         ...novel,
         currentEpisodeId: currentEpisode.nextEpisodeId,
-        currentParagraphIndex: 0
+        currentParagraphIndex: currentEpisode.nextParagraphIndex || 0
       });
       setIsTyping(true);
       setSkipTyping(false);
@@ -129,12 +129,12 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate }: No
     }
   }, [novel, onUpdate]);
 
-  const handleChoice = useCallback((nextEpisodeId?: string) => {
+  const handleChoice = useCallback((nextEpisodeId?: string, nextParagraphIndex?: number) => {
     if (nextEpisodeId) {
       onUpdate({
         ...novel,
         currentEpisodeId: nextEpisodeId,
-        currentParagraphIndex: 0
+        currentParagraphIndex: nextParagraphIndex || 0
       });
       setIsTyping(true);
       setSkipTyping(false);

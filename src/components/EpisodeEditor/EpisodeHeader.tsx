@@ -106,13 +106,19 @@ function EpisodeHeader({ episode, novel, onUpdate }: EpisodeHeaderProps) {
           </div>
         </div>
 
-        <div>
+        <div className="space-y-3">
           <Label className="text-foreground">Следующий эпизод</Label>
           <Select 
             value={episode.nextEpisodeId || 'none'} 
-            onValueChange={(value) => onUpdate({ ...episode, nextEpisodeId: value === 'none' ? undefined : value })}
+            onValueChange={(value) => {
+              if (value === 'none') {
+                onUpdate({ ...episode, nextEpisodeId: undefined, nextParagraphIndex: undefined });
+              } else {
+                onUpdate({ ...episode, nextEpisodeId: value });
+              }
+            }}
           >
-            <SelectTrigger className="text-foreground mt-2">
+            <SelectTrigger className="text-foreground">
               <SelectValue placeholder="Не выбран" />
             </SelectTrigger>
             <SelectContent>
@@ -122,6 +128,30 @@ function EpisodeHeader({ episode, novel, onUpdate }: EpisodeHeaderProps) {
               ))}
             </SelectContent>
           </Select>
+
+          {episode.nextEpisodeId && (
+            <div>
+              <Label className="text-foreground text-sm">Параграф в эпизоде</Label>
+              <Select 
+                value={episode.nextParagraphIndex?.toString() || '0'} 
+                onValueChange={(value) => onUpdate({ ...episode, nextParagraphIndex: parseInt(value) })}
+              >
+                <SelectTrigger className="text-foreground">
+                  <SelectValue placeholder="С начала" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="0">С начала эпизода</SelectItem>
+                  {novel.episodes.find(ep => ep.id === episode.nextEpisodeId)?.paragraphs.map((para, index) => (
+                    <SelectItem key={para.id} value={(index).toString()}>
+                      #{index + 1} - {para.type.toUpperCase()}
+                      {para.type === 'text' && para.content ? ` - ${para.content.slice(0, 30)}...` : ''}
+                      {para.type === 'dialogue' && para.characterName ? ` - ${para.characterName}` : ''}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
         </div>
         
         <div className="flex gap-2">

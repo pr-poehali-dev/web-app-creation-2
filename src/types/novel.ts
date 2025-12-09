@@ -24,6 +24,7 @@ export interface ChoiceParagraph extends BaseParagraph {
     id: string;
     text: string;
     nextEpisodeId?: string;
+    nextParagraphIndex?: number;
   }[];
 }
 
@@ -60,6 +61,7 @@ export interface Episode {
   position: { x: number; y: number };
   backgroundMusic?: string;
   nextEpisodeId?: string;
+  nextParagraphIndex?: number;
 }
 
 export interface LibraryItem {

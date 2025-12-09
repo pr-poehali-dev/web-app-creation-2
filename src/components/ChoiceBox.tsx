@@ -7,8 +7,9 @@ interface ChoiceBoxProps {
     id: string;
     text: string;
     nextEpisodeId?: string;
+    nextParagraphIndex?: number;
   }[];
-  onChoice: (nextEpisodeId?: string) => void;
+  onChoice: (nextEpisodeId?: string, nextParagraphIndex?: number) => void;
 }
 
 function ChoiceBox({ question, options, onChoice }: ChoiceBoxProps) {
@@ -28,7 +29,7 @@ function ChoiceBox({ question, options, onChoice }: ChoiceBoxProps) {
               style={{ animationDelay: `${index * 100}ms` }}
               onClick={(e) => {
                 e.stopPropagation();
-                onChoice(option.nextEpisodeId);
+                onChoice(option.nextEpisodeId, option.nextParagraphIndex);
               }}
             >
               {option.text}
