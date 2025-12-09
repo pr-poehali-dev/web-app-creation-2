@@ -29,7 +29,7 @@ function ParagraphTypeButtons({ onAddParagraph }: ParagraphTypeButtonsProps) {
         <Icon name="Image" size={14} className="mr-1" />
         Картинка
       </Button>
-      <Button size="sm" variant="outline" className="text-white" onClick={() => onAddParagraph('fade')}>
+      <Button size="sm" onClick={() => onAddParagraph('fade')}>
         <Icon name="Minus" size={14} className="mr-1" />
         Затухание
       </Button>
