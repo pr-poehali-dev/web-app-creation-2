@@ -222,6 +222,45 @@ function Index() {
     setShowParagraphsDialog(true);
   }, []);
 
+  const handleAddBookmark = useCallback((comment: string) => {
+    const currentEpisode = novel.episodes.find(ep => ep.id === novel.currentEpisodeId);
+    if (!currentEpisode) return;
+
+    const existingBookmark = profile.bookmarks.find(
+      b => b.episodeId === novel.currentEpisodeId && b.paragraphIndex === novel.currentParagraphIndex
+    );
+
+    const newBookmark = {
+      id: existingBookmark?.id || `bm${Date.now()}`,
+      episodeId: novel.currentEpisodeId,
+      paragraphIndex: novel.currentParagraphIndex,
+      comment,
+      createdAt: existingBookmark?.createdAt || new Date().toISOString()
+    };
+
+    const updatedBookmarks = existingBookmark
+      ? profile.bookmarks.map(b => b.id === existingBookmark.id ? newBookmark : b)
+      : [...profile.bookmarks, newBookmark];
+
+    setProfile({
+      ...profile,
+      bookmarks: updatedBookmarks
+    });
+  }, [novel, profile]);
+
+  const handleRemoveBookmark = useCallback(() => {
+    const existingBookmark = profile.bookmarks.find(
+      b => b.episodeId === novel.currentEpisodeId && b.paragraphIndex === novel.currentParagraphIndex
+    );
+
+    if (existingBookmark) {
+      setProfile({
+        ...profile,
+        bookmarks: profile.bookmarks.filter(b => b.id !== existingBookmark.id)
+      });
+    }
+  }, [novel, profile]);
+
   if (activeView === 'admin') {
     return (
       <AdminPanel 
@@ -374,6 +413,15 @@ function Index() {
         onSetShowAdminButton={setShowAdminButton}
         onSetAdminPassword={setAdminPassword}
         onAdminLogin={handleAdminLogin}
+        episodeId={novel.currentEpisodeId}
+        paragraphIndex={novel.currentParagraphIndex}
+        currentParagraph={novel.currentParagraphIndex + 1}
+        totalParagraphs={novel.episodes.find(ep => ep.id === novel.currentEpisodeId)?.paragraphs.length}
+        existingBookmark={profile.bookmarks.find(
+          b => b.episodeId === novel.currentEpisodeId && b.paragraphIndex === novel.currentParagraphIndex
+        )}
+        onAddBookmark={handleAddBookmark}
+        onRemoveBookmark={handleRemoveBookmark}
       />
 
       <ParagraphsDialog

@@ -363,18 +363,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate }: No
           />
         )}
 
-        <div className="fixed bottom-4 right-4 flex flex-col gap-2 items-end">
-          <BookmarkButton
-            episodeId={novel.currentEpisodeId}
-            paragraphIndex={novel.currentParagraphIndex}
-            existingBookmark={existingBookmark}
-            onAdd={handleAddBookmark}
-            onRemove={handleRemoveBookmark}
-          />
-          <div className="text-xs text-muted-foreground bg-card/50 backdrop-blur-sm px-3 py-2 rounded-lg border border-border">
-            {novel.currentParagraphIndex + 1} / {currentEpisode.paragraphs.length}
-          </div>
-        </div>
+
 
         {!isTyping && currentParagraph.type !== 'choice' && (
           <div className="fixed bottom-4 left-1/2 -translate-x-1/2 text-xs md:text-sm text-muted-foreground animate-pulse text-center px-4">
