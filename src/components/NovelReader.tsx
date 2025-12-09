@@ -203,7 +203,13 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
     }
   }, [profile, onProfileUpdate, goToNextParagraph]);
 
-  const handleClick = useCallback(() => {
+  const handleClick = useCallback((e: React.MouseEvent) => {
+    // Игнорируем клики по кнопкам и интерактивным элементам
+    const target = e.target as HTMLElement;
+    if (target.closest('button') || target.closest('a') || target.closest('[role="button"]')) {
+      return;
+    }
+
     if (isTyping) {
       setSkipTyping(true);
       setIsTyping(false);
@@ -221,16 +227,27 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
   const minSwipeDistance = 50;
 
   const onTouchStart = (e: React.TouchEvent) => {
+    // Игнорируем касания кнопок и интерактивных элементов
+    const target = e.target as HTMLElement;
+    if (target.closest('button') || target.closest('a') || target.closest('[role="button"]')) {
+      return;
+    }
+    
     setTouchEnd(null);
     setTouchStart(e.targetTouches[0].clientX);
   };
 
   const onTouchMove = (e: React.TouchEvent) => {
+    if (touchStart === null) return;
     setTouchEnd(e.targetTouches[0].clientX);
   };
 
   const onTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
+    if (!touchStart || !touchEnd) {
+      setTouchStart(null);
+      setTouchEnd(null);
+      return;
+    }
     
     const distance = touchStart - touchEnd;
     const isLeftSwipe = distance > minSwipeDistance;
@@ -243,6 +260,9 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
     if (isRightSwipe) {
       goToPreviousParagraph();
     }
+
+    setTouchStart(null);
+    setTouchEnd(null);
   };
 
   useEffect(() => {
@@ -280,7 +300,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
 
   return (
     <div 
-      className="min-h-screen bg-background flex items-start justify-center pt-24 md:pt-20 p-4 pb-20 md:pb-4 pr-32 md:pl-8 md:pr-8 cursor-pointer"
+      className="min-h-screen bg-background flex items-start justify-center pt-24 md:pt-20 px-2 md:px-4 pb-20 md:pb-4 md:pr-32 md:pl-8 cursor-pointer"
       onClick={handleClick}
       onTouchStart={onTouchStart}
       onTouchMove={onTouchMove}
@@ -299,7 +319,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
       <div className="w-full max-w-4xl">
         {/* Текущий параграф */}
         {currentParagraph.type === 'fade' ? null : currentParagraph.type === 'text' && (
-          <div className={`leading-relaxed text-left text-foreground p-4 pr-8 md:p-8 transition-opacity duration-300 ${
+          <div className={`leading-relaxed text-left text-foreground px-2 py-4 md:p-8 transition-opacity duration-300 ${
             isFading ? 'opacity-0' : 'opacity-100'
           } ${
             settings.textSize === 'small' ? 'text-base md:text-lg' :
