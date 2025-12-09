@@ -118,6 +118,47 @@ function ParagraphEditor({
     }
   };
 
+  const addDialogueToLibrary = () => {
+    if (paragraph.type !== 'dialogue') return;
+    
+    // Проверяем, существует ли уже персонаж с таким именем
+    const existingChar = novel.library.characters.find(c => c.name === paragraph.characterName);
+    
+    if (existingChar) {
+      // Если персонаж есть, добавляем изображение если его нет
+      if (paragraph.characterImage && !existingChar.images?.some(img => img.url === paragraph.characterImage)) {
+        const updatedChar = {
+          ...existingChar,
+          images: [
+            ...(existingChar.images || []),
+            { id: `img${Date.now()}`, url: paragraph.characterImage }
+          ]
+        };
+        onNovelUpdate({
+          ...novel,
+          library: {
+            ...novel.library,
+            characters: novel.library.characters.map(c => c.id === existingChar.id ? updatedChar : c)
+          }
+        });
+      }
+    } else {
+      // Создаем нового персонажа
+      const newChar = {
+        id: `char${Date.now()}`,
+        name: paragraph.characterName,
+        images: paragraph.characterImage ? [{ id: `img${Date.now()}`, url: paragraph.characterImage }] : []
+      };
+      onNovelUpdate({
+        ...novel,
+        library: {
+          ...novel.library,
+          characters: [...novel.library.characters, newChar]
+        }
+      });
+    }
+  };
+
   const handleSelectItem = (itemId: string) => {
     if (paragraph.type !== 'item') return;
     const item = novel.library.items.find(i => i.id === itemId);
@@ -282,17 +323,28 @@ function ParagraphEditor({
             )}
 
             {paragraph.type === 'dialogue' && (
-              <DialogueEditor
-                paragraph={paragraph}
-                index={index}
-                novel={novel}
-                imageUrl={imageUrl}
-                setImageUrl={setImageUrl}
-                onUpdate={onUpdate}
-                handleImageUrl={handleImageUrl}
-                handleImageUpload={handleImageUpload}
-                handleSelectCharacter={handleSelectCharacter}
-              />
+              <>
+                <DialogueEditor
+                  paragraph={paragraph}
+                  index={index}
+                  novel={novel}
+                  imageUrl={imageUrl}
+                  setImageUrl={setImageUrl}
+                  onUpdate={onUpdate}
+                  handleImageUrl={handleImageUrl}
+                  handleImageUpload={handleImageUpload}
+                  handleSelectCharacter={handleSelectCharacter}
+                />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full mt-2"
+                  onClick={addDialogueToLibrary}
+                >
+                  <Icon name="Save" size={14} className="mr-2" />
+                  Добавить персонажа в библиотеку
+                </Button>
+              </>
             )}
 
             {paragraph.type === 'choice' && (
