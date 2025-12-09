@@ -7,6 +7,7 @@ export const parseMarkdownToEpisode = (markdown: string, episodeId: string): Epi
   const paragraphs: Paragraph[] = [];
   
   let i = 0;
+  let consecutiveEmptyLines = 0;
   
   while (i < lines.length) {
     const line = lines[i].trim();
@@ -14,24 +15,32 @@ export const parseMarkdownToEpisode = (markdown: string, episodeId: string): Epi
     if (line.startsWith('# ')) {
       title = line.substring(2).trim();
       i++;
+      consecutiveEmptyLines = 0;
       continue;
     }
     
     if (line.startsWith('[MUSIC:') && line.endsWith(']')) {
       backgroundMusic = line.substring(7, line.length - 1).trim();
       i++;
+      consecutiveEmptyLines = 0;
       continue;
     }
     
     if (!line) {
-      // Пустая строка - добавляем fade параграф
-      paragraphs.push({
-        id: `p${Date.now()}_${paragraphs.length}`,
-        type: 'fade'
-      });
+      consecutiveEmptyLines++;
+      // Одна пустая строка - добавляем fade параграф
+      if (consecutiveEmptyLines === 1) {
+        paragraphs.push({
+          id: `p${Date.now()}_${paragraphs.length}`,
+          type: 'fade'
+        });
+      }
       i++;
       continue;
     }
+    
+    // Сбрасываем счетчик пустых строк
+    consecutiveEmptyLines = 0;
     
     if (!line.startsWith('[')) {
       // Обычный текст без тега - каждая строка = отдельный параграф
@@ -46,19 +55,25 @@ export const parseMarkdownToEpisode = (markdown: string, episodeId: string): Epi
     
     if (line.startsWith('[TEXT]')) {
       i++;
-      let content = '';
+      // В блоке [TEXT] каждая строка = отдельный параграф
       while (i < lines.length && !lines[i].trim().startsWith('[')) {
-        if (lines[i].trim()) {
-          content += (content ? '\n\n' : '') + lines[i].trim();
+        const currentLine = lines[i].trim();
+        
+        if (!currentLine) {
+          // Пустая строка в блоке [TEXT] = fade
+          paragraphs.push({
+            id: `p${Date.now()}_${paragraphs.length}`,
+            type: 'fade'
+          });
+        } else {
+          // Каждая непустая строка = текстовый параграф
+          paragraphs.push({
+            id: `p${Date.now()}_${paragraphs.length}`,
+            type: 'text',
+            content: currentLine
+          });
         }
         i++;
-      }
-      if (content) {
-        paragraphs.push({
-          id: `p${Date.now()}_${paragraphs.length}`,
-          type: 'text',
-          content
-        });
       }
       continue;
     }
@@ -70,9 +85,20 @@ export const parseMarkdownToEpisode = (markdown: string, episodeId: string): Epi
       
       i++;
       let text = '';
+      let emptyLinesCount = 0;
+      
       while (i < lines.length && !lines[i].trim().startsWith('[')) {
-        if (lines[i].trim()) {
-          text += (text ? '\n\n' : '') + lines[i].trim();
+        const currentLine = lines[i].trim();
+        
+        if (!currentLine) {
+          emptyLinesCount++;
+          // Две пустые строки = конец блока диалога
+          if (emptyLinesCount >= 2) {
+            break;
+          }
+        } else {
+          emptyLinesCount = 0;
+          text += (text ? '\n' : '') + currentLine;
         }
         i++;
       }
@@ -108,9 +134,20 @@ export const parseMarkdownToEpisode = (markdown: string, episodeId: string): Epi
       
       i++;
       let description = '';
+      let emptyLinesCount = 0;
+      
       while (i < lines.length && !lines[i].trim().startsWith('[')) {
-        if (lines[i].trim()) {
-          description += (description ? '\n\n' : '') + lines[i].trim();
+        const currentLine = lines[i].trim();
+        
+        if (!currentLine) {
+          emptyLinesCount++;
+          // Две пустые строки = конец блока предмета
+          if (emptyLinesCount >= 2) {
+            break;
+          }
+        } else {
+          emptyLinesCount = 0;
+          description += (description ? '\n' : '') + currentLine;
         }
         i++;
       }
@@ -129,25 +166,36 @@ export const parseMarkdownToEpisode = (markdown: string, episodeId: string): Epi
       i++;
       let question = '';
       const options: { id: string; text: string; nextEpisodeId?: string }[] = [];
+      let emptyLinesCount = 0;
       
       while (i < lines.length && !lines[i].trim().startsWith('[')) {
         const choiceLine = lines[i].trim();
         
-        if (!choiceLine.startsWith('-') && !question) {
-          question = choiceLine;
-        } else if (choiceLine.startsWith('- ')) {
-          const optionText = choiceLine.substring(2);
-          const linkMatch = optionText.match(/\[GOTO:(.*?)\]/);
-          const text = linkMatch 
-            ? optionText.substring(0, optionText.indexOf('[GOTO:')).trim()
-            : optionText;
-          const nextEpisodeId = linkMatch ? linkMatch[1].trim() : undefined;
+        if (!choiceLine) {
+          emptyLinesCount++;
+          // Две пустые строки = конец блока выбора
+          if (emptyLinesCount >= 2) {
+            break;
+          }
+        } else {
+          emptyLinesCount = 0;
           
-          options.push({
-            id: `opt${Date.now()}_${options.length}`,
-            text,
-            nextEpisodeId
-          });
+          if (!choiceLine.startsWith('-') && !question) {
+            question = choiceLine;
+          } else if (choiceLine.startsWith('- ')) {
+            const optionText = choiceLine.substring(2);
+            const linkMatch = optionText.match(/\[GOTO:(.*?)\]/);
+            const text = linkMatch 
+              ? optionText.substring(0, optionText.indexOf('[GOTO:')).trim()
+              : optionText;
+            const nextEpisodeId = linkMatch ? linkMatch[1].trim() : undefined;
+            
+            options.push({
+              id: `opt${Date.now()}_${options.length}`,
+              text,
+              nextEpisodeId
+            });
+          }
         }
         i++;
       }
@@ -180,19 +228,30 @@ export const getMarkdownTemplate = (): string => {
 
 [MUSIC:url_или_base64_музыки]
 
-Обычный текст параграфа. Можно писать несколько строк.
-Пустая строка создаёт новый текстовый параграф.
+Первая строка текста
+Вторая строка текста
 
-Это уже второй параграф.
+Третья строка текста (после пустой строки)
 
 [DIALOGUE:Имя персонажа] [IMG:эмодзи_или_url]
 Текст диалога персонажа.
 Может быть многострочным.
 
-[IMAGE:url_или_base64_изображения]
+
+Четвертая строка текста
+Пятая строка текста
+
+[TEXT]
+В блоке [TEXT] каждая строка = отдельный параграф
+Это второй параграф
+
+Пустая строка = разделитель (fade)
 
 [ITEM:Название предмета] [IMG:эмодзи_или_url]
 Описание предмета.
+
+
+Продолжение текста после предмета
 
 [CHOICE]
 Вопрос для выбора?
@@ -200,5 +259,9 @@ export const getMarkdownTemplate = (): string => {
 - Вариант 2 [GOTO:another_episode_id]
 - Вариант 3
 
-Продолжение текста после выбора...`;
+
+Продолжение текста после выбора
+
+💡 Две пустые строки после [DIALOGUE], [ITEM], [CHOICE] возвращают к обычному тексту
+💡 Интерактивные подсказки: [слово|текст подсказки]`;
 };
