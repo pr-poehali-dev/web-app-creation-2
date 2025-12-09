@@ -1,0 +1,64 @@
+export type ParagraphType = 'text' | 'image' | 'choice' | 'item' | 'dialogue';
+
+export interface BaseParagraph {
+  id: string;
+  type: ParagraphType;
+}
+
+export interface TextParagraph extends BaseParagraph {
+  type: 'text';
+  content: string;
+}
+
+export interface ImageParagraph extends BaseParagraph {
+  type: 'image';
+  url: string;
+  alt?: string;
+}
+
+export interface ChoiceParagraph extends BaseParagraph {
+  type: 'choice';
+  question: string;
+  options: {
+    id: string;
+    text: string;
+    nextEpisodeId?: string;
+  }[];
+}
+
+export interface ItemParagraph extends BaseParagraph {
+  type: 'item';
+  name: string;
+  description: string;
+  imageUrl?: string;
+}
+
+export interface DialogueParagraph extends BaseParagraph {
+  type: 'dialogue';
+  characterName: string;
+  characterImage?: string;
+  text: string;
+}
+
+export type Paragraph = 
+  | TextParagraph 
+  | ImageParagraph 
+  | ChoiceParagraph 
+  | ItemParagraph 
+  | DialogueParagraph;
+
+export interface Episode {
+  id: string;
+  title: string;
+  paragraphs: Paragraph[];
+  position: { x: number; y: number };
+}
+
+export interface Novel {
+  id: string;
+  title: string;
+  description: string;
+  episodes: Episode[];
+  currentEpisodeId: string;
+  currentParagraphIndex: number;
+}
