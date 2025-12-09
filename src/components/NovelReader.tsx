@@ -1,10 +1,11 @@
-import { useState, useEffect, useCallback } from 'react';
-import { Novel, Paragraph, Episode } from '@/types/novel';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { Novel } from '@/types/novel';
 import TypewriterText from './TypewriterText';
 import DialogueBox from './DialogueBox';
 import ChoiceBox from './ChoiceBox';
 import ItemBox from './ItemBox';
 import ImageBox from './ImageBox';
+import MusicPlayer from './MusicPlayer';
 
 interface NovelReaderProps {
   novel: Novel;
@@ -92,7 +93,7 @@ function NovelReader({ novel, onUpdate }: NovelReaderProps) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background text-foreground">
         <div className="text-center">
-          <h2 className="text-2xl font-bold mb-4">Эпизод не найден</h2>
+          <h2 className="text-2xl font-bold mb-4 text-foreground">Эпизод не найден</h2>
           <p className="text-muted-foreground">Проверьте структуру новеллы</p>
         </div>
       </div>
@@ -104,6 +105,10 @@ function NovelReader({ novel, onUpdate }: NovelReaderProps) {
       className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex items-center justify-center p-4 cursor-pointer"
       onClick={handleClick}
     >
+      {currentEpisode.backgroundMusic && (
+        <MusicPlayer audioSrc={currentEpisode.backgroundMusic} />
+      )}
+
       <div className="w-full max-w-4xl">
         {currentParagraph.type === 'text' && (
           <div className="novel-text text-xl md:text-2xl leading-relaxed text-foreground p-8">

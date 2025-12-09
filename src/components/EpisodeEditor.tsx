@@ -4,8 +4,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
 import Icon from '@/components/ui/icon';
+import { selectAndConvertImage, selectAndConvertAudio } from '@/utils/fileHelpers';
+import { parseMarkdownToEpisode, getMarkdownTemplate } from '@/utils/markdownImport';
 
 interface EpisodeEditorProps {
   episode: Episode;
@@ -18,6 +20,44 @@ function EpisodeEditor({ episode, onUpdate }: EpisodeEditorProps) {
   const handleTitleUpdate = (newTitle: string) => {
     onUpdate({ ...episode, title: newTitle });
     setEditingTitle(false);
+  };
+
+  const handleMusicUpload = async () => {
+    const audioBase64 = await selectAndConvertAudio();
+    if (audioBase64) {
+      onUpdate({ ...episode, backgroundMusic: audioBase64 });
+    }
+  };
+
+  const handleImportMarkdown = async () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.md,.txt';
+    input.onchange = async (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+
+      const text = await file.text();
+      const importedEpisode = parseMarkdownToEpisode(text, episode.id);
+      onUpdate({
+        ...episode,
+        title: importedEpisode.title,
+        paragraphs: importedEpisode.paragraphs,
+        backgroundMusic: importedEpisode.backgroundMusic || episode.backgroundMusic
+      });
+    };
+    input.click();
+  };
+
+  const handleExportTemplate = () => {
+    const template = getMarkdownTemplate();
+    const blob = new Blob([template], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'episode_template.md';
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   const handleAddParagraph = (type: ParagraphType) => {
@@ -80,6 +120,19 @@ function EpisodeEditor({ episode, onUpdate }: EpisodeEditorProps) {
     onUpdate({ ...episode, paragraphs: newParagraphs });
   };
 
+  const handleImageUpload = async (index: number, paragraph: Paragraph) => {
+    const imageBase64 = await selectAndConvertImage();
+    if (imageBase64) {
+      if (paragraph.type === 'dialogue') {
+        handleUpdateParagraph(index, { ...paragraph, characterImage: imageBase64 });
+      } else if (paragraph.type === 'item') {
+        handleUpdateParagraph(index, { ...paragraph, imageUrl: imageBase64 });
+      } else if (paragraph.type === 'image') {
+        handleUpdateParagraph(index, { ...paragraph, url: imageBase64 });
+      }
+    }
+  };
+
   return (
     <div className="space-y-4">
       <Card>
@@ -93,10 +146,11 @@ function EpisodeEditor({ episode, onUpdate }: EpisodeEditorProps) {
                   if (e.key === 'Enter') handleTitleUpdate(e.currentTarget.value);
                 }}
                 autoFocus
+                className="text-foreground"
               />
             ) : (
               <div className="flex items-center gap-2">
-                <span>{episode.title}</span>
+                <span className="text-foreground">{episode.title}</span>
                 <Button variant="ghost" size="icon" onClick={() => setEditingTitle(true)}>
                   <Icon name="Edit" size={16} />
                 </Button>
@@ -104,6 +158,38 @@ function EpisodeEditor({ episode, onUpdate }: EpisodeEditorProps) {
             )}
           </CardTitle>
         </CardHeader>
+        <CardContent className="space-y-3">
+          <div>
+            <Label className="text-foreground">Фоновая музыка</Label>
+            <div className="flex gap-2 mt-2">
+              <Button size="sm" variant="outline" onClick={handleMusicUpload}>
+                <Icon name="Music" size={14} className="mr-1" />
+                {episode.backgroundMusic ? 'Изменить музыку' : 'Добавить музыку'}
+              </Button>
+              {episode.backgroundMusic && (
+                <Button 
+                  size="sm" 
+                  variant="ghost" 
+                  onClick={() => onUpdate({ ...episode, backgroundMusic: undefined })}
+                >
+                  <Icon name="X" size={14} className="mr-1" />
+                  Удалить
+                </Button>
+              )}
+            </div>
+          </div>
+          
+          <div className="flex gap-2">
+            <Button size="sm" variant="outline" onClick={handleImportMarkdown}>
+              <Icon name="FileUp" size={14} className="mr-1" />
+              Импорт из MD
+            </Button>
+            <Button size="sm" variant="outline" onClick={handleExportTemplate}>
+              <Icon name="FileDown" size={14} className="mr-1" />
+              Скачать шаблон
+            </Button>
+          </div>
+        </CardContent>
       </Card>
 
       <div className="flex gap-2 flex-wrap">
@@ -177,6 +263,7 @@ function EpisodeEditor({ episode, onUpdate }: EpisodeEditorProps) {
                         handleUpdateParagraph(index, { ...paragraph, content: e.target.value })
                       }
                       rows={3}
+                      className="text-foreground"
                     />
                   )}
 
@@ -189,16 +276,32 @@ function EpisodeEditor({ episode, onUpdate }: EpisodeEditorProps) {
                           onChange={(e) =>
                             handleUpdateParagraph(index, { ...paragraph, characterName: e.target.value })
                           }
+                          className="text-foreground"
                         />
-                        <Input
-                          placeholder="Эмодзи персонажа"
-                          value={paragraph.characterImage || ''}
-                          onChange={(e) =>
-                            handleUpdateParagraph(index, { ...paragraph, characterImage: e.target.value })
-                          }
-                          className="w-24"
-                        />
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleImageUpload(index, paragraph)}
+                        >
+                          <Icon name="Upload" size={14} />
+                        </Button>
                       </div>
+                      {paragraph.characterImage && (
+                        <div className="flex items-center gap-2">
+                          {paragraph.characterImage.startsWith('data:') ? (
+                            <img src={paragraph.characterImage} alt="Character" className="w-12 h-12 object-cover rounded" />
+                          ) : (
+                            <span className="text-3xl">{paragraph.characterImage}</span>
+                          )}
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => handleUpdateParagraph(index, { ...paragraph, characterImage: undefined })}
+                          >
+                            <Icon name="X" size={14} />
+                          </Button>
+                        </div>
+                      )}
                       <Textarea
                         placeholder="Текст диалога"
                         value={paragraph.text}
@@ -206,6 +309,7 @@ function EpisodeEditor({ episode, onUpdate }: EpisodeEditorProps) {
                           handleUpdateParagraph(index, { ...paragraph, text: e.target.value })
                         }
                         rows={3}
+                        className="text-foreground"
                       />
                     </div>
                   )}
@@ -218,6 +322,7 @@ function EpisodeEditor({ episode, onUpdate }: EpisodeEditorProps) {
                         onChange={(e) =>
                           handleUpdateParagraph(index, { ...paragraph, question: e.target.value })
                         }
+                        className="text-foreground"
                       />
                       {paragraph.options.map((option, optIndex) => (
                         <div key={option.id} className="flex gap-2">
@@ -229,6 +334,7 @@ function EpisodeEditor({ episode, onUpdate }: EpisodeEditorProps) {
                               newOptions[optIndex] = { ...option, text: e.target.value };
                               handleUpdateParagraph(index, { ...paragraph, options: newOptions });
                             }}
+                            className="text-foreground"
                           />
                           <Input
                             placeholder="ID эпизода"
@@ -238,8 +344,18 @@ function EpisodeEditor({ episode, onUpdate }: EpisodeEditorProps) {
                               newOptions[optIndex] = { ...option, nextEpisodeId: e.target.value };
                               handleUpdateParagraph(index, { ...paragraph, options: newOptions });
                             }}
-                            className="w-32"
+                            className="w-32 text-foreground"
                           />
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => {
+                              const newOptions = paragraph.options.filter((_, i) => i !== optIndex);
+                              handleUpdateParagraph(index, { ...paragraph, options: newOptions });
+                            }}
+                          >
+                            <Icon name="Trash2" size={14} />
+                          </Button>
                         </div>
                       ))}
                       <Button
@@ -268,16 +384,32 @@ function EpisodeEditor({ episode, onUpdate }: EpisodeEditorProps) {
                           onChange={(e) =>
                             handleUpdateParagraph(index, { ...paragraph, name: e.target.value })
                           }
+                          className="text-foreground"
                         />
-                        <Input
-                          placeholder="Эмодзи"
-                          value={paragraph.imageUrl || ''}
-                          onChange={(e) =>
-                            handleUpdateParagraph(index, { ...paragraph, imageUrl: e.target.value })
-                          }
-                          className="w-24"
-                        />
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleImageUpload(index, paragraph)}
+                        >
+                          <Icon name="Upload" size={14} />
+                        </Button>
                       </div>
+                      {paragraph.imageUrl && (
+                        <div className="flex items-center gap-2">
+                          {paragraph.imageUrl.startsWith('data:') ? (
+                            <img src={paragraph.imageUrl} alt="Item" className="w-12 h-12 object-cover rounded" />
+                          ) : (
+                            <span className="text-3xl">{paragraph.imageUrl}</span>
+                          )}
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => handleUpdateParagraph(index, { ...paragraph, imageUrl: undefined })}
+                          >
+                            <Icon name="X" size={14} />
+                          </Button>
+                        </div>
+                      )}
                       <Textarea
                         placeholder="Описание"
                         value={paragraph.description}
@@ -285,18 +417,34 @@ function EpisodeEditor({ episode, onUpdate }: EpisodeEditorProps) {
                           handleUpdateParagraph(index, { ...paragraph, description: e.target.value })
                         }
                         rows={2}
+                        className="text-foreground"
                       />
                     </div>
                   )}
 
                   {paragraph.type === 'image' && (
-                    <Input
-                      placeholder="URL изображения"
-                      value={paragraph.url}
-                      onChange={(e) =>
-                        handleUpdateParagraph(index, { ...paragraph, url: e.target.value })
-                      }
-                    />
+                    <div className="space-y-2">
+                      <div className="flex gap-2">
+                        <Input
+                          placeholder="URL изображения"
+                          value={paragraph.url}
+                          onChange={(e) =>
+                            handleUpdateParagraph(index, { ...paragraph, url: e.target.value })
+                          }
+                          className="text-foreground"
+                        />
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleImageUpload(index, paragraph)}
+                        >
+                          <Icon name="Upload" size={14} />
+                        </Button>
+                      </div>
+                      {paragraph.url && (
+                        <img src={paragraph.url} alt="Preview" className="w-full max-h-48 object-contain rounded" />
+                      )}
+                    </div>
                   )}
                 </div>
               </div>
@@ -307,7 +455,7 @@ function EpisodeEditor({ episode, onUpdate }: EpisodeEditorProps) {
 
       {episode.paragraphs.length === 0 && (
         <div className="text-center py-16 text-muted-foreground">
-          Добавьте параграфы к эпизоду
+          Добавьте параграфы к эпизоду или импортируйте из MD файла
         </div>
       )}
     </div>

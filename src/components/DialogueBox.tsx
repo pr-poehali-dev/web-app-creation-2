@@ -15,8 +15,16 @@ function DialogueBox({ characterName, characterImage, text, skipTyping, onComple
       <CardContent className="p-6">
         <div className="flex items-start gap-4">
           {characterImage && (
-            <div className="text-6xl flex-shrink-0 animate-scale-in">
-              {characterImage}
+            <div className="flex-shrink-0 animate-scale-in">
+              {characterImage.startsWith('data:') ? (
+                <img 
+                  src={characterImage} 
+                  alt={characterName}
+                  className="w-24 h-24 object-cover rounded-lg"
+                />
+              ) : (
+                <div className="text-6xl">{characterImage}</div>
+              )}
             </div>
           )}
           <div className="flex-1">

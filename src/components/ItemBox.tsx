@@ -18,8 +18,16 @@ function ItemBox({ name, description, imageUrl, skipTyping, onComplete }: ItemBo
           Получен предмет
         </Badge>
         {imageUrl && (
-          <div className="text-8xl mb-6 animate-scale-in">
-            {imageUrl}
+          <div className="mb-6 animate-scale-in flex justify-center">
+            {imageUrl.startsWith('data:') ? (
+              <img 
+                src={imageUrl} 
+                alt={name}
+                className="max-w-xs max-h-64 object-contain rounded-lg"
+              />
+            ) : (
+              <div className="text-8xl">{imageUrl}</div>
+            )}
           </div>
         )}
         <h3 className="text-2xl font-bold text-primary mb-4">

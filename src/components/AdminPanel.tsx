@@ -74,7 +74,7 @@ function AdminPanel({ novel, onUpdate, onLogout }: AdminPanelProps) {
       <header className="border-b border-border bg-card sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold">Админ-панель</h1>
+            <h1 className="text-2xl font-bold text-foreground">Админ-панель</h1>
             <p className="text-sm text-muted-foreground">{novel.title}</p>
           </div>
           <Button variant="outline" onClick={onLogout}>
@@ -99,7 +99,7 @@ function AdminPanel({ novel, onUpdate, onLogout }: AdminPanelProps) {
 
           <TabsContent value="editor" className="space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold">Эпизоды</h2>
+              <h2 className="text-xl font-bold text-foreground">Эпизоды</h2>
               <Button onClick={handleAddEpisode}>
                 <Icon name="Plus" size={16} className="mr-2" />
                 Добавить эпизод

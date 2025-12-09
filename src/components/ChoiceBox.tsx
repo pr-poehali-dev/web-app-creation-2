@@ -24,7 +24,7 @@ function ChoiceBox({ question, options, onChoice }: ChoiceBoxProps) {
               key={option.id}
               variant="outline"
               size="lg"
-              className="w-full text-lg py-6 hover:bg-primary hover:text-primary-foreground transition-all hover:scale-105 animate-fade-in"
+              className="w-full text-lg py-6 hover:bg-primary hover:text-primary-foreground transition-all hover:scale-105 animate-fade-in text-foreground"
               style={{ animationDelay: `${index * 100}ms` }}
               onClick={(e) => {
                 e.stopPropagation();

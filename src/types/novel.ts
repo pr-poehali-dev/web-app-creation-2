@@ -52,6 +52,7 @@ export interface Episode {
   title: string;
   paragraphs: Paragraph[];
   position: { x: number; y: number };
+  backgroundMusic?: string;
 }
 
 export interface Novel {
