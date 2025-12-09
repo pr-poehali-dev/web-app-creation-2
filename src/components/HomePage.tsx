@@ -1,6 +1,7 @@
 import { HomePage as HomePageType } from '@/types/novel';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import ZoomableImage from '@/components/ZoomableImage';
 
 interface HomePageProps {
   homePage: HomePageType;
@@ -13,7 +14,7 @@ function HomePage({ homePage, onStart }: HomePageProps) {
       <div className="max-w-3xl w-full space-y-8 animate-fade-in">
         <div className="text-center space-y-6">
           {homePage.greetingImage && (
-            <img 
+            <ZoomableImage
               src={homePage.greetingImage} 
               alt="Greeting" 
               className="w-full max-w-md mx-auto rounded-lg shadow-lg animate-fade-in"
