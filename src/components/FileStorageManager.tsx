@@ -16,20 +16,22 @@ function FileStorageManager({ novel, onUpdate }: FileStorageManagerProps) {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [selectedAudio, setSelectedAudio] = useState<string | null>(null);
 
+  const fileStorage = novel.fileStorage || { images: [], audio: [] };
+
   const handleAddImage = async () => {
     const imageBase64 = await selectAndConvertImage();
     if (imageBase64) {
       const newImage = {
         id: `img${Date.now()}`,
-        name: `Изображение ${novel.fileStorage.images.length + 1}`,
+        name: `Изображение ${fileStorage.images.length + 1}`,
         url: imageBase64
       };
 
       onUpdate({
         ...novel,
         fileStorage: {
-          ...novel.fileStorage,
-          images: [...novel.fileStorage.images, newImage]
+          ...fileStorage,
+          images: [...fileStorage.images, newImage]
         }
       });
     }
@@ -40,15 +42,15 @@ function FileStorageManager({ novel, onUpdate }: FileStorageManagerProps) {
     if (audioBase64) {
       const newAudio = {
         id: `aud${Date.now()}`,
-        name: `Аудио ${novel.fileStorage.audio.length + 1}`,
+        name: `Аудио ${fileStorage.audio.length + 1}`,
         url: audioBase64
       };
 
       onUpdate({
         ...novel,
         fileStorage: {
-          ...novel.fileStorage,
-          audio: [...novel.fileStorage.audio, newAudio]
+          ...fileStorage,
+          audio: [...fileStorage.audio, newAudio]
         }
       });
     }
@@ -58,8 +60,8 @@ function FileStorageManager({ novel, onUpdate }: FileStorageManagerProps) {
     onUpdate({
       ...novel,
       fileStorage: {
-        ...novel.fileStorage,
-        images: novel.fileStorage.images.filter(img => img.id !== id)
+        ...fileStorage,
+        images: fileStorage.images.filter(img => img.id !== id)
       }
     });
     setSelectedImage(null);
@@ -69,8 +71,8 @@ function FileStorageManager({ novel, onUpdate }: FileStorageManagerProps) {
     onUpdate({
       ...novel,
       fileStorage: {
-        ...novel.fileStorage,
-        audio: novel.fileStorage.audio.filter(aud => aud.id !== id)
+        ...fileStorage,
+        audio: fileStorage.audio.filter(aud => aud.id !== id)
       }
     });
     setSelectedAudio(null);
@@ -80,8 +82,8 @@ function FileStorageManager({ novel, onUpdate }: FileStorageManagerProps) {
     onUpdate({
       ...novel,
       fileStorage: {
-        ...novel.fileStorage,
-        images: novel.fileStorage.images.map(img => img.id === id ? { ...img, name } : img)
+        ...fileStorage,
+        images: fileStorage.images.map(img => img.id === id ? { ...img, name } : img)
       }
     });
   };
@@ -90,8 +92,8 @@ function FileStorageManager({ novel, onUpdate }: FileStorageManagerProps) {
     onUpdate({
       ...novel,
       fileStorage: {
-        ...novel.fileStorage,
-        audio: novel.fileStorage.audio.map(aud => aud.id === id ? { ...aud, name } : aud)
+        ...fileStorage,
+        audio: fileStorage.audio.map(aud => aud.id === id ? { ...aud, name } : aud)
       }
     });
   };
@@ -107,11 +109,11 @@ function FileStorageManager({ novel, onUpdate }: FileStorageManagerProps) {
         <TabsList className="grid w-full max-w-md grid-cols-2">
           <TabsTrigger value="images">
             <Icon name="Image" size={16} className="mr-2" />
-            Изображения ({novel.fileStorage.images.length})
+            Изображения ({fileStorage.images.length})
           </TabsTrigger>
           <TabsTrigger value="audio">
             <Icon name="Music" size={16} className="mr-2" />
-            Аудио ({novel.fileStorage.audio.length})
+            Аудио ({fileStorage.audio.length})
           </TabsTrigger>
         </TabsList>
 
@@ -121,9 +123,9 @@ function FileStorageManager({ novel, onUpdate }: FileStorageManagerProps) {
             Добавить изображение
           </Button>
 
-          {novel.fileStorage.images.length > 0 ? (
+          {fileStorage.images.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {novel.fileStorage.images.map((image) => (
+              {fileStorage.images.map((image) => (
                 <Card 
                   key={image.id}
                   className={`cursor-pointer transition-all ${
@@ -185,9 +187,9 @@ function FileStorageManager({ novel, onUpdate }: FileStorageManagerProps) {
             Добавить аудио
           </Button>
 
-          {novel.fileStorage.audio.length > 0 ? (
+          {fileStorage.audio.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {novel.fileStorage.audio.map((audio) => (
+              {fileStorage.audio.map((audio) => (
                 <Card 
                   key={audio.id}
                   className={`cursor-pointer transition-all ${
