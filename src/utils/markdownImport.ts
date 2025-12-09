@@ -48,17 +48,8 @@ export const parseMarkdownToEpisode = (markdown: string, episodeId: string): Epi
       i++;
       let content = '';
       while (i < lines.length && !lines[i].trim().startsWith('[')) {
-        const currentLine = lines[i].trim();
-        
-        if (!currentLine && content) {
-          paragraphs.push({
-            id: `p${Date.now()}_${paragraphs.length}`,
-            type: 'text',
-            content
-          });
-          content = '';
-        } else if (currentLine) {
-          content += (content ? '\n' : '') + currentLine;
+        if (lines[i].trim()) {
+          content += (content ? '\n\n' : '') + lines[i].trim();
         }
         i++;
       }
@@ -80,9 +71,8 @@ export const parseMarkdownToEpisode = (markdown: string, episodeId: string): Epi
       i++;
       let text = '';
       while (i < lines.length && !lines[i].trim().startsWith('[')) {
-        const currentLine = lines[i].trim();
-        if (currentLine) {
-          text += (text ? '\n' : '') + currentLine;
+        if (lines[i].trim()) {
+          text += (text ? '\n\n' : '') + lines[i].trim();
         }
         i++;
       }
@@ -119,9 +109,8 @@ export const parseMarkdownToEpisode = (markdown: string, episodeId: string): Epi
       i++;
       let description = '';
       while (i < lines.length && !lines[i].trim().startsWith('[')) {
-        const currentLine = lines[i].trim();
-        if (currentLine) {
-          description += (description ? '\n' : '') + currentLine;
+        if (lines[i].trim()) {
+          description += (description ? '\n\n' : '') + lines[i].trim();
         }
         i++;
       }
@@ -191,15 +180,10 @@ export const getMarkdownTemplate = (): string => {
 
 [MUSIC:url_или_base64_музыки]
 
-Обычный текст параграфа без тега. Каждая строка = отдельный параграф.
-Это вторая строка = второй параграф.
+Обычный текст параграфа. Можно писать несколько строк.
+Пустая строка создаёт новый текстовый параграф.
 
-[TEXT]
-Текстовый блок. Внутри блока строки склеиваются.
-Это продолжение первого параграфа.
-
-Пустая строка внутри блока создаёт новый параграф.
-Это уже второй параграф внутри блока [TEXT].
+Это уже второй параграф.
 
 [DIALOGUE:Имя персонажа] [IMG:эмодзи_или_url]
 Текст диалога персонажа.
@@ -216,6 +200,5 @@ export const getMarkdownTemplate = (): string => {
 - Вариант 2 [GOTO:another_episode_id]
 - Вариант 3
 
-💡 Интерактивные подсказки: [слово|текст подсказки]
-Пример: Он увидел [дракона|огромное существо] на горе.`;
+Продолжение текста после выбора...`;
 };
