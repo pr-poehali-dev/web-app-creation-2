@@ -20,43 +20,52 @@ function EpisodesSidebar({ novel, currentEpisodeId, onEpisodeSelect, onShowParag
             
             return (
               <div key={episode.id} className="space-y-1">
-                <button
-                  onClick={() => {
-                    if (isCurrent) {
-                      onShowParagraphs(episode.id);
-                    } else {
-                      onEpisodeSelect(episode.id);
-                    }
-                  }}
-                  className={`w-full text-left p-3 rounded-lg transition-all ${
+                <div
+                  className={`w-full text-left p-3 rounded-lg transition-all cursor-pointer ${
                     isCurrent 
                       ? 'bg-primary text-primary-foreground shadow-lg' 
                       : 'bg-card hover:bg-card/80 text-foreground hover:shadow-md'
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 flex-1">
+                    <div 
+                      className="flex items-center gap-2 flex-1"
+                      onClick={() => {
+                        if (isCurrent) {
+                          onShowParagraphs(episode.id);
+                        } else {
+                          onEpisodeSelect(episode.id);
+                        }
+                      }}
+                    >
                       <span className="font-bold text-sm">{index + 1}.</span>
                       <span className="text-sm font-medium">{episode.title}</span>
                     </div>
                     {isCurrent && (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-6 w-6 flex-shrink-0"
+                      <button
+                        className="h-6 w-6 flex-shrink-0 hover:opacity-80 transition-opacity flex items-center justify-center"
                         onClick={(e) => {
                           e.stopPropagation();
                           onShowParagraphs(episode.id);
                         }}
                       >
                         <Icon name="List" size={14} />
-                      </Button>
+                      </button>
                     )}
                   </div>
-                  <div className="text-xs opacity-70 mt-1">
+                  <div 
+                    className="text-xs opacity-70 mt-1"
+                    onClick={() => {
+                      if (isCurrent) {
+                        onShowParagraphs(episode.id);
+                      } else {
+                        onEpisodeSelect(episode.id);
+                      }
+                    }}
+                  >
                     {episode.paragraphs.length} параграфов
                   </div>
-                </button>
+                </div>
               </div>
             );
           })}

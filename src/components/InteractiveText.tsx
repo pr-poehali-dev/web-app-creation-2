@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 
 interface InteractiveTextProps {
   text: string;
@@ -100,8 +100,10 @@ function InteractiveText({ text, className = '' }: InteractiveTextProps) {
           <DialogContent onClick={(e) => e.stopPropagation()} className="max-w-[90vw]">
             <DialogHeader>
               <DialogTitle className="text-left text-white">{mobileHint.content}</DialogTitle>
+              <DialogDescription className="text-white text-left">
+                {mobileHint.hint}
+              </DialogDescription>
             </DialogHeader>
-            <p className="text-white text-left">{mobileHint.hint}</p>
           </DialogContent>
         </Dialog>
       )}
