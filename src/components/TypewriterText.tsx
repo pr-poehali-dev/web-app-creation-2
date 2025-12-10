@@ -138,8 +138,13 @@ function TypewriterText({ text, speed = 50, skipTyping = false, onComplete }: Ty
   const cleanText = getCleanText(text);
   const targetLength = cleanText.length;
 
+  console.log('[TW] Render:', { skip: skipTyping, idx: currentIndex, len: targetLength });
+
   useEffect(() => {
+    console.log('[TW] Effect Start:', { skip: skipTyping, idx: currentIndex, len: targetLength });
+    
     if (skipTyping) {
+      console.log('[TW] SKIP MODE');
       setDisplayedText(text);
       setCurrentIndex(targetLength);
       if (currentIndex < targetLength) {
@@ -150,17 +155,20 @@ function TypewriterText({ text, speed = 50, skipTyping = false, onComplete }: Ty
 
     if (currentIndex < targetLength) {
       const timeout = setTimeout(() => {
+        console.log('[TW] Tick:', currentIndex + 1);
         setDisplayedText(getDisplayText(text, currentIndex + 1));
         setCurrentIndex(currentIndex + 1);
       }, speed);
 
       return () => clearTimeout(timeout);
     } else if (currentIndex === targetLength && currentIndex > 0) {
+      console.log('[TW] DONE');
       onComplete?.();
     }
   }, [currentIndex, text, targetLength, speed, skipTyping, onComplete]);
 
   useEffect(() => {
+    console.log('[TW] TEXT CHANGED - RESET');
     setDisplayedText('');
     setCurrentIndex(0);
   }, [text]);
