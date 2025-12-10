@@ -86,7 +86,6 @@ export function useNovelNavigation({
         const fadeDelay = hasFadeNext ? 1500 : 300;
         setIsFading(true);
         setTimeout(() => {
-          setIsFading(false);
           onProfileUpdate(prev => ({
             ...prev,
             currentEpisodeId,
@@ -94,6 +93,10 @@ export function useNovelNavigation({
           }));
           setIsTyping(true);
           setSkipTyping(false);
+          // Сбрасываем fade только после смены параграфа
+          setTimeout(() => {
+            setIsFading(false);
+          }, 50);
         }, fadeDelay);
       } else {
         onProfileUpdate(prev => ({
@@ -139,7 +142,6 @@ export function useNovelNavigation({
           const fadeDelay = hasFadeAtEnd ? 1500 : 300;
           setIsFading(true);
           setTimeout(() => {
-            setIsFading(false);
             onProfileUpdate(prev => ({
               ...prev,
               currentEpisodeId: targetEpisodeId,
@@ -147,6 +149,10 @@ export function useNovelNavigation({
             }));
             setIsTyping(true);
             setSkipTyping(false);
+            // Сбрасываем fade только после смены параграфа
+            setTimeout(() => {
+              setIsFading(false);
+            }, 50);
           }, fadeDelay);
         } else {
           onProfileUpdate(prev => ({

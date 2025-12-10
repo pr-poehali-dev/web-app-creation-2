@@ -36,6 +36,9 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
   const [isFading, setIsFading] = useState(false);
   const [canNavigate, setCanNavigate] = useState(false);
   
+  // Сохраняем предыдущий параграф для плавного fade
+  const [displayParagraph, setDisplayParagraph] = useState(currentParagraph);
+  
   // Ref для отслеживания актуального значения isTyping в callbacks
   const isTypingRef = useRef(isTyping);
   useEffect(() => {
@@ -52,13 +55,16 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
     }
   }, [isTyping]);
 
-  // Сбрасываем состояния при смене параграфа
+  // Обновляем отображаемый параграф только когда не в процессе fade
   useEffect(() => {
-    console.log('[NovelReader] Paragraph changed, resetting isTyping to true');
-    setIsTyping(true);
-    setSkipTyping(false);
-    setCanNavigate(false);
-  }, [currentEpisodeId, currentParagraphIndex]);
+    if (!isFading) {
+      console.log('[NovelReader] Paragraph changed, updating display');
+      setDisplayParagraph(currentParagraph);
+      setIsTyping(true);
+      setSkipTyping(false);
+      setCanNavigate(false);
+    }
+  }, [currentEpisodeId, currentParagraphIndex, isFading, currentParagraph]);
 
   // Хук навигации
   const {
@@ -256,7 +262,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
         ) : (
           /* Текущий параграф */
           <NovelReaderContent
-            currentParagraph={currentParagraph}
+            currentParagraph={displayParagraph}
             currentEpisode={currentEpisode}
             novel={novel}
             settings={settings}
