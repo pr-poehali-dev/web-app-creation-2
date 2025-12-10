@@ -32,34 +32,34 @@ function ChoiceEditor({
         }
         className="text-foreground"
       />
+      <div className="flex gap-2 mb-3">
+        <Select
+          value="manual"
+          onValueChange={(value) => {
+            if (value !== 'manual') handleSelectChoice(0, value);
+          }}
+        >
+          <SelectTrigger className="text-foreground">
+            <SelectValue placeholder="Загрузить из библиотеки" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="manual">Ввести вручную</SelectItem>
+            {novel.library.choices.map((choice) => (
+              <SelectItem key={choice.id} value={choice.id}>{choice.question}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => addChoiceToLibrary(0)}
+          title="Сохранить в библиотеку"
+        >
+          <Icon name="BookmarkPlus" size={14} />
+        </Button>
+      </div>
       {paragraph.options.map((option, optIndex) => (
         <div key={option.id} className="space-y-2 p-3 border border-border rounded-lg">
-          <div className="flex gap-2">
-            <Select
-              value="manual"
-              onValueChange={(value) => {
-                if (value !== 'manual') handleSelectChoice(optIndex, value);
-              }}
-            >
-              <SelectTrigger className="text-foreground">
-                <SelectValue placeholder="Из библиотеки" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="manual">Ввести вручную</SelectItem>
-                {novel.library.choices.map((choice) => (
-                  <SelectItem key={choice.id} value={choice.id}>{choice.text}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => addChoiceToLibrary(optIndex)}
-              title="Добавить в библиотеку"
-            >
-              <Icon name="BookmarkPlus" size={14} />
-            </Button>
-          </div>
           <Input
             placeholder="Текст варианта"
             value={option.text}

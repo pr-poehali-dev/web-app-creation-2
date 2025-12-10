@@ -84,8 +84,13 @@ export interface LibraryCharacter {
 
 export interface LibraryChoice {
   id: string;
-  text: string;
-  nextEpisodeId?: string;
+  question: string;
+  options: {
+    id: string;
+    text: string;
+    nextEpisodeId?: string;
+    nextParagraphIndex?: number;
+  }[];
 }
 
 export interface NewsItem {

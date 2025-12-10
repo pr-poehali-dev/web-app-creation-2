@@ -146,13 +146,14 @@ function ParagraphEditor({
     if (paragraph.type !== 'choice') return;
     const choice = novel.library.choices.find(c => c.id === choiceId);
     if (choice) {
-      const newOptions = [...paragraph.options];
-      newOptions[optIndex] = { 
-        ...newOptions[optIndex], 
-        text: choice.text, 
-        nextEpisodeId: choice.nextEpisodeId 
-      };
-      onUpdate(index, { ...paragraph, options: newOptions });
+      onUpdate(index, { 
+        ...paragraph, 
+        question: choice.question,
+        options: choice.options.map(opt => ({
+          ...opt,
+          id: `opt${Date.now()}_${Math.random()}`
+        }))
+      });
     }
   };
 
@@ -176,11 +177,15 @@ function ParagraphEditor({
 
   const addChoiceToLibrary = (optIndex: number) => {
     if (paragraph.type !== 'choice') return;
-    const option = paragraph.options[optIndex];
     const newChoice = {
       id: `choice${Date.now()}`,
-      text: option.text,
-      nextEpisodeId: option.nextEpisodeId
+      question: paragraph.question,
+      options: paragraph.options.map(opt => ({
+        id: opt.id,
+        text: opt.text,
+        nextEpisodeId: opt.nextEpisodeId,
+        nextParagraphIndex: opt.nextParagraphIndex
+      }))
     };
     
     onNovelUpdate({
