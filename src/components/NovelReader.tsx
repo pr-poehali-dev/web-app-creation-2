@@ -207,9 +207,9 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
       )}
 
       <div className="w-full max-w-4xl">
-        {/* Приветствие на первом параграфе */}
-        {showGreeting && (
-          <div className="mb-8 text-center animate-fade-in">
+        {/* Показываем либо приветствие, либо параграф */}
+        {showGreeting ? (
+          <div className="text-center animate-fade-in">
             <div className="bg-card/80 backdrop-blur-sm rounded-2xl p-8 shadow-2xl border border-border">
               {novel.homePage?.greetingImage && (
                 <img 
@@ -219,27 +219,27 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
                 />
               )}
               <h1 className="text-4xl font-bold mb-4 text-foreground">{novel.homePage.greeting}</h1>
-              <p className="text-muted-foreground text-sm">Нажмите или листайте, чтобы продолжить</p>
+              <p className="text-muted-foreground text-sm">Выберите эпизод в боковой панели для начала чтения</p>
             </div>
           </div>
+        ) : (
+          /* Текущий параграф */
+          <NovelReaderContent
+            currentParagraph={currentParagraph}
+            currentEpisode={currentEpisode}
+            novel={novel}
+            settings={settings}
+            profile={profile}
+            skipTyping={interaction.skipTyping}
+            isFading={interaction.isFading}
+            handleTypingComplete={interaction.handleTypingComplete}
+            handleChoice={handleChoice}
+            onProfileUpdate={onProfileUpdate}
+          />
         )}
 
-        {/* Текущий параграф */}
-        <NovelReaderContent
-          currentParagraph={currentParagraph}
-          currentEpisode={currentEpisode}
-          novel={novel}
-          settings={settings}
-          profile={profile}
-          skipTyping={interaction.skipTyping}
-          isFading={interaction.isFading}
-          handleTypingComplete={interaction.handleTypingComplete}
-          handleChoice={handleChoice}
-          onProfileUpdate={onProfileUpdate}
-        />
-
-        {/* Навигация для мобильных */}
-        {!interaction.isTyping && currentParagraph.type !== 'choice' && (
+        {/* Навигация для мобильных (только если не приветствие) */}
+        {!showGreeting && !interaction.isTyping && currentParagraph.type !== 'choice' && (
           <div className="md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 flex gap-3 z-50">
             <Button
               size="icon"
