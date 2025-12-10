@@ -302,6 +302,7 @@ function Index() {
       <ParagraphsDialog
         open={showParagraphsDialog}
         novel={novel}
+        profile={profile}
         selectedEpisodeId={selectedEpisodeForParagraphs}
         onOpenChange={setShowParagraphsDialog}
         onEpisodeSelect={handleEpisodeSelect}

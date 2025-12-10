@@ -1,10 +1,12 @@
 import { Novel } from '@/types/novel';
+import { UserProfile } from '@/types/settings';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import Icon from '@/components/ui/icon';
 
 interface ParagraphsDialogProps {
   open: boolean;
   novel: Novel;
+  profile: UserProfile;
   selectedEpisodeId: string | null;
   onOpenChange: (open: boolean) => void;
   onEpisodeSelect: (episodeId: string, paragraphIndex: number) => void;
@@ -13,6 +15,7 @@ interface ParagraphsDialogProps {
 function ParagraphsDialog({
   open,
   novel,
+  profile,
   selectedEpisodeId,
   onOpenChange,
   onEpisodeSelect
@@ -27,8 +30,9 @@ function ParagraphsDialog({
         </DialogHeader>
         <div className="overflow-y-auto max-h-[60vh] space-y-2 pr-2">
           {selectedEpisodeId && novel.episodes.find(ep => ep.id === selectedEpisodeId)?.paragraphs.map((para, pIndex) => {
-            const isCurrentPara = novel.currentEpisodeId === selectedEpisodeId && novel.currentParagraphIndex === pIndex;
-            const isVisited = novel.currentEpisodeId === selectedEpisodeId && pIndex <= novel.currentParagraphIndex;
+            const isCurrentPara = profile.currentEpisodeId === selectedEpisodeId && profile.currentParagraphIndex === pIndex;
+            const paragraphId = `${selectedEpisodeId}-${pIndex}`;
+            const isVisited = pIndex === 0 || (profile.readParagraphs || []).includes(paragraphId) || (profile.readParagraphs || []).includes(`${selectedEpisodeId}-${pIndex - 1}`);
             const isLocked = !isVisited;
             
             return (

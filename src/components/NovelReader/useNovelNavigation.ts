@@ -32,6 +32,11 @@ export function useNovelNavigation({
     const paragraphId = `${episodeId}-${paragraphIndex}`;
     if (paragraphIndex === 0) return true;
     if (!profile.readParagraphs || !Array.isArray(profile.readParagraphs)) return false;
+    
+    // Если параграф уже был прочитан ранее, он всегда доступен
+    if (profile.readParagraphs.includes(paragraphId)) return true;
+    
+    // Иначе проверяем, прочитан ли предыдущий параграф
     const prevParagraphId = `${episodeId}-${paragraphIndex - 1}`;
     return profile.readParagraphs.includes(prevParagraphId);
   };
