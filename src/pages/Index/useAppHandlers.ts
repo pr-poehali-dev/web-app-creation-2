@@ -6,15 +6,12 @@ import { View } from './useAppState';
 interface UseAppHandlersProps {
   novel: Novel | null;
   profile: UserProfile;
-  adminPassword: string;
   setProfile: (profile: UserProfile | ((prev: UserProfile) => UserProfile)) => void;
   setSettings: (settings: UserSettings) => void;
   setNovel: (novel: Novel) => void;
   setNovelForSaving: (novel: Novel) => void;
   setActiveView: (view: View) => void;
   setIsAdmin: (isAdmin: boolean) => void;
-  setShowAdminButton: (show: boolean) => void;
-  setAdminPassword: (password: string) => void;
   setSelectedEpisodeForParagraphs: (episodeId: string | null) => void;
   setShowParagraphsDialog: (show: boolean) => void;
   setShowGreetingScreen: (show: boolean) => void;
@@ -23,15 +20,12 @@ interface UseAppHandlersProps {
 export function useAppHandlers({
   novel,
   profile,
-  adminPassword,
   setProfile,
   setSettings,
   setNovel,
   setNovelForSaving,
   setActiveView,
   setIsAdmin,
-  setShowAdminButton,
-  setAdminPassword,
   setSelectedEpisodeForParagraphs,
   setShowParagraphsDialog,
   setShowGreetingScreen
@@ -54,15 +48,9 @@ export function useAppHandlers({
   }, [setProfile]);
 
   const handleAdminLogin = useCallback(() => {
-    if (adminPassword === '7859624') {
-      setIsAdmin(true);
-      setActiveView('admin');
-      setShowAdminButton(false);
-      setAdminPassword('');
-    } else {
-      alert('Неверный пароль');
-    }
-  }, [adminPassword, setIsAdmin, setActiveView, setShowAdminButton, setAdminPassword]);
+    setIsAdmin(true);
+    setActiveView('admin');
+  }, [setIsAdmin, setActiveView]);
 
   const handleEpisodeSelect = useCallback((episodeId: string, paragraphIndex?: number) => {
     setProfile(prev => ({

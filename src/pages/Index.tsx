@@ -10,7 +10,6 @@ import ParagraphsDialog from '@/components/ParagraphsDialog';
 import ActivePathsIndicator from '@/components/ActivePathsIndicator';
 import AuthScreen from '@/components/AuthScreen';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import Icon from '@/components/ui/icon';
 import { useAppState } from './Index/useAppState';
 import { useNovelDatabase } from './Index/useNovelDatabase';
@@ -27,10 +26,6 @@ function Index() {
     setProfile,
     activeView,
     setActiveView,
-    adminPassword,
-    setAdminPassword,
-    showAdminButton,
-    setShowAdminButton,
     showParagraphsDialog,
     setShowParagraphsDialog,
     selectedEpisodeForParagraphs,
@@ -60,15 +55,12 @@ function Index() {
   } = useAppHandlers({
     novel,
     profile,
-    adminPassword,
     setProfile,
     setSettings,
     setNovel,
     setNovelForSaving,
     setActiveView,
     setIsAdmin,
-    setShowAdminButton,
-    setAdminPassword,
     setSelectedEpisodeForParagraphs,
     setShowParagraphsDialog,
     setShowGreetingScreen
@@ -208,7 +200,7 @@ function Index() {
             </Button>
           )}
           
-          {!authState.isAdmin && !showAdminButton ? (
+          {!authState.isAdmin && (
             <Button
               variant="ghost"
               size="icon"
@@ -216,35 +208,6 @@ function Index() {
             >
               <Icon name="Lock" size={20} />
             </Button>
-          ) : null}
-          
-          {!authState.isAdmin && showAdminButton ? (
-            <div className="flex gap-2 bg-card/90 backdrop-blur-sm rounded-lg p-2">
-              <Input
-                type="password"
-                placeholder="Только для админов"
-                value={adminPassword}
-                disabled
-                onChange={(e) => setAdminPassword(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') handleAdminLogin();
-                }}
-                className="w-32 text-foreground"
-              />
-              <Button size="sm" onClick={handleAdminLogin}>
-                <Icon name="LogIn" size={16} />
-              </Button>
-              <Button 
-                size="sm" 
-                variant="ghost"
-                onClick={() => {
-                  setShowAdminButton(false);
-                  setAdminPassword('');
-                }}
-              >
-                <Icon name="X" size={16} />
-              </Button>
-            </div>
           )}
         </div>
       </div>

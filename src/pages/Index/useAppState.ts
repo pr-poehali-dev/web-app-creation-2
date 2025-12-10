@@ -9,8 +9,7 @@ export function useAppState() {
   const [settings, setSettings] = useState<UserSettings>(defaultSettings);
   const [profile, setProfile] = useState<UserProfile>(defaultProfile);
   const [activeView, setActiveView] = useState<View>('reader');
-  const [adminPassword, setAdminPassword] = useState('');
-  const [showAdminButton, setShowAdminButton] = useState(false);
+
   const [showParagraphsDialog, setShowParagraphsDialog] = useState(false);
   const [selectedEpisodeForParagraphs, setSelectedEpisodeForParagraphs] = useState<string | null>(null);
   const [showSidebar, setShowSidebar] = useState(false);
@@ -63,10 +62,6 @@ export function useAppState() {
     setProfile,
     activeView,
     setActiveView,
-    adminPassword,
-    setAdminPassword,
-    showAdminButton,
-    setShowAdminButton,
     showParagraphsDialog,
     setShowParagraphsDialog,
     selectedEpisodeForParagraphs,
