@@ -36,9 +36,7 @@ function Index() {
     showSidebar,
     setShowSidebar,
     isAdmin,
-    setIsAdmin,
-    hasSeenGreeting,
-    setHasSeenGreeting
+    setIsAdmin
   } = useAppState();
 
   const { isLoading, setNovelForSaving } = useNovelDatabase(setNovel, isAdmin);
@@ -131,86 +129,8 @@ function Index() {
       <SettingsPanel
         settings={settings}
         onUpdate={handleSettingsUpdate}
-        onBack={() => setActiveView(hasSeenGreeting ? 'reader' : 'greeting')}
+        onBack={() => setActiveView('reader')}
       />
-    );
-  }
-
-  if (activeView === 'greeting') {
-    return (
-      <div className="relative min-h-screen dark">
-        <HomePage 
-          homePage={novel.homePage || { greeting: 'Добро пожаловать', news: [] }}
-          onStart={() => {
-            setHasSeenGreeting(true);
-            localStorage.setItem('hasSeenGreeting', 'true');
-            
-            const hasValidProgress = profile.currentEpisodeId && 
-              novel.episodes.some(ep => ep.id === profile.currentEpisodeId) &&
-              profile.currentParagraphIndex !== undefined;
-            
-            if (!hasValidProgress) {
-              const firstEpisode = novel.episodes[0];
-              if (firstEpisode) {
-                setProfile({
-                  ...profile,
-                  currentEpisodeId: firstEpisode.id,
-                  currentParagraphIndex: 0
-                });
-              }
-            }
-            setActiveView('reader');
-          }}
-        />
-        
-        <div className="fixed top-4 right-4 flex gap-2 z-50">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="bg-card/50 backdrop-blur-sm hover:bg-card/80"
-            onClick={() => setActiveView('settings')}
-          >
-            <Icon name="Settings" size={20} />
-          </Button>
-          
-          {!showAdminButton ? (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="bg-card/50 backdrop-blur-sm hover:bg-card/80 opacity-30 hover:opacity-100 transition-opacity"
-              onClick={() => setShowAdminButton(true)}
-            >
-              <Icon name="Lock" size={20} />
-            </Button>
-          ) : (
-            <div className="flex gap-2 bg-card/90 backdrop-blur-sm rounded-lg p-2">
-              <Input
-                type="password"
-                placeholder="Пароль"
-                value={adminPassword}
-                onChange={(e) => setAdminPassword(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') handleAdminLogin();
-                }}
-                className="w-32 text-foreground"
-              />
-              <Button size="sm" onClick={handleAdminLogin}>
-                <Icon name="LogIn" size={16} />
-              </Button>
-              <Button 
-                size="sm" 
-                variant="ghost"
-                onClick={() => {
-                  setShowAdminButton(false);
-                  setAdminPassword('');
-                }}
-              >
-                <Icon name="X" size={16} />
-              </Button>
-            </div>
-          )}
-        </div>
-      </div>
     );
   }
 
@@ -369,7 +289,17 @@ function Index() {
         )}
         onAddBookmark={handleAddBookmark}
         onRemoveBookmark={handleRemoveBookmark}
-        onGoToGreeting={() => setActiveView('greeting')}
+        onGoToGreeting={() => {
+          const firstEpisode = novel.episodes[0];
+          if (firstEpisode) {
+            setProfile({
+              ...profile,
+              currentEpisodeId: firstEpisode.id,
+              currentParagraphIndex: 0
+            });
+          }
+        }}
+        showGreeting={profile.currentEpisodeId === novel.episodes[0]?.id && profile.currentParagraphIndex === 0}
       />
 
       <ParagraphsDialog

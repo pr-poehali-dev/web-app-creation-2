@@ -2,29 +2,19 @@ import { useState, useEffect } from 'react';
 import { Novel } from '@/types/novel';
 import { UserSettings, UserProfile, defaultSettings, defaultProfile } from '@/types/settings';
 
-export type View = 'home' | 'greeting' | 'reader' | 'admin' | 'episodes' | 'profile' | 'settings';
+export type View = 'home' | 'reader' | 'admin' | 'episodes' | 'profile' | 'settings';
 
 export function useAppState() {
   const [novel, setNovel] = useState<Novel | null>(null);
   const [settings, setSettings] = useState<UserSettings>(defaultSettings);
   const [profile, setProfile] = useState<UserProfile>(defaultProfile);
-  const [activeView, setActiveView] = useState<View>('greeting');
+  const [activeView, setActiveView] = useState<View>('reader');
   const [adminPassword, setAdminPassword] = useState('');
   const [showAdminButton, setShowAdminButton] = useState(false);
   const [showParagraphsDialog, setShowParagraphsDialog] = useState(false);
   const [selectedEpisodeForParagraphs, setSelectedEpisodeForParagraphs] = useState<string | null>(null);
   const [showSidebar, setShowSidebar] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [hasSeenGreeting, setHasSeenGreeting] = useState(false);
-
-  // Загрузка состояния приветствия
-  useEffect(() => {
-    const savedGreetingState = localStorage.getItem('hasSeenGreeting');
-    if (savedGreetingState === 'true') {
-      setHasSeenGreeting(true);
-      setActiveView('reader');
-    }
-  }, []);
 
   useEffect(() => {
     const savedSettings = localStorage.getItem('userSettings');
@@ -83,8 +73,6 @@ export function useAppState() {
     showSidebar,
     setShowSidebar,
     isAdmin,
-    setIsAdmin,
-    hasSeenGreeting,
-    setHasSeenGreeting
+    setIsAdmin
   };
 }
