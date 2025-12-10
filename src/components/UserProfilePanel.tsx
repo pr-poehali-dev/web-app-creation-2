@@ -234,9 +234,9 @@ function UserProfilePanel({ profile, novel, onUpdate, onBack, onNavigateTo }: Us
               </TabsContent>
 
               <TabsContent value="paths" className="mt-6">
-                {profile.activePaths.length > 0 ? (
+                {(profile.activePaths && profile.activePaths.length > 0) ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {(novel.paths || []).filter(path => profile.activePaths.includes(path.id)).map(path => (
+                    {(novel.paths || []).filter(path => profile.activePaths?.includes(path.id)).map(path => (
                       <Card key={path.id} className="border-2" style={{ borderColor: path.color || undefined }}>
                         <CardContent className="p-4">
                           <div className="flex items-start gap-3">
