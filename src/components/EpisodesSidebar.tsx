@@ -1,15 +1,24 @@
 import { Novel } from '@/types/novel';
+import { UserProfile } from '@/types/settings';
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
 
 interface EpisodesSidebarProps {
   novel: Novel;
   currentEpisodeId: string;
+  profile: UserProfile;
   onEpisodeSelect: (episodeId: string, paragraphIndex?: number) => void;
   onShowParagraphs: (episodeId: string) => void;
 }
 
-function EpisodesSidebar({ novel, currentEpisodeId, onEpisodeSelect, onShowParagraphs }: EpisodesSidebarProps) {
+function EpisodesSidebar({ novel, currentEpisodeId, profile, onEpisodeSelect, onShowParagraphs }: EpisodesSidebarProps) {
+  const isEpisodeAccessible = (episodeId: string) => {
+    const episode = novel.episodes.find(ep => ep.id === episodeId);
+    if (!episode) return false;
+    
+    const firstParagraphId = `${episodeId}-0`;
+    return profile.readParagraphs.includes(firstParagraphId);
+  };
   return (
     <div className="w-80 h-full bg-card border-r border-border overflow-y-auto flex-shrink-0">
       <div className="p-4">
@@ -17,13 +26,19 @@ function EpisodesSidebar({ novel, currentEpisodeId, onEpisodeSelect, onShowParag
         <div className="space-y-2">
           {novel.episodes.map((episode, index) => {
             const isCurrent = currentEpisodeId === episode.id;
+            const isAccessible = index === 0 || isEpisodeAccessible(episode.id) || isCurrent;
+            const isLocked = !isAccessible;
             
             return (
               <div key={episode.id} className="space-y-1">
                 <div
-                  className={`w-full text-left p-3 rounded-lg transition-all cursor-pointer ${
+                  className={`w-full text-left p-3 rounded-lg transition-all ${
+                    isLocked ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+                  } ${
                     isCurrent 
                       ? 'bg-primary text-primary-foreground shadow-lg' 
+                      : isLocked
+                      ? 'bg-muted/50 text-muted-foreground'
                       : 'bg-card hover:bg-card/80 text-foreground hover:shadow-md'
                   }`}
                 >
@@ -31,6 +46,7 @@ function EpisodesSidebar({ novel, currentEpisodeId, onEpisodeSelect, onShowParag
                     <div 
                       className="flex items-center gap-2 flex-1"
                       onClick={() => {
+                        if (isLocked) return;
                         if (isCurrent) {
                           onShowParagraphs(episode.id);
                         } else {
@@ -38,6 +54,7 @@ function EpisodesSidebar({ novel, currentEpisodeId, onEpisodeSelect, onShowParag
                         }
                       }}
                     >
+                      {isLocked && <Icon name="Lock" size={14} className="flex-shrink-0" />}
                       <span className="font-bold text-sm">{index + 1}.</span>
                       <span className="text-sm font-medium">{episode.title}</span>
                     </div>
@@ -56,6 +73,7 @@ function EpisodesSidebar({ novel, currentEpisodeId, onEpisodeSelect, onShowParag
                   <div 
                     className="text-xs opacity-70 mt-1"
                     onClick={() => {
+                      if (isLocked) return;
                       if (isCurrent) {
                         onShowParagraphs(episode.id);
                       } else {
@@ -63,7 +81,7 @@ function EpisodesSidebar({ novel, currentEpisodeId, onEpisodeSelect, onShowParag
                       }
                     }}
                   >
-                    {episode.paragraphs.length} параграфов
+                    {isLocked ? 'Заблокирован' : `${episode.paragraphs.length} параграфов`}
                   </div>
                 </div>
               </div>

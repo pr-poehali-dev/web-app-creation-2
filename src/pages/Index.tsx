@@ -236,6 +236,7 @@ function Index() {
         <EpisodesSidebar
           novel={novel}
           currentEpisodeId={profile.currentEpisodeId}
+          profile={profile}
           onEpisodeSelect={(episodeId, paragraphIndex) => {
             handleEpisodeSelect(episodeId, paragraphIndex);
             setShowSidebar(false);
