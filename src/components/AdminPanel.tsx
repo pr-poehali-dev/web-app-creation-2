@@ -26,13 +26,19 @@ function AdminPanel({ novel, onUpdate, onLogout, authState }: AdminPanelProps) {
   const selectedEpisode = novel.episodes.find(ep => ep.id === selectedEpisodeId);
 
   const handleAddEpisode = () => {
+    const timestamp = Date.now();
     const newEpisode = {
-      id: `ep${Date.now()}`,
+      id: `ep${timestamp}`,
       title: 'Новый эпизод',
       position: { x: 100 + novel.episodes.length * 50, y: 100 + novel.episodes.length * 50 },
       paragraphs: [
         {
-          id: `p${Date.now()}`,
+          id: `p${timestamp}`,
+          type: 'background' as const,
+          url: 'https://cdn.poehali.dev/projects/821accb9-788a-49b3-9e90-832ee920f37b/bucket/u3875968173_quote_background_close-up_of_japanese_lanterns_wi_7076d7a0-fe3b-4374-aa35-93e85d6c7fe8_0.png'
+        },
+        {
+          id: `p${timestamp + 1}`,
           type: 'text' as const,
           content: 'Новый текст'
         }
