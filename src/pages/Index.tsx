@@ -18,6 +18,7 @@ import Icon from '@/components/ui/icon';
 
 const initialNovel: Novel = {
   title: 'Тайна старого особняка',
+  paths: [],
   episodes: [
     {
       id: 'ep1',

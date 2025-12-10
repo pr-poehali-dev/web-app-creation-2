@@ -36,6 +36,14 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
     b => b.episodeId === currentEpisodeId && b.paragraphIndex === currentParagraphIndex
   );
 
+  // Проверка доступности параграфа
+  const isParagraphAccessible = (episodeId: string, paragraphIndex: number) => {
+    const paragraphId = `${episodeId}-${paragraphIndex}`;
+    if (paragraphIndex === 0) return true;
+    const prevParagraphId = `${episodeId}-${paragraphIndex - 1}`;
+    return profile.readParagraphs.includes(prevParagraphId);
+  };
+
   const handleAddBookmark = (comment: string) => {
     const newBookmark: Bookmark = {
       id: `bm${Date.now()}`,
@@ -64,6 +72,18 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
 
   const goToNextParagraph = useCallback(() => {
     if (!currentEpisode) return;
+
+    // Отмечаем текущий параграф как прочитанный
+    const currentParagraphId = `${currentEpisodeId}-${currentParagraphIndex}`;
+    onProfileUpdate(prev => {
+      if (!prev.readParagraphs.includes(currentParagraphId)) {
+        return {
+          ...prev,
+          readParagraphs: [...prev.readParagraphs, currentParagraphId]
+        };
+      }
+      return prev;
+    });
 
     let nextIndex = currentParagraphIndex + 1;
     
@@ -147,7 +167,33 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
     }
   }, [currentParagraphIndex, currentEpisode, currentEpisodeId, onProfileUpdate]);
 
-  const handleChoice = useCallback((nextEpisodeId?: string, nextParagraphIndex?: number) => {
+  const handleChoice = useCallback((choiceId: string, pathId: string | undefined, oneTime: boolean | undefined, nextEpisodeId?: string, nextParagraphIndex?: number) => {
+    // Отмечаем выбор как использованный если он одноразовый
+    if (oneTime) {
+      onProfileUpdate(prev => {
+        if (!prev.usedChoices.includes(choiceId)) {
+          return {
+            ...prev,
+            usedChoices: [...prev.usedChoices, choiceId]
+          };
+        }
+        return prev;
+      });
+    }
+
+    // Активируем путь если указан
+    if (pathId) {
+      onProfileUpdate(prev => {
+        if (!prev.activePaths.includes(pathId)) {
+          return {
+            ...prev,
+            activePaths: [...prev.activePaths, pathId]
+          };
+        }
+        return prev;
+      });
+    }
+
     if (nextEpisodeId) {
       onProfileUpdate(prev => ({
         ...prev,
@@ -380,7 +426,12 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
             {currentParagraph.type === 'choice' && (
               <ChoiceBox
                 question={currentParagraph.question}
-                options={currentParagraph.options}
+                options={currentParagraph.options.filter(opt => {
+                  // Фильтруем недоступные выборы
+                  if (opt.oneTime && profile.usedChoices.includes(opt.id)) return false;
+                  if (opt.requiredPath && !profile.activePaths.includes(opt.requiredPath)) return false;
+                  return true;
+                })}
                 onChoice={handleChoice}
               />
             )}

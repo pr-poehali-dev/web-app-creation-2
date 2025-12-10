@@ -45,6 +45,9 @@ export interface UserProfile {
   metCharacters: MetCharacter[];
   currentEpisodeId: string;
   currentParagraphIndex: number;
+  readParagraphs: string[];
+  usedChoices: string[];
+  activePaths: string[];
 }
 
 export interface ReadProgress {
@@ -74,5 +77,8 @@ export const defaultProfile: UserProfile = {
   collectedItems: [],
   metCharacters: [],
   currentEpisodeId: 'ep1',
-  currentParagraphIndex: 0
+  currentParagraphIndex: 0,
+  readParagraphs: [],
+  usedChoices: [],
+  activePaths: []
 };

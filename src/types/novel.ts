@@ -25,6 +25,8 @@ export interface ChoiceParagraph extends BaseParagraph {
     text: string;
     nextEpisodeId?: string;
     nextParagraphIndex?: number;
+    requiredPath?: string;
+    oneTime?: boolean;
   }[];
 }
 
@@ -62,6 +64,7 @@ export interface Episode {
   backgroundMusic?: string;
   nextEpisodeId?: string;
   nextParagraphIndex?: number;
+  requiredPath?: string;
 }
 
 export interface LibraryItem {
@@ -98,6 +101,13 @@ export interface HomePage {
   news: NewsItem[];
 }
 
+export interface Path {
+  id: string;
+  name: string;
+  description?: string;
+  color?: string;
+}
+
 export interface Novel {
   id?: string;
   title: string;
@@ -110,6 +120,7 @@ export interface Novel {
     characters: LibraryCharacter[];
     choices: LibraryChoice[];
   };
+  paths?: Path[];
   homePage?: HomePage;
   fileStorage?: {
     images: { id: string; name: string; url: string }[];

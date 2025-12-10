@@ -190,6 +190,24 @@ function EpisodeHeader({ episode, novel, onUpdate, onNovelUpdate }: EpisodeHeade
       </CardHeader>
       <CardContent className="space-y-3">
         <div>
+          <Label className="text-foreground">ID эпизода</Label>
+          <Input value={episode.id} disabled className="font-mono text-sm mt-1" />
+        </div>
+
+        <div>
+          <Label className="text-foreground">Требуемый путь (опционально)</Label>
+          <Input 
+            value={episode.requiredPath || ''} 
+            onChange={(e) => onUpdate({ ...episode, requiredPath: e.target.value || undefined })}
+            placeholder="Оставьте пустым для общего доступа"
+            className="font-mono text-sm mt-1"
+          />
+          <p className="text-xs text-muted-foreground mt-1">
+            Если указан, эпизод доступен только игрокам с активным путём
+          </p>
+        </div>
+
+        <div>
           <Label className="text-foreground">Фоновая музыка</Label>
           <div className="flex gap-2 mt-2">
             <Dialog open={showMusicDialog} onOpenChange={setShowMusicDialog}>

@@ -70,6 +70,51 @@ function ChoiceEditor({
             }}
             className="text-foreground"
           />
+          <div className="space-y-2 p-2 bg-muted/30 rounded">
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <Label className="text-xs flex items-center gap-1">
+                  <Icon name="GitBranch" size={12} />
+                  Активирует путь
+                </Label>
+                <Select
+                  value={option.requiredPath || 'none'}
+                  onValueChange={(value) => {
+                    const newOptions = [...paragraph.options];
+                    newOptions[optIndex] = { ...option, requiredPath: value === 'none' ? undefined : value };
+                    onUpdate(index, { ...paragraph, options: newOptions });
+                  }}
+                >
+                  <SelectTrigger className="text-foreground text-xs h-8">
+                    <SelectValue placeholder="Нет" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">Нет</SelectItem>
+                    {novel.paths?.map((path) => (
+                      <SelectItem key={path.id} value={path.id}>{path.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex items-end">
+                <label className="flex items-center gap-2 cursor-pointer text-xs">
+                  <input
+                    type="checkbox"
+                    checked={option.oneTime || false}
+                    onChange={(e) => {
+                      const newOptions = [...paragraph.options];
+                      newOptions[optIndex] = { ...option, oneTime: e.target.checked };
+                      onUpdate(index, { ...paragraph, options: newOptions });
+                    }}
+                    className="rounded"
+                  />
+                  Одноразовый
+                </label>
+              </div>
+            </div>
+          </div>
+
           <div className="flex gap-2 items-start">
             <div className="flex-1 space-y-2">
               <Label className="text-xs">Следующий эпизод</Label>
