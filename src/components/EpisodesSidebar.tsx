@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Novel } from '@/types/novel';
 import { UserProfile } from '@/types/settings';
 import { Button } from '@/components/ui/button';
@@ -12,42 +13,60 @@ interface EpisodesSidebarProps {
 }
 
 function EpisodesSidebar({ novel, currentEpisodeId, profile, onEpisodeSelect, onShowParagraphs }: EpisodesSidebarProps) {
-  const isEpisodeFullyRead = (episodeId: string) => {
-    const episode = novel.episodes.find(ep => ep.id === episodeId);
-    if (!episode) return false;
-    if (!profile.readParagraphs || !Array.isArray(profile.readParagraphs)) return false;
-    
-    for (let i = 0; i < episode.paragraphs.length; i++) {
-      const paragraphId = `${episodeId}-${i}`;
-      if (!profile.readParagraphs.includes(paragraphId)) {
-        return false;
-      }
-    }
-    return true;
-  };
+  // Создаем Set для быстрого поиска прочитанных параграфов
+  const readParagraphsSet = useMemo(() => {
+    return new Set(profile.readParagraphs || []);
+  }, [profile.readParagraphs]);
 
-  const isEpisodeAccessible = (index: number) => {
-    if (index === 0) return true;
-    const episode = novel.episodes[index];
-    if (episode.unlockedForAll) return true;
-    const prevEpisode = novel.episodes[index - 1];
-    return isEpisodeFullyRead(prevEpisode.id);
-  };
-
-  const getLastReadParagraphIndex = (episodeId: string) => {
-    const episode = novel.episodes.find(ep => ep.id === episodeId);
-    if (!episode) return 0;
-    if (!profile.readParagraphs || !Array.isArray(profile.readParagraphs)) return 0;
-    
-    // Найти последний прочитанный параграф
-    for (let i = episode.paragraphs.length - 1; i >= 0; i--) {
-      const paragraphId = `${episodeId}-${i}`;
-      if (profile.readParagraphs.includes(paragraphId)) {
-        return i;
+  // Кэшируем статус эпизодов
+  const episodesStatus = useMemo(() => {
+    return novel.episodes.map((episode, index) => {
+      // Проверяем полностью ли прочитан эпизод
+      let isFullyRead = true;
+      for (let i = 0; i < episode.paragraphs.length; i++) {
+        const paragraphId = `${episode.id}-${i}`;
+        if (!readParagraphsSet.has(paragraphId)) {
+          isFullyRead = false;
+          break;
+        }
       }
-    }
-    return 0;
-  };
+
+      // Находим последний прочитанный параграф
+      let lastReadIndex = 0;
+      for (let i = episode.paragraphs.length - 1; i >= 0; i--) {
+        const paragraphId = `${episode.id}-${i}`;
+        if (readParagraphsSet.has(paragraphId)) {
+          lastReadIndex = i;
+          break;
+        }
+      }
+
+      // Проверяем доступность эпизода
+      let isAccessible = false;
+      if (index === 0 || episode.unlockedForAll) {
+        isAccessible = true;
+      } else if (index > 0) {
+        const prevEpisodeStatus = index > 0 ? novel.episodes[index - 1] : null;
+        if (prevEpisodeStatus) {
+          let prevFullyRead = true;
+          for (let i = 0; i < prevEpisodeStatus.paragraphs.length; i++) {
+            const paragraphId = `${prevEpisodeStatus.id}-${i}`;
+            if (!readParagraphsSet.has(paragraphId)) {
+              prevFullyRead = false;
+              break;
+            }
+          }
+          isAccessible = prevFullyRead;
+        }
+      }
+
+      return {
+        isFullyRead,
+        lastReadIndex,
+        isAccessible
+      };
+    });
+  }, [novel.episodes, readParagraphsSet]);
   return (
     <div className="w-80 h-full bg-card border-r border-border overflow-y-auto flex-shrink-0">
       <div className="p-4">
@@ -55,9 +74,10 @@ function EpisodesSidebar({ novel, currentEpisodeId, profile, onEpisodeSelect, on
         <div className="space-y-2">
           {novel.episodes.map((episode, index) => {
             const isCurrent = currentEpisodeId === episode.id;
-            const isAccessible = isEpisodeAccessible(index) || isCurrent;
+            const status = episodesStatus[index];
+            const isAccessible = status.isAccessible || isCurrent;
             const isLocked = !isAccessible;
-            const isFullyRead = isEpisodeFullyRead(episode.id);
+            const isFullyRead = status.isFullyRead;
             
             return (
               <div key={episode.id} className="space-y-1">
@@ -77,8 +97,7 @@ function EpisodesSidebar({ novel, currentEpisodeId, profile, onEpisodeSelect, on
                       className="flex items-center gap-2 flex-1"
                       onClick={() => {
                         if (isLocked) return;
-                        const paragraphIndex = getLastReadParagraphIndex(episode.id);
-                        onEpisodeSelect(episode.id, paragraphIndex);
+                        onEpisodeSelect(episode.id, status.lastReadIndex);
                       }}
                     >
                       {isLocked && <Icon name="Lock" size={14} className="flex-shrink-0" />}
