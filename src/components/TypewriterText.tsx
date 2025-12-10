@@ -137,14 +137,6 @@ function TypewriterText({ text, speed = 50, skipTyping = false, onComplete }: Ty
   
   const cleanText = getCleanText(text);
   const targetLength = cleanText.length;
-  
-  console.log('[TypewriterText] Component mounted/updated:', {
-    textPreview: text.substring(0, 20) + '...',
-    speed,
-    skipTyping,
-    currentIndex,
-    targetLength
-  });
 
   useEffect(() => {
     if (skipTyping) {

@@ -16,6 +16,7 @@ interface NovelReaderContentProps {
   handleTypingComplete: () => void;
   handleChoice: (choiceId: string, pathId: string | undefined, oneTime: boolean | undefined, nextEpisodeId?: string, nextParagraphIndex?: number) => void;
   onProfileUpdate: (profile: UserProfile | ((prev: UserProfile) => UserProfile)) => void;
+  paragraphKey: string;
 }
 
 function NovelReaderContent({
@@ -27,7 +28,8 @@ function NovelReaderContent({
   skipTyping,
   handleTypingComplete,
   handleChoice,
-  onProfileUpdate
+  onProfileUpdate,
+  paragraphKey
 }: NovelReaderContentProps) {
   const novelFontStyle = {
     fontFamily: settings.fontFamily === 'merriweather' ? '"Merriweather", serif' :
@@ -51,7 +53,7 @@ function NovelReaderContent({
           'text-lg md:text-xl'
         }`} style={novelFontStyle}>
           <TypewriterText 
-            key={currentParagraph.id}
+            key={paragraphKey}
             text={currentParagraph.content}
             speed={settings.textSpeed}
             skipTyping={skipTyping}
@@ -62,7 +64,7 @@ function NovelReaderContent({
 
       {currentParagraph.type === 'dialogue' && (
         <DialogueBox
-          key={currentParagraph.id}
+          key={paragraphKey}
           characterName={currentParagraph.characterName}
           characterImage={currentParagraph.characterImage}
           text={currentParagraph.text}
@@ -108,7 +110,7 @@ function NovelReaderContent({
 
       {currentParagraph.type === 'item' && (
         <ItemBox
-          key={currentParagraph.id}
+          key={paragraphKey}
           name={currentParagraph.name}
           description={currentParagraph.description}
           imageUrl={currentParagraph.imageUrl}

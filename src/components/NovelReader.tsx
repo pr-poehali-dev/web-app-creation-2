@@ -270,6 +270,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
             handleTypingComplete={handleTypingComplete}
             handleChoice={handleChoice}
             onProfileUpdate={onProfileUpdate}
+            paragraphKey={`${currentEpisodeId}-${currentParagraphIndex}`}
           />
         )}
 
