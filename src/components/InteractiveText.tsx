@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 
@@ -10,6 +10,8 @@ interface InteractiveTextProps {
 function InteractiveText({ text, className = '' }: InteractiveTextProps) {
   const [mobileHint, setMobileHint] = useState<{ content: string; hint: string } | null>(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [tooltipPosition, setTooltipPosition] = useState<{ side: 'top' | 'bottom' | 'left' | 'right'; align: 'start' | 'center' | 'end' }>({ side: 'top', align: 'center' });
+  const triggerRef = useRef<HTMLSpanElement>(null);
 
   // Определяем мобильное устройство
   useEffect(() => {
@@ -18,6 +20,43 @@ function InteractiveText({ text, className = '' }: InteractiveTextProps) {
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  // Вычисляем оптимальную позицию подсказки
+  const calculateTooltipPosition = (e: React.MouseEvent) => {
+    const mouseX = e.clientX;
+    const mouseY = e.clientY;
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+
+    // Расстояния до краёв
+    const distanceToRight = windowWidth - mouseX;
+    const distanceToLeft = mouseX;
+    const distanceToBottom = windowHeight - mouseY;
+    const distanceToTop = mouseY;
+
+    // Находим максимальное расстояние
+    const maxDistance = Math.max(distanceToRight, distanceToLeft, distanceToBottom, distanceToTop);
+
+    let side: 'top' | 'bottom' | 'left' | 'right' = 'top';
+    let align: 'start' | 'center' | 'end' = 'center';
+
+    // Выбираем сторону с наибольшим пространством
+    if (maxDistance === distanceToTop) {
+      side = 'top';
+      align = distanceToLeft > distanceToRight ? 'end' : 'start';
+    } else if (maxDistance === distanceToBottom) {
+      side = 'bottom';
+      align = distanceToLeft > distanceToRight ? 'end' : 'start';
+    } else if (maxDistance === distanceToLeft) {
+      side = 'left';
+      align = distanceToTop > distanceToBottom ? 'end' : 'start';
+    } else {
+      side = 'right';
+      align = distanceToTop > distanceToBottom ? 'end' : 'start';
+    }
+
+    setTooltipPosition({ side, align });
+  };
 
   const parseText = (input: string) => {
     const parts: Array<{ 
@@ -119,15 +158,24 @@ function InteractiveText({ text, className = '' }: InteractiveTextProps) {
               );
             }
             
-            // На десктопе оставляем HoverCard
+            // На десктопе оставляем HoverCard с динамической позицией
             return (
               <HoverCard key={index}>
                 <HoverCardTrigger asChild>
-                  <span className="underline decoration-dotted decoration-primary/50 cursor-help text-primary hover:text-primary/80 transition-colors">
+                  <span 
+                    ref={triggerRef}
+                    className="underline decoration-dotted decoration-primary/50 cursor-help text-primary hover:text-primary/80 transition-colors"
+                    onMouseEnter={calculateTooltipPosition}
+                  >
                     {part.content}
                   </span>
                 </HoverCardTrigger>
-                <HoverCardContent className="w-80 bg-card/95 backdrop-blur-sm border-primary/20 mr-20">
+                <HoverCardContent 
+                  className="w-80 bg-card/95 backdrop-blur-sm border-primary/20"
+                  side={tooltipPosition.side}
+                  align={tooltipPosition.align}
+                  sideOffset={10}
+                >
                   <p className="text-sm text-foreground">{part.hint}</p>
                 </HoverCardContent>
               </HoverCard>
