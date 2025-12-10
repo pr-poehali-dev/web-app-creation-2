@@ -35,6 +35,12 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
   const [skipTyping, setSkipTyping] = useState(false);
   const [isFading, setIsFading] = useState(false);
 
+  // Сбрасываем состояния при смене параграфа
+  useEffect(() => {
+    setIsTyping(true);
+    setSkipTyping(false);
+  }, [currentEpisodeId, currentParagraphIndex]);
+
   // Хук навигации
   const {
     isParagraphAccessible,

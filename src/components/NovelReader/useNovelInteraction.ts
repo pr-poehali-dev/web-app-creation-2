@@ -75,11 +75,14 @@ export function useNovelInteraction({
 
     // Если движение было минимальным (тап)
     if (!isLeftSwipe && !isRightSwipe) {
-      // Простое касание - показать весь текст или перелистнуть
+      // Простое касание
       if (isTyping) {
+        // Показать весь текст
         setSkipTyping(true);
         setIsTyping(false);
+        // НЕ переходим к следующему параграфу в этом же событии
       } else {
+        // Текст уже полностью показан - переход к следующему
         if (currentParagraph?.type !== 'choice') {
           goToNextParagraph();
         }
