@@ -18,10 +18,18 @@ interface UserProfilePanelProps {
   onUpdate: (profile: UserProfile) => void;
   onBack: () => void;
   onNavigateTo?: (episodeId: string, paragraphIndex: number) => void;
+  username?: string;
 }
 
-function UserProfilePanel({ profile, novel, onUpdate, onBack, onNavigateTo }: UserProfilePanelProps) {
+const AUTH_API = 'https://functions.poehali.dev/f895202d-2b99-4eae-a334-8b273bf2cbd1';
+
+function UserProfilePanel({ profile, novel, onUpdate, onBack, onNavigateTo, username }: UserProfilePanelProps) {
   const [isEditingName, setIsEditingName] = useState(false);
+  const [oldPassword, setOldPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [passwordSuccess, setPasswordSuccess] = useState('');
 
   const handleDeleteBookmark = (bookmarkId: string) => {
     onUpdate({
@@ -55,6 +63,58 @@ function UserProfilePanel({ profile, novel, onUpdate, onBack, onNavigateTo }: Us
       onUpdate({ ...profile, name: newName.trim() });
     }
     setIsEditingName(false);
+  };
+
+  const handlePasswordChange = async () => {
+    setPasswordError('');
+    setPasswordSuccess('');
+
+    if (!oldPassword || !newPassword || !confirmPassword) {
+      setPasswordError('Заполните все поля');
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setPasswordError('Новые пароли не совпадают');
+      return;
+    }
+
+    if (newPassword.length < 4) {
+      setPasswordError('Пароль должен быть минимум 4 символа');
+      return;
+    }
+
+    if (!username) {
+      setPasswordError('Имя пользователя не найдено');
+      return;
+    }
+
+    try {
+      const response = await fetch(AUTH_API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'change_password',
+          username,
+          old_password: oldPassword,
+          new_password: newPassword
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setPasswordError(data.error || 'Ошибка при смене пароля');
+        return;
+      }
+
+      setPasswordSuccess('Пароль успешно изменен');
+      setOldPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (err) {
+      setPasswordError('Ошибка соединения с сервером');
+    }
   };
 
   const achievements = [
@@ -177,7 +237,7 @@ function UserProfilePanel({ profile, novel, onUpdate, onBack, onNavigateTo }: Us
         <Card className="animate-fade-in" style={{ animationDelay: '200ms' }}>
           <CardContent className="p-6">
             <Tabs defaultValue="achievements" className="w-full">
-              <TabsList className="grid w-full grid-cols-5">
+              <TabsList className="grid w-full grid-cols-6">
                 <TabsTrigger value="achievements" className="flex items-center gap-1">
                   <Icon name="Trophy" size={16} />
                   <span className="hidden md:inline">Достижения</span>
@@ -197,6 +257,10 @@ function UserProfilePanel({ profile, novel, onUpdate, onBack, onNavigateTo }: Us
                 <TabsTrigger value="characters" className="flex items-center gap-1">
                   <Icon name="Users" size={16} />
                   <span className="hidden md:inline">Персонажи</span>
+                </TabsTrigger>
+                <TabsTrigger value="security" className="flex items-center gap-1">
+                  <Icon name="Lock" size={16} />
+                  <span className="hidden md:inline">Безопасность</span>
                 </TabsTrigger>
               </TabsList>
 
@@ -398,6 +462,55 @@ function UserProfilePanel({ profile, novel, onUpdate, onBack, onNavigateTo }: Us
                 ) : (
                   <p className="text-center py-8 text-muted-foreground">Вы ещё не встретили персонажей</p>
                 )}
+              </TabsContent>
+
+              <TabsContent value="security" className="mt-6">
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-lg font-semibold text-foreground mb-4">Смена пароля</h3>
+                    <div className="space-y-4 max-w-md">
+                      <div className="space-y-2">
+                        <Label htmlFor="old-password">Текущий пароль</Label>
+                        <Input
+                          id="old-password"
+                          type="password"
+                          value={oldPassword}
+                          onChange={(e) => setOldPassword(e.target.value)}
+                          placeholder="Введите текущий пароль"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="new-password">Новый пароль</Label>
+                        <Input
+                          id="new-password"
+                          type="password"
+                          value={newPassword}
+                          onChange={(e) => setNewPassword(e.target.value)}
+                          placeholder="Минимум 4 символа"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="confirm-password">Подтвердите новый пароль</Label>
+                        <Input
+                          id="confirm-password"
+                          type="password"
+                          value={confirmPassword}
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                          placeholder="Введите пароль еще раз"
+                        />
+                      </div>
+                      {passwordError && (
+                        <div className="text-sm text-destructive">{passwordError}</div>
+                      )}
+                      {passwordSuccess && (
+                        <div className="text-sm text-green-500">{passwordSuccess}</div>
+                      )}
+                      <Button onClick={handlePasswordChange} className="w-full">
+                        Изменить пароль
+                      </Button>
+                    </div>
+                  </div>
+                </div>
               </TabsContent>
             </Tabs>
           </CardContent>

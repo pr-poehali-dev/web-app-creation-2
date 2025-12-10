@@ -316,6 +316,50 @@ def handler(event, context):
                     'isBase64Encoded': False
                 }
             
+            elif action == 'change_password':
+                username = body_data.get('username', '').strip().lower()
+                old_password = body_data.get('old_password', '')
+                new_password = body_data.get('new_password', '')
+                
+                if not username or not old_password or not new_password:
+                    return {
+                        'statusCode': 400,
+                        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                        'body': json.dumps({'error': 'Все поля обязательны'}),
+                        'isBase64Encoded': False
+                    }
+                
+                if len(new_password) < 4:
+                    return {
+                        'statusCode': 400,
+                        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                        'body': json.dumps({'error': 'Новый пароль должен быть минимум 4 символа'}),
+                        'isBase64Encoded': False
+                    }
+                
+                # Проверяем старый пароль
+                old_hash = hashlib.sha256(old_password.encode()).hexdigest()
+                cur.execute("SELECT id FROM users WHERE username = %s AND password_hash = %s", (username, old_hash))
+                
+                if not cur.fetchone():
+                    return {
+                        'statusCode': 401,
+                        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                        'body': json.dumps({'error': 'Неверный текущий пароль'}),
+                        'isBase64Encoded': False
+                    }
+                
+                # Обновляем пароль
+                new_hash = hashlib.sha256(new_password.encode()).hexdigest()
+                cur.execute("UPDATE users SET password_hash = %s WHERE username = %s", (new_hash, username))
+                
+                return {
+                    'statusCode': 200,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'success': True, 'message': 'Пароль успешно изменен'}),
+                    'isBase64Encoded': False
+                }
+            
             elif action == 'reset_password':
                 email = body_data.get('email', '').strip()
                 

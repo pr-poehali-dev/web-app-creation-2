@@ -138,6 +138,7 @@ function Index() {
         onUpdate={handleProfileUpdate}
         onBack={() => setActiveView('reader')}
         onNavigateTo={handleNavigateToBookmark}
+        username={authState.username || undefined}
       />
     );
   }
