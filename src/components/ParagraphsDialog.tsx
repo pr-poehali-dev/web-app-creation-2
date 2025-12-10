@@ -11,6 +11,7 @@ interface ParagraphsDialogProps {
   onOpenChange: (open: boolean) => void;
   onEpisodeSelect: (episodeId: string, paragraphIndex: number) => void;
   isAdmin?: boolean;
+  isGuest?: boolean;
 }
 
 function ParagraphsDialog({
@@ -20,7 +21,8 @@ function ParagraphsDialog({
   selectedEpisodeId,
   onOpenChange,
   onEpisodeSelect,
-  isAdmin
+  isAdmin,
+  isGuest
 }: ParagraphsDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -35,7 +37,20 @@ function ParagraphsDialog({
             const isCurrentPara = profile.currentEpisodeId === selectedEpisodeId && profile.currentParagraphIndex === pIndex;
             const paragraphId = `${selectedEpisodeId}-${pIndex}`;
             const isVisited = pIndex === 0 || (profile.readParagraphs || []).includes(paragraphId) || (profile.readParagraphs || []).includes(`${selectedEpisodeId}-${pIndex - 1}`);
-            const isLocked = isAdmin ? false : !isVisited;
+            
+            // Для гостей параграфы доступны только в разблокированных эпизодах
+            const episode = novel.episodes.find(ep => ep.id === selectedEpisodeId);
+            const episodeIndex = novel.episodes.findIndex(ep => ep.id === selectedEpisodeId);
+            const isEpisodeAccessibleForGuest = episodeIndex === 0 || episode?.unlockedForAll;
+            
+            let isLocked = false;
+            if (isAdmin) {
+              isLocked = false;
+            } else if (isGuest && !isEpisodeAccessibleForGuest) {
+              isLocked = true;
+            } else {
+              isLocked = !isVisited;
+            }
             
             return (
               <button

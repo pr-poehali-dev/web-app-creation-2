@@ -11,10 +11,11 @@ interface EpisodesSidebarProps {
   onEpisodeSelect: (episodeId: string, paragraphIndex?: number) => void;
   onShowParagraphs: (episodeId: string) => void;
   isAdmin?: boolean;
+  isGuest?: boolean;
   onClose?: () => void;
 }
 
-function EpisodesSidebar({ novel, currentEpisodeId, profile, onEpisodeSelect, onShowParagraphs, isAdmin, onClose }: EpisodesSidebarProps) {
+function EpisodesSidebar({ novel, currentEpisodeId, profile, onEpisodeSelect, onShowParagraphs, isAdmin, isGuest, onClose }: EpisodesSidebarProps) {
   // Создаем Set для быстрого поиска прочитанных параграфов
   const readParagraphsSet = useMemo(() => {
     return new Set(profile.readParagraphs || []);
@@ -48,10 +49,14 @@ function EpisodesSidebar({ novel, currentEpisodeId, profile, onEpisodeSelect, on
       if (isAdmin) {
         // Для админа открыты все эпизоды
         isAccessible = true;
+      } else if (isGuest) {
+        // Для гостей доступны только первый эпизод и те, что разблокированы для всех
+        isAccessible = index === 0 || episode.unlockedForAll;
       } else if (index === 0 || episode.unlockedForAll) {
-        // Первый эпизод или эпизод разблокирован для всех
+        // Для зарегистрированных: первый эпизод или эпизод разблокирован для всех
         isAccessible = true;
       } else if (index > 0) {
+        // Для зарегистрированных: доступен если предыдущий эпизод прочитан полностью
         const prevEpisodeStatus = index > 0 ? novel.episodes[index - 1] : null;
         if (prevEpisodeStatus) {
           let prevFullyRead = true;

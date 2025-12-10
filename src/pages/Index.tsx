@@ -272,6 +272,7 @@ function Index() {
             setShowSidebar(false);
           }}
           isAdmin={authState.isAdmin}
+          isGuest={authState.isGuest}
           onClose={() => setShowSidebar(false)}
         />
       </div>
@@ -323,6 +324,7 @@ function Index() {
         onOpenChange={setShowParagraphsDialog}
         onEpisodeSelect={handleEpisodeSelect}
         isAdmin={authState.isAdmin}
+        isGuest={authState.isGuest}
       />
     </div>
   );
