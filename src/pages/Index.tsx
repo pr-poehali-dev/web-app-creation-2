@@ -280,11 +280,8 @@ function Index() {
       </div>
       
       <NavigationMenu
-        showAdminButton={showAdminButton}
-        adminPassword={adminPassword}
+        isAdmin={authState.isAdmin}
         onSetActiveView={setActiveView}
-        onSetShowAdminButton={setShowAdminButton}
-        onSetAdminPassword={setAdminPassword}
         onAdminLogin={handleAdminLogin}
         episodeId={profile.currentEpisodeId}
         paragraphIndex={profile.currentParagraphIndex}
