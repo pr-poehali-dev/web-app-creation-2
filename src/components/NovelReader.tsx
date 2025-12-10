@@ -91,16 +91,6 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
       setCanNavigate(false);
     }
   }, [currentEpisodeId, currentParagraphIndex, currentParagraph, isFading]);
-  
-  // Авто-переход для background параграфов
-  useEffect(() => {
-    if (currentParagraph?.type === 'background' && !isFading) {
-      const timer = setTimeout(() => {
-        goToNextParagraph();
-      }, 500); // Задержка на плавную смену фона
-      return () => clearTimeout(timer);
-    }
-  }, [currentParagraph, isFading, goToNextParagraph]);
 
   // Хук навигации
   const {
@@ -140,6 +130,16 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
     setIsTyping,
     setSkipTyping
   });
+  
+  // Авто-переход для background параграфов
+  useEffect(() => {
+    if (currentParagraph?.type === 'background' && !isFading) {
+      const timer = setTimeout(() => {
+        goToNextParagraph();
+      }, 500); // Задержка на плавную смену фона
+      return () => clearTimeout(timer);
+    }
+  }, [currentParagraph, isFading, goToNextParagraph]);
 
   const handleAddBookmark = (comment: string) => {
     const newBookmark: Bookmark = {
