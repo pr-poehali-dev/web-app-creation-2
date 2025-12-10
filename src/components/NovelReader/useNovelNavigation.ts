@@ -12,7 +12,6 @@ interface UseNovelNavigationProps {
   onProfileUpdate: (profile: UserProfile | ((prev: UserProfile) => UserProfile)) => void;
   setIsTyping: (value: boolean) => void;
   setSkipTyping: (value: boolean) => void;
-  setIsFading: (value: boolean) => void;
   isGuest?: boolean;
   onGuestLimitReached?: () => void;
 }
@@ -27,7 +26,6 @@ export function useNovelNavigation({
   onProfileUpdate,
   setIsTyping,
   setSkipTyping,
-  setIsFading,
   isGuest = false,
   onGuestLimitReached
 }: UseNovelNavigationProps) {
@@ -71,33 +69,13 @@ export function useNovelNavigation({
     const nextIndex = currentParagraphIndex + 1;
 
     if (nextIndex < currentEpisode.paragraphs.length) {
-      // Запускаем анимацию растворения для текстовых параграфов
-      if (currentParagraph?.type === 'text') {
-        // Если у текущего параграфа установлен slowFade, делаем растворение медленнее
-        const fadeDelay = currentParagraph.slowFade ? 1500 : 300;
-        setIsFading(true);
-        setTimeout(() => {
-          onProfileUpdate(prev => ({
-            ...prev,
-            currentEpisodeId,
-            currentParagraphIndex: nextIndex
-          }));
-          setIsTyping(true);
-          setSkipTyping(false);
-          // Сбрасываем fade только после смены параграфа
-          setTimeout(() => {
-            setIsFading(false);
-          }, 50);
-        }, fadeDelay);
-      } else {
-        onProfileUpdate(prev => ({
-          ...prev,
-          currentEpisodeId,
-          currentParagraphIndex: nextIndex
-        }));
-        setIsTyping(true);
-        setSkipTyping(false);
-      }
+      onProfileUpdate(prev => ({
+        ...prev,
+        currentEpisodeId,
+        currentParagraphIndex: nextIndex
+      }));
+      setIsTyping(true);
+      setSkipTyping(false);
     } else {
       // Переход к следующему эпизоду
       const nextEpisodeId = currentEpisode.nextEpisodeId;
@@ -124,35 +102,16 @@ export function useNovelNavigation({
           return;
         }
 
-        if (currentParagraph?.type === 'text') {
-          // Если у текущего параграфа установлен slowFade, делаем растворение медленнее
-          const fadeDelay = currentParagraph.slowFade ? 1500 : 300;
-          setIsFading(true);
-          setTimeout(() => {
-            onProfileUpdate(prev => ({
-              ...prev,
-              currentEpisodeId: targetEpisodeId,
-              currentParagraphIndex: targetParagraphIdx
-            }));
-            setIsTyping(true);
-            setSkipTyping(false);
-            // Сбрасываем fade только после смены параграфа
-            setTimeout(() => {
-              setIsFading(false);
-            }, 50);
-          }, fadeDelay);
-        } else {
-          onProfileUpdate(prev => ({
-            ...prev,
-            currentEpisodeId: targetEpisodeId,
-            currentParagraphIndex: targetParagraphIdx
-          }));
-          setIsTyping(true);
-          setSkipTyping(false);
-        }
+        onProfileUpdate(prev => ({
+          ...prev,
+          currentEpisodeId: targetEpisodeId,
+          currentParagraphIndex: targetParagraphIdx
+        }));
+        setIsTyping(true);
+        setSkipTyping(false);
       }
     }
-  }, [currentEpisodeId, currentParagraphIndex, currentEpisode, currentParagraph, onProfileUpdate, setIsTyping, setSkipTyping, setIsFading]);
+  }, [currentEpisodeId, currentParagraphIndex, currentEpisode, currentParagraph, onProfileUpdate, setIsTyping, setSkipTyping, novel, isGuest, onGuestLimitReached]);
 
   const goToPreviousParagraph = useCallback(() => {
     if (currentParagraphIndex > 0) {
@@ -166,10 +125,9 @@ export function useNovelNavigation({
         }));
         setIsTyping(true);
         setSkipTyping(false);
-        setIsFading(false);
       }
     }
-  }, [currentParagraphIndex, currentEpisodeId, onProfileUpdate, setIsTyping, setSkipTyping, setIsFading]);
+  }, [currentParagraphIndex, currentEpisodeId, onProfileUpdate, setIsTyping, setSkipTyping]);
 
   const handleChoice = useCallback((choiceId: string, pathId: string | undefined, oneTime: boolean | undefined, nextEpisodeId?: string, nextParagraphIndex?: number) => {
     // Отмечаем выбор как использованный если он одноразовый
