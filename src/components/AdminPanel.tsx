@@ -8,6 +8,7 @@ import NovelVisualization from './NovelVisualization';
 import LibraryManager from './LibraryManager';
 import HomePageEditor from './HomePageEditor';
 import PathsManager from './PathsManager';
+import BulkImportDialog from './BulkImportDialog';
 
 interface AdminPanelProps {
   novel: Novel;
@@ -19,7 +20,7 @@ function AdminPanel({ novel, onUpdate, onLogout }: AdminPanelProps) {
   const [selectedEpisodeId, setSelectedEpisodeId] = useState<string | null>(
     novel.episodes[0]?.id || null
   );
-
+  const [showBulkImport, setShowBulkImport] = useState(false);
   const selectedEpisode = novel.episodes.find(ep => ep.id === selectedEpisodeId);
 
   const handleAddEpisode = () => {
@@ -143,10 +144,16 @@ function AdminPanel({ novel, onUpdate, onLogout }: AdminPanelProps) {
           <TabsContent value="editor" className="space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-bold text-foreground">Эпизоды</h2>
-              <Button onClick={handleAddEpisode}>
-                <Icon name="Plus" size={16} className="mr-2" />
-                Добавить эпизод
-              </Button>
+              <div className="flex gap-2">
+                <Button onClick={() => setShowBulkImport(true)} variant="outline">
+                  <Icon name="Upload" size={16} className="mr-2" />
+                  Массовый импорт
+                </Button>
+                <Button onClick={handleAddEpisode}>
+                  <Icon name="Plus" size={16} className="mr-2" />
+                  Добавить эпизод
+                </Button>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -269,6 +276,13 @@ function AdminPanel({ novel, onUpdate, onLogout }: AdminPanelProps) {
           </TabsContent>
         </Tabs>
       </div>
+
+      <BulkImportDialog
+        open={showBulkImport}
+        novel={novel}
+        onOpenChange={setShowBulkImport}
+        onUpdate={onUpdate}
+      />
     </div>
   );
 }
