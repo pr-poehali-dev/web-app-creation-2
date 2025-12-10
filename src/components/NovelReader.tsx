@@ -263,7 +263,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
 
   return (
     <div 
-      className={`min-h-screen flex items-end justify-center pb-1 px-2 md:px-4 md:pr-32 md:pl-8 ${showGreeting ? '' : 'cursor-pointer'} relative`}
+      className={`min-h-screen flex ${showGreeting ? 'items-center' : 'items-end'} justify-center ${showGreeting ? '' : 'pb-1'} px-2 md:px-4 md:pr-32 md:pl-8 ${showGreeting ? '' : 'cursor-pointer'} relative`}
       onClick={showGreeting ? undefined : handleClick}
       onTouchStart={showGreeting ? undefined : onTouchStart}
       onTouchMove={showGreeting ? undefined : onTouchMove}
@@ -275,16 +275,16 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
                     'Arial, sans-serif'
       }}
     >
-      {/* Фоновое изображение с плавной сменой */}
-      {backgroundImage && (
+      {/* Фоновое изображение с плавной сменой (только если не приветствие) */}
+      {!showGreeting && backgroundImage && (
         <div 
           className="absolute inset-0 bg-cover bg-center transition-opacity duration-500"
           style={{ backgroundImage: `url(${backgroundImage})` }}
         />
       )}
       
-      {/* Слой затемнения чтобы не терять текст */}
-      {backgroundImage && (
+      {/* Слой затемнения чтобы не терять текст (только если не приветствие) */}
+      {!showGreeting && backgroundImage && (
         <div className="absolute inset-0 bg-black/20" />
       )}
       {/* Музыка запускается только когда эпизод открыт (не на экране приветствия) */}
@@ -297,7 +297,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
         />
       )}
 
-      <div className="w-full max-w-4xl relative z-10 mb-1">
+      <div className={`w-full max-w-4xl relative z-10 ${showGreeting ? '' : 'mb-1'}`}>
         {/* Показываем либо приветствие (если showGreetingScreen), либо параграф */}
         {showGreeting ? (
           <div className="text-center animate-fade-in">

@@ -54,7 +54,7 @@ function NovelReaderContent({
             ? `transition-opacity duration-300 ease-in-out ${isFading ? 'opacity-0' : 'opacity-100'}` 
             : ''
         }`}>
-          <div className={`leading-relaxed text-left text-foreground w-full ${
+          <div className={`leading-relaxed text-center text-foreground w-full ${
             settings.textSize === 'small' ? 'text-base md:text-lg' :
             settings.textSize === 'large' ? 'text-xl md:text-2xl' :
             'text-lg md:text-xl'
