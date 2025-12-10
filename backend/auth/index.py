@@ -504,9 +504,7 @@ def handler(event, context):
                         'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
                         'body': json.dumps({
                             'success': True,
-                            'message': 'Новый пароль отправлен на ваш email',
-                            'tempPassword': new_password,
-                            'username': username
+                            'message': 'Новый пароль отправлен на ваш email'
                         }),
                         'isBase64Encoded': False
                     }
