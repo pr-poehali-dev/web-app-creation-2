@@ -97,7 +97,7 @@ function NavigationMenu({
           </Button>
         )}
         
-        {isAdmin ? (
+        {isAdmin && (
           <Button
             variant="ghost"
             size="icon"
@@ -106,15 +106,6 @@ function NavigationMenu({
             title="Админ-панель"
           >
             <Icon name="Settings2" size={20} />
-          </Button>
-        ) : (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="bg-card/50 backdrop-blur-sm hover:bg-card/80 opacity-10 pointer-events-none text-white"
-            title="Только для админов"
-          >
-            <Icon name="Lock" size={20} />
           </Button>
         )}
       </div>

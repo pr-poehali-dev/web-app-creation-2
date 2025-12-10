@@ -11,9 +11,10 @@ interface EpisodesSidebarProps {
   onEpisodeSelect: (episodeId: string, paragraphIndex?: number) => void;
   onShowParagraphs: (episodeId: string) => void;
   isAdmin?: boolean;
+  onClose?: () => void;
 }
 
-function EpisodesSidebar({ novel, currentEpisodeId, profile, onEpisodeSelect, onShowParagraphs, isAdmin }: EpisodesSidebarProps) {
+function EpisodesSidebar({ novel, currentEpisodeId, profile, onEpisodeSelect, onShowParagraphs, isAdmin, onClose }: EpisodesSidebarProps) {
   // Создаем Set для быстрого поиска прочитанных параграфов
   const readParagraphsSet = useMemo(() => {
     return new Set(profile.readParagraphs || []);
@@ -73,9 +74,21 @@ function EpisodesSidebar({ novel, currentEpisodeId, profile, onEpisodeSelect, on
     });
   }, [novel.episodes, readParagraphsSet]);
   return (
-    <div className="w-80 h-full bg-card border-r border-border overflow-y-auto flex-shrink-0">
+    <div className="w-80 h-full bg-card border-r border-border overflow-y-auto flex-shrink-0 relative">
       <div className="p-4">
-        <h2 className="text-lg font-bold text-foreground mb-4">Эпизоды</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-bold text-foreground">Эпизоды</h2>
+          {onClose && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onClose}
+              className="md:hidden"
+            >
+              <Icon name="X" size={20} />
+            </Button>
+          )}
+        </div>
         <div className="space-y-2">
           {novel.episodes.map((episode, index) => {
             const isCurrent = currentEpisodeId === episode.id;

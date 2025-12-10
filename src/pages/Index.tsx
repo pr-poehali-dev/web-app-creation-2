@@ -216,16 +216,6 @@ function Index() {
               <Icon name="Settings2" size={20} />
             </Button>
           )}
-          
-          {!authState.isAdmin && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="bg-card/50 backdrop-blur-sm hover:bg-card/80 opacity-10 pointer-events-none"
-            >
-              <Icon name="Lock" size={20} />
-            </Button>
-          )}
         </div>
       </div>
     );
@@ -244,12 +234,14 @@ function Index() {
 
   return (
     <div className="relative min-h-screen dark flex" style={uiFontStyle}>
-      <button
-        onClick={() => setShowSidebar(!showSidebar)}
-        className="md:hidden fixed top-4 left-4 z-[70] bg-card/90 backdrop-blur-sm p-2 rounded-lg shadow-lg text-white"
-      >
-        <Icon name={showSidebar ? 'X' : 'Menu'} size={20} />
-      </button>
+      {!showSidebar && (
+        <button
+          onClick={() => setShowSidebar(true)}
+          className="md:hidden fixed top-4 left-4 z-[70] bg-card/90 backdrop-blur-sm p-2 rounded-lg shadow-lg text-white"
+        >
+          <Icon name="Menu" size={20} />
+        </button>
+      )}
 
       {profile.currentEpisodeId && !showGreetingScreen && (
         <div className="hidden md:block fixed top-4 left-[340px] z-50">
@@ -280,6 +272,7 @@ function Index() {
             setShowSidebar(false);
           }}
           isAdmin={authState.isAdmin}
+          onClose={() => setShowSidebar(false)}
         />
       </div>
 
