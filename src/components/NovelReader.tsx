@@ -55,7 +55,6 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
 
   // Сбрасываем состояния при смене параграфа
   useEffect(() => {
-    console.log('[NovelReader] Paragraph changed, resetting isTyping');
     setIsTyping(true);
     setSkipTyping(false);
     setCanNavigate(false);

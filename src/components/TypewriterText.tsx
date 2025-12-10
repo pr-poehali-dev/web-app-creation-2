@@ -137,37 +137,18 @@ function TypewriterText({ text, speed = 50, skipTyping = false, onComplete }: Ty
   
   const cleanText = getCleanText(text);
   const targetLength = cleanText.length;
-  
-  console.log('[TypewriterText] Render:', { 
-    textPreview: text.substring(0, 30) + '...', 
-    currentIndex, 
-    targetLength, 
-    skipTyping,
-    displayedLength: displayedText.length 
-  });
 
   useEffect(() => {
-    console.log('[TypewriterText] Main Effect Triggered:', { 
-      skipTyping, 
-      currentIndex, 
-      targetLength,
-      isComplete: currentIndex === targetLength,
-      shouldType: currentIndex < targetLength
-    });
-    
     if (skipTyping) {
-      console.log('[TypewriterText] ⚡ SKIP MODE - showing full text immediately');
       setDisplayedText(text);
       setCurrentIndex(targetLength);
       if (currentIndex < targetLength) {
-        console.log('[TypewriterText] ⚡ Calling onComplete from skip');
         onComplete?.();
       }
       return;
     }
 
     if (currentIndex < targetLength) {
-      console.log('[TypewriterText] ⌨️ Typing character', currentIndex + 1, 'of', targetLength);
       const timeout = setTimeout(() => {
         setDisplayedText(getDisplayText(text, currentIndex + 1));
         setCurrentIndex(currentIndex + 1);
@@ -175,13 +156,11 @@ function TypewriterText({ text, speed = 50, skipTyping = false, onComplete }: Ty
 
       return () => clearTimeout(timeout);
     } else if (currentIndex === targetLength && currentIndex > 0) {
-      console.log('[TypewriterText] ✅ Typing COMPLETE - calling onComplete');
       onComplete?.();
     }
   }, [currentIndex, text, targetLength, speed, skipTyping]);
 
   useEffect(() => {
-    console.log('[TypewriterText] 🔄 TEXT CHANGED - resetting state. New text:', text.substring(0, 30) + '...');
     setDisplayedText('');
     setCurrentIndex(0);
   }, [text]);

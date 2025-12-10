@@ -51,6 +51,7 @@ function NovelReaderContent({
           'text-lg md:text-xl'
         }`} style={novelFontStyle}>
           <TypewriterText 
+            key={currentParagraph.id}
             text={currentParagraph.content}
             speed={settings.textSpeed}
             skipTyping={skipTyping}
@@ -61,6 +62,7 @@ function NovelReaderContent({
 
       {currentParagraph.type === 'dialogue' && (
         <DialogueBox
+          key={currentParagraph.id}
           characterName={currentParagraph.characterName}
           characterImage={currentParagraph.characterImage}
           text={currentParagraph.text}
@@ -106,6 +108,7 @@ function NovelReaderContent({
 
       {currentParagraph.type === 'item' && (
         <ItemBox
+          key={currentParagraph.id}
           name={currentParagraph.name}
           description={currentParagraph.description}
           imageUrl={currentParagraph.imageUrl}
