@@ -127,39 +127,34 @@ const getDisplayText = (text: string, targetLength: number): string => {
 function TypewriterText({ text, speed = 50, skipTyping = false, onComplete }: TypewriterTextProps) {
   const [displayedText, setDisplayedText] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isComplete, setIsComplete] = useState(false);
-  
   const targetLength = getCleanText(text).length;
 
   useEffect(() => {
     setDisplayedText('');
     setCurrentIndex(0);
-    setIsComplete(false);
   }, [text]);
 
   useEffect(() => {
-    if (isComplete) return;
-
-    if (skipTyping) {
+    if (skipTyping && currentIndex < targetLength) {
       setDisplayedText(text);
       setCurrentIndex(targetLength);
-      setIsComplete(true);
       onComplete?.();
       return;
     }
 
-    if (currentIndex < targetLength) {
+    if (currentIndex < targetLength && !skipTyping) {
       const timeout = setTimeout(() => {
         setDisplayedText(getDisplayText(text, currentIndex + 1));
         setCurrentIndex(prev => prev + 1);
       }, speed);
 
       return () => clearTimeout(timeout);
-    } else if (currentIndex === targetLength && currentIndex > 0 && !isComplete) {
-      setIsComplete(true);
+    }
+    
+    if (currentIndex === targetLength && currentIndex > 0) {
       onComplete?.();
     }
-  }, [currentIndex, targetLength, speed, skipTyping, text, isComplete, onComplete]);
+  }, [currentIndex, targetLength, speed, skipTyping, text, onComplete]);
 
   return <InteractiveText text={displayedText} />;
 }
