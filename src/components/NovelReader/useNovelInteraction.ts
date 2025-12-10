@@ -60,15 +60,21 @@ export function useNovelInteraction({
     setTouchEnd(e.targetTouches[0].clientX);
   };
 
-  const onTouchEnd = () => {
+  const onTouchEnd = (e: React.TouchEvent) => {
     if (!touchStart) {
       setTouchStart(null);
       setTouchEnd(null);
       return;
     }
 
-    // Если touchEnd не установлен, это простое касание (тап), а не свайп
-    if (!touchEnd) {
+    // Проверяем, было ли движение
+    const finalTouch = touchEnd !== null ? touchEnd : e.changedTouches[0].clientX;
+    const distance = touchStart - finalTouch;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    // Если движение было минимальным (тап)
+    if (!isLeftSwipe && !isRightSwipe) {
       // Простое касание - показать весь текст или перелистнуть
       if (isTyping) {
         setSkipTyping(true);
@@ -78,21 +84,15 @@ export function useNovelInteraction({
           goToNextParagraph();
         }
       }
-      setTouchStart(null);
-      setTouchEnd(null);
-      return;
-    }
-    
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
-
-    if (isLeftSwipe && !isTyping && currentParagraph?.type !== 'choice') {
-      goToNextParagraph();
-    }
-    
-    if (isRightSwipe) {
-      goToPreviousParagraph();
+    } else {
+      // Свайп
+      if (isLeftSwipe && !isTyping && currentParagraph?.type !== 'choice') {
+        goToNextParagraph();
+      }
+      
+      if (isRightSwipe) {
+        goToPreviousParagraph();
+      }
     }
 
     setTouchStart(null);
