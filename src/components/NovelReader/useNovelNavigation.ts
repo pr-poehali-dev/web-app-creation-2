@@ -74,7 +74,7 @@ export function useNovelNavigation({
       // Запускаем анимацию растворения для текстовых параграфов
       if (currentParagraph?.type === 'text') {
         // Если у текущего параграфа установлен slowFade, делаем растворение медленнее
-        const fadeDelay = currentParagraph.slowFade ? 1500 : 300;
+        const fadeDelay = currentParagraph.slowFade ? 3000 : 300;
         setIsFading(true);
         setTimeout(() => {
           onProfileUpdate(prev => ({
@@ -126,7 +126,7 @@ export function useNovelNavigation({
 
         if (currentParagraph?.type === 'text') {
           // Если у текущего параграфа установлен slowFade, делаем растворение медленнее
-          const fadeDelay = currentParagraph.slowFade ? 1500 : 300;
+          const fadeDelay = currentParagraph.slowFade ? 3000 : 300;
           setIsFading(true);
           setTimeout(() => {
             onProfileUpdate(prev => ({

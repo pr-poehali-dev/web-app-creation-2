@@ -49,7 +49,7 @@ function NovelReaderContent({
       {currentParagraph.type === 'text' && (
         <div className={`leading-relaxed text-left text-foreground px-2 py-4 md:p-8 transition-opacity ease-in-out ${
           isFading 
-            ? `opacity-0 ${currentParagraph.slowFade ? 'duration-[1500ms]' : 'duration-300'}` 
+            ? `opacity-0 ${currentParagraph.slowFade ? 'duration-[3000ms]' : 'duration-300'}` 
             : 'opacity-100 duration-300'
         } ${
           settings.textSize === 'small' ? 'text-base md:text-lg' :

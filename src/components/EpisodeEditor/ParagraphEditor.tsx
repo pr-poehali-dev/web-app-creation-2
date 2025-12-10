@@ -306,7 +306,7 @@ function ParagraphEditor({
                   onCheckedChange={(checked) => onUpdate(index, { ...paragraph, slowFade: checked as boolean })}
                 />
                 <Label htmlFor={`slow-fade-${index}`} className="text-sm text-muted-foreground cursor-pointer">
-                  Медленное растворение (1.5s)
+                  Медленное растворение (3s)
                 </Label>
               </div>
             )}
