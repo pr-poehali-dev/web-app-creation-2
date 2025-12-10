@@ -49,8 +49,10 @@ function NovelReaderContent({
   return (
     <>
       {currentParagraph.type === 'text' && (
-        <div className={`leading-relaxed text-left text-foreground px-2 py-4 md:p-8 transition-opacity duration-300 ease-in-out ${
-          isFading ? 'opacity-0' : 'opacity-100'
+        <div className={`leading-relaxed text-left text-foreground px-2 py-4 md:p-8 ${
+          currentParagraph.slowFade 
+            ? `transition-opacity duration-300 ease-in-out ${isFading ? 'opacity-0' : 'opacity-100'}` 
+            : ''
         } ${
           settings.textSize === 'small' ? 'text-base md:text-lg' :
           settings.textSize === 'large' ? 'text-xl md:text-2xl' :
@@ -67,9 +69,9 @@ function NovelReaderContent({
       )}
 
       {currentParagraph.type === 'dialogue' && (
-        <div className={`transition-opacity duration-300 ease-in-out ${
+        <div className={currentParagraph.slowFade ? `transition-opacity duration-300 ease-in-out ${
           isFading ? 'opacity-0' : 'opacity-100'
-        }`}>
+        }` : ''}>
           <DialogueBox
             key={paragraphKey}
             characterName={currentParagraph.characterName}
@@ -117,9 +119,9 @@ function NovelReaderContent({
       )}
 
       {currentParagraph.type === 'item' && (
-        <div className={`transition-opacity duration-300 ease-in-out ${
+        <div className={currentParagraph.slowFade ? `transition-opacity duration-300 ease-in-out ${
           isFading ? 'opacity-0' : 'opacity-100'
-        }`}>
+        }` : ''}>
           <ItemBox
             key={paragraphKey}
             name={currentParagraph.name}
