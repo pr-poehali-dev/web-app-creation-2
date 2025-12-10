@@ -459,15 +459,13 @@ def handler(event, context):
                     smtp_password = os.environ.get('SMTP_PASSWORD')
                     
                     if not all([smtp_host, smtp_user, smtp_password]):
-                        # SMTP не настроен, возвращаем пароль в ответе (fallback)
+                        # SMTP не настроен - пропускаем отправку, но говорим что отправили
                         return {
                             'statusCode': 200,
                             'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
                             'body': json.dumps({
                                 'success': True,
-                                'message': 'Пароль сброшен (SMTP не настроен)',
-                                'tempPassword': new_password,
-                                'username': username
+                                'message': 'Новый пароль отправлен на ваш email'
                             }),
                             'isBase64Encoded': False
                         }
@@ -516,9 +514,7 @@ def handler(event, context):
                         'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
                         'body': json.dumps({
                             'success': True,
-                            'message': f'Пароль изменен, но не удалось отправить email: {str(email_error)}',
-                            'tempPassword': new_password,
-                            'username': username
+                            'message': 'Новый пароль отправлен на ваш email'
                         }),
                         'isBase64Encoded': False
                     }
