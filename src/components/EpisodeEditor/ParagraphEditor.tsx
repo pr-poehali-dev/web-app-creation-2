@@ -44,29 +44,58 @@ function ParagraphEditor({
     let newParagraph: Paragraph;
     const id = paragraph.id;
 
+    // Извлекаем текст из текущего параграфа
+    let preservedText = '';
+    if (paragraph.type === 'text') {
+      preservedText = paragraph.content;
+    } else if (paragraph.type === 'dialogue') {
+      preservedText = paragraph.text;
+    } else if (paragraph.type === 'item') {
+      preservedText = paragraph.description;
+    } else if (paragraph.type === 'choice') {
+      preservedText = paragraph.question;
+    }
+
     switch (newType) {
       case 'text':
-        newParagraph = { id, type: 'text', content: 'Новый текст' };
+        newParagraph = { id, type: 'text', content: preservedText || 'Новый текст' };
         break;
       case 'dialogue':
-        newParagraph = { id, type: 'dialogue', characterName: 'Персонаж', text: 'Текст диалога' };
+        newParagraph = { 
+          id, 
+          type: 'dialogue', 
+          characterName: paragraph.type === 'dialogue' ? paragraph.characterName : 'Персонаж',
+          characterImage: paragraph.type === 'dialogue' ? paragraph.characterImage : undefined,
+          text: preservedText || 'Текст диалога' 
+        };
         break;
       case 'choice':
         newParagraph = { 
           id, 
           type: 'choice', 
-          question: 'Ваш выбор?',
-          options: [
+          question: preservedText || 'Ваш выбор?',
+          options: paragraph.type === 'choice' ? paragraph.options : [
             { id: `opt${Date.now()}1`, text: 'Вариант 1' },
             { id: `opt${Date.now()}2`, text: 'Вариант 2' }
           ]
         };
         break;
       case 'item':
-        newParagraph = { id, type: 'item', name: 'Предмет', description: 'Описание предмета' };
+        newParagraph = { 
+          id, 
+          type: 'item', 
+          name: paragraph.type === 'item' ? paragraph.name : 'Предмет',
+          description: preservedText || 'Описание предмета',
+          imageUrl: paragraph.type === 'item' ? paragraph.imageUrl : undefined
+        };
         break;
       case 'image':
-        newParagraph = { id, type: 'image', url: 'https://via.placeholder.com/800x600' };
+        newParagraph = { 
+          id, 
+          type: 'image', 
+          url: paragraph.type === 'image' ? paragraph.url : 'https://via.placeholder.com/800x600',
+          alt: paragraph.type === 'image' ? paragraph.alt : undefined
+        };
         break;
       case 'fade':
         newParagraph = { id, type: 'fade' };
