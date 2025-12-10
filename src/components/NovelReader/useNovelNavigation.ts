@@ -69,13 +69,13 @@ export function useNovelNavigation({
     const nextIndex = currentParagraphIndex + 1;
 
     if (nextIndex < currentEpisode.paragraphs.length) {
+      setIsTyping(true);
+      setSkipTyping(false);
       onProfileUpdate(prev => ({
         ...prev,
         currentEpisodeId,
         currentParagraphIndex: nextIndex
       }));
-      setIsTyping(true);
-      setSkipTyping(false);
     } else {
       // Переход к следующему эпизоду
       const nextEpisodeId = currentEpisode.nextEpisodeId;
@@ -102,13 +102,13 @@ export function useNovelNavigation({
           return;
         }
 
+        setIsTyping(true);
+        setSkipTyping(false);
         onProfileUpdate(prev => ({
           ...prev,
           currentEpisodeId: targetEpisodeId,
           currentParagraphIndex: targetParagraphIdx
         }));
-        setIsTyping(true);
-        setSkipTyping(false);
       }
     }
   }, [currentEpisodeId, currentParagraphIndex, currentEpisode, currentParagraph, onProfileUpdate, setIsTyping, setSkipTyping, novel, isGuest, onGuestLimitReached]);
@@ -118,13 +118,13 @@ export function useNovelNavigation({
       const prevIndex = currentParagraphIndex - 1;
       
       if (prevIndex >= 0) {
+        setIsTyping(true);
+        setSkipTyping(false);
         onProfileUpdate(prev => ({
           ...prev,
           currentEpisodeId,
           currentParagraphIndex: prevIndex
         }));
-        setIsTyping(true);
-        setSkipTyping(false);
       }
     }
   }, [currentParagraphIndex, currentEpisodeId, onProfileUpdate, setIsTyping, setSkipTyping]);
@@ -167,13 +167,13 @@ export function useNovelNavigation({
         return;
       }
 
+      setIsTyping(true);
+      setSkipTyping(false);
       onProfileUpdate(prev => ({
         ...prev,
         currentEpisodeId: nextEpisodeId,
         currentParagraphIndex: nextParagraphIndex || 0
       }));
-      setIsTyping(true);
-      setSkipTyping(false);
     } else {
       goToNextParagraph();
     }
