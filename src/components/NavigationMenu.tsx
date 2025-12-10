@@ -22,6 +22,9 @@ interface NavigationMenuProps {
   username?: string;
   isGuest?: boolean;
   onShowAuthPrompt?: () => void;
+  isMusicPlaying?: boolean;
+  onToggleMusic?: () => void;
+  hasMusic?: boolean;
 }
 
 function NavigationMenu({
@@ -40,7 +43,10 @@ function NavigationMenu({
   onLogout,
   username,
   isGuest = false,
-  onShowAuthPrompt
+  onShowAuthPrompt,
+  isMusicPlaying = false,
+  onToggleMusic,
+  hasMusic = false
 }: NavigationMenuProps) {
   return (
     <div className="fixed top-4 right-4 flex flex-col gap-2 z-50 items-end">
@@ -120,6 +126,22 @@ function NavigationMenu({
           onAdd={onAddBookmark}
           onRemove={onRemoveBookmark}
         />
+      )}
+      
+      {!showGreeting && hasMusic && onToggleMusic && (
+        <Button
+          variant="ghost"
+          size="icon"
+          className="bg-card/50 backdrop-blur-sm hover:bg-card/80 text-white"
+          onClick={onToggleMusic}
+          title={isMusicPlaying ? 'Остановить музыку' : 'Включить музыку'}
+        >
+          {isMusicPlaying ? (
+            <Icon name="Music" size={20} className="animate-pulse" />
+          ) : (
+            <Icon name="MusicOff" size={20} />
+          )}
+        </Button>
       )}
     </div>
   );

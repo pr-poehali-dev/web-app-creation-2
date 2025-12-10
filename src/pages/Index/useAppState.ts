@@ -16,6 +16,7 @@ export function useAppState() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [showGreetingScreen, setShowGreetingScreen] = useState(true);
   const [showAuthPrompt, setShowAuthPrompt] = useState(false);
+  const [isMusicPlaying, setIsMusicPlaying] = useState(false);
 
   useEffect(() => {
     const savedSettings = localStorage.getItem('userSettings');
@@ -74,6 +75,8 @@ export function useAppState() {
     showGreetingScreen,
     setShowGreetingScreen,
     showAuthPrompt,
-    setShowAuthPrompt
+    setShowAuthPrompt,
+    isMusicPlaying,
+    setIsMusicPlaying
   };
 }

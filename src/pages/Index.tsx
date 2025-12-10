@@ -37,7 +37,9 @@ function Index() {
     showGreetingScreen,
     setShowGreetingScreen,
     showAuthPrompt,
-    setShowAuthPrompt
+    setShowAuthPrompt,
+    isMusicPlaying,
+    setIsMusicPlaying
   } = useAppState();
 
   const { isLoading, setNovelForSaving } = useNovelDatabase(setNovel, isAdmin);
@@ -282,6 +284,8 @@ function Index() {
           showGreetingScreen={showGreetingScreen}
           isGuest={authState.isGuest}
           onGuestLimitReached={() => setShowAuthPrompt(true)}
+          isMusicPlaying={isMusicPlaying}
+          onToggleMusic={() => setIsMusicPlaying(!isMusicPlaying)}
         />
         <ActivePathsIndicator novel={novel} profile={profile} />
       </div>
@@ -307,6 +311,9 @@ function Index() {
         username={authState.username || undefined}
         isGuest={authState.isGuest}
         onShowAuthPrompt={() => setShowAuthPrompt(true)}
+        isMusicPlaying={isMusicPlaying}
+        onToggleMusic={() => setIsMusicPlaying(!isMusicPlaying)}
+        hasMusic={!!novel.episodes.find(ep => ep.id === profile.currentEpisodeId)?.backgroundMusic}
       />
 
       <ParagraphsDialog

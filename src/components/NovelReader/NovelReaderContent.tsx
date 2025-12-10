@@ -13,7 +13,6 @@ interface NovelReaderContentProps {
   settings: UserSettings;
   profile: UserProfile;
   skipTyping: boolean;
-  isFading: boolean;
   handleTypingComplete: () => void;
   handleChoice: (choiceId: string, pathId: string | undefined, oneTime: boolean | undefined, nextEpisodeId?: string, nextParagraphIndex?: number) => void;
   onProfileUpdate: (profile: UserProfile | ((prev: UserProfile) => UserProfile)) => void;
@@ -26,7 +25,6 @@ function NovelReaderContent({
   settings,
   profile,
   skipTyping,
-  isFading,
   handleTypingComplete,
   handleChoice,
   onProfileUpdate
@@ -47,11 +45,7 @@ function NovelReaderContent({
   return (
     <>
       {currentParagraph.type === 'text' && (
-        <div className={`leading-relaxed text-left text-foreground px-2 py-4 md:p-8 transition-opacity ease-in-out ${
-          isFading 
-            ? `opacity-0 ${currentParagraph.slowFade ? 'duration-[3000ms]' : 'duration-300'}` 
-            : 'opacity-100 duration-300'
-        } ${
+        <div className={`leading-relaxed text-left text-foreground px-2 py-4 md:p-8 ${
           settings.textSize === 'small' ? 'text-base md:text-lg' :
           settings.textSize === 'large' ? 'text-xl md:text-2xl' :
           'text-lg md:text-xl'
