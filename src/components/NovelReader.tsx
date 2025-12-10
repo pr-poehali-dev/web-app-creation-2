@@ -20,9 +20,11 @@ interface NovelReaderProps {
   showGreetingScreen?: boolean;
   isGuest?: boolean;
   onGuestLimitReached?: () => void;
+  isMusicPlaying: boolean;
+  onToggleMusic: () => void;
 }
 
-function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, currentEpisodeId, currentParagraphIndex, showGreetingScreen = false, isGuest = false, onGuestLimitReached }: NovelReaderProps) {
+function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, currentEpisodeId, currentParagraphIndex, showGreetingScreen = false, isGuest = false, onGuestLimitReached, isMusicPlaying, onToggleMusic }: NovelReaderProps) {
   const currentEpisode = novel.episodes.find(ep => ep.id === currentEpisodeId);
   const currentParagraph = currentEpisode?.paragraphs[currentParagraphIndex];
 
@@ -241,7 +243,12 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
     >
       {/* Музыка запускается только когда эпизод открыт (не на экране приветствия) */}
       {!showGreeting && currentEpisode.backgroundMusic && (
-        <MusicPlayer audioSrc={currentEpisode.backgroundMusic} volume={settings.musicVolume} />
+        <MusicPlayer 
+          audioSrc={currentEpisode.backgroundMusic} 
+          volume={settings.musicVolume}
+          isPlaying={isMusicPlaying}
+          onToggle={onToggleMusic}
+        />
       )}
 
       <div className="w-full max-w-4xl">
