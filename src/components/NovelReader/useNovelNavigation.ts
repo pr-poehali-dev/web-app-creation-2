@@ -31,6 +31,7 @@ export function useNovelNavigation({
   const isParagraphAccessible = (episodeId: string, paragraphIndex: number) => {
     const paragraphId = `${episodeId}-${paragraphIndex}`;
     if (paragraphIndex === 0) return true;
+    if (!profile.readParagraphs || !Array.isArray(profile.readParagraphs)) return false;
     const prevParagraphId = `${episodeId}-${paragraphIndex - 1}`;
     return profile.readParagraphs.includes(prevParagraphId);
   };
@@ -41,10 +42,11 @@ export function useNovelNavigation({
     // Отмечаем текущий параграф как прочитанный
     const currentParagraphId = `${currentEpisodeId}-${currentParagraphIndex}`;
     onProfileUpdate(prev => {
-      if (!prev.readParagraphs.includes(currentParagraphId)) {
+      const readParagraphs = prev.readParagraphs || [];
+      if (!readParagraphs.includes(currentParagraphId)) {
         return {
           ...prev,
-          readParagraphs: [...prev.readParagraphs, currentParagraphId]
+          readParagraphs: [...readParagraphs, currentParagraphId]
         };
       }
       return prev;
@@ -153,10 +155,11 @@ export function useNovelNavigation({
     // Отмечаем выбор как использованный если он одноразовый
     if (oneTime) {
       onProfileUpdate(prev => {
-        if (!prev.usedChoices.includes(choiceId)) {
+        const usedChoices = prev.usedChoices || [];
+        if (!usedChoices.includes(choiceId)) {
           return {
             ...prev,
-            usedChoices: [...prev.usedChoices, choiceId]
+            usedChoices: [...usedChoices, choiceId]
           };
         }
         return prev;
@@ -166,10 +169,11 @@ export function useNovelNavigation({
     // Активируем путь если указан
     if (pathId) {
       onProfileUpdate(prev => {
-        if (!prev.activePaths.includes(pathId)) {
+        const activePaths = prev.activePaths || [];
+        if (!activePaths.includes(pathId)) {
           return {
             ...prev,
-            activePaths: [...prev.activePaths, pathId]
+            activePaths: [...activePaths, pathId]
           };
         }
         return prev;

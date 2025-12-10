@@ -31,7 +31,14 @@ export function useAppState() {
     if (savedProfile) {
       try {
         const parsedProfile = JSON.parse(savedProfile);
-        setProfile(parsedProfile);
+        // Миграция старых профилей: добавляем отсутствующие поля
+        const migratedProfile = {
+          ...parsedProfile,
+          readParagraphs: parsedProfile.readParagraphs || [],
+          usedChoices: parsedProfile.usedChoices || [],
+          activePaths: parsedProfile.activePaths || []
+        };
+        setProfile(migratedProfile);
       } catch (e) {
         console.error('Failed to load profile', e);
       }
