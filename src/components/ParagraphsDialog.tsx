@@ -45,7 +45,7 @@ function ParagraphsDialog({
                   isCurrentPara
                     ? 'bg-primary text-primary-foreground font-semibold shadow-md'
                     : isLocked
-                    ? 'bg-muted text-muted-foreground cursor-not-allowed opacity-50'
+                    ? 'bg-muted text-foreground cursor-not-allowed'
                     : 'bg-muted hover:bg-muted/80 text-foreground hover:shadow-md'
                 }`}
               >
