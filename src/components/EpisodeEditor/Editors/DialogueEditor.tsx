@@ -31,6 +31,12 @@ function DialogueEditor({
   handleImageUpload,
   handleSelectCharacter
 }: DialogueEditorProps) {
+  const character = novel.library.characters.find(c => c.name === paragraph.characterName);
+  const allImages = character ? [
+    ...(character.defaultImage ? [{ id: 'default', url: character.defaultImage, name: 'По умолчанию' }] : []),
+    ...(character.images || [])
+  ] : [];
+
   return (
     <div className="space-y-2">
       <div className="flex gap-2">
@@ -71,39 +77,35 @@ function DialogueEditor({
               <DialogTitle>Добавить изображение персонажа</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
-              {(() => {
-                const character = novel.library.characters.find(c => c.name === paragraph.characterName);
-                if (character && character.images?.length > 0) {
-                  return (
-                    <div>
-                      <Label>Выбрать из персонажа</Label>
-                      <div className="grid grid-cols-3 gap-2 mt-2">
-                        {character.images.map((img) => (
-                          <div
-                            key={img.id}
-                            className="cursor-pointer border rounded hover:border-primary transition-colors"
-                            onClick={() => {
-                              onUpdate(index, { ...paragraph, characterImage: img.url });
-                            }}
-                          >
-                            <img src={img.url} alt={img.name || ''} className="w-full h-20 object-cover rounded" />
-                            <p className="text-xs text-center p-1">{img.name}</p>
-                          </div>
-                        ))}
+              {allImages.length > 0 && (
+                <div>
+                  <Label>Выбрать изображение</Label>
+                  <div className="grid grid-cols-3 gap-2 mt-2">
+                    {allImages.map((img) => (
+                      <div
+                        key={img.id}
+                        className={`cursor-pointer border-2 rounded hover:border-primary transition-colors ${
+                          paragraph.characterImage === img.url ? 'border-primary' : 'border-transparent'
+                        }`}
+                        onClick={() => {
+                          onUpdate(index, { ...paragraph, characterImage: img.url });
+                        }}
+                      >
+                        <img src={img.url} alt={img.name || ''} className="w-full h-20 object-contain rounded" />
+                        <p className="text-xs text-center p-1 truncate">{img.name}</p>
                       </div>
-                      <div className="relative my-4">
-                        <div className="absolute inset-0 flex items-center">
-                          <span className="w-full border-t" />
-                        </div>
-                        <div className="relative flex justify-center text-xs uppercase">
-                          <span className="bg-background px-2 text-muted-foreground">или</span>
-                        </div>
-                      </div>
+                    ))}
+                  </div>
+                  <div className="relative my-4">
+                    <div className="absolute inset-0 flex items-center">
+                      <span className="w-full border-t" />
                     </div>
-                  );
-                }
-                return null;
-              })()}
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-background px-2 text-muted-foreground">или добавить новое</span>
+                    </div>
+                  </div>
+                </div>
+              )}
               <div>
                 <Label>URL изображения</Label>
                 <Input
@@ -132,9 +134,34 @@ function DialogueEditor({
           </DialogContent>
         </Dialog>
       </div>
-      {paragraph.characterImage && (
+      {paragraph.characterImage && allImages.length > 0 && (
+        <div className="flex items-center gap-2 p-2 bg-secondary/20 rounded">
+          <img src={paragraph.characterImage} alt="Character" className="w-12 h-12 object-contain rounded" />
+          <div className="flex-1 flex gap-1 overflow-x-auto">
+            {allImages.map((img) => (
+              <Button
+                key={img.id}
+                size="sm"
+                variant={paragraph.characterImage === img.url ? "default" : "outline"}
+                className="flex-shrink-0"
+                onClick={() => onUpdate(index, { ...paragraph, characterImage: img.url })}
+              >
+                {img.name}
+              </Button>
+            ))}
+          </div>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => onUpdate(index, { ...paragraph, characterImage: undefined })}
+          >
+            <Icon name="X" size={14} />
+          </Button>
+        </div>
+      )}
+      {paragraph.characterImage && allImages.length === 0 && (
         <div className="flex items-center gap-2">
-          <img src={paragraph.characterImage} alt="Character" className="w-12 h-12 object-cover rounded" />
+          <img src={paragraph.characterImage} alt="Character" className="w-12 h-12 object-contain rounded" />
           <Button
             size="sm"
             variant="ghost"
