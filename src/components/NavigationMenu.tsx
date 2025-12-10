@@ -118,9 +118,9 @@ function NavigationMenu({
         )}
       </div>
 
-      {!showGreeting && (episodeId && paragraphIndex !== undefined && onAddBookmark && onRemoveBookmark || hasMusic && onToggleMusic) && (
+      {!showGreeting && (episodeId && paragraphIndex !== undefined && onAddBookmark && onRemoveBookmark && !isGuest || hasMusic && onToggleMusic) && (
         <div className="flex gap-2 items-center">
-          {episodeId && paragraphIndex !== undefined && onAddBookmark && onRemoveBookmark && (
+          {episodeId && paragraphIndex !== undefined && onAddBookmark && onRemoveBookmark && !isGuest && (
             <BookmarkButton
               episodeId={episodeId}
               paragraphIndex={paragraphIndex}

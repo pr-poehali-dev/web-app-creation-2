@@ -139,7 +139,9 @@ function TypewriterText({ text, speed = 50, skipTyping = false, onComplete }: Ty
   const targetLength = cleanText.length;
 
   useEffect(() => {
+    console.log('[TypewriterText] Effect:', { skipTyping, currentIndex, targetLength });
     if (skipTyping) {
+      console.log('[TypewriterText] Skip typing - showing full text');
       setDisplayedText(text);
       setCurrentIndex(targetLength);
       if (currentIndex < targetLength) {
@@ -161,6 +163,7 @@ function TypewriterText({ text, speed = 50, skipTyping = false, onComplete }: Ty
   }, [currentIndex, text, targetLength, speed, skipTyping]);
 
   useEffect(() => {
+    console.log('[TypewriterText] Text changed, resetting state');
     setDisplayedText('');
     setCurrentIndex(0);
   }, [text]);
