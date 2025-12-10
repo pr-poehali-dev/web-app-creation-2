@@ -47,7 +47,7 @@ function DialogueBox({
                 <ZoomableImage
                   src={characterImage}
                   alt={characterName}
-                  className="w-32 h-32 md:w-48 md:h-48 object-cover rounded-3xl shadow-2xl"
+                  className="w-32 h-32 md:w-48 md:h-48 object-contain rounded-3xl shadow-2xl"
                 />
               ) : (
                 <div className="text-6xl md:text-9xl">{characterImage}</div>
