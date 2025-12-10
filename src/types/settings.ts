@@ -5,7 +5,8 @@ export interface UserSettings {
   autoPlay: boolean;
   textSize: 'small' | 'medium' | 'large';
   theme: 'dark' | 'light';
-  fontFamily: 'merriweather' | 'montserrat' | 'georgia' | 'arial';
+  fontFamily: 'merriweather' | 'montserrat' | 'georgia' | 'arial' | 'playfair' | 'lora' | 'roboto' | 'opensans' | 'ptsans' | 'Inter';
+  uiFontFamily: 'system' | 'montserrat' | 'roboto' | 'opensans' | 'ptsans' | 'Inter' | 'playfair' | 'lora';
 }
 
 export interface Bookmark {
@@ -64,7 +65,8 @@ export const defaultSettings: UserSettings = {
   autoPlay: false,
   textSize: 'medium',
   theme: 'dark',
-  fontFamily: 'merriweather'
+  fontFamily: 'merriweather',
+  uiFontFamily: 'system'
 };
 
 export const defaultProfile: UserProfile = {

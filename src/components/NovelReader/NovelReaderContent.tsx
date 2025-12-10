@@ -35,6 +35,19 @@ function NovelReaderContent({
     return null;
   }
 
+  const novelFontStyle = {
+    fontFamily: settings.fontFamily === 'merriweather' ? '"Merriweather", serif' :
+               settings.fontFamily === 'playfair' ? '"Playfair Display", serif' :
+               settings.fontFamily === 'lora' ? '"Lora", serif' :
+               settings.fontFamily === 'georgia' ? 'Georgia, serif' :
+               settings.fontFamily === 'montserrat' ? '"Montserrat", sans-serif' :
+               settings.fontFamily === 'roboto' ? '"Roboto", sans-serif' :
+               settings.fontFamily === 'opensans' ? '"Open Sans", sans-serif' :
+               settings.fontFamily === 'ptsans' ? '"PT Sans", sans-serif' :
+               settings.fontFamily === 'Inter' ? '"Inter", sans-serif' :
+               'Arial, sans-serif'
+  };
+
   return (
     <>
       {currentParagraph.type === 'text' && (
@@ -44,7 +57,7 @@ function NovelReaderContent({
           settings.textSize === 'small' ? 'text-base md:text-lg' :
           settings.textSize === 'large' ? 'text-xl md:text-2xl' :
           'text-lg md:text-xl'
-        }`}>
+        }`} style={novelFontStyle}>
           <TypewriterText 
             text={currentParagraph.content}
             speed={settings.textSpeed}
@@ -62,6 +75,7 @@ function NovelReaderContent({
           skipTyping={skipTyping}
           onComplete={handleTypingComplete}
           textSpeed={settings.textSpeed}
+          fontFamily={novelFontStyle.fontFamily}
           existingComment={profile.metCharacters?.find(
             c => c.name === currentParagraph.characterName
           )?.comment}

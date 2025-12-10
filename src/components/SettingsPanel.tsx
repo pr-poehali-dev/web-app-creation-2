@@ -43,7 +43,8 @@ function SettingsPanel({ settings, onUpdate, onBack }: SettingsPanelProps) {
         autoPlay: false,
         textSize: 'medium',
         theme: 'dark',
-        fontFamily: 'merriweather'
+        fontFamily: 'merriweather',
+        uiFontFamily: 'system'
       });
     }
   };
@@ -108,25 +109,69 @@ function SettingsPanel({ settings, onUpdate, onBack }: SettingsPanelProps) {
               </div>
 
               <div className="space-y-3">
-                <Label className="text-foreground">Шрифт текста</Label>
+                <Label className="text-foreground">Шрифт текста новеллы</Label>
                 <Select value={settings.fontFamily} onValueChange={(value) => onUpdate({ ...settings, fontFamily: value as any })}>
                   <SelectTrigger className="text-foreground">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="merriweather">Merriweather (Serif)</SelectItem>
-                    <SelectItem value="montserrat">Montserrat (Sans)</SelectItem>
+                    <SelectItem value="playfair">Playfair Display (Serif)</SelectItem>
+                    <SelectItem value="lora">Lora (Serif)</SelectItem>
                     <SelectItem value="georgia">Georgia (Serif)</SelectItem>
+                    <SelectItem value="montserrat">Montserrat (Sans)</SelectItem>
+                    <SelectItem value="roboto">Roboto (Sans)</SelectItem>
+                    <SelectItem value="opensans">Open Sans (Sans)</SelectItem>
+                    <SelectItem value="ptsans">PT Sans (Sans)</SelectItem>
+                    <SelectItem value="Inter">Inter (Sans)</SelectItem>
                     <SelectItem value="arial">Arial (Sans)</SelectItem>
                   </SelectContent>
                 </Select>
                 <p className="text-xs text-muted-foreground" style={{
                   fontFamily: settings.fontFamily === 'merriweather' ? '"Merriweather", serif' :
-                             settings.fontFamily === 'montserrat' ? '"Montserrat", sans-serif' :
+                             settings.fontFamily === 'playfair' ? '"Playfair Display", serif' :
+                             settings.fontFamily === 'lora' ? '"Lora", serif' :
                              settings.fontFamily === 'georgia' ? 'Georgia, serif' :
+                             settings.fontFamily === 'montserrat' ? '"Montserrat", sans-serif' :
+                             settings.fontFamily === 'roboto' ? '"Roboto", sans-serif' :
+                             settings.fontFamily === 'opensans' ? '"Open Sans", sans-serif' :
+                             settings.fontFamily === 'ptsans' ? '"PT Sans", sans-serif' :
+                             settings.fontFamily === 'Inter' ? '"Inter", sans-serif' :
                              'Arial, sans-serif'
                 }}>
-                  Предпросмотр: Пример текста новеллы
+                  Предпросмотр: Пример текста новеллы с этим шрифтом
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                <Label className="text-foreground">Шрифт интерфейса</Label>
+                <Select value={settings.uiFontFamily || 'system'} onValueChange={(value) => onUpdate({ ...settings, uiFontFamily: value as any })}>
+                  <SelectTrigger className="text-foreground">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="system">Системный</SelectItem>
+                    <SelectItem value="montserrat">Montserrat</SelectItem>
+                    <SelectItem value="roboto">Roboto</SelectItem>
+                    <SelectItem value="opensans">Open Sans</SelectItem>
+                    <SelectItem value="ptsans">PT Sans</SelectItem>
+                    <SelectItem value="Inter">Inter</SelectItem>
+                    <SelectItem value="playfair">Playfair Display</SelectItem>
+                    <SelectItem value="lora">Lora</SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground" style={{
+                  fontFamily: !settings.uiFontFamily || settings.uiFontFamily === 'system' ? 'system-ui, -apple-system, sans-serif' :
+                             settings.uiFontFamily === 'montserrat' ? '"Montserrat", sans-serif' :
+                             settings.uiFontFamily === 'roboto' ? '"Roboto", sans-serif' :
+                             settings.uiFontFamily === 'opensans' ? '"Open Sans", sans-serif' :
+                             settings.uiFontFamily === 'ptsans' ? '"PT Sans", sans-serif' :
+                             settings.uiFontFamily === 'Inter' ? '"Inter", sans-serif' :
+                             settings.uiFontFamily === 'playfair' ? '"Playfair Display", serif' :
+                             settings.uiFontFamily === 'lora' ? '"Lora", serif' :
+                             'system-ui, sans-serif'
+                }}>
+                  Предпросмотр: Меню, кнопки и элементы управления
                 </p>
               </div>
 

@@ -209,8 +209,19 @@ function Index() {
     );
   }
 
+  const uiFontStyle = settings.uiFontFamily && settings.uiFontFamily !== 'system' ? {
+    fontFamily: settings.uiFontFamily === 'montserrat' ? '"Montserrat", sans-serif' :
+               settings.uiFontFamily === 'roboto' ? '"Roboto", sans-serif' :
+               settings.uiFontFamily === 'opensans' ? '"Open Sans", sans-serif' :
+               settings.uiFontFamily === 'ptsans' ? '"PT Sans", sans-serif' :
+               settings.uiFontFamily === 'Inter' ? '"Inter", sans-serif' :
+               settings.uiFontFamily === 'playfair' ? '"Playfair Display", serif' :
+               settings.uiFontFamily === 'lora' ? '"Lora", serif' :
+               'system-ui, sans-serif'
+  } : {};
+
   return (
-    <div className="relative min-h-screen dark flex">
+    <div className="relative min-h-screen dark flex" style={uiFontStyle}>
       <button
         onClick={() => setShowSidebar(!showSidebar)}
         className="md:hidden fixed top-4 left-4 z-[60] bg-card/90 backdrop-blur-sm p-2 rounded-lg shadow-lg text-white"

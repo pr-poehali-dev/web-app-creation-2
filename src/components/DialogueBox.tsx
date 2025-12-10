@@ -15,6 +15,7 @@ interface DialogueBoxProps {
   textSpeed?: number;
   onCommentSave?: (comment: string) => void;
   existingComment?: string;
+  fontFamily?: string;
 }
 
 function DialogueBox({ 
@@ -25,7 +26,8 @@ function DialogueBox({
   onComplete, 
   textSpeed = 50,
   onCommentSave,
-  existingComment
+  existingComment,
+  fontFamily
 }: DialogueBoxProps) {
   const [showCommentDialog, setShowCommentDialog] = useState(false);
   const [comment, setComment] = useState(existingComment || '');
@@ -71,7 +73,7 @@ function DialogueBox({
                 {characterName}
               </h3>
             )}
-            <p className="novel-text text-base md:text-lg leading-relaxed text-foreground">
+            <p className="novel-text text-base md:text-lg leading-relaxed text-foreground" style={{ fontFamily }}>
               <TypewriterText 
                 text={text}
                 speed={textSpeed}
