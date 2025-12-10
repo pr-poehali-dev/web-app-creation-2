@@ -20,7 +20,7 @@ function AuthScreen({ onAuthSuccess, onClose }: AuthScreenProps) {
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const [mode, setMode] = useState<'login' | 'register' | 'reset'>('login');
+  const [mode, setMode] = useState<'login' | 'register'>('login');
 
   const handleRegister = async () => {
     if (!username.trim() || !password) {
@@ -94,51 +94,7 @@ function AuthScreen({ onAuthSuccess, onClose }: AuthScreenProps) {
     }
   };
 
-  const handleResetPassword = async () => {
-    if (!email.trim()) {
-      setError('Введите email');
-      return;
-    }
 
-    setIsLoading(true);
-    setError('');
-
-    try {
-      const response = await fetch(AUTH_API, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'reset_password',
-          email: email.trim()
-        })
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        setError(data.error || 'Ошибка сброса пароля');
-        return;
-      }
-
-      // Если сервер вернул временный пароль (SMTP не настроен), показываем его
-      if (data.tempPassword && data.username) {
-        alert(`Пароль сброшен!\nЛогин: ${data.username}\nНовый пароль: ${data.tempPassword}\n\nСохраните этот пароль!`);
-        setMode('login');
-        setUsername(data.username);
-        setPassword('');
-        setEmail('');
-      } else {
-        // Если письмо отправлено, показываем уведомление
-        alert(data.message || 'Если email найден в системе, новый пароль отправлен на вашу почту');
-        setMode('login');
-        setEmail('');
-      }
-    } catch (err) {
-      setError('Ошибка соединения с сервером');
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-background dark flex items-center justify-center p-4">
@@ -160,48 +116,7 @@ function AuthScreen({ onAuthSuccess, onClose }: AuthScreenProps) {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {mode === 'reset' ? (
-            <div className="space-y-4">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setMode('login')}
-                className="mb-2"
-              >
-                <Icon name="ArrowLeft" size={16} className="mr-2" />
-                Назад
-              </Button>
-              <div className="space-y-2">
-                <Label htmlFor="reset-email">Email</Label>
-                <Input
-                  id="reset-email"
-                  type="email"
-                  placeholder="Введите email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleResetPassword()}
-                  disabled={isLoading}
-                />
-              </div>
-              {error && (
-                <div className="text-sm text-destructive text-center">{error}</div>
-              )}
-              <Button 
-                className="w-full" 
-                onClick={handleResetPassword} 
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <>
-                    <Icon name="Loader2" size={16} className="mr-2 animate-spin" />
-                    Сброс...
-                  </>
-                ) : (
-                  'Сбросить пароль'
-                )}
-              </Button>
-            </div>
-          ) : (
+
             <Tabs value={mode} onValueChange={(v) => setMode(v as 'login' | 'register')}>
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="login">Вход</TabsTrigger>
@@ -249,14 +164,7 @@ function AuthScreen({ onAuthSuccess, onClose }: AuthScreenProps) {
                   'Войти'
                 )}
               </Button>
-              <Button
-                variant="link"
-                size="sm"
-                className="w-full"
-                onClick={() => setMode('reset')}
-              >
-                Забыли пароль?
-              </Button>
+
             </TabsContent>
 
             <TabsContent value="register" className="space-y-4">
@@ -314,7 +222,6 @@ function AuthScreen({ onAuthSuccess, onClose }: AuthScreenProps) {
               </Button>
             </TabsContent>
           </Tabs>
-          )}
         </CardContent>
       </Card>
     </div>
