@@ -8,12 +8,14 @@ import EpisodesSidebar from '@/components/EpisodesSidebar';
 import NavigationMenu from '@/components/NavigationMenu';
 import ParagraphsDialog from '@/components/ParagraphsDialog';
 import ActivePathsIndicator from '@/components/ActivePathsIndicator';
+import AuthScreen from '@/components/AuthScreen';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Icon from '@/components/ui/icon';
 import { useAppState } from './Index/useAppState';
 import { useNovelDatabase } from './Index/useNovelDatabase';
 import { useAppHandlers } from './Index/useAppHandlers';
+import { useAuth } from '@/hooks/useAuth';
 
 function Index() {
   const {
@@ -43,6 +45,8 @@ function Index() {
 
   const { isLoading, setNovelForSaving } = useNovelDatabase(setNovel, isAdmin);
 
+  const { authState, handleAuthSuccess, handleLogout } = useAuth(profile, setProfile);
+
   const {
     handleNovelUpdate,
     handleSettingsUpdate,
@@ -69,6 +73,11 @@ function Index() {
     setShowParagraphsDialog,
     setShowGreetingScreen
   });
+
+  // Показываем экран авторизации, если пользователь не авторизован
+  if (!authState.isAuthenticated) {
+    return <AuthScreen onAuthSuccess={handleAuthSuccess} />;
+  }
 
   if (isLoading) {
     return (
@@ -297,6 +306,8 @@ function Index() {
           setShowGreetingScreen(true);
         }}
         showGreeting={showGreetingScreen}
+        onLogout={handleLogout}
+        username={authState.username || undefined}
       />
 
       <ParagraphsDialog
