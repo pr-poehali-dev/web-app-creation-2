@@ -34,7 +34,7 @@ function AdminPanel({ novel, onUpdate, onLogout, authState }: AdminPanelProps) {
       paragraphs: [
         {
           id: `p${timestamp}`,
-          type: 'background' as const,
+          type: 'image' as const,
           url: 'https://cdn.poehali.dev/projects/821accb9-788a-49b3-9e90-832ee920f37b/bucket/u3875968173_quote_background_close-up_of_japanese_lanterns_wi_7076d7a0-fe3b-4374-aa35-93e85d6c7fe8_0.png'
         },
         {
