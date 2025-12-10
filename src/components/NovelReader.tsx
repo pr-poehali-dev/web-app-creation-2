@@ -322,11 +322,11 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
               {!isTyping && currentParagraph.type !== 'choice' && (
                 <Dialog>
                   <DialogTrigger asChild>
-                    <div className="hidden md:block absolute bottom-0 left-1/2 -translate-x-1/2 text-xs text-muted-foreground/70 animate-pulse text-center px-4 cursor-help pb-2">
+                    <div className="hidden md:block absolute bottom-0 left-1/2 md:left-[calc(50%+2rem)] -translate-x-1/2 text-xs text-muted-foreground/70 animate-pulse text-center px-4 cursor-help pb-2">
                       Нажмите или → для продолжения
                     </div>
                   </DialogTrigger>
-                  <DialogContent onClick={(e) => e.stopPropagation()}>
+                  <DialogContent onClick={(e) => e.stopPropagation()} className="md:ml-16">
                     <DialogHeader>
                       <DialogTitle>Управление</DialogTitle>
                     </DialogHeader>
