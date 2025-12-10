@@ -86,7 +86,8 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
     if (!isFading) {
       console.log('[NovelReader] Paragraph changed, updating display and resetting isTyping');
       setDisplayParagraph(currentParagraph);
-      setIsTyping(true);
+      // Для картинок сразу ставим isTyping=false, чтобы не блокировать автопереход
+      setIsTyping(currentParagraph?.type === 'image' ? false : true);
       setSkipTyping(false);
       setCanNavigate(false);
     }
@@ -131,12 +132,12 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
     setSkipTyping
   });
   
-  // Авто-переход для background параграфов
+  // Авто-переход для background и image параграфов
   useEffect(() => {
-    if (currentParagraph?.type === 'background' && !isFading) {
+    if ((currentParagraph?.type === 'background' || currentParagraph?.type === 'image') && !isFading) {
       const timer = setTimeout(() => {
         goToNextParagraph();
-      }, 500); // Задержка на плавную смену фона
+      }, 500); // Задержка на плавную смену
       return () => clearTimeout(timer);
     }
   }, [currentParagraph, isFading, goToNextParagraph]);
