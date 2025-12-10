@@ -3,6 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import Icon from '@/components/ui/icon';
 
 const AUTH_API = 'https://functions.poehali.dev/f895202d-2b99-4eae-a334-8b273bf2cbd1';
@@ -21,6 +23,9 @@ function UsersManagement({ adminUsername }: UsersManagementProps) {
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  const [editingUser, setEditingUser] = useState<string | null>(null);
+  const [newPassword, setNewPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('');
 
   const loadUsers = async () => {
     setIsLoading(true);
@@ -78,6 +83,43 @@ function UsersManagement({ adminUsername }: UsersManagementProps) {
       loadUsers();
     } catch (err) {
       alert('Ошибка соединения с сервером');
+    }
+  };
+
+  const handleSetPassword = async () => {
+    if (!editingUser) return;
+    
+    setPasswordError('');
+
+    if (!newPassword || newPassword.length < 4) {
+      setPasswordError('Пароль должен быть минимум 4 символа');
+      return;
+    }
+
+    try {
+      const response = await fetch(AUTH_API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'admin_set_password',
+          admin_username: adminUsername,
+          target_username: editingUser,
+          new_password: newPassword
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setPasswordError(data.error || 'Ошибка изменения пароля');
+        return;
+      }
+
+      alert(`Пароль для ${editingUser} успешно изменен`);
+      setEditingUser(null);
+      setNewPassword('');
+    } catch (err) {
+      setPasswordError('Ошибка соединения с сервером');
     }
   };
 
@@ -150,16 +192,30 @@ function UsersManagement({ adminUsername }: UsersManagementProps) {
                   </p>
                 )}
               </div>
-              <div className="flex items-center gap-2">
-                <Label htmlFor={`admin-${user.username}`} className="text-sm">
-                  Админ
-                </Label>
-                <Switch
-                  id={`admin-${user.username}`}
-                  checked={user.isAdmin}
-                  onCheckedChange={(checked) => handleToggleAdmin(user.username, checked)}
-                  disabled={user.username === 'kotatsu'}
-                />
+              <div className="flex items-center gap-3">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    setEditingUser(user.username);
+                    setNewPassword('');
+                    setPasswordError('');
+                  }}
+                >
+                  <Icon name="Key" size={14} className="mr-1" />
+                  Пароль
+                </Button>
+                <div className="flex items-center gap-2">
+                  <Label htmlFor={`admin-${user.username}`} className="text-sm">
+                    Админ
+                  </Label>
+                  <Switch
+                    id={`admin-${user.username}`}
+                    checked={user.isAdmin}
+                    onCheckedChange={(checked) => handleToggleAdmin(user.username, checked)}
+                    disabled={user.username === 'kotatsu'}
+                  />
+                </div>
               </div>
             </div>
           ))}
@@ -170,6 +226,38 @@ function UsersManagement({ adminUsername }: UsersManagementProps) {
           </p>
         )}
       </CardContent>
+
+      <Dialog open={!!editingUser} onOpenChange={(open) => !open && setEditingUser(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Изменить пароль: {editingUser}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="new-password">Новый пароль</Label>
+              <Input
+                id="new-password"
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="Минимум 4 символа"
+                onKeyDown={(e) => e.key === 'Enter' && handleSetPassword()}
+              />
+            </div>
+            {passwordError && (
+              <p className="text-sm text-destructive">{passwordError}</p>
+            )}
+            <div className="flex gap-2">
+              <Button onClick={handleSetPassword} className="flex-1">
+                Изменить пароль
+              </Button>
+              <Button variant="outline" onClick={() => setEditingUser(null)}>
+                Отмена
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }

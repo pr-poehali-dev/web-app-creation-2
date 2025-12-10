@@ -360,6 +360,58 @@ def handler(event, context):
                     'isBase64Encoded': False
                 }
             
+            elif action == 'admin_set_password':
+                admin_username = body_data.get('admin_username', '').strip().lower()
+                target_username = body_data.get('target_username', '').strip().lower()
+                new_password = body_data.get('new_password', '')
+                
+                if not admin_username or not target_username or not new_password:
+                    return {
+                        'statusCode': 400,
+                        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                        'body': json.dumps({'error': 'Все поля обязательны'}),
+                        'isBase64Encoded': False
+                    }
+                
+                # Проверяем, является ли запрашивающий админом
+                cur.execute("SELECT is_admin FROM users WHERE username = %s", (admin_username,))
+                result = cur.fetchone()
+                if not result or not result[0]:
+                    return {
+                        'statusCode': 403,
+                        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                        'body': json.dumps({'error': 'Нет прав администратора'}),
+                        'isBase64Encoded': False
+                    }
+                
+                if len(new_password) < 4:
+                    return {
+                        'statusCode': 400,
+                        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                        'body': json.dumps({'error': 'Пароль должен быть минимум 4 символа'}),
+                        'isBase64Encoded': False
+                    }
+                
+                # Устанавливаем новый пароль
+                new_hash = hashlib.sha256(new_password.encode()).hexdigest()
+                cur.execute("UPDATE users SET password_hash = %s WHERE username = %s RETURNING id", (new_hash, target_username))
+                result = cur.fetchone()
+                
+                if not result:
+                    return {
+                        'statusCode': 404,
+                        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                        'body': json.dumps({'error': 'Пользователь не найден'}),
+                        'isBase64Encoded': False
+                    }
+                
+                return {
+                    'statusCode': 200,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'success': True, 'message': 'Пароль успешно изменен'}),
+                    'isBase64Encoded': False
+                }
+            
             elif action == 'reset_password':
                 email = body_data.get('email', '').strip()
                 

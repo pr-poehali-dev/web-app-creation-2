@@ -10,6 +10,7 @@ interface ParagraphsDialogProps {
   selectedEpisodeId: string | null;
   onOpenChange: (open: boolean) => void;
   onEpisodeSelect: (episodeId: string, paragraphIndex: number) => void;
+  isAdmin?: boolean;
 }
 
 function ParagraphsDialog({
@@ -18,7 +19,8 @@ function ParagraphsDialog({
   profile,
   selectedEpisodeId,
   onOpenChange,
-  onEpisodeSelect
+  onEpisodeSelect,
+  isAdmin
 }: ParagraphsDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -33,7 +35,7 @@ function ParagraphsDialog({
             const isCurrentPara = profile.currentEpisodeId === selectedEpisodeId && profile.currentParagraphIndex === pIndex;
             const paragraphId = `${selectedEpisodeId}-${pIndex}`;
             const isVisited = pIndex === 0 || (profile.readParagraphs || []).includes(paragraphId) || (profile.readParagraphs || []).includes(`${selectedEpisodeId}-${pIndex - 1}`);
-            const isLocked = !isVisited;
+            const isLocked = isAdmin ? false : !isVisited;
             
             return (
               <button

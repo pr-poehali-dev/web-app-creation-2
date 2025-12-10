@@ -10,9 +10,10 @@ interface EpisodesSidebarProps {
   profile: UserProfile;
   onEpisodeSelect: (episodeId: string, paragraphIndex?: number) => void;
   onShowParagraphs: (episodeId: string) => void;
+  isAdmin?: boolean;
 }
 
-function EpisodesSidebar({ novel, currentEpisodeId, profile, onEpisodeSelect, onShowParagraphs }: EpisodesSidebarProps) {
+function EpisodesSidebar({ novel, currentEpisodeId, profile, onEpisodeSelect, onShowParagraphs, isAdmin }: EpisodesSidebarProps) {
   // Создаем Set для быстрого поиска прочитанных параграфов
   const readParagraphsSet = useMemo(() => {
     return new Set(profile.readParagraphs || []);
@@ -43,7 +44,11 @@ function EpisodesSidebar({ novel, currentEpisodeId, profile, onEpisodeSelect, on
 
       // Проверяем доступность эпизода
       let isAccessible = false;
-      if (index === 0 || episode.unlockedForAll) {
+      if (isAdmin) {
+        // Для админа открыты все эпизоды
+        isAccessible = true;
+      } else if (index === 0 || episode.unlockedForAll) {
+        // Первый эпизод или эпизод разблокирован для всех
         isAccessible = true;
       } else if (index > 0) {
         const prevEpisodeStatus = index > 0 ? novel.episodes[index - 1] : null;

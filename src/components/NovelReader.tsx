@@ -195,11 +195,11 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
 
   return (
     <div 
-      className="min-h-screen bg-background flex items-start justify-center pt-32 md:pt-20 px-2 md:px-4 pb-32 md:pb-4 md:pr-32 md:pl-8 cursor-pointer"
-      onClick={interaction.handleClick}
-      onTouchStart={interaction.onTouchStart}
-      onTouchMove={interaction.onTouchMove}
-      onTouchEnd={interaction.onTouchEnd}
+      className={`min-h-screen bg-background flex items-start justify-center pt-32 md:pt-20 px-2 md:px-4 pb-32 md:pb-4 md:pr-32 md:pl-8 ${showGreeting ? '' : 'cursor-pointer'}`}
+      onClick={showGreeting ? undefined : interaction.handleClick}
+      onTouchStart={showGreeting ? undefined : interaction.onTouchStart}
+      onTouchMove={showGreeting ? undefined : interaction.onTouchMove}
+      onTouchEnd={showGreeting ? undefined : interaction.onTouchEnd}
       style={{
         fontFamily: settings.fontFamily === 'merriweather' ? '"Merriweather", serif' :
                     settings.fontFamily === 'montserrat' ? '"Montserrat", sans-serif' :

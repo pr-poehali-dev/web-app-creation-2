@@ -263,6 +263,7 @@ function Index() {
             handleShowParagraphs(episodeId);
             setShowSidebar(false);
           }}
+          isAdmin={authState.isAdmin}
         />
       </div>
 
@@ -308,6 +309,7 @@ function Index() {
         selectedEpisodeId={selectedEpisodeForParagraphs}
         onOpenChange={setShowParagraphsDialog}
         onEpisodeSelect={handleEpisodeSelect}
+        isAdmin={authState.isAdmin}
       />
     </div>
   );
