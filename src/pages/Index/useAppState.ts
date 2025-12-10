@@ -15,7 +15,7 @@ export function useAppState() {
   const [selectedEpisodeForParagraphs, setSelectedEpisodeForParagraphs] = useState<string | null>(null);
   const [showSidebar, setShowSidebar] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [showGreetingScreen, setShowGreetingScreen] = useState(false);
+  const [showGreetingScreen, setShowGreetingScreen] = useState(true);
 
   useEffect(() => {
     const savedSettings = localStorage.getItem('userSettings');

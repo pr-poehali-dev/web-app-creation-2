@@ -231,7 +231,7 @@ function Index() {
         <Icon name={showSidebar ? 'X' : 'Menu'} size={20} />
       </button>
 
-      {profile.currentEpisodeId && (
+      {profile.currentEpisodeId && !showGreetingScreen && (
         <div className="hidden md:block fixed top-4 left-[340px] z-50">
           <div className="text-xs text-muted-foreground bg-card/50 backdrop-blur-sm px-3 py-2 rounded-lg border border-border">
             {profile.currentParagraphIndex + 1} / {novel.episodes.find(ep => ep.id === profile.currentEpisodeId)?.paragraphs.length}
