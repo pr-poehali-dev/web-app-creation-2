@@ -15,8 +15,8 @@ interface ItemBoxProps {
 function ItemBox({ name, description, imageUrl, skipTyping, onComplete, textSpeed = 50 }: ItemBoxProps) {
 
   return (
-    <Card className="bg-gradient-to-br from-card via-secondary/10 to-accent/20 backdrop-blur-sm border-0 shadow-2xl animate-scale-in">
-      <CardContent className="p-4 md:p-10 text-center">
+    <Card className="bg-gradient-to-br from-card via-secondary/10 to-accent/20 backdrop-blur-sm border-0 shadow-2xl animate-scale-in max-w-md mx-auto">
+      <CardContent className="p-4 md:p-8 text-center">
         <Badge variant="default" className="mb-4 md:mb-6 text-xs md:text-sm bg-primary text-primary-foreground border-0 shadow-lg px-3 md:px-4 py-1 md:py-1.5 rounded-full font-semibold">
           Получен предмет
         </Badge>
