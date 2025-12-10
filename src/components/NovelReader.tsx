@@ -34,6 +34,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
   const [isTyping, setIsTyping] = useState(true);
   const [skipTyping, setSkipTyping] = useState(false);
   const [isFading, setIsFading] = useState(false);
+  const [canNavigate, setCanNavigate] = useState(false);
   
   // Ref для отслеживания актуального значения isTyping в callbacks
   const isTypingRef = useRef(isTyping);
@@ -41,11 +42,22 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
     isTypingRef.current = isTyping;
   }, [isTyping]);
 
+  // Добавляем небольшую задержку после завершения печати перед навигацией
+  useEffect(() => {
+    if (!isTyping) {
+      const timer = setTimeout(() => setCanNavigate(true), 200);
+      return () => clearTimeout(timer);
+    } else {
+      setCanNavigate(false);
+    }
+  }, [isTyping]);
+
   // Сбрасываем состояния при смене параграфа
   useEffect(() => {
     console.log('[NovelReader] Paragraph changed, resetting isTyping to true');
     setIsTyping(true);
     setSkipTyping(false);
+    setCanNavigate(false);
   }, [currentEpisodeId, currentParagraphIndex]);
 
   // Хук навигации
@@ -82,6 +94,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
     goToPreviousParagraph,
     isTyping,
     isTypingRef,
+    canNavigate,
     setIsTyping,
     setSkipTyping
   });

@@ -7,6 +7,7 @@ interface UseNovelInteractionProps {
   goToPreviousParagraph: () => void;
   isTyping: boolean;
   isTypingRef: React.MutableRefObject<boolean>;
+  canNavigate: boolean;
   setIsTyping: (value: boolean) => void;
   setSkipTyping: (value: boolean) => void;
 }
@@ -17,6 +18,7 @@ export function useNovelInteraction({
   goToPreviousParagraph,
   isTyping,
   isTypingRef,
+  canNavigate,
   setIsTyping,
   setSkipTyping
 }: UseNovelInteractionProps) {
@@ -31,18 +33,18 @@ export function useNovelInteraction({
     }
 
     const currentIsTyping = isTypingRef.current;
-    console.log('[Click] isTyping:', currentIsTyping);
+    console.log('[Click] isTyping:', currentIsTyping, 'canNavigate:', canNavigate);
     if (currentIsTyping) {
       console.log('[Click] Skip typing - setting skipTyping=true');
       setSkipTyping(true);
       // НЕ устанавливаем setIsTyping(false) здесь - это сделает TypewriterText через onComplete
-    } else {
+    } else if (canNavigate) {
       console.log('[Click] Go to next paragraph');
       if (currentParagraph?.type !== 'choice') {
         goToNextParagraph();
       }
     }
-  }, [isTyping, currentParagraph, goToNextParagraph, setSkipTyping]);
+  }, [isTypingRef, canNavigate, currentParagraph, goToNextParagraph, setSkipTyping]);
 
   const handleTypingComplete = useCallback(() => {
     console.log('[Interaction] Typing complete, setting isTyping to false');
@@ -86,13 +88,13 @@ export function useNovelInteraction({
     if (!isLeftSwipe && !isRightSwipe) {
       // Простое касание
       const currentIsTyping = isTypingRef.current;
-      console.log('[Touch] Tap detected, isTyping:', currentIsTyping);
+      console.log('[Touch] Tap detected, isTyping:', currentIsTyping, 'canNavigate:', canNavigate);
       if (currentIsTyping) {
         // Показать весь текст
         console.log('[Touch] Skip typing - setting skipTyping=true');
         setSkipTyping(true);
         // НЕ устанавливаем setIsTyping(false) здесь - это сделает TypewriterText через onComplete
-      } else {
+      } else if (canNavigate) {
         // Текст уже полностью показан - переход к следующему
         console.log('[Touch] Go to next paragraph');
         if (currentParagraph?.type !== 'choice') {
@@ -103,7 +105,7 @@ export function useNovelInteraction({
       // Свайп
       const currentIsTyping = isTypingRef.current;
       console.log('[Touch] Swipe detected');
-      if (isLeftSwipe && !currentIsTyping && currentParagraph?.type !== 'choice') {
+      if (isLeftSwipe && !currentIsTyping && canNavigate && currentParagraph?.type !== 'choice') {
         goToNextParagraph();
       }
       
