@@ -70,6 +70,10 @@ export function useNovelNavigation({
 
     let nextIndex = currentParagraphIndex + 1;
     
+    // Проверяем, есть ли fade параграф следующим
+    const hasFadeNext = nextIndex < currentEpisode.paragraphs.length && 
+                        currentEpisode.paragraphs[nextIndex].type === 'fade';
+    
     // Пропускаем fade параграфы
     while (nextIndex < currentEpisode.paragraphs.length && currentEpisode.paragraphs[nextIndex].type === 'fade') {
       nextIndex++;
@@ -78,6 +82,8 @@ export function useNovelNavigation({
     if (nextIndex < currentEpisode.paragraphs.length) {
       // Если следующий параграф не fade, запускаем анимацию растворения
       if (currentParagraph?.type === 'text') {
+        // Если перед следующим параграфом был fade, делаем растворение медленнее
+        const fadeDelay = hasFadeNext ? 1500 : 300;
         setIsFading(true);
         setTimeout(() => {
           onProfileUpdate(prev => ({
@@ -90,7 +96,7 @@ export function useNovelNavigation({
           setTimeout(() => {
             setIsFading(false);
           }, 50);
-        }, 300);
+        }, fadeDelay);
       } else {
         onProfileUpdate(prev => ({
           ...prev,
@@ -126,7 +132,13 @@ export function useNovelNavigation({
           return;
         }
 
+        // Проверяем, есть ли fade в конце текущего эпизода
+        const lastIndex = currentEpisode.paragraphs.length - 1;
+        const hasFadeAtEnd = lastIndex > currentParagraphIndex && 
+                             currentEpisode.paragraphs[lastIndex].type === 'fade';
+
         if (currentParagraph?.type === 'text') {
+          const fadeDelay = hasFadeAtEnd ? 1500 : 300;
           setIsFading(true);
           setTimeout(() => {
             onProfileUpdate(prev => ({
@@ -139,7 +151,7 @@ export function useNovelNavigation({
             setTimeout(() => {
               setIsFading(false);
             }, 50);
-          }, 300);
+          }, fadeDelay);
         } else {
           onProfileUpdate(prev => ({
             ...prev,
