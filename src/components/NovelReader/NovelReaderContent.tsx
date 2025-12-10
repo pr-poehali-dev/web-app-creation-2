@@ -51,8 +51,8 @@ function NovelReaderContent({
   return (
     <>
       {currentParagraph.type === 'text' && (
-        <div className={`leading-relaxed text-left text-foreground px-2 py-4 md:p-8 transition-opacity duration-300 ${
-          isFading ? 'opacity-0' : 'opacity-100'
+        <div className={`leading-relaxed text-left text-foreground px-2 py-4 md:p-8 transition-opacity ease-in-out ${
+          isFading ? 'opacity-0 duration-[1500ms]' : 'opacity-100 duration-300'
         } ${
           settings.textSize === 'small' ? 'text-base md:text-lg' :
           settings.textSize === 'large' ? 'text-xl md:text-2xl' :
