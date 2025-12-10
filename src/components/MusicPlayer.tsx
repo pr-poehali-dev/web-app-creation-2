@@ -7,11 +7,10 @@ import { Card } from '@/components/ui/card';
 interface MusicPlayerProps {
   audioSrc: string;
   volume?: number;
-  isPlaying: boolean;
-  onToggle: () => void;
 }
 
-function MusicPlayer({ audioSrc, volume: initialVolume = 70, isPlaying, onToggle }: MusicPlayerProps) {
+function MusicPlayer({ audioSrc, volume: initialVolume = 70 }: MusicPlayerProps) {
+  const [isPlaying, setIsPlaying] = useState(true);
   const [volume, setVolume] = useState(initialVolume);
   const [showControls, setShowControls] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -37,7 +36,7 @@ function MusicPlayer({ audioSrc, volume: initialVolume = 70, isPlaying, onToggle
 
   const togglePlay = (e: React.MouseEvent) => {
     e.stopPropagation();
-    onToggle();
+    setIsPlaying(!isPlaying);
   };
 
   const handleVolumeChange = (value: number[]) => {

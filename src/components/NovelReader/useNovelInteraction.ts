@@ -33,9 +33,13 @@ export function useNovelInteraction({
     }
 
     const currentIsTyping = isTypingRef.current;
+    console.log('[Click] isTyping:', currentIsTyping, 'canNavigate:', canNavigate);
     if (currentIsTyping) {
+      console.log('[Click] Skip typing - setting skipTyping=true');
       setSkipTyping(true);
+      // НЕ устанавливаем setIsTyping(false) здесь - это сделает TypewriterText через onComplete
     } else if (canNavigate) {
+      console.log('[Click] Go to next paragraph');
       if (currentParagraph?.type !== 'choice') {
         goToNextParagraph();
       }
@@ -43,6 +47,7 @@ export function useNovelInteraction({
   }, [isTypingRef, canNavigate, currentParagraph, goToNextParagraph, setSkipTyping]);
 
   const handleTypingComplete = useCallback(() => {
+    console.log('[Interaction] Typing complete, setting isTyping to false');
     setIsTyping(false);
   }, [setIsTyping]);
 
@@ -77,14 +82,21 @@ export function useNovelInteraction({
     const isLeftSwipe = distance > minSwipeDistance;
     const isRightSwipe = distance < -minSwipeDistance;
 
-
+    console.log('[Touch] isTyping:', isTyping, 'distance:', distance, 'isSwipe:', isLeftSwipe || isRightSwipe);
 
     // Если движение было минимальным (тап)
     if (!isLeftSwipe && !isRightSwipe) {
+      // Простое касание
       const currentIsTyping = isTypingRef.current;
+      console.log('[Touch] Tap detected, isTyping:', currentIsTyping, 'canNavigate:', canNavigate);
       if (currentIsTyping) {
+        // Показать весь текст
+        console.log('[Touch] Skip typing - setting skipTyping=true');
         setSkipTyping(true);
+        // НЕ устанавливаем setIsTyping(false) здесь - это сделает TypewriterText через onComplete
       } else if (canNavigate) {
+        // Текст уже полностью показан - переход к следующему
+        console.log('[Touch] Go to next paragraph');
         if (currentParagraph?.type !== 'choice') {
           goToNextParagraph();
         }
@@ -92,6 +104,7 @@ export function useNovelInteraction({
     } else {
       // Свайп
       const currentIsTyping = isTypingRef.current;
+      console.log('[Touch] Swipe detected');
       if (isLeftSwipe && !currentIsTyping && canNavigate && currentParagraph?.type !== 'choice') {
         goToNextParagraph();
       }

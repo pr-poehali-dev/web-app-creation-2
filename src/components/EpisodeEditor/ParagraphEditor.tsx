@@ -3,7 +3,8 @@ import { Paragraph, Novel, ParagraphType } from '@/types/novel';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
 import Icon from '@/components/ui/icon';
 import { selectAndConvertImage } from '@/utils/fileHelpers';
 import { getParagraphNumber } from '@/utils/paragraphNumbers';
@@ -296,6 +297,19 @@ function ParagraphEditor({
                 </Button>
               </div>
             </div>
+
+            {paragraph.type === 'text' && (
+              <div className="flex items-center gap-2 pb-2">
+                <Checkbox
+                  id={`slow-fade-${index}`}
+                  checked={paragraph.slowFade || false}
+                  onCheckedChange={(checked) => onUpdate(index, { ...paragraph, slowFade: checked as boolean })}
+                />
+                <Label htmlFor={`slow-fade-${index}`} className="text-sm text-muted-foreground cursor-pointer">
+                  Медленное растворение (1.5s)
+                </Label>
+              </div>
+            )}
 
             {paragraph.type === 'text' && (
               <TextEditor

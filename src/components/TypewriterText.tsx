@@ -8,21 +8,24 @@ interface TypewriterTextProps {
   onComplete?: () => void;
 }
 
+// Функция для получения текста без форматирования для подсчета длины
 const getCleanText = (text: string): string => {
   return text
-    .replace(/\[([^\|]+)\|([^\]]+)\]/g, '$1')
-    .replace(/\*\*([^*]+)\*\*/g, '$1')
-    .replace(/\*([^*]+)\*/g, '$1')
-    .replace(/__([^_]+)__/g, '$1')
-    .replace(/~~([^~]+)~~/g, '$1');
+    .replace(/\[([^\|]+)\|([^\]]+)\]/g, '$1') // Интерактивные подсказки
+    .replace(/\*\*([^*]+)\*\*/g, '$1') // Жирный
+    .replace(/\*([^*]+)\*/g, '$1') // Курсив
+    .replace(/__([^_]+)__/g, '$1') // Подчёркивание
+    .replace(/~~([^~]+)~~/g, '$1'); // Зачёркивание
 };
 
+// Функция для отображения текста с форматированием до определенной позиции
 const getDisplayText = (text: string, targetLength: number): string => {
   let cleanPos = 0;
   let result = '';
   let i = 0;
   
   while (i < text.length && cleanPos < targetLength) {
+    // Интерактивная подсказка [слово|подсказка]
     if (text[i] === '[' && text.indexOf('|', i) !== -1 && text.indexOf(']', i) !== -1) {
       const pipeIdx = text.indexOf('|', i);
       const closeIdx = text.indexOf(']', i);
@@ -44,6 +47,7 @@ const getDisplayText = (text: string, targetLength: number): string => {
       }
     }
     
+    // Жирный текст **текст**
     if (text[i] === '*' && text[i + 1] === '*') {
       const endIdx = text.indexOf('**', i + 2);
       if (endIdx !== -1) {
@@ -62,6 +66,7 @@ const getDisplayText = (text: string, targetLength: number): string => {
       }
     }
     
+    // Курсив *текст*
     if (text[i] === '*' && text[i + 1] !== '*') {
       const endIdx = text.indexOf('*', i + 1);
       if (endIdx !== -1) {
@@ -80,6 +85,7 @@ const getDisplayText = (text: string, targetLength: number): string => {
       }
     }
     
+    // Подчёркивание __текст__
     if (text[i] === '_' && text[i + 1] === '_') {
       const endIdx = text.indexOf('__', i + 2);
       if (endIdx !== -1) {
@@ -98,6 +104,7 @@ const getDisplayText = (text: string, targetLength: number): string => {
       }
     }
     
+    // Зачёркивание ~~текст~~
     if (text[i] === '~' && text[i + 1] === '~') {
       const endIdx = text.indexOf('~~', i + 2);
       if (endIdx !== -1) {
@@ -127,20 +134,15 @@ const getDisplayText = (text: string, targetLength: number): string => {
 function TypewriterText({ text, speed = 50, skipTyping = false, onComplete }: TypewriterTextProps) {
   const [displayedText, setDisplayedText] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
-  const targetLength = getCleanText(text).length;
-
-  useEffect(() => {
-    setDisplayedText('');
-    setCurrentIndex(0);
-  }, [text]);
+  
+  const cleanText = getCleanText(text);
+  const targetLength = cleanText.length;
 
   useEffect(() => {
     if (skipTyping) {
-      if (currentIndex < targetLength) {
-        setDisplayedText(text);
-        setCurrentIndex(targetLength);
-        onComplete?.();
-      }
+      setDisplayedText(text);
+      setCurrentIndex(targetLength);
+      onComplete?.();
       return;
     }
 
@@ -154,7 +156,12 @@ function TypewriterText({ text, speed = 50, skipTyping = false, onComplete }: Ty
     } else if (currentIndex === targetLength && currentIndex > 0) {
       onComplete?.();
     }
-  }, [currentIndex, targetLength, speed, skipTyping, text, onComplete]);
+  }, [currentIndex, text, targetLength, speed, skipTyping, onComplete]);
+
+  useEffect(() => {
+    setDisplayedText('');
+    setCurrentIndex(0);
+  }, [text]);
 
   return <InteractiveText text={displayedText} />;
 }

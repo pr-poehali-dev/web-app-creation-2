@@ -13,10 +13,10 @@ interface NovelReaderContentProps {
   settings: UserSettings;
   profile: UserProfile;
   skipTyping: boolean;
+  isFading: boolean;
   handleTypingComplete: () => void;
   handleChoice: (choiceId: string, pathId: string | undefined, oneTime: boolean | undefined, nextEpisodeId?: string, nextParagraphIndex?: number) => void;
   onProfileUpdate: (profile: UserProfile | ((prev: UserProfile) => UserProfile)) => void;
-  paragraphKey: string;
 }
 
 function NovelReaderContent({
@@ -26,10 +26,10 @@ function NovelReaderContent({
   settings,
   profile,
   skipTyping,
+  isFading,
   handleTypingComplete,
   handleChoice,
-  onProfileUpdate,
-  paragraphKey
+  onProfileUpdate
 }: NovelReaderContentProps) {
   const novelFontStyle = {
     fontFamily: settings.fontFamily === 'merriweather' ? '"Merriweather", serif' :
@@ -47,13 +47,16 @@ function NovelReaderContent({
   return (
     <>
       {currentParagraph.type === 'text' && (
-        <div className={`leading-relaxed text-left text-foreground px-2 py-4 md:p-8 ${
+        <div className={`leading-relaxed text-left text-foreground px-2 py-4 md:p-8 transition-opacity ease-in-out ${
+          isFading 
+            ? `opacity-0 ${currentParagraph.slowFade ? 'duration-[1500ms]' : 'duration-300'}` 
+            : 'opacity-100 duration-300'
+        } ${
           settings.textSize === 'small' ? 'text-base md:text-lg' :
           settings.textSize === 'large' ? 'text-xl md:text-2xl' :
           'text-lg md:text-xl'
         }`} style={novelFontStyle}>
           <TypewriterText 
-            key={paragraphKey}
             text={currentParagraph.content}
             speed={settings.textSpeed}
             skipTyping={skipTyping}
@@ -64,7 +67,6 @@ function NovelReaderContent({
 
       {currentParagraph.type === 'dialogue' && (
         <DialogueBox
-          key={paragraphKey}
           characterName={currentParagraph.characterName}
           characterImage={currentParagraph.characterImage}
           text={currentParagraph.text}
@@ -110,7 +112,6 @@ function NovelReaderContent({
 
       {currentParagraph.type === 'item' && (
         <ItemBox
-          key={paragraphKey}
           name={currentParagraph.name}
           description={currentParagraph.description}
           imageUrl={currentParagraph.imageUrl}
