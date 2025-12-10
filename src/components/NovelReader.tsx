@@ -301,7 +301,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
         {/* Показываем либо приветствие (если showGreetingScreen), либо параграф */}
         {showGreeting ? (
           <div className="text-center animate-fade-in">
-            <div className="bg-background rounded-2xl p-8 shadow-2xl border border-border">
+            <div className="bg-card/90 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-border">
               {novel.homePage?.greetingImage && (
                 <img 
                   src={novel.homePage.greetingImage} 
