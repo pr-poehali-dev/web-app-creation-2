@@ -32,6 +32,9 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
     b => b.episodeId === currentEpisodeId && b.paragraphIndex === currentParagraphIndex
   );
 
+  // Ключ для принудительного пересоздания состояний при смене параграфа
+  const paragraphKey = `${currentEpisodeId}-${currentParagraphIndex}`;
+  
   // Временные состояния для typing
   const [isTyping, setIsTyping] = useState(true);
   const [skipTyping, setSkipTyping] = useState(false);
@@ -53,8 +56,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
     }
   }, [isTyping]);
 
-  // Сбрасываем состояния при смене параграфа - КРИТИЧНО делать это синхронно
-  const paragraphKey = `${currentEpisodeId}-${currentParagraphIndex}`;
+  // Сбрасываем состояния при смене параграфа
   useEffect(() => {
     setIsTyping(true);
     setSkipTyping(false);
@@ -262,6 +264,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
         ) : (
           /* Текущий параграф */
           <NovelReaderContent
+            key={paragraphKey}
             currentParagraph={currentParagraph}
             currentEpisode={currentEpisode}
             novel={novel}
