@@ -6,6 +6,7 @@ interface UseNovelInteractionProps {
   goToNextParagraph: () => void;
   goToPreviousParagraph: () => void;
   isTyping: boolean;
+  isTypingRef: React.MutableRefObject<boolean>;
   setIsTyping: (value: boolean) => void;
   setSkipTyping: (value: boolean) => void;
 }
@@ -15,6 +16,7 @@ export function useNovelInteraction({
   goToNextParagraph,
   goToPreviousParagraph,
   isTyping,
+  isTypingRef,
   setIsTyping,
   setSkipTyping
 }: UseNovelInteractionProps) {
@@ -28,8 +30,9 @@ export function useNovelInteraction({
       return;
     }
 
-    console.log('[Click] isTyping:', isTyping);
-    if (isTyping) {
+    const currentIsTyping = isTypingRef.current;
+    console.log('[Click] isTyping:', currentIsTyping);
+    if (currentIsTyping) {
       console.log('[Click] Skip typing - setting skipTyping=true');
       setSkipTyping(true);
       // НЕ устанавливаем setIsTyping(false) здесь - это сделает TypewriterText через onComplete
@@ -82,8 +85,9 @@ export function useNovelInteraction({
     // Если движение было минимальным (тап)
     if (!isLeftSwipe && !isRightSwipe) {
       // Простое касание
-      console.log('[Touch] Tap detected, isTyping:', isTyping);
-      if (isTyping) {
+      const currentIsTyping = isTypingRef.current;
+      console.log('[Touch] Tap detected, isTyping:', currentIsTyping);
+      if (currentIsTyping) {
         // Показать весь текст
         console.log('[Touch] Skip typing - setting skipTyping=true');
         setSkipTyping(true);
@@ -97,8 +101,9 @@ export function useNovelInteraction({
       }
     } else {
       // Свайп
+      const currentIsTyping = isTypingRef.current;
       console.log('[Touch] Swipe detected');
-      if (isLeftSwipe && !isTyping && currentParagraph?.type !== 'choice') {
+      if (isLeftSwipe && !currentIsTyping && currentParagraph?.type !== 'choice') {
         goToNextParagraph();
       }
       

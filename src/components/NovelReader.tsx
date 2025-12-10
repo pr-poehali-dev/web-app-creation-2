@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Novel } from '@/types/novel';
 import { UserSettings, UserProfile, Bookmark } from '@/types/settings';
 import MusicPlayer from './MusicPlayer';
@@ -34,6 +34,12 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
   const [isTyping, setIsTyping] = useState(true);
   const [skipTyping, setSkipTyping] = useState(false);
   const [isFading, setIsFading] = useState(false);
+  
+  // Ref для отслеживания актуального значения isTyping в callbacks
+  const isTypingRef = useRef(isTyping);
+  useEffect(() => {
+    isTypingRef.current = isTyping;
+  }, [isTyping]);
 
   // Сбрасываем состояния при смене параграфа
   useEffect(() => {
@@ -75,6 +81,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
     goToNextParagraph,
     goToPreviousParagraph,
     isTyping,
+    isTypingRef,
     setIsTyping,
     setSkipTyping
   });
