@@ -59,7 +59,7 @@ const getDisplayText = (text: string, targetLength: number): string => {
           continue;
         } else {
           const remaining = targetLength - cleanPos;
-          result += `**${content.substring(0, remaining)}`;
+          result += `**${content.substring(0, remaining)}**`;
           cleanPos = targetLength;
           continue;
         }
@@ -78,7 +78,7 @@ const getDisplayText = (text: string, targetLength: number): string => {
           continue;
         } else {
           const remaining = targetLength - cleanPos;
-          result += `*${content.substring(0, remaining)}`;
+          result += `*${content.substring(0, remaining)}*`;
           cleanPos = targetLength;
           continue;
         }
@@ -97,7 +97,7 @@ const getDisplayText = (text: string, targetLength: number): string => {
           continue;
         } else {
           const remaining = targetLength - cleanPos;
-          result += `__${content.substring(0, remaining)}`;
+          result += `__${content.substring(0, remaining)}__`;
           cleanPos = targetLength;
           continue;
         }
@@ -116,7 +116,7 @@ const getDisplayText = (text: string, targetLength: number): string => {
           continue;
         } else {
           const remaining = targetLength - cleanPos;
-          result += `~~${content.substring(0, remaining)}`;
+          result += `~~${content.substring(0, remaining)}~~`;
           cleanPos = targetLength;
           continue;
         }
