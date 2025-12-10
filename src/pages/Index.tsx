@@ -72,17 +72,10 @@ function Index() {
   if (showAuthPrompt && !authState.isAuthenticated) {
     return (
       <div className="relative min-h-screen bg-background dark">
-        <AuthScreen onAuthSuccess={handleAuthSuccess} />
-        {authState.isGuest && (
-          <Button
-            variant="ghost"
-            className="absolute top-4 left-4"
-            onClick={() => setShowAuthPrompt(false)}
-          >
-            <Icon name="ArrowLeft" size={20} className="mr-2" />
-            Продолжить как гость
-          </Button>
-        )}
+        <AuthScreen 
+          onAuthSuccess={handleAuthSuccess} 
+          onClose={authState.isGuest ? () => setShowAuthPrompt(false) : undefined}
+        />
       </div>
     );
   }

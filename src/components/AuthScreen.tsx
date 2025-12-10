@@ -11,9 +11,10 @@ const AUTH_API = 'https://functions.poehali.dev/f895202d-2b99-4eae-a334-8b273bf2
 
 interface AuthScreenProps {
   onAuthSuccess: (username: string, userId: number, profile: UserProfile, isAdmin: boolean) => void;
+  onClose?: () => void;
 }
 
-function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
+function AuthScreen({ onAuthSuccess, onClose }: AuthScreenProps) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
@@ -141,7 +142,17 @@ function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
 
   return (
     <div className="min-h-screen bg-background dark flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
+      <Card className="w-full max-w-md relative">
+        {onClose && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute top-4 right-4 z-10"
+            onClick={onClose}
+          >
+            <Icon name="X" size={20} />
+          </Button>
+        )}
         <CardHeader>
           <CardTitle className="text-2xl text-center">Визуальная новелла</CardTitle>
           <CardDescription className="text-center">
