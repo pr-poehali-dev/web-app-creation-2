@@ -66,7 +66,8 @@ function Index() {
     setShowAdminButton,
     setAdminPassword,
     setSelectedEpisodeForParagraphs,
-    setShowParagraphsDialog
+    setShowParagraphsDialog,
+    setShowGreetingScreen
   });
 
   if (isLoading) {
@@ -253,7 +254,6 @@ function Index() {
           profile={profile}
           onEpisodeSelect={(episodeId, paragraphIndex) => {
             handleEpisodeSelect(episodeId, paragraphIndex);
-            setShowGreetingScreen(false);
             setShowSidebar(false);
           }}
           onShowParagraphs={(episodeId) => {
