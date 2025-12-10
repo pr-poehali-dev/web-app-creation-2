@@ -1,4 +1,4 @@
-import { Episode, Paragraph } from '@/types/novel';
+import { Novel, Episode, Paragraph } from '@/types/novel';
 import { UserSettings, UserProfile } from '@/types/settings';
 import TypewriterText from '../TypewriterText';
 import DialogueBox from '../DialogueBox';
@@ -9,6 +9,7 @@ import ImageBox from '../ImageBox';
 interface NovelReaderContentProps {
   currentParagraph: Paragraph;
   currentEpisode: Episode;
+  novel: Novel;
   settings: UserSettings;
   profile: UserProfile;
   skipTyping: boolean;
@@ -21,6 +22,7 @@ interface NovelReaderContentProps {
 function NovelReaderContent({
   currentParagraph,
   currentEpisode,
+  novel,
   settings,
   profile,
   skipTyping,
@@ -91,6 +93,7 @@ function NovelReaderContent({
             if (opt.requiredPath && !profile.activePaths.includes(opt.requiredPath)) return false;
             return true;
           })}
+          novel={novel}
           onChoice={handleChoice}
         />
       )}

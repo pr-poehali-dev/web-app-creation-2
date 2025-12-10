@@ -12,12 +12,23 @@ interface EpisodesSidebarProps {
 }
 
 function EpisodesSidebar({ novel, currentEpisodeId, profile, onEpisodeSelect, onShowParagraphs }: EpisodesSidebarProps) {
-  const isEpisodeAccessible = (episodeId: string) => {
+  const isEpisodeFullyRead = (episodeId: string) => {
     const episode = novel.episodes.find(ep => ep.id === episodeId);
     if (!episode) return false;
     
-    const firstParagraphId = `${episodeId}-0`;
-    return profile.readParagraphs.includes(firstParagraphId);
+    for (let i = 0; i < episode.paragraphs.length; i++) {
+      const paragraphId = `${episodeId}-${i}`;
+      if (!profile.readParagraphs.includes(paragraphId)) {
+        return false;
+      }
+    }
+    return true;
+  };
+
+  const isEpisodeAccessible = (index: number) => {
+    if (index === 0) return true;
+    const prevEpisode = novel.episodes[index - 1];
+    return isEpisodeFullyRead(prevEpisode.id);
   };
   return (
     <div className="w-80 h-full bg-card border-r border-border overflow-y-auto flex-shrink-0">
@@ -26,8 +37,9 @@ function EpisodesSidebar({ novel, currentEpisodeId, profile, onEpisodeSelect, on
         <div className="space-y-2">
           {novel.episodes.map((episode, index) => {
             const isCurrent = currentEpisodeId === episode.id;
-            const isAccessible = index === 0 || isEpisodeAccessible(episode.id) || isCurrent;
+            const isAccessible = isEpisodeAccessible(index) || isCurrent;
             const isLocked = !isAccessible;
+            const isFullyRead = isEpisodeFullyRead(episode.id);
             
             return (
               <div key={episode.id} className="space-y-1">
@@ -81,7 +93,7 @@ function EpisodesSidebar({ novel, currentEpisodeId, profile, onEpisodeSelect, on
                       }
                     }}
                   >
-                    {isLocked ? 'Заблокирован' : `${episode.paragraphs.length} параграфов`}
+                    {isLocked ? 'Заблокирован' : isFullyRead ? '✓ Прочитан' : `${episode.paragraphs.length} параграфов`}
                   </div>
                 </div>
               </div>

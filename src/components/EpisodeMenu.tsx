@@ -23,10 +23,23 @@ function EpisodeMenu({ novel, profile, onEpisodeSelect, onBack }: EpisodeMenuPro
            novel.currentEpisodeId === episodeId ? 50 : 0;
   };
 
-  const isEpisodeUnlocked = (episodeId: string, index: number) => {
+  const isEpisodeFullyRead = (episodeId: string) => {
+    const episode = novel.episodes.find(ep => ep.id === episodeId);
+    if (!episode) return false;
+    
+    for (let i = 0; i < episode.paragraphs.length; i++) {
+      const paragraphId = `${episodeId}-${i}`;
+      if (!profile.readParagraphs.includes(paragraphId)) {
+        return false;
+      }
+    }
+    return true;
+  };
+
+  const isEpisodeUnlocked = (index: number) => {
     if (index === 0) return true;
-    const firstParagraphId = `${episodeId}-0`;
-    return profile.readParagraphs.includes(firstParagraphId);
+    const prevEpisode = novel.episodes[index - 1];
+    return isEpisodeFullyRead(prevEpisode.id);
   };
 
   return (
@@ -44,7 +57,7 @@ function EpisodeMenu({ novel, profile, onEpisodeSelect, onBack }: EpisodeMenuPro
           {novel.episodes.map((episode, index) => {
             const progress = getEpisodeProgress(episode.id);
             const isCurrent = novel.currentEpisodeId === episode.id;
-            const isLocked = !isEpisodeUnlocked(episode.id, index) && !isCurrent;
+            const isLocked = !isEpisodeUnlocked(index) && !isCurrent;
             
             return (
               <Card 

@@ -206,6 +206,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
         <NovelReaderContent
           currentParagraph={currentParagraph}
           currentEpisode={currentEpisode}
+          novel={novel}
           settings={settings}
           profile={profile}
           skipTyping={interaction.skipTyping}

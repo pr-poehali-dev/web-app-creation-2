@@ -7,6 +7,7 @@ import HomePage from '@/components/HomePage';
 import EpisodesSidebar from '@/components/EpisodesSidebar';
 import NavigationMenu from '@/components/NavigationMenu';
 import ParagraphsDialog from '@/components/ParagraphsDialog';
+import ActivePathsIndicator from '@/components/ActivePathsIndicator';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Icon from '@/components/ui/icon';
@@ -258,6 +259,7 @@ function Index() {
           currentEpisodeId={profile.currentEpisodeId}
           currentParagraphIndex={profile.currentParagraphIndex}
         />
+        <ActivePathsIndicator novel={novel} profile={profile} />
       </div>
       
       <NavigationMenu

@@ -177,10 +177,14 @@ function UserProfilePanel({ profile, novel, onUpdate, onBack, onNavigateTo }: Us
         <Card className="animate-fade-in" style={{ animationDelay: '200ms' }}>
           <CardContent className="p-6">
             <Tabs defaultValue="achievements" className="w-full">
-              <TabsList className="grid w-full grid-cols-4">
+              <TabsList className="grid w-full grid-cols-5">
                 <TabsTrigger value="achievements" className="flex items-center gap-1">
                   <Icon name="Trophy" size={16} />
                   <span className="hidden md:inline">Достижения</span>
+                </TabsTrigger>
+                <TabsTrigger value="paths" className="flex items-center gap-1">
+                  <Icon name="GitBranch" size={16} />
+                  <span className="hidden md:inline">Пути</span>
                 </TabsTrigger>
                 <TabsTrigger value="bookmarks" className="flex items-center gap-1">
                   <Icon name="Bookmark" size={16} />
@@ -227,6 +231,42 @@ function UserProfilePanel({ profile, novel, onUpdate, onBack, onNavigateTo }: Us
                     </div>
                   ))}
                 </div>
+              </TabsContent>
+
+              <TabsContent value="paths" className="mt-6">
+                {profile.activePaths.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {(novel.paths || []).filter(path => profile.activePaths.includes(path.id)).map(path => (
+                      <Card key={path.id} className="border-2" style={{ borderColor: path.color || undefined }}>
+                        <CardContent className="p-4">
+                          <div className="flex items-start gap-3">
+                            <div 
+                              className="w-10 h-10 rounded-full flex items-center justify-center"
+                              style={{ 
+                                backgroundColor: path.color ? `${path.color}20` : undefined,
+                                color: path.color || undefined
+                              }}
+                            >
+                              <Icon name="GitBranch" size={20} />
+                            </div>
+                            <div className="flex-1">
+                              <h4 className="font-semibold text-foreground mb-1">{path.name}</h4>
+                              {path.description && (
+                                <p className="text-xs text-muted-foreground">{path.description}</p>
+                              )}
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <Icon name="GitBranch" size={48} className="mx-auto mb-4 text-muted-foreground opacity-50" />
+                    <p className="text-muted-foreground">Вы ещё не активировали ни одного пути</p>
+                    <p className="text-xs text-muted-foreground mt-2">Пути активируются при выборе определённых вариантов</p>
+                  </div>
+                )}
               </TabsContent>
 
               <TabsContent value="bookmarks" className="mt-6 space-y-3">
