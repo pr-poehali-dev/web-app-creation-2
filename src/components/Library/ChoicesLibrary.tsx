@@ -204,14 +204,19 @@ function ChoicesLibrary({ novel, onUpdate }: ChoicesLibraryProps) {
       </Card>
 
       <div className="space-y-2">
-        {novel.library.choices.map((choice) => (
-          <Card key={choice.id}>
-            <CardContent className="p-4">
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex-1">
-                  <p className="text-foreground font-bold mb-2">{choice.question}</p>
-                  <div className="space-y-1">
-                    {choice.options.map((option) => {
+        {novel.library.choices.map((choice) => {
+          if (!choice.options || !Array.isArray(choice.options)) {
+            return null;
+          }
+          
+          return (
+            <Card key={choice.id}>
+              <CardContent className="p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex-1">
+                    <p className="text-foreground font-bold mb-2">{choice.question}</p>
+                    <div className="space-y-1">
+                      {choice.options.map((option) => {
                       const episode = option.nextEpisodeId 
                         ? novel.episodes.find(ep => ep.id === option.nextEpisodeId)
                         : null;
@@ -227,21 +232,22 @@ function ChoicesLibrary({ novel, onUpdate }: ChoicesLibraryProps) {
                           )}
                         </div>
                       );
-                    })}
+                      })}
+                    </div>
                   </div>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="text-destructive flex-shrink-0"
+                    onClick={() => handleDeleteChoice(choice.id)}
+                  >
+                    <Icon name="Trash2" size={16} />
+                  </Button>
                 </div>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="text-destructive flex-shrink-0"
-                  onClick={() => handleDeleteChoice(choice.id)}
-                >
-                  <Icon name="Trash2" size={16} />
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
     </div>
   );
