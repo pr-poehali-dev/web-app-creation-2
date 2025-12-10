@@ -54,7 +54,7 @@ function NovelReaderContent({
             ? `transition-opacity duration-300 ease-in-out ${isFading ? 'opacity-0' : 'opacity-100'}` 
             : ''
         }`}>
-          <div className={`leading-relaxed text-left text-foreground w-full ${
+          <div className={`leading-relaxed text-center text-foreground w-full ${
             settings.textSize === 'small' ? 'text-base md:text-lg' :
             settings.textSize === 'large' ? 'text-xl md:text-2xl' :
             'text-lg md:text-xl'
@@ -107,19 +107,17 @@ function NovelReaderContent({
       )}
 
       {currentParagraph.type === 'choice' && (
-        <div className="flex items-center justify-center">
-          <ChoiceBox
-            question={currentParagraph.question}
-            options={currentParagraph.options.filter(opt => {
-              // Фильтруем недоступные выборы
-              if (opt.oneTime && profile.usedChoices.includes(opt.id)) return false;
-              if (opt.requiredPath && !profile.activePaths.includes(opt.requiredPath)) return false;
-              return true;
-            })}
-            novel={novel}
-            onChoice={handleChoice}
-          />
-        </div>
+        <ChoiceBox
+          question={currentParagraph.question}
+          options={currentParagraph.options.filter(opt => {
+            // Фильтруем недоступные выборы
+            if (opt.oneTime && profile.usedChoices.includes(opt.id)) return false;
+            if (opt.requiredPath && !profile.activePaths.includes(opt.requiredPath)) return false;
+            return true;
+          })}
+          novel={novel}
+          onChoice={handleChoice}
+        />
       )}
 
       {currentParagraph.type === 'item' && (
