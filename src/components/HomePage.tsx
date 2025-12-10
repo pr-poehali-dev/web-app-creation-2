@@ -1,14 +1,43 @@
-import { HomePage as HomePageType } from '@/types/novel';
+import { HomePage as HomePageType, Novel } from '@/types/novel';
+import { UserProfile } from '@/types/settings';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import ZoomableImage from '@/components/ZoomableImage';
+import Icon from '@/components/ui/icon';
 
 interface HomePageProps {
   homePage: HomePageType;
-  onStart: () => void;
+  novel: Novel;
+  profile: UserProfile;
+  onEpisodeSelect: (episodeId: string, paragraphIndex: number) => void;
 }
 
-function HomePage({ homePage, onStart }: HomePageProps) {
+function HomePage({ homePage, novel, profile, onEpisodeSelect }: HomePageProps) {
+  // Проверяем доступность эпизодов
+  const isEpisodeFullyRead = (episodeId: string) => {
+    const episode = novel.episodes.find(ep => ep.id === episodeId);
+    if (!episode) return false;
+    
+    return episode.paragraphs.every((_, idx) => {
+      const paragraphId = `${episodeId}-${idx}`;
+      return profile.readParagraphs?.includes(paragraphId);
+    });
+  };
+
+  const isEpisodeAccessible = (index: number) => {
+    if (index === 0) return true;
+    const episode = novel.episodes[index];
+    if (episode.unlockedForAll) return true;
+    const prevEpisode = novel.episodes[index - 1];
+    return isEpisodeFullyRead(prevEpisode.id);
+  };
+
+  const isPathMatching = (episode: typeof novel.episodes[0], index: number) => {
+    if (index === 0) return true;
+    if (!episode.requiredPath) return true;
+    return profile.activePaths?.includes(episode.requiredPath);
+  };
+
   return (
     <div className="min-h-screen bg-background dark flex items-center justify-center p-4">
       <div className="max-w-3xl w-full space-y-8 animate-fade-in">
@@ -23,9 +52,58 @@ function HomePage({ homePage, onStart }: HomePageProps) {
           <h1 className="text-5xl font-bold text-foreground animate-scale-in whitespace-pre-wrap leading-tight">
             {homePage.greeting || 'Добро пожаловать'}
           </h1>
-          <Button size="lg" onClick={onStart} className="mt-8">
-            Начать историю
-          </Button>
+        </div>
+
+        {/* Список доступных эпизодов */}
+        <div className="space-y-4 mt-12">
+          <h2 className="text-2xl font-bold text-foreground text-center">Эпизоды</h2>
+          <div className="grid gap-3">
+            {novel.episodes.map((episode, index) => {
+              const isAccessible = isEpisodeAccessible(index);
+              const hasRequiredPath = isPathMatching(episode, index);
+              const canPlay = isAccessible && hasRequiredPath;
+              const isFullyRead = isEpisodeFullyRead(episode.id);
+              
+              return (
+                <Card 
+                  key={episode.id} 
+                  className={`transition-all ${
+                    canPlay 
+                      ? 'cursor-pointer hover:border-primary hover:shadow-lg' 
+                      : 'opacity-50 cursor-not-allowed'
+                  } ${isFullyRead ? 'border-secondary' : ''}`}
+                  onClick={() => canPlay && onEpisodeSelect(episode.id, 0)}
+                >
+                  <CardContent className="p-4 flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className={`flex items-center justify-center w-10 h-10 rounded-full ${
+                        isFullyRead ? 'bg-secondary' : canPlay ? 'bg-primary' : 'bg-muted'
+                      }`}>
+                        {isFullyRead ? (
+                          <Icon name="Check" size={20} className="text-white" />
+                        ) : canPlay ? (
+                          <Icon name="Play" size={20} className="text-white" />
+                        ) : (
+                          <Icon name="Lock" size={20} className="text-white" />
+                        )}
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-foreground">{episode.title}</h3>
+                        {!hasRequiredPath && episode.requiredPath && (
+                          <p className="text-xs text-muted-foreground">
+                            Требуется путь: {novel.paths?.find(p => p.id === episode.requiredPath)?.name || episode.requiredPath}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    {canPlay && (
+                      <Icon name="ChevronRight" size={20} className="text-muted-foreground" />
+                    )}
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
         </div>
 
         {homePage.news && homePage.news.length > 0 && (
