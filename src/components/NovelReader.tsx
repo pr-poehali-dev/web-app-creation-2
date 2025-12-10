@@ -53,12 +53,13 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
     }
   }, [isTyping]);
 
-  // Сбрасываем состояния при смене параграфа
+  // Сбрасываем состояния при смене параграфа - КРИТИЧНО делать это синхронно
+  const paragraphKey = `${currentEpisodeId}-${currentParagraphIndex}`;
   useEffect(() => {
     setIsTyping(true);
     setSkipTyping(false);
     setCanNavigate(false);
-  }, [currentEpisodeId, currentParagraphIndex]);
+  }, [paragraphKey]);
 
   // Хук навигации
   const {
@@ -270,7 +271,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
             handleTypingComplete={handleTypingComplete}
             handleChoice={handleChoice}
             onProfileUpdate={onProfileUpdate}
-            paragraphKey={`${currentEpisodeId}-${currentParagraphIndex}`}
+            paragraphKey={paragraphKey}
           />
         )}
 
