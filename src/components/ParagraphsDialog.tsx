@@ -26,7 +26,7 @@ function ParagraphsDialog({
 }: ParagraphsDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[80vh]">
+      <DialogContent className="max-w-2xl max-h-[80vh] md:ml-16">
         <DialogHeader>
           <DialogTitle>
             Параграфы: {novel.episodes.find(ep => ep.id === selectedEpisodeId)?.title}
