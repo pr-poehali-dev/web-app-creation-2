@@ -86,7 +86,8 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
     if (!isFading) {
       console.log('[NovelReader] Paragraph changed, updating display and resetting isTyping');
       setDisplayParagraph(currentParagraph);
-      setIsTyping(true);
+      // Для фоновых параграфов сразу ставим isTyping=false, чтобы не блокировать автопереход
+      setIsTyping(currentParagraph?.type === 'background' ? false : true);
       setSkipTyping(false);
       setCanNavigate(false);
     }
