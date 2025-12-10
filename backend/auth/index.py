@@ -423,43 +423,105 @@ def handler(event, context):
                         'isBase64Encoded': False
                     }
                 
-                # Проверяем существование email
+                # Проверяем существование email в БД
                 cur.execute("SELECT username FROM users WHERE email = %s", (email,))
                 result = cur.fetchone()
                 
                 if not result:
-                    # Не раскрываем, существует ли email
+                    # Не раскрываем, существует ли email (защита от перебора)
                     return {
                         'statusCode': 200,
                         'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-                        'body': json.dumps({'success': True, 'message': 'Если email найден, инструкции отправлены'}),
+                        'body': json.dumps({'success': True, 'message': 'Если email найден, письмо с новым паролем отправлено'}),
                         'isBase64Encoded': False
                     }
                 
                 username = result[0]
                 
-                # Генерируем временный пароль
+                # Генерируем новый пароль
                 import random
                 import string
-                temp_password = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
-                temp_hash = hashlib.sha256(temp_password.encode()).hexdigest()
+                new_password = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
+                new_hash = hashlib.sha256(new_password.encode()).hexdigest()
                 
-                # Обновляем пароль
-                cur.execute("UPDATE users SET password_hash = %s WHERE username = %s", (temp_hash, username))
+                # Обновляем пароль в БД
+                cur.execute("UPDATE users SET password_hash = %s WHERE username = %s", (new_hash, username))
                 
-                # В реальной системе здесь отправка email
-                # Пока возвращаем временный пароль в ответе (только для разработки!)
-                return {
-                    'statusCode': 200,
-                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-                    'body': json.dumps({
-                        'success': True,
-                        'message': 'Пароль сброшен',
-                        'tempPassword': temp_password,
-                        'username': username
-                    }),
-                    'isBase64Encoded': False
-                }
+                # Отправляем email с новым паролем
+                try:
+                    import smtplib
+                    from email.mime.text import MIMEText
+                    from email.mime.multipart import MIMEMultipart
+                    
+                    smtp_host = os.environ.get('SMTP_HOST')
+                    smtp_port = int(os.environ.get('SMTP_PORT', '587'))
+                    smtp_user = os.environ.get('SMTP_USER')
+                    smtp_password = os.environ.get('SMTP_PASSWORD')
+                    
+                    if not all([smtp_host, smtp_user, smtp_password]):
+                        # SMTP не настроен, возвращаем пароль в ответе (fallback)
+                        return {
+                            'statusCode': 200,
+                            'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                            'body': json.dumps({
+                                'success': True,
+                                'message': 'Пароль сброшен (SMTP не настроен)',
+                                'tempPassword': new_password,
+                                'username': username
+                            }),
+                            'isBase64Encoded': False
+                        }
+                    
+                    # Создаем сообщение
+                    msg = MIMEMultipart()
+                    msg['From'] = smtp_user
+                    msg['To'] = email
+                    msg['Subject'] = 'Восстановление пароля - Визуальная новелла'
+                    
+                    body = f"""
+Здравствуйте!
+
+Вы запросили сброс пароля для аккаунта "{username}".
+
+Ваш новый пароль: {new_password}
+
+Рекомендуем изменить пароль после входа в систему.
+
+---
+Если вы не запрашивали сброс пароля, проигнорируйте это письмо.
+"""
+                    
+                    msg.attach(MIMEText(body, 'plain', 'utf-8'))
+                    
+                    # Отправляем письмо
+                    with smtplib.SMTP(smtp_host, smtp_port) as server:
+                        server.starttls()
+                        server.login(smtp_user, smtp_password)
+                        server.send_message(msg)
+                    
+                    return {
+                        'statusCode': 200,
+                        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                        'body': json.dumps({
+                            'success': True,
+                            'message': 'Новый пароль отправлен на ваш email'
+                        }),
+                        'isBase64Encoded': False
+                    }
+                    
+                except Exception as email_error:
+                    # Ошибка отправки email, но пароль уже изменен в БД
+                    return {
+                        'statusCode': 200,
+                        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                        'body': json.dumps({
+                            'success': True,
+                            'message': f'Пароль изменен, но не удалось отправить email: {str(email_error)}',
+                            'tempPassword': new_password,
+                            'username': username
+                        }),
+                        'isBase64Encoded': False
+                    }
         
         cur.close()
         conn.close()

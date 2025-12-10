@@ -119,10 +119,19 @@ function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
         return;
       }
 
-      alert(`Пароль сброшен!\nЛогин: ${data.username}\nНовый пароль: ${data.tempPassword}`);
-      setMode('login');
-      setUsername(data.username);
-      setEmail('');
+      // Если сервер вернул временный пароль (SMTP не настроен), показываем его
+      if (data.tempPassword && data.username) {
+        alert(`Пароль сброшен!\nЛогин: ${data.username}\nНовый пароль: ${data.tempPassword}\n\nСохраните этот пароль!`);
+        setMode('login');
+        setUsername(data.username);
+        setPassword('');
+        setEmail('');
+      } else {
+        // Если письмо отправлено, показываем уведомление
+        alert(data.message || 'Если email найден в системе, новый пароль отправлен на вашу почту');
+        setMode('login');
+        setEmail('');
+      }
     } catch (err) {
       setError('Ошибка соединения с сервером');
     } finally {
