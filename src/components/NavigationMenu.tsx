@@ -41,12 +41,6 @@ function NavigationMenu({
   return (
     <div className="fixed top-4 right-4 flex flex-col gap-2 z-50 items-end">
       <div className="flex gap-2 flex-wrap justify-end">
-        {username && (
-          <div className="bg-card/50 backdrop-blur-sm rounded-lg px-3 py-2 text-sm text-white flex items-center gap-2">
-            <Icon name="User" size={16} />
-            {username}
-          </div>
-        )}
         {!showGreeting && onGoToGreeting && (
           <Button
             variant="ghost"
@@ -60,11 +54,12 @@ function NavigationMenu({
         )}
         <Button
           variant="ghost"
-          size="icon"
           className="bg-card/50 backdrop-blur-sm hover:bg-card/80 text-white"
           onClick={() => onSetActiveView('profile')}
+          title="Профиль"
         >
           <Icon name="User" size={20} />
+          {username && <span className="ml-2">{username}</span>}
         </Button>
         <Button
           variant="ghost"
