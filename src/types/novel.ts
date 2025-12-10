@@ -78,6 +78,7 @@ export interface LibraryItem {
 export interface LibraryCharacter {
   id: string;
   name: string;
+  defaultImage?: string;
   images: { id: string; url: string; name?: string }[];
   description?: string;
 }

@@ -157,15 +157,22 @@ function CharactersLibrary({ novel, onUpdate }: CharactersLibraryProps) {
                         />
                       </div>
                     ) : (
-                      <>
-                        <h4 className="font-semibold text-foreground text-lg">{character.name}</h4>
-                        {character.description && (
-                          <p className="text-sm text-muted-foreground mt-1">{character.description}</p>
+                      <div className="flex gap-3">
+                        {character.defaultImage && (
+                          <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
+                            <img src={character.defaultImage} alt={character.name} className="w-full h-full object-contain" />
+                          </div>
                         )}
-                        <p className="text-xs text-muted-foreground mt-2">
-                          {character.images?.length || 0} изображений
-                        </p>
-                      </>
+                        <div>
+                          <h4 className="font-semibold text-foreground text-lg">{character.name}</h4>
+                          {character.description && (
+                            <p className="text-sm text-muted-foreground mt-1">{character.description}</p>
+                          )}
+                          <p className="text-xs text-muted-foreground mt-2">
+                            {character.defaultImage ? 'Основное изображение установлено' : 'Нет основного изображения'} • {character.images?.length || 0} доп. изображений
+                          </p>
+                        </div>
+                      </div>
                     )}
                   </div>
                   <div className="flex gap-1">
@@ -190,7 +197,31 @@ function CharactersLibrary({ novel, onUpdate }: CharactersLibraryProps) {
                 {editingCharacter === character.id && (
                   <div className="space-y-3">
                     <div className="border-t pt-3">
-                      <Label className="text-sm font-semibold">Изображения персонажа</Label>
+                      <Label className="text-sm font-semibold">Основное изображение (в профиле)</Label>
+                      <div className="flex gap-2 mt-2">
+                        <Button size="sm" variant="outline" onClick={async () => {
+                          const imageBase64 = await selectAndConvertImage();
+                          if (imageBase64) {
+                            handleUpdateCharacter(character.id, { defaultImage: imageBase64 });
+                          }
+                        }}>
+                          <Icon name="Upload" size={14} className="mr-2" />
+                          {character.defaultImage ? 'Изменить' : 'Загрузить'}
+                        </Button>
+                        {character.defaultImage && (
+                          <>
+                            <div className="w-12 h-12 rounded overflow-hidden">
+                              <img src={character.defaultImage} alt={character.name} className="w-full h-full object-contain" />
+                            </div>
+                            <Button size="sm" variant="ghost" onClick={() => handleUpdateCharacter(character.id, { defaultImage: undefined })}>
+                              <Icon name="X" size={14} />
+                            </Button>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                    <div className="border-t pt-3">
+                      <Label className="text-sm font-semibold">Дополнительные изображения (для диалогов)</Label>
                       <Dialog>
                         <DialogTrigger asChild>
                           <Button size="sm" className="w-full mt-2">

@@ -142,7 +142,7 @@ function ParagraphEditor({
       onUpdate(index, { 
         ...paragraph, 
         characterName: character.name,
-        characterImage: character.images?.[0]?.url
+        characterImage: character.defaultImage || character.images?.[0]?.url
       });
     }
   };

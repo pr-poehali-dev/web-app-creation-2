@@ -107,6 +107,11 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
           c => c.name === currentParagraph.characterName && c.episodeId === currentEpisodeId
         );
         if (!characterExists) {
+          const libraryCharacter = novel.library.characters.find(
+            c => c.name === currentParagraph.characterName
+          );
+          const defaultImage = libraryCharacter?.defaultImage || currentParagraph.characterImage;
+          
           return {
             ...prev,
             metCharacters: [
@@ -114,7 +119,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
               {
                 id: `char${Date.now()}`,
                 name: currentParagraph.characterName,
-                image: currentParagraph.characterImage,
+                image: defaultImage,
                 episodeId: currentEpisodeId,
                 firstMetAt: new Date().toISOString()
               }
@@ -124,7 +129,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
         return prev;
       });
     }
-  }, [currentParagraph?.type, currentParagraph?.characterName, currentEpisodeId, onProfileUpdate]);
+  }, [currentParagraph?.type, currentParagraph?.characterName, currentEpisodeId, novel.library.characters, onProfileUpdate]);
 
   // Сохранить предмет при показе
   useEffect(() => {
