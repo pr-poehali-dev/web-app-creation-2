@@ -86,8 +86,8 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
     if (!isFading) {
       console.log('[NovelReader] Paragraph changed, updating display and resetting isTyping');
       setDisplayParagraph(currentParagraph);
-      // Для картинок сразу ставим isTyping=false, чтобы не блокировать автопереход
-      setIsTyping(currentParagraph?.type === 'image' ? false : true);
+      // Для картинок и фонов сразу ставим isTyping=false
+      setIsTyping(currentParagraph?.type === 'image' || currentParagraph?.type === 'background' ? false : true);
       setSkipTyping(false);
       setCanNavigate(false);
     }
@@ -132,12 +132,12 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
     setSkipTyping
   });
   
-  // Авто-переход для background и image параграфов
+  // Авто-переход только для background параграфов
   useEffect(() => {
-    if ((currentParagraph?.type === 'background' || currentParagraph?.type === 'image') && !isFading) {
+    if (currentParagraph?.type === 'background' && !isFading) {
       const timer = setTimeout(() => {
         goToNextParagraph();
-      }, 500); // Задержка на плавную смену
+      }, 500); // Задержка на плавную смену фона
       return () => clearTimeout(timer);
     }
   }, [currentParagraph, isFading, goToNextParagraph]);
@@ -299,7 +299,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
           <div className="absolute inset-0 bg-black/20" />
           
           {/* Контент внутри фона */}
-          <div className="relative w-full h-full flex items-end justify-center pb-8 px-4">
+          <div className="relative w-full h-full flex items-end justify-center pb-8 px-4 md:pr-8">
             <div className="w-full max-w-4xl relative z-10">
               {/* Отображаемый параграф (для плавного fade) */}
               {currentParagraph.type !== 'background' && (
