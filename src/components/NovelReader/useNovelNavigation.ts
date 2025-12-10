@@ -13,6 +13,8 @@ interface UseNovelNavigationProps {
   setIsTyping: (value: boolean) => void;
   setSkipTyping: (value: boolean) => void;
   setIsFading: (value: boolean) => void;
+  isGuest?: boolean;
+  onGuestLimitReached?: () => void;
 }
 
 export function useNovelNavigation({
@@ -25,8 +27,17 @@ export function useNovelNavigation({
   onProfileUpdate,
   setIsTyping,
   setSkipTyping,
-  setIsFading
+  setIsFading,
+  isGuest = false,
+  onGuestLimitReached
 }: UseNovelNavigationProps) {
+  // Проверка, доступен ли эпизод для гостей
+  const isEpisodeAccessibleForGuest = (episodeId: string) => {
+    const episode = novel.episodes.find(ep => ep.id === episodeId);
+    if (!episode) return false;
+    const episodeIndex = novel.episodes.findIndex(ep => ep.id === episodeId);
+    return episodeIndex === 0 || episode.unlockedForAll;
+  };
   // Проверка доступности параграфа
   const isParagraphAccessible = (episodeId: string, paragraphIndex: number) => {
     const paragraphId = `${episodeId}-${paragraphIndex}`;
@@ -107,6 +118,14 @@ export function useNovelNavigation({
       }
       
       if (targetEpisodeId) {
+        // Проверяем доступ для гостя
+        if (isGuest && !isEpisodeAccessibleForGuest(targetEpisodeId)) {
+          if (onGuestLimitReached) {
+            onGuestLimitReached();
+          }
+          return;
+        }
+
         if (currentParagraph?.type === 'text') {
           setIsFading(true);
           setTimeout(() => {
@@ -186,6 +205,14 @@ export function useNovelNavigation({
     }
 
     if (nextEpisodeId) {
+      // Проверяем доступ для гостя
+      if (isGuest && !isEpisodeAccessibleForGuest(nextEpisodeId)) {
+        if (onGuestLimitReached) {
+          onGuestLimitReached();
+        }
+        return;
+      }
+
       onProfileUpdate(prev => ({
         ...prev,
         currentEpisodeId: nextEpisodeId,

@@ -35,7 +35,9 @@ function Index() {
     isAdmin,
     setIsAdmin,
     showGreetingScreen,
-    setShowGreetingScreen
+    setShowGreetingScreen,
+    showAuthPrompt,
+    setShowAuthPrompt
   } = useAppState();
 
   const { isLoading, setNovelForSaving } = useNovelDatabase(setNovel, isAdmin);
@@ -66,9 +68,23 @@ function Index() {
     setShowGreetingScreen
   });
 
-  // Показываем экран авторизации, если пользователь не авторизован
-  if (!authState.isAuthenticated) {
-    return <AuthScreen onAuthSuccess={handleAuthSuccess} />;
+  // Показываем экран авторизации только если пользователь явно запросил или достиг конца доступного контента
+  if (showAuthPrompt && !authState.isAuthenticated) {
+    return (
+      <div className="relative min-h-screen bg-background dark">
+        <AuthScreen onAuthSuccess={handleAuthSuccess} />
+        {authState.isGuest && (
+          <Button
+            variant="ghost"
+            className="absolute top-4 left-4"
+            onClick={() => setShowAuthPrompt(false)}
+          >
+            <Icon name="ArrowLeft" size={20} className="mr-2" />
+            Продолжить как гость
+          </Button>
+        )}
+      </div>
+    );
   }
 
   if (isLoading) {
@@ -277,6 +293,8 @@ function Index() {
           currentEpisodeId={profile.currentEpisodeId}
           currentParagraphIndex={profile.currentParagraphIndex}
           showGreetingScreen={showGreetingScreen}
+          isGuest={authState.isGuest}
+          onGuestLimitReached={() => setShowAuthPrompt(true)}
         />
         <ActivePathsIndicator novel={novel} profile={profile} />
       </div>
@@ -300,6 +318,8 @@ function Index() {
         showGreeting={showGreetingScreen}
         onLogout={handleLogout}
         username={authState.username || undefined}
+        isGuest={authState.isGuest}
+        onShowAuthPrompt={() => setShowAuthPrompt(true)}
       />
 
       <ParagraphsDialog

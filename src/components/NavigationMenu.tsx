@@ -20,6 +20,8 @@ interface NavigationMenuProps {
   showGreeting?: boolean;
   onLogout?: () => void;
   username?: string;
+  isGuest?: boolean;
+  onShowAuthPrompt?: () => void;
 }
 
 function NavigationMenu({
@@ -36,7 +38,9 @@ function NavigationMenu({
   onGoToGreeting,
   showGreeting,
   onLogout,
-  username
+  username,
+  isGuest = false,
+  onShowAuthPrompt
 }: NavigationMenuProps) {
   return (
     <div className="fixed top-4 right-4 flex flex-col gap-2 z-50 items-end">
@@ -52,15 +56,27 @@ function NavigationMenu({
             <Icon name="Home" size={20} />
           </Button>
         )}
-        <Button
-          variant="ghost"
-          className="bg-card/50 backdrop-blur-sm hover:bg-card/80 text-white"
-          onClick={() => onSetActiveView('profile')}
-          title="Профиль"
-        >
-          <Icon name="User" size={20} />
-          {username && <span className="ml-2">{username}</span>}
-        </Button>
+        {isGuest ? (
+          <Button
+            variant="default"
+            className="bg-primary/90 backdrop-blur-sm hover:bg-primary text-white"
+            onClick={onShowAuthPrompt}
+            title="Войти или зарегистрироваться"
+          >
+            <Icon name="LogIn" size={20} />
+            <span className="ml-2">Войти</span>
+          </Button>
+        ) : (
+          <Button
+            variant="ghost"
+            className="bg-card/50 backdrop-blur-sm hover:bg-card/80 text-white"
+            onClick={() => onSetActiveView('profile')}
+            title="Профиль"
+          >
+            <Icon name="User" size={20} />
+            {username && <span className="ml-2">{username}</span>}
+          </Button>
+        )}
         <Button
           variant="ghost"
           size="icon"

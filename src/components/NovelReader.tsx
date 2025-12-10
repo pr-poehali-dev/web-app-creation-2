@@ -18,9 +18,11 @@ interface NovelReaderProps {
   currentEpisodeId: string;
   currentParagraphIndex: number;
   showGreetingScreen?: boolean;
+  isGuest?: boolean;
+  onGuestLimitReached?: () => void;
 }
 
-function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, currentEpisodeId, currentParagraphIndex, showGreetingScreen = false }: NovelReaderProps) {
+function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, currentEpisodeId, currentParagraphIndex, showGreetingScreen = false, isGuest = false, onGuestLimitReached }: NovelReaderProps) {
   const currentEpisode = novel.episodes.find(ep => ep.id === currentEpisodeId);
   const currentParagraph = currentEpisode?.paragraphs[currentParagraphIndex];
 
@@ -63,7 +65,9 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
     onProfileUpdate,
     setIsTyping,
     setSkipTyping,
-    setIsFading
+    setIsFading,
+    isGuest,
+    onGuestLimitReached
   });
 
   // Переопределяем навигацию в interaction хуке

@@ -8,6 +8,7 @@ interface AuthState {
   username: string | null;
   userId: number | null;
   isAdmin: boolean;
+  isGuest: boolean;
 }
 
 export function useAuth(profile: UserProfile, setProfile: (profile: UserProfile) => void) {
@@ -15,7 +16,8 @@ export function useAuth(profile: UserProfile, setProfile: (profile: UserProfile)
     isAuthenticated: false,
     username: null,
     userId: null,
-    isAdmin: false
+    isAdmin: false,
+    isGuest: true
   });
 
   // Загрузка сохраненной сессии
@@ -24,7 +26,7 @@ export function useAuth(profile: UserProfile, setProfile: (profile: UserProfile)
     if (savedAuth) {
       try {
         const auth = JSON.parse(savedAuth);
-        setAuthState(auth);
+        setAuthState({ ...auth, isGuest: !auth.isAuthenticated });
       } catch (e) {
         localStorage.removeItem('auth');
       }
@@ -56,14 +58,14 @@ export function useAuth(profile: UserProfile, setProfile: (profile: UserProfile)
   }, [authState.isAuthenticated, authState.username, profile]);
 
   const handleAuthSuccess = (username: string, userId: number, serverProfile: UserProfile, isAdmin: boolean) => {
-    const auth = { isAuthenticated: true, username, userId, isAdmin };
+    const auth = { isAuthenticated: true, username, userId, isAdmin, isGuest: false };
     setAuthState(auth);
     localStorage.setItem('auth', JSON.stringify(auth));
     setProfile(serverProfile);
   };
 
   const handleLogout = () => {
-    setAuthState({ isAuthenticated: false, username: null, userId: null, isAdmin: false });
+    setAuthState({ isAuthenticated: false, username: null, userId: null, isAdmin: false, isGuest: true });
     localStorage.removeItem('auth');
   };
 
