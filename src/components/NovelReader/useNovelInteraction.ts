@@ -28,17 +28,21 @@ export function useNovelInteraction({
       return;
     }
 
+    console.log('[Click] isTyping:', isTyping);
     if (isTyping) {
+      console.log('[Click] Skip typing - setting skipTyping=true');
       setSkipTyping(true);
-      setIsTyping(false);
+      // НЕ устанавливаем setIsTyping(false) здесь - это сделает TypewriterText через onComplete
     } else {
+      console.log('[Click] Go to next paragraph');
       if (currentParagraph?.type !== 'choice') {
         goToNextParagraph();
       }
     }
-  }, [isTyping, currentParagraph, goToNextParagraph, setIsTyping, setSkipTyping]);
+  }, [isTyping, currentParagraph, goToNextParagraph, setSkipTyping]);
 
   const handleTypingComplete = useCallback(() => {
+    console.log('[Interaction] Typing complete, setting isTyping to false');
     setIsTyping(false);
   }, [setIsTyping]);
 
@@ -73,22 +77,27 @@ export function useNovelInteraction({
     const isLeftSwipe = distance > minSwipeDistance;
     const isRightSwipe = distance < -minSwipeDistance;
 
+    console.log('[Touch] isTyping:', isTyping, 'distance:', distance, 'isSwipe:', isLeftSwipe || isRightSwipe);
+
     // Если движение было минимальным (тап)
     if (!isLeftSwipe && !isRightSwipe) {
       // Простое касание
+      console.log('[Touch] Tap detected, isTyping:', isTyping);
       if (isTyping) {
         // Показать весь текст
+        console.log('[Touch] Skip typing - setting skipTyping=true');
         setSkipTyping(true);
-        setIsTyping(false);
-        // НЕ переходим к следующему параграфу в этом же событии
+        // НЕ устанавливаем setIsTyping(false) здесь - это сделает TypewriterText через onComplete
       } else {
         // Текст уже полностью показан - переход к следующему
+        console.log('[Touch] Go to next paragraph');
         if (currentParagraph?.type !== 'choice') {
           goToNextParagraph();
         }
       }
     } else {
       // Свайп
+      console.log('[Touch] Swipe detected');
       if (isLeftSwipe && !isTyping && currentParagraph?.type !== 'choice') {
         goToNextParagraph();
       }
