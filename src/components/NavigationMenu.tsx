@@ -118,30 +118,34 @@ function NavigationMenu({
         )}
       </div>
 
-      {!showGreeting && episodeId && paragraphIndex !== undefined && onAddBookmark && onRemoveBookmark && (
-        <BookmarkButton
-          episodeId={episodeId}
-          paragraphIndex={paragraphIndex}
-          existingBookmark={existingBookmark}
-          onAdd={onAddBookmark}
-          onRemove={onRemoveBookmark}
-        />
-      )}
-      
-      {!showGreeting && hasMusic && onToggleMusic && (
-        <Button
-          variant="ghost"
-          size="icon"
-          className="bg-card/50 backdrop-blur-sm hover:bg-card/80 text-white"
-          onClick={onToggleMusic}
-          title={isMusicPlaying ? 'Остановить музыку' : 'Включить музыку'}
-        >
-          {isMusicPlaying ? (
-            <Icon name="Music" size={20} className="animate-pulse" />
-          ) : (
-            <Icon name="MusicOff" size={20} />
+      {!showGreeting && (episodeId && paragraphIndex !== undefined && onAddBookmark && onRemoveBookmark || hasMusic && onToggleMusic) && (
+        <div className="flex gap-2 items-center">
+          {episodeId && paragraphIndex !== undefined && onAddBookmark && onRemoveBookmark && (
+            <BookmarkButton
+              episodeId={episodeId}
+              paragraphIndex={paragraphIndex}
+              existingBookmark={existingBookmark}
+              onAdd={onAddBookmark}
+              onRemove={onRemoveBookmark}
+            />
           )}
-        </Button>
+          
+          {hasMusic && onToggleMusic && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="bg-card/50 backdrop-blur-sm hover:bg-card/80 text-white"
+              onClick={onToggleMusic}
+              title={isMusicPlaying ? 'Остановить музыку' : 'Включить музыку'}
+            >
+              {isMusicPlaying ? (
+                <Icon name="Music" size={20} className="animate-pulse" />
+              ) : (
+                <Icon name="MusicOff" size={20} />
+              )}
+            </Button>
+          )}
+        </div>
       )}
     </div>
   );
