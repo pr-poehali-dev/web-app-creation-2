@@ -10,14 +10,16 @@ import { UserProfile } from '@/types/settings';
 const AUTH_API = 'https://functions.poehali.dev/f895202d-2b99-4eae-a334-8b273bf2cbd1';
 
 interface AuthScreenProps {
-  onAuthSuccess: (username: string, userId: number, profile: UserProfile) => void;
+  onAuthSuccess: (username: string, userId: number, profile: UserProfile, isAdmin: boolean) => void;
 }
 
 function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [mode, setMode] = useState<'login' | 'register' | 'reset'>('login');
 
   const handleRegister = async () => {
     if (!username.trim() || !password) {
@@ -36,6 +38,7 @@ function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
           action: 'register',
           username: username.trim(),
           password,
+          email: email.trim() || undefined,
           createdAt: new Date().toISOString()
         })
       });
@@ -47,7 +50,7 @@ function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
         return;
       }
 
-      onAuthSuccess(data.username, data.userId, data.profile);
+      onAuthSuccess(data.username, data.userId, data.profile, data.isAdmin || false);
     } catch (err) {
       setError('Ошибка соединения с сервером');
     } finally {
@@ -82,7 +85,44 @@ function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
         return;
       }
 
-      onAuthSuccess(data.username, data.userId, data.profile);
+      onAuthSuccess(data.username, data.userId, data.profile, data.isAdmin || false);
+    } catch (err) {
+      setError('Ошибка соединения с сервером');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleResetPassword = async () => {
+    if (!email.trim()) {
+      setError('Введите email');
+      return;
+    }
+
+    setIsLoading(true);
+    setError('');
+
+    try {
+      const response = await fetch(AUTH_API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'reset_password',
+          email: email.trim()
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || 'Ошибка сброса пароля');
+        return;
+      }
+
+      alert(`Пароль сброшен!\nЛогин: ${data.username}\nНовый пароль: ${data.tempPassword}`);
+      setMode('login');
+      setUsername(data.username);
+      setEmail('');
     } catch (err) {
       setError('Ошибка соединения с сервером');
     } finally {
@@ -100,13 +140,55 @@ function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="login">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="login">Вход</TabsTrigger>
-              <TabsTrigger value="register">Регистрация</TabsTrigger>
-            </TabsList>
+          {mode === 'reset' ? (
+            <div className="space-y-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setMode('login')}
+                className="mb-2"
+              >
+                <Icon name="ArrowLeft" size={16} className="mr-2" />
+                Назад
+              </Button>
+              <div className="space-y-2">
+                <Label htmlFor="reset-email">Email</Label>
+                <Input
+                  id="reset-email"
+                  type="email"
+                  placeholder="Введите email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleResetPassword()}
+                  disabled={isLoading}
+                />
+              </div>
+              {error && (
+                <div className="text-sm text-destructive text-center">{error}</div>
+              )}
+              <Button 
+                className="w-full" 
+                onClick={handleResetPassword} 
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <>
+                    <Icon name="Loader2" size={16} className="mr-2 animate-spin" />
+                    Сброс...
+                  </>
+                ) : (
+                  'Сбросить пароль'
+                )}
+              </Button>
+            </div>
+          ) : (
+            <Tabs value={mode} onValueChange={(v) => setMode(v as 'login' | 'register')}>
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="login">Вход</TabsTrigger>
+                <TabsTrigger value="register">Регистрация</TabsTrigger>
+              </TabsList>
 
-            <TabsContent value="login" className="space-y-4">
+              <TabsContent value="login" className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="login-username">Логин</Label>
                 <Input
@@ -147,6 +229,14 @@ function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
                   'Войти'
                 )}
               </Button>
+              <Button
+                variant="link"
+                size="sm"
+                className="w-full"
+                onClick={() => setMode('reset')}
+              >
+                Забыли пароль?
+              </Button>
             </TabsContent>
 
             <TabsContent value="register" className="space-y-4">
@@ -173,6 +263,18 @@ function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
                   disabled={isLoading}
                 />
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="register-email">Email (необязательно)</Label>
+                <Input
+                  id="register-email"
+                  type="email"
+                  placeholder="Для восстановления пароля"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleRegister()}
+                  disabled={isLoading}
+                />
+              </div>
               {error && (
                 <div className="text-sm text-destructive text-center">{error}</div>
               )}
@@ -192,6 +294,7 @@ function AuthScreen({ onAuthSuccess }: AuthScreenProps) {
               </Button>
             </TabsContent>
           </Tabs>
+          )}
         </CardContent>
       </Card>
     </div>

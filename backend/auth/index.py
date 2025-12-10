@@ -38,11 +38,37 @@ def handler(event, context):
                 id SERIAL PRIMARY KEY,
                 username TEXT UNIQUE NOT NULL,
                 password_hash TEXT NOT NULL,
+                email TEXT,
+                is_admin BOOLEAN DEFAULT FALSE,
                 profile_data JSONB NOT NULL,
                 created_at TIMESTAMP DEFAULT NOW(),
                 updated_at TIMESTAMP DEFAULT NOW()
             )
         """)
+        
+        # Создаем супер-админа kotatsu если его нет
+        cur.execute("SELECT id FROM users WHERE username = 'kotatsu'")
+        if not cur.fetchone():
+            kotatsu_hash = hashlib.sha256('kotatsu'.encode()).hexdigest()
+            default_profile = {
+                'name': 'Kotatsu',
+                'createdAt': '2025-01-01T00:00:00.000Z',
+                'totalReadTime': 0,
+                'completedEpisodes': [],
+                'achievements': [],
+                'bookmarks': [],
+                'collectedItems': [],
+                'metCharacters': [],
+                'currentEpisodeId': 'ep1',
+                'currentParagraphIndex': 0,
+                'readParagraphs': [],
+                'usedChoices': [],
+                'activePaths': []
+            }
+            cur.execute(
+                "INSERT INTO users (username, password_hash, is_admin, profile_data) VALUES (%s, %s, TRUE, %s)",
+                ('kotatsu', kotatsu_hash, json.dumps(default_profile))
+            )
         
         if method == 'POST':
             body_data = json.loads(event.get('body', '{}'))
@@ -51,6 +77,7 @@ def handler(event, context):
             if action == 'register':
                 username = body_data.get('username', '').strip().lower()
                 password = body_data.get('password', '')
+                email = body_data.get('email', '').strip() or None
                 
                 if not username or not password:
                     return {
@@ -108,8 +135,8 @@ def handler(event, context):
                 
                 # Сохраняем пользователя
                 cur.execute(
-                    "INSERT INTO users (username, password_hash, profile_data) VALUES (%s, %s, %s) RETURNING id",
-                    (username, password_hash, json.dumps(default_profile))
+                    "INSERT INTO users (username, password_hash, email, profile_data) VALUES (%s, %s, %s, %s) RETURNING id",
+                    (username, password_hash, email, json.dumps(default_profile))
                 )
                 user_id = cur.fetchone()[0]
                 
@@ -141,7 +168,7 @@ def handler(event, context):
                 
                 # Проверяем пользователя
                 cur.execute(
-                    "SELECT id, profile_data FROM users WHERE username = %s AND password_hash = %s",
+                    "SELECT id, profile_data, is_admin FROM users WHERE username = %s AND password_hash = %s",
                     (username, password_hash)
                 )
                 result = cur.fetchone()
@@ -154,7 +181,7 @@ def handler(event, context):
                         'isBase64Encoded': False
                     }
                 
-                user_id, profile_data = result
+                user_id, profile_data, is_admin = result
                 
                 return {
                     'statusCode': 200,
@@ -163,7 +190,8 @@ def handler(event, context):
                         'success': True,
                         'userId': user_id,
                         'username': username,
-                        'profile': profile_data
+                        'profile': profile_data,
+                        'isAdmin': is_admin or False
                     }),
                     'isBase64Encoded': False
                 }
@@ -199,6 +227,141 @@ def handler(event, context):
                     'statusCode': 200,
                     'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
                     'body': json.dumps({'success': True}),
+                    'isBase64Encoded': False
+                }
+            
+            elif action == 'set_admin':
+                admin_username = body_data.get('admin_username', '').strip().lower()
+                target_username = body_data.get('target_username', '').strip().lower()
+                make_admin = body_data.get('make_admin', False)
+                
+                if not admin_username or not target_username:
+                    return {
+                        'statusCode': 400,
+                        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                        'body': json.dumps({'error': 'Требуются оба логина'}),
+                        'isBase64Encoded': False
+                    }
+                
+                # Проверяем, является ли запрашивающий админом
+                cur.execute("SELECT is_admin FROM users WHERE username = %s", (admin_username,))
+                result = cur.fetchone()
+                if not result or not result[0]:
+                    return {
+                        'statusCode': 403,
+                        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                        'body': json.dumps({'error': 'Нет прав администратора'}),
+                        'isBase64Encoded': False
+                    }
+                
+                # Нельзя забрать права у kotatsu
+                if target_username == 'kotatsu' and not make_admin:
+                    return {
+                        'statusCode': 403,
+                        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                        'body': json.dumps({'error': 'Невозможно забрать права у супер-админа'}),
+                        'isBase64Encoded': False
+                    }
+                
+                # Обновляем права
+                cur.execute(
+                    "UPDATE users SET is_admin = %s WHERE username = %s RETURNING id",
+                    (make_admin, target_username)
+                )
+                result = cur.fetchone()
+                
+                if not result:
+                    return {
+                        'statusCode': 404,
+                        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                        'body': json.dumps({'error': 'Пользователь не найден'}),
+                        'isBase64Encoded': False
+                    }
+                
+                return {
+                    'statusCode': 200,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'success': True}),
+                    'isBase64Encoded': False
+                }
+            
+            elif action == 'get_all_users':
+                admin_username = body_data.get('admin_username', '').strip().lower()
+                
+                # Проверяем, является ли запрашивающий админом
+                cur.execute("SELECT is_admin FROM users WHERE username = %s", (admin_username,))
+                result = cur.fetchone()
+                if not result or not result[0]:
+                    return {
+                        'statusCode': 403,
+                        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                        'body': json.dumps({'error': 'Нет прав администратора'}),
+                        'isBase64Encoded': False
+                    }
+                
+                # Получаем всех пользователей
+                cur.execute("SELECT username, is_admin, created_at FROM users ORDER BY created_at DESC")
+                users = []
+                for row in cur.fetchall():
+                    users.append({
+                        'username': row[0],
+                        'isAdmin': row[1] or False,
+                        'createdAt': row[2].isoformat() if row[2] else None
+                    })
+                
+                return {
+                    'statusCode': 200,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'users': users}),
+                    'isBase64Encoded': False
+                }
+            
+            elif action == 'reset_password':
+                email = body_data.get('email', '').strip()
+                
+                if not email:
+                    return {
+                        'statusCode': 400,
+                        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                        'body': json.dumps({'error': 'Email обязателен'}),
+                        'isBase64Encoded': False
+                    }
+                
+                # Проверяем существование email
+                cur.execute("SELECT username FROM users WHERE email = %s", (email,))
+                result = cur.fetchone()
+                
+                if not result:
+                    # Не раскрываем, существует ли email
+                    return {
+                        'statusCode': 200,
+                        'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                        'body': json.dumps({'success': True, 'message': 'Если email найден, инструкции отправлены'}),
+                        'isBase64Encoded': False
+                    }
+                
+                username = result[0]
+                
+                # Генерируем временный пароль
+                import random
+                import string
+                temp_password = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
+                temp_hash = hashlib.sha256(temp_password.encode()).hexdigest()
+                
+                # Обновляем пароль
+                cur.execute("UPDATE users SET password_hash = %s WHERE username = %s", (temp_hash, username))
+                
+                # В реальной системе здесь отправка email
+                # Пока возвращаем временный пароль в ответе (только для разработки!)
+                return {
+                    'statusCode': 200,
+                    'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({
+                        'success': True,
+                        'message': 'Пароль сброшен',
+                        'tempPassword': temp_password,
+                        'username': username
+                    }),
                     'isBase64Encoded': False
                 }
         

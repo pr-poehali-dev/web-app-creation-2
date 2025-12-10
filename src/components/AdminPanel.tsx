@@ -9,14 +9,16 @@ import LibraryManager from './LibraryManager';
 import HomePageEditor from './HomePageEditor';
 import PathsManager from './PathsManager';
 import BulkImportDialog from './BulkImportDialog';
+import UsersManagement from './UsersManagement';
 
 interface AdminPanelProps {
   novel: Novel;
   onUpdate: (novel: Novel) => void;
   onLogout: () => void;
+  authState?: { username: string | null; isAdmin: boolean };
 }
 
-function AdminPanel({ novel, onUpdate, onLogout }: AdminPanelProps) {
+function AdminPanel({ novel, onUpdate, onLogout, authState }: AdminPanelProps) {
   const [selectedEpisodeId, setSelectedEpisodeId] = useState<string | null>(
     novel.episodes[0]?.id || null
   );
@@ -107,7 +109,7 @@ function AdminPanel({ novel, onUpdate, onLogout }: AdminPanelProps) {
 
       <div className="container mx-auto px-4 py-8">
         <Tabs defaultValue="home" className="w-full">
-          <TabsList className="grid w-full max-w-4xl grid-cols-6 mb-8">
+          <TabsList className="grid w-full max-w-5xl grid-cols-7 mb-8">
             <TabsTrigger value="home">
               <Icon name="Home" size={16} className="mr-2" />
               Главная
@@ -127,6 +129,10 @@ function AdminPanel({ novel, onUpdate, onLogout }: AdminPanelProps) {
             <TabsTrigger value="visualization">
               <Icon name="Network" size={16} className="mr-2" />
               Визуализация
+            </TabsTrigger>
+            <TabsTrigger value="users">
+              <Icon name="Users" size={16} className="mr-2" />
+              Пользователи
             </TabsTrigger>
             <TabsTrigger value="system">
               <Icon name="Settings" size={16} className="mr-2" />
@@ -273,6 +279,12 @@ function AdminPanel({ novel, onUpdate, onLogout }: AdminPanelProps) {
                 </div>
               </div>
             </div>
+          </TabsContent>
+
+          <TabsContent value="users">
+            {authState?.username && (
+              <UsersManagement adminUsername={authState.username} />
+            )}
           </TabsContent>
         </Tabs>
       </div>

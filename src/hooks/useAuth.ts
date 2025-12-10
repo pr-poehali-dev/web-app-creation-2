@@ -7,13 +7,15 @@ interface AuthState {
   isAuthenticated: boolean;
   username: string | null;
   userId: number | null;
+  isAdmin: boolean;
 }
 
 export function useAuth(profile: UserProfile, setProfile: (profile: UserProfile) => void) {
   const [authState, setAuthState] = useState<AuthState>({
     isAuthenticated: false,
     username: null,
-    userId: null
+    userId: null,
+    isAdmin: false
   });
 
   // Загрузка сохраненной сессии
@@ -53,15 +55,15 @@ export function useAuth(profile: UserProfile, setProfile: (profile: UserProfile)
     return () => clearInterval(interval);
   }, [authState.isAuthenticated, authState.username, profile]);
 
-  const handleAuthSuccess = (username: string, userId: number, serverProfile: UserProfile) => {
-    const auth = { isAuthenticated: true, username, userId };
+  const handleAuthSuccess = (username: string, userId: number, serverProfile: UserProfile, isAdmin: boolean) => {
+    const auth = { isAuthenticated: true, username, userId, isAdmin };
     setAuthState(auth);
     localStorage.setItem('auth', JSON.stringify(auth));
     setProfile(serverProfile);
   };
 
   const handleLogout = () => {
-    setAuthState({ isAuthenticated: false, username: null, userId: null });
+    setAuthState({ isAuthenticated: false, username: null, userId: null, isAdmin: false });
     localStorage.removeItem('auth');
   };
 

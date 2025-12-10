@@ -101,6 +101,19 @@ function Index() {
   }
 
   if (activeView === 'admin') {
+    if (!authState.isAdmin) {
+      return (
+        <div className="min-h-screen bg-background dark flex items-center justify-center">
+          <div className="text-center">
+            <p className="text-foreground text-xl mb-4">Нет доступа к админ-панели</p>
+            <Button onClick={() => setActiveView('reader')}>
+              Вернуться
+            </Button>
+          </div>
+        </div>
+      );
+    }
+    
     return (
       <AdminPanel 
         novel={novel} 
@@ -109,6 +122,7 @@ function Index() {
           setActiveView('reader');
           setIsAdmin(false);
         }}
+        authState={authState}
       />
     );
   }
@@ -180,21 +194,37 @@ function Index() {
             <Icon name="Settings" size={20} />
           </Button>
           
-          {!showAdminButton ? (
+          {authState.isAdmin && (
             <Button
               variant="ghost"
               size="icon"
-              className="bg-card/50 backdrop-blur-sm hover:bg-card/80 opacity-30 hover:opacity-100 transition-opacity"
-              onClick={() => setShowAdminButton(true)}
+              className="bg-card/50 backdrop-blur-sm hover:bg-card/80"
+              onClick={() => {
+                setActiveView('admin');
+                setIsAdmin(true);
+              }}
+            >
+              <Icon name="Settings2" size={20} />
+            </Button>
+          )}
+          
+          {!authState.isAdmin && !showAdminButton ? (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="bg-card/50 backdrop-blur-sm hover:bg-card/80 opacity-10 pointer-events-none"
             >
               <Icon name="Lock" size={20} />
             </Button>
-          ) : (
+          ) : null}
+          
+          {!authState.isAdmin && showAdminButton ? (
             <div className="flex gap-2 bg-card/90 backdrop-blur-sm rounded-lg p-2">
               <Input
                 type="password"
-                placeholder="Пароль"
+                placeholder="Только для админов"
                 value={adminPassword}
+                disabled
                 onChange={(e) => setAdminPassword(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') handleAdminLogin();
