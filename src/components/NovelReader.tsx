@@ -297,7 +297,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
         />
       )}
 
-      <div className={`w-full max-w-4xl relative z-10 ${showGreeting ? '' : ''}`}>
+      <div className="w-full max-w-4xl relative z-10">
         {/* Показываем либо приветствие (если showGreetingScreen), либо параграф */}
         {showGreeting ? (
           <div className="text-center animate-fade-in">
@@ -363,10 +363,10 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
         )}
 
         {/* Подсказка для десктопа */}
-        {!isTyping && currentParagraph.type !== 'choice' && (
+        {!showGreeting && !isTyping && currentParagraph.type !== 'choice' && (
           <Dialog>
             <DialogTrigger asChild>
-              <div className="hidden md:block fixed bottom-4 left-1/2 -translate-x-1/2 text-xs text-muted-foreground animate-pulse text-center px-4 cursor-help">
+              <div className="hidden md:block absolute bottom-0 left-1/2 -translate-x-1/2 text-xs text-muted-foreground/70 animate-pulse text-center px-4 cursor-help pb-2">
                 Нажмите или → для продолжения
               </div>
             </DialogTrigger>
