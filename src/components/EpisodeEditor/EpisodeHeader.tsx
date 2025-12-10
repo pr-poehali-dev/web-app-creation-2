@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Switch } from '@/components/ui/switch';
 import Icon from '@/components/ui/icon';
 import { selectAndConvertAudio } from '@/utils/fileHelpers';
 import { parseMarkdownToEpisode, getMarkdownTemplate } from '@/utils/markdownImport';
@@ -207,6 +208,19 @@ function EpisodeHeader({ episode, novel, onUpdate, onNovelUpdate }: EpisodeHeade
           </p>
         </div>
 
+        <div className="flex items-center justify-between space-x-2">
+          <div className="space-y-1">
+            <Label className="text-foreground">Разблокирован для всех</Label>
+            <p className="text-xs text-muted-foreground">
+              Эпизод доступен всем игрокам независимо от прохождения
+            </p>
+          </div>
+          <Switch
+            checked={episode.unlockedForAll || false}
+            onCheckedChange={(checked) => onUpdate({ ...episode, unlockedForAll: checked })}
+          />
+        </div>
+
         <div>
           <Label className="text-foreground">Фоновая музыка</Label>
           <div className="flex gap-2 mt-2">
@@ -308,6 +322,10 @@ function EpisodeHeader({ episode, novel, onUpdate, onNovelUpdate }: EpisodeHeade
               </Select>
             </div>
           )}
+          
+          <p className="text-xs text-muted-foreground">
+            Если следующий эпизод не выбран, автоматически перейдёт к следующему по порядку
+          </p>
         </div>
         
         <div className="flex gap-2">

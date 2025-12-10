@@ -44,14 +44,6 @@ function NavigationMenu({
           variant="ghost"
           size="icon"
           className="bg-card/50 backdrop-blur-sm hover:bg-card/80 text-white"
-          onClick={() => onSetActiveView('home')}
-        >
-          <Icon name="Home" size={20} />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="bg-card/50 backdrop-blur-sm hover:bg-card/80 text-white"
           onClick={() => onSetActiveView('profile')}
         >
           <Icon name="User" size={20} />

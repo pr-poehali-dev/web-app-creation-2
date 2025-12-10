@@ -28,6 +28,8 @@ function EpisodesSidebar({ novel, currentEpisodeId, profile, onEpisodeSelect, on
 
   const isEpisodeAccessible = (index: number) => {
     if (index === 0) return true;
+    const episode = novel.episodes[index];
+    if (episode.unlockedForAll) return true;
     const prevEpisode = novel.episodes[index - 1];
     return isEpisodeFullyRead(prevEpisode.id);
   };

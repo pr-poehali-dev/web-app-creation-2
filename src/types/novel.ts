@@ -65,6 +65,7 @@ export interface Episode {
   nextEpisodeId?: string;
   nextParagraphIndex?: number;
   requiredPath?: string;
+  unlockedForAll?: boolean;
 }
 
 export interface LibraryItem {

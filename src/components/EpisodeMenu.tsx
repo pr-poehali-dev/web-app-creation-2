@@ -39,6 +39,8 @@ function EpisodeMenu({ novel, profile, onEpisodeSelect, onBack }: EpisodeMenuPro
 
   const isEpisodeUnlocked = (index: number) => {
     if (index === 0) return true;
+    const episode = novel.episodes[index];
+    if (episode.unlockedForAll) return true;
     const prevEpisode = novel.episodes[index - 1];
     return isEpisodeFullyRead(prevEpisode.id);
   };

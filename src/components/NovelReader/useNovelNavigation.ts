@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { Episode, Paragraph } from '@/types/novel';
+import { Episode, Paragraph, Novel } from '@/types/novel';
 import { UserProfile } from '@/types/settings';
 
 interface UseNovelNavigationProps {
@@ -8,6 +8,7 @@ interface UseNovelNavigationProps {
   currentEpisode: Episode | undefined;
   currentParagraph: Paragraph | undefined;
   profile: UserProfile;
+  novel: Novel;
   onProfileUpdate: (profile: UserProfile | ((prev: UserProfile) => UserProfile)) => void;
   setIsTyping: (value: boolean) => void;
   setSkipTyping: (value: boolean) => void;
@@ -20,6 +21,7 @@ export function useNovelNavigation({
   currentEpisode,
   currentParagraph,
   profile,
+  novel,
   onProfileUpdate,
   setIsTyping,
   setSkipTyping,
@@ -80,30 +82,47 @@ export function useNovelNavigation({
         setIsTyping(true);
         setSkipTyping(false);
       }
-    } else if (currentEpisode.nextEpisodeId) {
+    } else {
       // Переход к следующему эпизоду
-      if (currentParagraph?.type === 'text') {
-        setIsFading(true);
-        setTimeout(() => {
+      const nextEpisodeId = currentEpisode.nextEpisodeId;
+      const nextParagraphIdx = currentEpisode.nextParagraphIndex || 0;
+      
+      // Если nextEpisodeId не указан, пробуем следующий по порядку
+      let targetEpisodeId = nextEpisodeId;
+      let targetParagraphIdx = nextParagraphIdx;
+      
+      if (!targetEpisodeId) {
+        const currentIndex = novel.episodes.findIndex(ep => ep.id === currentEpisodeId);
+        if (currentIndex >= 0 && currentIndex < novel.episodes.length - 1) {
+          targetEpisodeId = novel.episodes[currentIndex + 1].id;
+          targetParagraphIdx = 0;
+        }
+      }
+      
+      if (targetEpisodeId) {
+        if (currentParagraph?.type === 'text') {
+          setIsFading(true);
+          setTimeout(() => {
+            onProfileUpdate(prev => ({
+              ...prev,
+              currentEpisodeId: targetEpisodeId,
+              currentParagraphIndex: targetParagraphIdx
+            }));
+            setIsTyping(true);
+            setSkipTyping(false);
+            setTimeout(() => {
+              setIsFading(false);
+            }, 50);
+          }, 300);
+        } else {
           onProfileUpdate(prev => ({
             ...prev,
-            currentEpisodeId: currentEpisode.nextEpisodeId,
-            currentParagraphIndex: currentEpisode.nextParagraphIndex || 0
+            currentEpisodeId: targetEpisodeId,
+            currentParagraphIndex: targetParagraphIdx
           }));
           setIsTyping(true);
           setSkipTyping(false);
-          setTimeout(() => {
-            setIsFading(false);
-          }, 50);
-        }, 300);
-      } else {
-        onProfileUpdate(prev => ({
-          ...prev,
-          currentEpisodeId: currentEpisode.nextEpisodeId,
-          currentParagraphIndex: currentEpisode.nextParagraphIndex || 0
-        }));
-        setIsTyping(true);
-        setSkipTyping(false);
+        }
       }
     }
   }, [currentEpisodeId, currentParagraphIndex, currentEpisode, currentParagraph, onProfileUpdate, setIsTyping, setSkipTyping, setIsFading]);
