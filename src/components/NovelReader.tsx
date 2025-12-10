@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Novel } from '@/types/novel';
 import { UserSettings, UserProfile, Bookmark } from '@/types/settings';
 import MusicPlayer from './MusicPlayer';
@@ -30,24 +30,10 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
     b => b.episodeId === currentEpisodeId && b.paragraphIndex === currentParagraphIndex
   );
 
-  // Хук взаимодействия (клики, свайпы, typing)
-  const {
-    isTyping,
-    setIsTyping,
-    skipTyping,
-    setSkipTyping,
-    isFading,
-    setIsFading,
-    handleClick,
-    handleTypingComplete,
-    onTouchStart,
-    onTouchMove,
-    onTouchEnd
-  } = useNovelInteraction({
-    currentParagraph,
-    goToNextParagraph: () => {}, // Временная заглушка, переопределим ниже
-    goToPreviousParagraph: () => {} // Временная заглушка, переопределим ниже
-  });
+  // Временные состояния для typing и fading
+  const [isTyping, setIsTyping] = useState(true);
+  const [skipTyping, setSkipTyping] = useState(false);
+  const [isFading, setIsFading] = useState(false);
 
   // Хук навигации
   const {
@@ -70,11 +56,20 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
     onGuestLimitReached
   });
 
-  // Переопределяем навигацию в interaction хуке
-  const interaction = useNovelInteraction({
+  // Хук взаимодействия (клики, свайпы, typing)
+  const {
+    handleClick,
+    handleTypingComplete,
+    onTouchStart,
+    onTouchMove,
+    onTouchEnd
+  } = useNovelInteraction({
     currentParagraph,
     goToNextParagraph,
-    goToPreviousParagraph
+    goToPreviousParagraph,
+    isTyping,
+    setIsTyping,
+    setSkipTyping
   });
 
   const handleAddBookmark = (comment: string) => {
@@ -165,7 +160,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'ArrowRight') {
         e.preventDefault();
-        if (!interaction.isTyping && currentParagraph?.type !== 'choice') {
+        if (!isTyping && currentParagraph?.type !== 'choice') {
           goToNextParagraph();
         }
       } else if (e.key === 'ArrowLeft') {
@@ -200,10 +195,10 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
   return (
     <div 
       className={`min-h-screen bg-background flex items-start justify-center pt-32 md:pt-20 px-2 md:px-4 pb-32 md:pb-4 md:pr-32 md:pl-8 ${showGreeting ? '' : 'cursor-pointer'}`}
-      onClick={showGreeting ? undefined : interaction.handleClick}
-      onTouchStart={showGreeting ? undefined : interaction.onTouchStart}
-      onTouchMove={showGreeting ? undefined : interaction.onTouchMove}
-      onTouchEnd={showGreeting ? undefined : interaction.onTouchEnd}
+      onClick={showGreeting ? undefined : handleClick}
+      onTouchStart={showGreeting ? undefined : onTouchStart}
+      onTouchMove={showGreeting ? undefined : onTouchMove}
+      onTouchEnd={showGreeting ? undefined : onTouchEnd}
       style={{
         fontFamily: settings.fontFamily === 'merriweather' ? '"Merriweather", serif' :
                     settings.fontFamily === 'montserrat' ? '"Montserrat", sans-serif' :
@@ -239,16 +234,16 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
             novel={novel}
             settings={settings}
             profile={profile}
-            skipTyping={interaction.skipTyping}
-            isFading={interaction.isFading}
-            handleTypingComplete={interaction.handleTypingComplete}
+            skipTyping={skipTyping}
+            isFading={isFading}
+            handleTypingComplete={handleTypingComplete}
             handleChoice={handleChoice}
             onProfileUpdate={onProfileUpdate}
           />
         )}
 
         {/* Навигация для мобильных (только если не приветствие) */}
-        {!showGreeting && !interaction.isTyping && currentParagraph.type !== 'choice' && (
+        {!showGreeting && !isTyping && currentParagraph.type !== 'choice' && (
           <div className="md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 flex gap-3 z-50">
             <Button
               size="icon"
@@ -276,7 +271,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
         )}
 
         {/* Подсказка для десктопа */}
-        {!interaction.isTyping && currentParagraph.type !== 'choice' && (
+        {!isTyping && currentParagraph.type !== 'choice' && (
           <Dialog>
             <DialogTrigger asChild>
               <div className="hidden md:block fixed bottom-4 left-1/2 -translate-x-1/2 text-xs text-muted-foreground animate-pulse text-center px-4 cursor-help">

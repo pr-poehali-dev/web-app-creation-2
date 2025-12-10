@@ -5,16 +5,19 @@ interface UseNovelInteractionProps {
   currentParagraph: Paragraph | undefined;
   goToNextParagraph: () => void;
   goToPreviousParagraph: () => void;
+  isTyping: boolean;
+  setIsTyping: (value: boolean) => void;
+  setSkipTyping: (value: boolean) => void;
 }
 
 export function useNovelInteraction({
   currentParagraph,
   goToNextParagraph,
-  goToPreviousParagraph
+  goToPreviousParagraph,
+  isTyping,
+  setIsTyping,
+  setSkipTyping
 }: UseNovelInteractionProps) {
-  const [isTyping, setIsTyping] = useState(true);
-  const [skipTyping, setSkipTyping] = useState(false);
-  const [isFading, setIsFading] = useState(false);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
 
@@ -33,11 +36,11 @@ export function useNovelInteraction({
         goToNextParagraph();
       }
     }
-  }, [isTyping, currentParagraph, goToNextParagraph]);
+  }, [isTyping, currentParagraph, goToNextParagraph, setIsTyping, setSkipTyping]);
 
   const handleTypingComplete = useCallback(() => {
     setIsTyping(false);
-  }, []);
+  }, [setIsTyping]);
 
   const minSwipeDistance = 50;
 
@@ -97,12 +100,6 @@ export function useNovelInteraction({
   };
 
   return {
-    isTyping,
-    setIsTyping,
-    skipTyping,
-    setSkipTyping,
-    isFading,
-    setIsFading,
     handleClick,
     handleTypingComplete,
     onTouchStart,
