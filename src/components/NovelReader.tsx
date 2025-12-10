@@ -184,6 +184,10 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
                     settings.fontFamily === 'arial' ? 'font-sans' :
                     'font-sans';
 
+  // Показываем приветствие, если это первый параграф первого эпизода
+  const isFirstParagraph = currentEpisodeId === novel.episodes[0]?.id && currentParagraphIndex === 0;
+  const showGreeting = isFirstParagraph && novel.homePage?.greeting;
+
   return (
     <div 
       className="min-h-screen bg-background flex items-start justify-center pt-32 md:pt-20 px-2 md:px-4 pb-32 md:pb-4 md:pr-32 md:pl-8 cursor-pointer"
@@ -203,6 +207,23 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
       )}
 
       <div className="w-full max-w-4xl">
+        {/* Приветствие на первом параграфе */}
+        {showGreeting && (
+          <div className="mb-8 text-center animate-fade-in">
+            <div className="bg-card/80 backdrop-blur-sm rounded-2xl p-8 shadow-2xl border border-border">
+              {novel.homePage?.greetingImage && (
+                <img 
+                  src={novel.homePage.greetingImage} 
+                  alt="Greeting" 
+                  className="w-full max-w-md mx-auto mb-6 rounded-xl"
+                />
+              )}
+              <h1 className="text-4xl font-bold mb-4 text-foreground">{novel.homePage.greeting}</h1>
+              <p className="text-muted-foreground text-sm">Нажмите или листайте, чтобы продолжить</p>
+            </div>
+          </div>
+        )}
+
         {/* Текущий параграф */}
         <NovelReaderContent
           currentParagraph={currentParagraph}

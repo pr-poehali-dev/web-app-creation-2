@@ -139,14 +139,21 @@ function Index() {
       <div className="relative min-h-screen dark">
         <HomePage 
           homePage={novel.homePage || { greeting: 'Добро пожаловать', news: [] }}
-          novel={novel}
-          profile={profile}
-          onEpisodeSelect={(episodeId, paragraphIndex) => {
-            setProfile({
-              ...profile,
-              currentEpisodeId: episodeId,
-              currentParagraphIndex: paragraphIndex
-            });
+          onStart={() => {
+            const hasValidProgress = profile.currentEpisodeId && 
+              novel.episodes.some(ep => ep.id === profile.currentEpisodeId) &&
+              profile.currentParagraphIndex !== undefined;
+            
+            if (!hasValidProgress) {
+              const firstEpisode = novel.episodes[0];
+              if (firstEpisode) {
+                setProfile({
+                  ...profile,
+                  currentEpisodeId: firstEpisode.id,
+                  currentParagraphIndex: 0
+                });
+              }
+            }
             setActiveView('reader');
           }}
         />
