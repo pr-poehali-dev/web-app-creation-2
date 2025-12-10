@@ -300,16 +300,18 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
       <div className={`w-full max-w-4xl relative z-10 ${showGreeting ? '' : 'mb-1'}`}>
         {/* Показываем либо приветствие (если showGreetingScreen), либо параграф */}
         {showGreeting ? (
-          <div className="text-center animate-fade-in p-8">
-            {novel.homePage?.greetingImage && (
-              <img 
-                src={novel.homePage.greetingImage} 
-                alt="Greeting" 
-                className="w-full max-w-md mx-auto mb-6 rounded-xl"
-              />
-            )}
-            <h1 className="text-4xl font-bold mb-4 text-foreground">{novel.homePage.greeting}</h1>
-            <p className="text-muted-foreground text-sm">Выберите эпизод в боковой панели для начала чтения</p>
+          <div className="text-center animate-fade-in">
+            <div className="bg-background rounded-2xl p-8 shadow-2xl border border-border">
+              {novel.homePage?.greetingImage && (
+                <img 
+                  src={novel.homePage.greetingImage} 
+                  alt="Greeting" 
+                  className="w-full max-w-md mx-auto mb-6 rounded-xl"
+                />
+              )}
+              <h1 className="text-4xl font-bold mb-4 text-foreground">{novel.homePage.greeting}</h1>
+              <p className="text-muted-foreground text-sm">Выберите эпизод в боковой панели для начала чтения</p>
+            </div>
           </div>
         ) : (
           /* Отображаемый параграф (для плавного fade) */
