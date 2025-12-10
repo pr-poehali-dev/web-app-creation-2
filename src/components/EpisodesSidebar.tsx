@@ -62,18 +62,14 @@ function EpisodesSidebar({ novel, currentEpisodeId, profile, onEpisodeSelect, on
                       className="flex items-center gap-2 flex-1"
                       onClick={() => {
                         if (isLocked) return;
-                        if (isCurrent) {
-                          onShowParagraphs(episode.id);
-                        } else {
-                          onEpisodeSelect(episode.id);
-                        }
+                        onEpisodeSelect(episode.id);
                       }}
                     >
                       {isLocked && <Icon name="Lock" size={14} className="flex-shrink-0" />}
                       <span className="font-bold text-sm">{index + 1}.</span>
                       <span className="text-sm font-medium">{episode.title}</span>
                     </div>
-                    {isCurrent && (
+                    {!isLocked && (
                       <button
                         className="h-6 w-6 flex-shrink-0 hover:opacity-80 transition-opacity flex items-center justify-center"
                         onClick={(e) => {
@@ -85,17 +81,7 @@ function EpisodesSidebar({ novel, currentEpisodeId, profile, onEpisodeSelect, on
                       </button>
                     )}
                   </div>
-                  <div 
-                    className="text-xs opacity-70 mt-1"
-                    onClick={() => {
-                      if (isLocked) return;
-                      if (isCurrent) {
-                        onShowParagraphs(episode.id);
-                      } else {
-                        onEpisodeSelect(episode.id);
-                      }
-                    }}
-                  >
+                  <div className="text-xs opacity-70 mt-1">
                     {isLocked ? 'Заблокирован' : isFullyRead ? '✓ Прочитан' : `${episode.paragraphs.length} параграфов`}
                   </div>
                 </div>
