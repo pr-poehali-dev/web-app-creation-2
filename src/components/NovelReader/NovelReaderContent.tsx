@@ -17,6 +17,7 @@ interface NovelReaderContentProps {
   handleTypingComplete: () => void;
   handleChoice: (choiceId: string, pathId: string | undefined, oneTime: boolean | undefined, nextEpisodeId?: string, nextParagraphIndex?: number) => void;
   onProfileUpdate: (profile: UserProfile | ((prev: UserProfile) => UserProfile)) => void;
+  paragraphKey: string;
 }
 
 function NovelReaderContent({
@@ -29,7 +30,8 @@ function NovelReaderContent({
   isFading,
   handleTypingComplete,
   handleChoice,
-  onProfileUpdate
+  onProfileUpdate,
+  paragraphKey
 }: NovelReaderContentProps) {
   const novelFontStyle = {
     fontFamily: settings.fontFamily === 'merriweather' ? '"Merriweather", serif' :
@@ -47,16 +49,15 @@ function NovelReaderContent({
   return (
     <>
       {currentParagraph.type === 'text' && (
-        <div className={`leading-relaxed text-left text-foreground px-2 py-4 md:p-8 transition-opacity ease-in-out ${
-          isFading 
-            ? `opacity-0 ${currentParagraph.slowFade ? 'duration-[1500ms]' : 'duration-300'}` 
-            : 'opacity-100 duration-300'
+        <div className={`leading-relaxed text-left text-foreground px-2 py-4 md:p-8 transition-opacity duration-300 ease-in-out ${
+          isFading ? 'opacity-0' : 'opacity-100'
         } ${
           settings.textSize === 'small' ? 'text-base md:text-lg' :
           settings.textSize === 'large' ? 'text-xl md:text-2xl' :
           'text-lg md:text-xl'
         }`} style={novelFontStyle}>
-          <TypewriterText 
+          <TypewriterText
+            key={paragraphKey}
             text={currentParagraph.content}
             speed={settings.textSpeed}
             skipTyping={skipTyping}
@@ -66,34 +67,39 @@ function NovelReaderContent({
       )}
 
       {currentParagraph.type === 'dialogue' && (
-        <DialogueBox
-          characterName={currentParagraph.characterName}
-          characterImage={currentParagraph.characterImage}
-          text={currentParagraph.text}
-          skipTyping={skipTyping}
-          onComplete={handleTypingComplete}
-          textSpeed={settings.textSpeed}
-          fontFamily={novelFontStyle.fontFamily}
-          existingComment={profile.metCharacters?.find(
-            c => c.name === currentParagraph.characterName
-          )?.comment}
-          onCommentSave={(comment) => {
-            const characterIndex = profile.metCharacters?.findIndex(
+        <div className={`transition-opacity duration-300 ease-in-out ${
+          isFading ? 'opacity-0' : 'opacity-100'
+        }`}>
+          <DialogueBox
+            key={paragraphKey}
+            characterName={currentParagraph.characterName}
+            characterImage={currentParagraph.characterImage}
+            text={currentParagraph.text}
+            skipTyping={skipTyping}
+            onComplete={handleTypingComplete}
+            textSpeed={settings.textSpeed}
+            fontFamily={novelFontStyle.fontFamily}
+            existingComment={profile.metCharacters?.find(
               c => c.name === currentParagraph.characterName
-            );
-            if (characterIndex !== undefined && characterIndex >= 0) {
-              const updatedCharacters = [...(profile.metCharacters || [])];
-              updatedCharacters[characterIndex] = {
-                ...updatedCharacters[characterIndex],
-                comment
-              };
-              onProfileUpdate({
-                ...profile,
-                metCharacters: updatedCharacters
-              });
-            }
-          }}
-        />
+            )?.comment}
+            onCommentSave={(comment) => {
+              const characterIndex = profile.metCharacters?.findIndex(
+                c => c.name === currentParagraph.characterName
+              );
+              if (characterIndex !== undefined && characterIndex >= 0) {
+                const updatedCharacters = [...(profile.metCharacters || [])];
+                updatedCharacters[characterIndex] = {
+                  ...updatedCharacters[characterIndex],
+                  comment
+                };
+                onProfileUpdate({
+                  ...profile,
+                  metCharacters: updatedCharacters
+                });
+              }
+            }}
+          />
+        </div>
       )}
 
       {currentParagraph.type === 'choice' && (
@@ -111,14 +117,19 @@ function NovelReaderContent({
       )}
 
       {currentParagraph.type === 'item' && (
-        <ItemBox
-          name={currentParagraph.name}
-          description={currentParagraph.description}
-          imageUrl={currentParagraph.imageUrl}
-          skipTyping={skipTyping}
-          onComplete={handleTypingComplete}
-          textSpeed={settings.textSpeed}
-        />
+        <div className={`transition-opacity duration-300 ease-in-out ${
+          isFading ? 'opacity-0' : 'opacity-100'
+        }`}>
+          <ItemBox
+            key={paragraphKey}
+            name={currentParagraph.name}
+            description={currentParagraph.description}
+            imageUrl={currentParagraph.imageUrl}
+            skipTyping={skipTyping}
+            onComplete={handleTypingComplete}
+            textSpeed={settings.textSpeed}
+          />
+        </div>
       )}
 
       {currentParagraph.type === 'image' && (

@@ -32,6 +32,9 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
     b => b.episodeId === currentEpisodeId && b.paragraphIndex === currentParagraphIndex
   );
 
+  // Ключ для принудительного пересоздания компонентов при смене параграфа
+  const paragraphKey = `${currentEpisodeId}-${currentParagraphIndex}`;
+  
   // Временные состояния для typing и fading
   const [isTyping, setIsTyping] = useState(true);
   const [skipTyping, setSkipTyping] = useState(false);
@@ -280,6 +283,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
             handleTypingComplete={handleTypingComplete}
             handleChoice={handleChoice}
             onProfileUpdate={onProfileUpdate}
+            paragraphKey={paragraphKey}
           />
         )}
 
