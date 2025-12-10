@@ -64,18 +64,31 @@ function NavigationMenu({
             title="Войти или зарегистрироваться"
           >
             <Icon name="LogIn" size={20} />
-            <span className="ml-2">Войти</span>
+            <span className="ml-2 hidden md:inline">Войти</span>
           </Button>
         ) : (
-          <Button
-            variant="ghost"
-            className="bg-card/50 backdrop-blur-sm hover:bg-card/80 text-white"
-            onClick={() => onSetActiveView('profile')}
-            title="Профиль"
-          >
-            <Icon name="User" size={20} />
-            {username && <span className="ml-2">{username}</span>}
-          </Button>
+          <>
+            <Button
+              variant="ghost"
+              className="bg-card/50 backdrop-blur-sm hover:bg-card/80 text-white"
+              onClick={() => onSetActiveView('profile')}
+              title="Профиль"
+            >
+              <Icon name="User" size={20} />
+              {username && <span className="ml-2 hidden md:inline">{username}</span>}
+            </Button>
+            {onLogout && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="bg-card/50 backdrop-blur-sm hover:bg-card/80 text-white"
+                onClick={onLogout}
+                title="Выйти"
+              >
+                <Icon name="LogOut" size={20} />
+              </Button>
+            )}
+          </>
         )}
         <Button
           variant="ghost"
@@ -85,17 +98,6 @@ function NavigationMenu({
         >
           <Icon name="Settings" size={20} />
         </Button>
-        {onLogout && (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="bg-card/50 backdrop-blur-sm hover:bg-card/80 text-white"
-            onClick={onLogout}
-            title="Выйти"
-          >
-            <Icon name="LogOut" size={20} />
-          </Button>
-        )}
         
         {isAdmin && (
           <Button
@@ -110,7 +112,7 @@ function NavigationMenu({
         )}
       </div>
 
-      {episodeId && paragraphIndex !== undefined && onAddBookmark && onRemoveBookmark && (
+      {!showGreeting && episodeId && paragraphIndex !== undefined && onAddBookmark && onRemoveBookmark && (
         <BookmarkButton
           episodeId={episodeId}
           paragraphIndex={paragraphIndex}
