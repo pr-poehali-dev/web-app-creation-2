@@ -142,7 +142,9 @@ function TypewriterText({ text, speed = 50, skipTyping = false, onComplete }: Ty
     if (skipTyping) {
       setDisplayedText(text);
       setCurrentIndex(targetLength);
-      onComplete?.();
+      if (currentIndex < targetLength) {
+        onComplete?.();
+      }
       return;
     }
 
@@ -156,7 +158,7 @@ function TypewriterText({ text, speed = 50, skipTyping = false, onComplete }: Ty
     } else if (currentIndex === targetLength && currentIndex > 0) {
       onComplete?.();
     }
-  }, [currentIndex, text, targetLength, speed, skipTyping, onComplete]);
+  }, [currentIndex, text, targetLength, speed, skipTyping]);
 
   useEffect(() => {
     setDisplayedText('');
