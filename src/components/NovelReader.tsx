@@ -171,7 +171,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [interaction.isTyping, currentParagraph, goToNextParagraph, goToPreviousParagraph]);
+  }, [isTyping, currentParagraph, goToNextParagraph, goToPreviousParagraph]);
 
   if (!currentEpisode || !currentParagraph) {
     return (
