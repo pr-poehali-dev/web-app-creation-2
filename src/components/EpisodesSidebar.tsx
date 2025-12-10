@@ -47,14 +47,14 @@ function EpisodesSidebar({ novel, currentEpisodeId, profile, onEpisodeSelect, on
             return (
               <div key={episode.id} className="space-y-1">
                 <div
-                  className={`w-full text-left p-3 rounded-lg transition-all ${
+                  className={`w-full text-left p-3 rounded-lg transition-all border-2 ${
                     isLocked ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
                   } ${
                     isCurrent 
-                      ? 'bg-primary text-primary-foreground shadow-lg' 
+                      ? 'bg-primary text-primary-foreground shadow-lg border-border' 
                       : isLocked
-                      ? 'bg-muted/50 text-muted-foreground'
-                      : 'bg-card hover:bg-card/80 text-foreground hover:shadow-md'
+                      ? 'bg-muted/50 text-muted-foreground border-border'
+                      : 'bg-card hover:bg-card/80 text-foreground hover:shadow-md border-transparent'
                   }`}
                 >
                   <div className="flex items-center justify-between">
