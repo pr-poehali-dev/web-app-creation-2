@@ -68,22 +68,13 @@ export function useNovelNavigation({
       return prev;
     });
 
-    let nextIndex = currentParagraphIndex + 1;
-    
-    // Проверяем, есть ли fade параграф следующим
-    const hasFadeNext = nextIndex < currentEpisode.paragraphs.length && 
-                        currentEpisode.paragraphs[nextIndex].type === 'fade';
-    
-    // Пропускаем fade параграфы
-    while (nextIndex < currentEpisode.paragraphs.length && currentEpisode.paragraphs[nextIndex].type === 'fade') {
-      nextIndex++;
-    }
+    const nextIndex = currentParagraphIndex + 1;
 
     if (nextIndex < currentEpisode.paragraphs.length) {
-      // Если следующий параграф не fade, запускаем анимацию растворения
+      // Запускаем анимацию растворения для текстовых параграфов
       if (currentParagraph?.type === 'text') {
-        // Если перед следующим параграфом был fade, делаем растворение медленнее
-        const fadeDelay = hasFadeNext ? 1500 : 300;
+        // Если у текущего параграфа установлен slowFade, делаем растворение медленнее
+        const fadeDelay = currentParagraph.slowFade ? 1500 : 300;
         setIsFading(true);
         setTimeout(() => {
           onProfileUpdate(prev => ({
@@ -133,13 +124,9 @@ export function useNovelNavigation({
           return;
         }
 
-        // Проверяем, есть ли fade в конце текущего эпизода
-        const lastIndex = currentEpisode.paragraphs.length - 1;
-        const hasFadeAtEnd = lastIndex > currentParagraphIndex && 
-                             currentEpisode.paragraphs[lastIndex].type === 'fade';
-
         if (currentParagraph?.type === 'text') {
-          const fadeDelay = hasFadeAtEnd ? 1500 : 300;
+          // Если у текущего параграфа установлен slowFade, делаем растворение медленнее
+          const fadeDelay = currentParagraph.slowFade ? 1500 : 300;
           setIsFading(true);
           setTimeout(() => {
             onProfileUpdate(prev => ({
@@ -169,12 +156,7 @@ export function useNovelNavigation({
 
   const goToPreviousParagraph = useCallback(() => {
     if (currentParagraphIndex > 0) {
-      let prevIndex = currentParagraphIndex - 1;
-      
-      // Пропускаем fade параграфы при движении назад
-      while (prevIndex >= 0 && currentEpisode?.paragraphs[prevIndex].type === 'fade') {
-        prevIndex--;
-      }
+      const prevIndex = currentParagraphIndex - 1;
       
       if (prevIndex >= 0) {
         onProfileUpdate(prev => ({
@@ -187,7 +169,7 @@ export function useNovelNavigation({
         setIsFading(false);
       }
     }
-  }, [currentParagraphIndex, currentEpisode, currentEpisodeId, onProfileUpdate, setIsTyping, setSkipTyping, setIsFading]);
+  }, [currentParagraphIndex, currentEpisodeId, onProfileUpdate, setIsTyping, setSkipTyping, setIsFading]);
 
   const handleChoice = useCallback((choiceId: string, pathId: string | undefined, oneTime: boolean | undefined, nextEpisodeId?: string, nextParagraphIndex?: number) => {
     // Отмечаем выбор как использованный если он одноразовый

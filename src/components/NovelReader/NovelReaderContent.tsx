@@ -31,10 +31,6 @@ function NovelReaderContent({
   handleChoice,
   onProfileUpdate
 }: NovelReaderContentProps) {
-  if (currentParagraph.type === 'fade') {
-    return null;
-  }
-
   const novelFontStyle = {
     fontFamily: settings.fontFamily === 'merriweather' ? '"Merriweather", serif' :
                settings.fontFamily === 'playfair' ? '"Playfair Display", serif' :
