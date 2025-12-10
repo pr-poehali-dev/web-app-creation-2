@@ -111,7 +111,7 @@ export function useNovelNavigation({
         setSkipTyping(false);
       }
     }
-  }, [currentEpisodeId, currentParagraphIndex, currentEpisode, currentParagraph, onProfileUpdate, setIsTyping, setSkipTyping, setIsFading]);
+  }, [currentEpisodeId, currentParagraphIndex, currentEpisode, currentParagraph, onProfileUpdate, setIsTyping, setSkipTyping, novel, isGuest, onGuestLimitReached]);
 
   const goToPreviousParagraph = useCallback(() => {
     if (currentParagraphIndex > 0) {
@@ -125,10 +125,9 @@ export function useNovelNavigation({
         }));
         setIsTyping(true);
         setSkipTyping(false);
-        setIsFading(false);
       }
     }
-  }, [currentParagraphIndex, currentEpisodeId, onProfileUpdate, setIsTyping, setSkipTyping, setIsFading]);
+  }, [currentParagraphIndex, currentEpisodeId, onProfileUpdate, setIsTyping, setSkipTyping]);
 
   const handleChoice = useCallback((choiceId: string, pathId: string | undefined, oneTime: boolean | undefined, nextEpisodeId?: string, nextParagraphIndex?: number) => {
     // Отмечаем выбор как использованный если он одноразовый
