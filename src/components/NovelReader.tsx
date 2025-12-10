@@ -17,9 +17,10 @@ interface NovelReaderProps {
   onProfileUpdate: (profile: UserProfile | ((prev: UserProfile) => UserProfile)) => void;
   currentEpisodeId: string;
   currentParagraphIndex: number;
+  showGreetingScreen?: boolean;
 }
 
-function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, currentEpisodeId, currentParagraphIndex }: NovelReaderProps) {
+function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, currentEpisodeId, currentParagraphIndex, showGreetingScreen = false }: NovelReaderProps) {
   const currentEpisode = novel.episodes.find(ep => ep.id === currentEpisodeId);
   const currentParagraph = currentEpisode?.paragraphs[currentParagraphIndex];
 
@@ -184,9 +185,8 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
                     settings.fontFamily === 'arial' ? 'font-sans' :
                     'font-sans';
 
-  // Показываем приветствие, если это первый параграф первого эпизода
-  const isFirstParagraph = currentEpisodeId === novel.episodes[0]?.id && currentParagraphIndex === 0;
-  const showGreeting = isFirstParagraph && novel.homePage?.greeting;
+  // Показываем приветствие только если showGreetingScreen === true
+  const showGreeting = showGreetingScreen && novel.homePage?.greeting;
 
   return (
     <div 
@@ -207,7 +207,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
       )}
 
       <div className="w-full max-w-4xl">
-        {/* Показываем либо приветствие, либо параграф */}
+        {/* Показываем либо приветствие (если showGreetingScreen), либо параграф */}
         {showGreeting ? (
           <div className="text-center animate-fade-in">
             <div className="bg-card/80 backdrop-blur-sm rounded-2xl p-8 shadow-2xl border border-border">

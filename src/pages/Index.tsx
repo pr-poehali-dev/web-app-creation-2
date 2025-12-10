@@ -36,7 +36,9 @@ function Index() {
     showSidebar,
     setShowSidebar,
     isAdmin,
-    setIsAdmin
+    setIsAdmin,
+    showGreetingScreen,
+    setShowGreetingScreen
   } = useAppState();
 
   const { isLoading, setNovelForSaving } = useNovelDatabase(setNovel, isAdmin);
@@ -251,6 +253,7 @@ function Index() {
           profile={profile}
           onEpisodeSelect={(episodeId, paragraphIndex) => {
             handleEpisodeSelect(episodeId, paragraphIndex);
+            setShowGreetingScreen(false);
             setShowSidebar(false);
           }}
           onShowParagraphs={(episodeId) => {
@@ -269,6 +272,7 @@ function Index() {
           onProfileUpdate={handleProfileUpdate}
           currentEpisodeId={profile.currentEpisodeId}
           currentParagraphIndex={profile.currentParagraphIndex}
+          showGreetingScreen={showGreetingScreen}
         />
         <ActivePathsIndicator novel={novel} profile={profile} />
       </div>
@@ -290,16 +294,9 @@ function Index() {
         onAddBookmark={handleAddBookmark}
         onRemoveBookmark={handleRemoveBookmark}
         onGoToGreeting={() => {
-          const firstEpisode = novel.episodes[0];
-          if (firstEpisode) {
-            setProfile({
-              ...profile,
-              currentEpisodeId: firstEpisode.id,
-              currentParagraphIndex: 0
-            });
-          }
+          setShowGreetingScreen(true);
         }}
-        showGreeting={profile.currentEpisodeId === novel.episodes[0]?.id && profile.currentParagraphIndex === 0}
+        showGreeting={showGreetingScreen}
       />
 
       <ParagraphsDialog
