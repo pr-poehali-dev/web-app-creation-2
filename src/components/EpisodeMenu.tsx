@@ -26,6 +26,7 @@ function EpisodeMenu({ novel, profile, onEpisodeSelect, onBack }: EpisodeMenuPro
   const isEpisodeFullyRead = (episodeId: string) => {
     const episode = novel.episodes.find(ep => ep.id === episodeId);
     if (!episode) return false;
+    if (!profile.readParagraphs || !Array.isArray(profile.readParagraphs)) return false;
     
     for (let i = 0; i < episode.paragraphs.length; i++) {
       const paragraphId = `${episodeId}-${i}`;
