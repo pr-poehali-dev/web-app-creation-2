@@ -32,13 +32,14 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
     b => b.episodeId === currentEpisodeId && b.paragraphIndex === currentParagraphIndex
   );
 
-  // Ключ для принудительного пересоздания состояний при смене параграфа
-  const paragraphKey = `${currentEpisodeId}-${currentParagraphIndex}`;
-  
-  // Временные состояния для typing
+  // Временные состояния для typing и fading
   const [isTyping, setIsTyping] = useState(true);
   const [skipTyping, setSkipTyping] = useState(false);
+  const [isFading, setIsFading] = useState(false);
   const [canNavigate, setCanNavigate] = useState(false);
+  
+  // Сохраняем отображаемый параграф для плавного fade
+  const [displayParagraph, setDisplayParagraph] = useState(currentParagraph);
   
   // Ref для отслеживания актуального значения isTyping в callbacks
   const isTypingRef = useRef(isTyping);
@@ -56,12 +57,16 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
     }
   }, [isTyping]);
 
-  // Сбрасываем состояния при смене параграфа
+  // Обновляем displayParagraph только когда не в процессе fade
   useEffect(() => {
-    setIsTyping(true);
-    setSkipTyping(false);
-    setCanNavigate(false);
-  }, [currentEpisodeId, currentParagraphIndex]);
+    if (!isFading) {
+      console.log('[NovelReader] Paragraph changed, updating display and resetting isTyping');
+      setDisplayParagraph(currentParagraph);
+      setIsTyping(true);
+      setSkipTyping(false);
+      setCanNavigate(false);
+    }
+  }, [currentEpisodeId, currentParagraphIndex, currentParagraph, isFading]);
 
   // Хук навигации
   const {
@@ -79,6 +84,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
     onProfileUpdate,
     setIsTyping,
     setSkipTyping,
+    setIsFading,
     isGuest,
     onGuestLimitReached
   });
@@ -262,18 +268,18 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
             </div>
           </div>
         ) : (
-          /* Текущий параграф */
+          /* Отображаемый параграф (для плавного fade) */
           <NovelReaderContent
-            currentParagraph={currentParagraph}
+            currentParagraph={displayParagraph}
             currentEpisode={currentEpisode}
             novel={novel}
             settings={settings}
             profile={profile}
             skipTyping={skipTyping}
+            isFading={isFading}
             handleTypingComplete={handleTypingComplete}
             handleChoice={handleChoice}
             onProfileUpdate={onProfileUpdate}
-            paragraphKey={paragraphKey}
           />
         )}
 
