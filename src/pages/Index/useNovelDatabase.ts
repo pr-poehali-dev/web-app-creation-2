@@ -106,6 +106,16 @@ export function useNovelDatabase(
         const response = await fetch(API_URL);
         if (response.ok) {
           const novelData = await response.json();
+          
+          // Ensure library structure exists with all required fields
+          if (!novelData.library) {
+            novelData.library = { items: [], characters: [], choices: [] };
+          } else {
+            if (!novelData.library.items) novelData.library.items = [];
+            if (!novelData.library.characters) novelData.library.characters = [];
+            if (!novelData.library.choices) novelData.library.choices = [];
+          }
+          
           setNovel(novelData);
           setNovelForSaving(novelData);
         } else {
