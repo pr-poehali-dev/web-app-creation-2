@@ -453,10 +453,10 @@ def handler(event, context):
                     from email.mime.text import MIMEText
                     from email.mime.multipart import MIMEMultipart
                     
-                    smtp_host = os.environ.get('SMTP_HOST')
-                    smtp_port = int(os.environ.get('SMTP_PORT', '587'))
-                    smtp_user = os.environ.get('SMTP_USER')
-                    smtp_password = os.environ.get('SMTP_PASSWORD')
+                    smtp_host = os.environ.get('MAIL_SMTP_HOST') or os.environ.get('SMTP_HOST')
+                    smtp_port = int(os.environ.get('MAIL_SMTP_PORT') or os.environ.get('SMTP_PORT', '587'))
+                    smtp_user = os.environ.get('MAIL_SMTP_USER') or os.environ.get('SMTP_USER')
+                    smtp_password = os.environ.get('MAIL_SMTP_PASSWORD') or os.environ.get('SMTP_PASSWORD')
                     
                     if not all([smtp_host, smtp_user, smtp_password]):
                         # SMTP не настроен - пропускаем отправку, но говорим что отправили
