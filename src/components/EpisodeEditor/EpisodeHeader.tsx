@@ -197,12 +197,28 @@ function EpisodeHeader({ episode, novel, onUpdate, onNovelUpdate }: EpisodeHeade
 
         <div>
           <Label className="text-foreground">Требуемый путь (опционально)</Label>
-          <Input 
-            value={episode.requiredPath || ''} 
-            onChange={(e) => onUpdate({ ...episode, requiredPath: e.target.value || undefined })}
-            placeholder="Оставьте пустым для общего доступа"
-            className="font-mono text-sm mt-1"
-          />
+          <Select
+            value={episode.requiredPath || 'none'}
+            onValueChange={(value) => onUpdate({ ...episode, requiredPath: value === 'none' ? undefined : value })}
+          >
+            <SelectTrigger className="text-foreground mt-1">
+              <SelectValue placeholder="Доступен всем" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">Доступен всем</SelectItem>
+              {novel.paths?.map((path) => (
+                <SelectItem key={path.id} value={path.id}>
+                  <div className="flex items-center gap-2">
+                    <div 
+                      className="w-3 h-3 rounded-full" 
+                      style={{ backgroundColor: path.color }}
+                    />
+                    {path.name}
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <p className="text-xs text-muted-foreground mt-1">
             Если указан, эпизод доступен только игрокам с активным путём
           </p>

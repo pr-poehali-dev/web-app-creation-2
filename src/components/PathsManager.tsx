@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Path } from '@/types/novel';
+import { useState, useMemo } from 'react';
+import { Novel, Path } from '@/types/novel';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,13 +8,39 @@ import { Textarea } from '@/components/ui/textarea';
 import Icon from '@/components/ui/icon';
 
 interface PathsManagerProps {
-  paths: Path[];
-  onUpdate: (paths: Path[]) => void;
+  novel: Novel;
+  onUpdate: (novel: Novel) => void;
 }
 
-function PathsManager({ paths, onUpdate }: PathsManagerProps) {
+function PathsManager({ novel, onUpdate }: PathsManagerProps) {
+  const paths = novel.paths || [];
   const [selectedPathId, setSelectedPathId] = useState<string | null>(paths[0]?.id || null);
   const selectedPath = paths.find(p => p.id === selectedPathId);
+
+  const pathUsage = useMemo(() => {
+    if (!selectedPath) return { episodes: [], choices: [], items: [] };
+
+    const linkedEpisodes = novel.episodes.filter(ep => ep.requiredPath === selectedPath.id);
+    
+    const linkedChoices: Array<{ episodeTitle: string; question: string; optionText: string }> = [];
+    novel.episodes.forEach(ep => {
+      ep.paragraphs.forEach(para => {
+        if (para.type === 'choice') {
+          para.options.forEach(opt => {
+            if (opt.requiredPath === selectedPath.id) {
+              linkedChoices.push({
+                episodeTitle: ep.title,
+                question: para.question,
+                optionText: opt.text
+              });
+            }
+          });
+        }
+      });
+    });
+
+    return { episodes: linkedEpisodes, choices: linkedChoices };
+  }, [selectedPath, novel.episodes]);
 
   const handleAddPath = () => {
     const newPath: Path = {
@@ -23,20 +49,29 @@ function PathsManager({ paths, onUpdate }: PathsManagerProps) {
       description: '',
       color: '#9333ea'
     };
-    onUpdate([...paths, newPath]);
+    onUpdate({
+      ...novel,
+      paths: [...paths, newPath]
+    });
     setSelectedPathId(newPath.id);
   };
 
   const handleUpdatePath = (updates: Partial<Path>) => {
     if (!selectedPath) return;
-    onUpdate(paths.map(p => p.id === selectedPath.id ? { ...p, ...updates } : p));
+    onUpdate({
+      ...novel,
+      paths: paths.map(p => p.id === selectedPath.id ? { ...p, ...updates } : p)
+    });
   };
 
   const handleDeletePath = (pathId: string) => {
     const confirmed = confirm('Удалить этот путь? Все привязки к эпизодам и выборам будут потеряны.');
     if (!confirmed) return;
     
-    onUpdate(paths.filter(p => p.id !== pathId));
+    onUpdate({
+      ...novel,
+      paths: paths.filter(p => p.id !== pathId)
+    });
     if (selectedPathId === pathId) {
       setSelectedPathId(paths[0]?.id || null);
     }
@@ -58,7 +93,6 @@ function PathsManager({ paths, onUpdate }: PathsManagerProps) {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Список путей */}
         <div className="space-y-2">
           {paths.length === 0 ? (
             <Card>
@@ -94,7 +128,6 @@ function PathsManager({ paths, onUpdate }: PathsManagerProps) {
           )}
         </div>
 
-        {/* Редактор пути */}
         <div className="lg:col-span-2">
           {selectedPath ? (
             <Card>
@@ -102,19 +135,6 @@ function PathsManager({ paths, onUpdate }: PathsManagerProps) {
                 <CardTitle>Редактирование пути</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div>
-                  <Label htmlFor="path-id">ID пути</Label>
-                  <Input
-                    id="path-id"
-                    value={selectedPath.id}
-                    disabled
-                    className="font-mono text-sm"
-                  />
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Используйте этот ID при настройке эпизодов и выборов
-                  </p>
-                </div>
-
                 <div>
                   <Label htmlFor="path-name">Название</Label>
                   <Input
@@ -155,7 +175,59 @@ function PathsManager({ paths, onUpdate }: PathsManagerProps) {
                   </div>
                 </div>
 
-                <div className="pt-4 border-t">
+                <div className="pt-4 border-t space-y-4">
+                  <div>
+                    <h3 className="text-sm font-semibold mb-2 flex items-center gap-2">
+                      <Icon name="GitBranch" size={14} />
+                      Связанные элементы
+                    </h3>
+                    
+                    {pathUsage.episodes.length === 0 && pathUsage.choices.length === 0 ? (
+                      <p className="text-sm text-muted-foreground">Нет элементов, связанных с этим путём</p>
+                    ) : (
+                      <div className="space-y-3">
+                        {pathUsage.episodes.length > 0 && (
+                          <div>
+                            <p className="text-xs font-medium text-muted-foreground mb-1">
+                              Эпизоды ({pathUsage.episodes.length})
+                            </p>
+                            <div className="space-y-1">
+                              {pathUsage.episodes.map(ep => (
+                                <div key={ep.id} className="text-sm p-2 bg-muted/30 rounded flex items-center gap-2">
+                                  <Icon name="Book" size={12} />
+                                  {ep.title}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {pathUsage.choices.length > 0 && (
+                          <div>
+                            <p className="text-xs font-medium text-muted-foreground mb-1">
+                              Выборы ({pathUsage.choices.length})
+                            </p>
+                            <div className="space-y-1">
+                              {pathUsage.choices.map((choice, idx) => (
+                                <div key={idx} className="text-sm p-2 bg-muted/30 rounded">
+                                  <div className="flex items-start gap-2">
+                                    <Icon name="GitBranch" size={12} className="mt-0.5" />
+                                    <div>
+                                      <p className="font-medium">{choice.episodeTitle}</p>
+                                      <p className="text-xs text-muted-foreground">
+                                        {choice.question} → {choice.optionText}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
                   <Button
                     variant="destructive"
                     onClick={() => handleDeletePath(selectedPath.id)}
@@ -176,7 +248,6 @@ function PathsManager({ paths, onUpdate }: PathsManagerProps) {
         </div>
       </div>
 
-      {/* Инструкция */}
       <Card className="bg-muted/50">
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
@@ -186,8 +257,8 @@ function PathsManager({ paths, onUpdate }: PathsManagerProps) {
         </CardHeader>
         <CardContent className="space-y-2 text-sm">
           <p><strong>1. Создайте пути</strong> - например: "Путь добра", "Путь зла", "Секретная ветка"</p>
-          <p><strong>2. Привяжите выборы к путям</strong> - в редакторе выбора укажите requiredPath, чтобы активировать путь при выборе опции</p>
-          <p><strong>3. Ограничьте доступ к эпизодам</strong> - укажите requiredPath в эпизоде, чтобы он был доступен только игрокам с активным путём</p>
+          <p><strong>2. Привяжите выборы к путям</strong> - в редакторе выбора укажите путь, чтобы активировать его при выборе опции</p>
+          <p><strong>3. Ограничьте доступ к эпизодам</strong> - укажите путь в эпизоде, чтобы он был доступен только игрокам с активным путём</p>
           <p><strong>4. Одноразовые выборы</strong> - включите oneTime в выборе, чтобы он был доступен только один раз</p>
         </CardContent>
       </Card>

@@ -227,8 +227,8 @@ function AdminPanel({ novel, onUpdate, onLogout }: AdminPanelProps) {
 
           <TabsContent value="paths">
             <PathsManager 
-              paths={novel.paths || []} 
-              onUpdate={(paths) => onUpdate({ ...novel, paths })} 
+              novel={novel}
+              onUpdate={onUpdate} 
             />
           </TabsContent>
 
