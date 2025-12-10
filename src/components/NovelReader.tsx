@@ -263,7 +263,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
 
   return (
     <div 
-      className={`min-h-screen flex ${showGreeting ? 'items-center' : 'items-end'} justify-center ${showGreeting ? '' : 'pb-8'} ${showGreeting ? 'px-2 md:px-4 md:pr-32 md:pl-8' : 'px-6 md:px-12'} ${showGreeting ? '' : 'cursor-pointer'} relative bg-background`}
+      className={`min-h-screen flex ${showGreeting ? 'items-center justify-center px-2 md:px-4 md:pr-32 md:pl-8' : ''} ${showGreeting ? '' : 'cursor-pointer'} relative bg-background`}
       onClick={showGreeting ? undefined : handleClick}
       onTouchStart={showGreeting ? undefined : onTouchStart}
       onTouchMove={showGreeting ? undefined : onTouchMove}
@@ -275,18 +275,6 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
                     'Arial, sans-serif'
       }}
     >
-      {/* Фоновое изображение с плавной сменой (только если не приветствие) */}
-      {!showGreeting && backgroundImage && (
-        <div 
-          className="absolute top-20 left-4 right-4 bottom-4 md:left-8 md:right-32 bg-cover bg-center transition-opacity duration-500 rounded-2xl"
-          style={{ backgroundImage: `url(${backgroundImage})` }}
-        />
-      )}
-      
-      {/* Слой затемнения чтобы не терять текст (только если не приветствие) */}
-      {!showGreeting && backgroundImage && (
-        <div className="absolute top-20 left-4 right-4 bottom-4 md:left-8 md:right-32 bg-black/20 rounded-2xl" />
-      )}
       {/* Музыка запускается только когда эпизод открыт (не на экране приветствия) */}
       {!showGreeting && currentEpisode.backgroundMusic && (
         <MusicPlayer 
@@ -297,9 +285,66 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
         />
       )}
 
-      <div className="w-full max-w-4xl relative z-10">
-        {/* Показываем либо приветствие (если showGreetingScreen), либо параграф */}
-        {showGreeting ? (
+      {/* Фоновое изображение с контентом внутри (только если не приветствие) */}
+      {!showGreeting && backgroundImage && (
+        <div className="absolute top-20 left-4 right-4 bottom-4 md:left-8 md:right-32 rounded-2xl overflow-hidden">
+          {/* Само фоновое изображение */}
+          <div 
+            className="absolute inset-0 bg-cover bg-center transition-opacity duration-500"
+            style={{ backgroundImage: `url(${backgroundImage})` }}
+          />
+          
+          {/* Слой затемнения */}
+          <div className="absolute inset-0 bg-black/20" />
+          
+          {/* Контент внутри фона */}
+          <div className="relative w-full h-full flex items-end justify-center pb-8 px-4">
+            <div className="w-full max-w-4xl relative z-10">
+              {/* Отображаемый параграф (для плавного fade) */}
+              {currentParagraph.type !== 'background' && (
+                <NovelReaderContent
+                  currentParagraph={displayParagraph}
+                  currentEpisode={currentEpisode}
+                  novel={novel}
+                  settings={settings}
+                  profile={profile}
+                  skipTyping={skipTyping}
+                  isFading={isFading}
+                  handleTypingComplete={handleTypingComplete}
+                  handleChoice={handleChoice}
+                  onProfileUpdate={onProfileUpdate}
+                  paragraphKey={paragraphKey}
+                />
+              )}
+
+              {/* Подсказка для десктопа */}
+              {!isTyping && currentParagraph.type !== 'choice' && (
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <div className="hidden md:block absolute bottom-0 left-1/2 -translate-x-1/2 text-xs text-muted-foreground/70 animate-pulse text-center px-4 cursor-help pb-2">
+                      Нажмите или → для продолжения
+                    </div>
+                  </DialogTrigger>
+                  <DialogContent onClick={(e) => e.stopPropagation()}>
+                    <DialogHeader>
+                      <DialogTitle>Управление</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-3">
+                      <p className="text-foreground">• Клик или → - следующий параграф</p>
+                      <p className="text-foreground">• ← - предыдущий параграф</p>
+                      <p className="text-foreground">• Swipe влево/вправо - навигация</p>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Приветствие (показывается отдельно если showGreeting) */}
+      {showGreeting && (
+        <div className="w-full max-w-4xl relative z-10">
           <div className="text-center animate-fade-in">
             <div className="bg-card rounded-2xl p-8 shadow-xl border border-border">
               {novel.homePage?.greetingImage && (
@@ -313,76 +358,36 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
               <p className="text-muted-foreground text-sm">Выберите эпизод в боковой панели для начала чтения</p>
             </div>
           </div>
-        ) : (
-          /* Отображаемый параграф (для плавного fade) */
-          <>
-            {currentParagraph.type !== 'background' && (
-              <NovelReaderContent
-                currentParagraph={displayParagraph}
-                currentEpisode={currentEpisode}
-                novel={novel}
-                settings={settings}
-                profile={profile}
-                skipTyping={skipTyping}
-                isFading={isFading}
-                handleTypingComplete={handleTypingComplete}
-                handleChoice={handleChoice}
-                onProfileUpdate={onProfileUpdate}
-                paragraphKey={paragraphKey}
-              />
-            )}
-          </>
-        )}
+        </div>
+      )}
 
-        {/* Навигация для мобильных (только если не приветствие) */}
-        {!showGreeting && !isTyping && currentParagraph.type !== 'choice' && (
-          <div className="md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 flex gap-3 z-50">
-            <Button
-              size="icon"
-              variant="secondary"
-              onClick={(e) => {
-                e.stopPropagation();
-                goToPreviousParagraph();
-              }}
-              className="bg-card/90 backdrop-blur-sm shadow-xl"
-            >
-              <Icon name="ChevronLeft" size={24} />
-            </Button>
-            <Button
-              size="icon"
-              variant="secondary"
-              onClick={(e) => {
-                e.stopPropagation();
-                goToNextParagraph();
-              }}
-              className="bg-card/90 backdrop-blur-sm shadow-xl"
-            >
-              <Icon name="ChevronRight" size={24} />
-            </Button>
-          </div>
-        )}
-
-        {/* Подсказка для десктопа */}
-        {!showGreeting && !isTyping && currentParagraph.type !== 'choice' && (
-          <Dialog>
-            <DialogTrigger asChild>
-              <div className="hidden md:block absolute bottom-0 left-1/2 -translate-x-1/2 text-xs text-muted-foreground/70 animate-pulse text-center px-4 cursor-help pb-2">
-                Нажмите или → для продолжения
-              </div>
-            </DialogTrigger>
-            <DialogContent onClick={(e) => e.stopPropagation()}>
-              <DialogHeader>
-                <DialogTitle>Управление</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-3">
-                <p className="text-foreground">• Клик или → - следующий параграф</p>
-                <p className="text-foreground">• ← - предыдущий параграф</p>
-                <p className="text-foreground">• Swipe влево/вправо - навигация</p>
-              </div>
-            </DialogContent>
-          </Dialog>
-        )}
-      </div>
+      {/* Навигация для мобильных (только если не приветствие) */}
+      {!showGreeting && !isTyping && currentParagraph.type !== 'choice' && (
+        <div className="md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 flex gap-3 z-50">
+          <Button
+            size="icon"
+            variant="secondary"
+            onClick={(e) => {
+              e.stopPropagation();
+              goToPreviousParagraph();
+            }}
+            className="bg-card/90 backdrop-blur-sm shadow-xl"
+          >
+            <Icon name="ChevronLeft" size={24} />
+          </Button>
+          <Button
+            size="icon"
+            variant="secondary"
+            onClick={(e) => {
+              e.stopPropagation();
+              goToNextParagraph();
+            }}
+            className="bg-card/90 backdrop-blur-sm shadow-xl"
+          >
+            <Icon name="ChevronRight" size={24} />
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
