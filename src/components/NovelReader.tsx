@@ -278,14 +278,14 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
       {/* Фоновое изображение с плавной сменой (только если не приветствие) */}
       {!showGreeting && backgroundImage && (
         <div 
-          className="absolute inset-0 bg-cover bg-center transition-opacity duration-500"
+          className="absolute top-16 left-4 right-4 bottom-4 md:left-8 md:right-8 bg-cover bg-center transition-opacity duration-500 rounded-2xl"
           style={{ backgroundImage: `url(${backgroundImage})` }}
         />
       )}
       
       {/* Слой затемнения чтобы не терять текст (только если не приветствие) */}
       {!showGreeting && backgroundImage && (
-        <div className="absolute inset-0 bg-black/20" />
+        <div className="absolute top-16 left-4 right-4 bottom-4 md:left-8 md:right-8 bg-black/20 rounded-2xl" />
       )}
       {/* Музыка запускается только когда эпизод открыт (не на экране приветствия) */}
       {!showGreeting && currentEpisode.backgroundMusic && (
