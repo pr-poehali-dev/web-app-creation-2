@@ -367,9 +367,9 @@ function UserProfilePanel({ profile, novel, onUpdate, onBack, onNavigateTo }: Us
                         <Card key={character.id}>
                           <CardContent className="p-4">
                             <div className="flex items-start gap-3">
-                              <div className="w-16 h-16 flex items-center justify-center bg-secondary/30 rounded-full">
-                                {character.image?.startsWith('data:') ? (
-                                  <img src={character.image} alt={character.name} className="w-full h-full object-cover rounded-full" />
+                              <div className="w-16 h-16 flex items-center justify-center bg-secondary/30 rounded-full overflow-hidden">
+                                {character.image?.startsWith('data:') || character.image?.startsWith('http') ? (
+                                  <img src={character.image} alt={character.name} className="w-full h-full object-contain" />
                                 ) : (
                                   <span className="text-3xl">{character.image || '👤'}</span>
                                 )}
