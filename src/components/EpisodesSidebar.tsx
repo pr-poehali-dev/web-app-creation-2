@@ -33,6 +33,21 @@ function EpisodesSidebar({ novel, currentEpisodeId, profile, onEpisodeSelect, on
     const prevEpisode = novel.episodes[index - 1];
     return isEpisodeFullyRead(prevEpisode.id);
   };
+
+  const getLastReadParagraphIndex = (episodeId: string) => {
+    const episode = novel.episodes.find(ep => ep.id === episodeId);
+    if (!episode) return 0;
+    if (!profile.readParagraphs || !Array.isArray(profile.readParagraphs)) return 0;
+    
+    // Найти последний прочитанный параграф
+    for (let i = episode.paragraphs.length - 1; i >= 0; i--) {
+      const paragraphId = `${episodeId}-${i}`;
+      if (profile.readParagraphs.includes(paragraphId)) {
+        return i;
+      }
+    }
+    return 0;
+  };
   return (
     <div className="w-80 h-full bg-card border-r border-border overflow-y-auto flex-shrink-0">
       <div className="p-4">
@@ -62,7 +77,8 @@ function EpisodesSidebar({ novel, currentEpisodeId, profile, onEpisodeSelect, on
                       className="flex items-center gap-2 flex-1"
                       onClick={() => {
                         if (isLocked) return;
-                        onEpisodeSelect(episode.id);
+                        const paragraphIndex = getLastReadParagraphIndex(episode.id);
+                        onEpisodeSelect(episode.id, paragraphIndex);
                       }}
                     >
                       {isLocked && <Icon name="Lock" size={14} className="flex-shrink-0" />}
