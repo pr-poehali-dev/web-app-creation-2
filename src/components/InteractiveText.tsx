@@ -20,8 +20,14 @@ function InteractiveText({ text, className = '' }: InteractiveTextProps) {
   }, []);
 
   const parseText = (input: string) => {
-    const parts: Array<{ type: 'text' | 'hint'; content: string; hint?: string }> = [];
-    const regex = /\[([^\|]+)\|([^\]]+)\]/g;
+    const parts: Array<{ 
+      type: 'text' | 'hint' | 'bold' | 'italic' | 'underline' | 'strikethrough'; 
+      content: string; 
+      hint?: string;
+      children?: any[];
+    }> = [];
+    
+    const regex = /\[([^\|]+)\|([^\]]+)\]|\*\*([^*]+)\*\*|\*([^*]+)\*|__([^_]+)__|~~([^~]+)~~/g;
     let lastIndex = 0;
     let match;
 
@@ -33,11 +39,39 @@ function InteractiveText({ text, className = '' }: InteractiveTextProps) {
         });
       }
       
-      parts.push({
-        type: 'hint',
-        content: match[1],
-        hint: match[2]
-      });
+      // Проверяем какой тип совпадения
+      if (match[1] && match[2]) {
+        // Интерактивная подсказка [слово|подсказка]
+        parts.push({
+          type: 'hint',
+          content: match[1],
+          hint: match[2]
+        });
+      } else if (match[3]) {
+        // Жирный текст **текст**
+        parts.push({
+          type: 'bold',
+          content: match[3]
+        });
+      } else if (match[4]) {
+        // Курсив *текст*
+        parts.push({
+          type: 'italic',
+          content: match[4]
+        });
+      } else if (match[5]) {
+        // Подчёркивание __текст__
+        parts.push({
+          type: 'underline',
+          content: match[5]
+        });
+      } else if (match[6]) {
+        // Зачёркнутый ~~текст~~
+        parts.push({
+          type: 'strikethrough',
+          content: match[6]
+        });
+      }
       
       lastIndex = regex.lastIndex;
     }
@@ -60,7 +94,15 @@ function InteractiveText({ text, className = '' }: InteractiveTextProps) {
         {parts.map((part, index) => {
           if (part.type === 'text') {
             return <span key={index}>{part.content}</span>;
-          } else {
+          } else if (part.type === 'bold') {
+            return <strong key={index}>{part.content}</strong>;
+          } else if (part.type === 'italic') {
+            return <em key={index}>{part.content}</em>;
+          } else if (part.type === 'underline') {
+            return <u key={index}>{part.content}</u>;
+          } else if (part.type === 'strikethrough') {
+            return <s key={index}>{part.content}</s>;
+          } else if (part.type === 'hint') {
             // На мобильных показываем Dialog при клике
             if (isMobile) {
               return (
@@ -91,6 +133,7 @@ function InteractiveText({ text, className = '' }: InteractiveTextProps) {
               </HoverCard>
             );
           }
+          return null;
         })}
       </span>
 

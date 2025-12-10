@@ -8,39 +8,118 @@ interface TypewriterTextProps {
   onComplete?: () => void;
 }
 
-// Функция для получения текста без подсказок для подсчета длины
+// Функция для получения текста без форматирования для подсчета длины
 const getCleanText = (text: string): string => {
-  return text.replace(/\[([^\|]+)\|([^\]]+)\]/g, '$1');
+  return text
+    .replace(/\[([^\|]+)\|([^\]]+)\]/g, '$1') // Интерактивные подсказки
+    .replace(/\*\*([^*]+)\*\*/g, '$1') // Жирный
+    .replace(/\*([^*]+)\*/g, '$1') // Курсив
+    .replace(/__([^_]+)__/g, '$1') // Подчёркивание
+    .replace(/~~([^~]+)~~/g, '$1'); // Зачёркивание
 };
 
-// Функция для отображения текста с подсказками до определенной позиции
+// Функция для отображения текста с форматированием до определенной позиции
 const getDisplayText = (text: string, targetLength: number): string => {
   let cleanPos = 0;
   let result = '';
   let i = 0;
   
   while (i < text.length && cleanPos < targetLength) {
+    // Интерактивная подсказка [слово|подсказка]
     if (text[i] === '[' && text.indexOf('|', i) !== -1 && text.indexOf(']', i) !== -1) {
       const pipeIdx = text.indexOf('|', i);
       const closeIdx = text.indexOf(']', i);
       
       if (pipeIdx < closeIdx) {
-        // Это интерактивная подсказка
         const word = text.substring(i + 1, pipeIdx);
         const hint = text.substring(pipeIdx + 1, closeIdx);
         
         if (cleanPos + word.length <= targetLength) {
-          // Показываем всю подсказку
           result += `[${word}|${hint}]`;
           cleanPos += word.length;
           i = closeIdx + 1;
         } else {
-          // Показываем часть слова
           const remaining = targetLength - cleanPos;
           result += word.substring(0, remaining);
           cleanPos = targetLength;
         }
         continue;
+      }
+    }
+    
+    // Жирный текст **текст**
+    if (text[i] === '*' && text[i + 1] === '*') {
+      const endIdx = text.indexOf('**', i + 2);
+      if (endIdx !== -1) {
+        const content = text.substring(i + 2, endIdx);
+        if (cleanPos + content.length <= targetLength) {
+          result += `**${content}**`;
+          cleanPos += content.length;
+          i = endIdx + 2;
+          continue;
+        } else {
+          const remaining = targetLength - cleanPos;
+          result += `**${content.substring(0, remaining)}`;
+          cleanPos = targetLength;
+          continue;
+        }
+      }
+    }
+    
+    // Курсив *текст*
+    if (text[i] === '*' && text[i + 1] !== '*') {
+      const endIdx = text.indexOf('*', i + 1);
+      if (endIdx !== -1) {
+        const content = text.substring(i + 1, endIdx);
+        if (cleanPos + content.length <= targetLength) {
+          result += `*${content}*`;
+          cleanPos += content.length;
+          i = endIdx + 1;
+          continue;
+        } else {
+          const remaining = targetLength - cleanPos;
+          result += `*${content.substring(0, remaining)}`;
+          cleanPos = targetLength;
+          continue;
+        }
+      }
+    }
+    
+    // Подчёркивание __текст__
+    if (text[i] === '_' && text[i + 1] === '_') {
+      const endIdx = text.indexOf('__', i + 2);
+      if (endIdx !== -1) {
+        const content = text.substring(i + 2, endIdx);
+        if (cleanPos + content.length <= targetLength) {
+          result += `__${content}__`;
+          cleanPos += content.length;
+          i = endIdx + 2;
+          continue;
+        } else {
+          const remaining = targetLength - cleanPos;
+          result += `__${content.substring(0, remaining)}`;
+          cleanPos = targetLength;
+          continue;
+        }
+      }
+    }
+    
+    // Зачёркивание ~~текст~~
+    if (text[i] === '~' && text[i + 1] === '~') {
+      const endIdx = text.indexOf('~~', i + 2);
+      if (endIdx !== -1) {
+        const content = text.substring(i + 2, endIdx);
+        if (cleanPos + content.length <= targetLength) {
+          result += `~~${content}~~`;
+          cleanPos += content.length;
+          i = endIdx + 2;
+          continue;
+        } else {
+          const remaining = targetLength - cleanPos;
+          result += `~~${content.substring(0, remaining)}`;
+          cleanPos = targetLength;
+          continue;
+        }
       }
     }
     
