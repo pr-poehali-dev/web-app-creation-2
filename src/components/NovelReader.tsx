@@ -44,6 +44,27 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
   // Сохраняем отображаемый параграф для плавного fade
   const [displayParagraph, setDisplayParagraph] = useState(currentParagraph);
   
+  // Фоновое изображение - находим последний background параграф до текущего
+  const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
+  
+  useEffect(() => {
+    if (!currentEpisode) return;
+    
+    // Ищем последний background параграф до текущего индекса
+    let bgUrl: string | null = null;
+    for (let i = currentParagraphIndex; i >= 0; i--) {
+      const p = currentEpisode.paragraphs[i];
+      if (p.type === 'background') {
+        bgUrl = p.url;
+        break;
+      }
+    }
+    
+    if (bgUrl !== backgroundImage) {
+      setBackgroundImage(bgUrl);
+    }
+  }, [currentEpisodeId, currentParagraphIndex, currentEpisode, backgroundImage]);
+  
   // Ref для отслеживания актуального значения isTyping в callbacks
   const isTypingRef = useRef(isTyping);
   useEffect(() => {
@@ -70,6 +91,16 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
       setCanNavigate(false);
     }
   }, [currentEpisodeId, currentParagraphIndex, currentParagraph, isFading]);
+  
+  // Авто-переход для background параграфов
+  useEffect(() => {
+    if (currentParagraph?.type === 'background' && !isFading) {
+      const timer = setTimeout(() => {
+        goToNextParagraph();
+      }, 500); // Задержка на плавную смену фона
+      return () => clearTimeout(timer);
+    }
+  }, [currentParagraph, isFading, goToNextParagraph]);
 
   // Хук навигации
   const {
@@ -232,7 +263,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
 
   return (
     <div 
-      className={`min-h-screen bg-background flex items-start justify-center pt-32 md:pt-20 px-2 md:px-4 pb-32 md:pb-4 md:pr-32 md:pl-8 ${showGreeting ? '' : 'cursor-pointer'}`}
+      className={`min-h-screen flex items-end justify-center pb-1 px-2 md:px-4 md:pr-32 md:pl-8 ${showGreeting ? '' : 'cursor-pointer'} relative`}
       onClick={showGreeting ? undefined : handleClick}
       onTouchStart={showGreeting ? undefined : onTouchStart}
       onTouchMove={showGreeting ? undefined : onTouchMove}
@@ -244,6 +275,18 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
                     'Arial, sans-serif'
       }}
     >
+      {/* Фоновое изображение с плавной сменой */}
+      {backgroundImage && (
+        <div 
+          className="absolute inset-0 bg-cover bg-center transition-opacity duration-500"
+          style={{ backgroundImage: `url(${backgroundImage})` }}
+        />
+      )}
+      
+      {/* Слой затемнения чтобы не терять текст */}
+      {backgroundImage && (
+        <div className="absolute inset-0 bg-black/20" />
+      )}
       {/* Музыка запускается только когда эпизод открыт (не на экране приветствия) */}
       {!showGreeting && currentEpisode.backgroundMusic && (
         <MusicPlayer 
@@ -254,7 +297,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
         />
       )}
 
-      <div className="w-full max-w-4xl">
+      <div className="w-full max-w-4xl relative z-10 mb-1">
         {/* Показываем либо приветствие (если showGreetingScreen), либо параграф */}
         {showGreeting ? (
           <div className="text-center animate-fade-in">
@@ -272,19 +315,23 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
           </div>
         ) : (
           /* Отображаемый параграф (для плавного fade) */
-          <NovelReaderContent
-            currentParagraph={displayParagraph}
-            currentEpisode={currentEpisode}
-            novel={novel}
-            settings={settings}
-            profile={profile}
-            skipTyping={skipTyping}
-            isFading={isFading}
-            handleTypingComplete={handleTypingComplete}
-            handleChoice={handleChoice}
-            onProfileUpdate={onProfileUpdate}
-            paragraphKey={paragraphKey}
-          />
+          <>
+            {currentParagraph.type !== 'background' && (
+              <NovelReaderContent
+                currentParagraph={displayParagraph}
+                currentEpisode={currentEpisode}
+                novel={novel}
+                settings={settings}
+                profile={profile}
+                skipTyping={skipTyping}
+                isFading={isFading}
+                handleTypingComplete={handleTypingComplete}
+                handleChoice={handleChoice}
+                onProfileUpdate={onProfileUpdate}
+                paragraphKey={paragraphKey}
+              />
+            )}
+          </>
         )}
 
         {/* Навигация для мобильных (только если не приветствие) */}

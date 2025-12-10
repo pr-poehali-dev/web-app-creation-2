@@ -44,8 +44,8 @@ function EpisodeEditor({ episode, novel, onUpdate, onNovelUpdate }: EpisodeEdito
       case 'image':
         newParagraph = { id, type: 'image', url: 'https://via.placeholder.com/800x600' };
         break;
-      case 'fade':
-        newParagraph = { id, type: 'fade' };
+      case 'background':
+        newParagraph = { id, type: 'background', url: 'https://via.placeholder.com/1920x1080' };
         break;
       default:
         return;
@@ -136,9 +136,9 @@ function EpisodeEditor({ episode, novel, onUpdate, onNovelUpdate }: EpisodeEdito
                   <Icon name="Image" size={14} className="mr-1" />
                   Картинка
                 </Button>
-                <Button size="sm" variant="outline" onClick={() => handleAddParagraph('fade', index)}>
-                  <Icon name="Minus" size={14} className="mr-1" />
-                  Затухание
+                <Button size="sm" variant="secondary" onClick={() => handleAddParagraph('background', index)}>
+                  <Icon name="Wallpaper" size={14} className="mr-1" />
+                  Фон
                 </Button>
               </div>
             )}

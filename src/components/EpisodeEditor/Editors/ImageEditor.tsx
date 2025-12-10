@@ -1,4 +1,4 @@
-import { ImageParagraph } from '@/types/novel';
+import { ImageParagraph, BackgroundParagraph } from '@/types/novel';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -6,13 +6,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import Icon from '@/components/ui/icon';
 
 interface ImageEditorProps {
-  paragraph: ImageParagraph;
+  paragraph: ImageParagraph | BackgroundParagraph;
   index: number;
   imageUrl: string;
   setImageUrl: (url: string) => void;
-  onUpdate: (index: number, updatedParagraph: ImageParagraph) => void;
-  handleImageUrl: (target: 'dialogue' | 'item' | 'image') => void;
-  handleImageUpload: (target: 'dialogue' | 'item' | 'image') => Promise<void>;
+  onUpdate: (index: number, updatedParagraph: ImageParagraph | BackgroundParagraph) => void;
+  handleImageUrl: () => void;
+  handleImageUpload: () => Promise<void>;
+  label?: string;
 }
 
 function ImageEditor({ 
@@ -22,7 +23,8 @@ function ImageEditor({
   setImageUrl, 
   onUpdate, 
   handleImageUrl, 
-  handleImageUpload
+  handleImageUpload,
+  label = 'Изменить изображение'
 }: ImageEditorProps) {
   return (
     <div className="space-y-2">
@@ -43,7 +45,7 @@ function ImageEditor({
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Изменить изображение</DialogTitle>
+              <DialogTitle>{label}</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
               <div>
@@ -54,7 +56,7 @@ function ImageEditor({
                   onChange={(e) => setImageUrl(e.target.value)}
                   className="text-foreground mt-1"
                 />
-                <Button onClick={() => handleImageUrl('image')} className="w-full mt-2" disabled={!imageUrl}>
+                <Button onClick={handleImageUrl} className="w-full mt-2" disabled={!imageUrl}>
                   Добавить по URL
                 </Button>
               </div>
@@ -66,7 +68,7 @@ function ImageEditor({
                   <span className="bg-background px-2 text-muted-foreground">или</span>
                 </div>
               </div>
-              <Button onClick={() => handleImageUpload('image')} variant="outline" className="w-full">
+              <Button onClick={handleImageUpload} variant="outline" className="w-full">
                 <Icon name="Upload" size={14} className="mr-2" />
                 Загрузить файл
               </Button>

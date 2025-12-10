@@ -99,6 +99,14 @@ function ParagraphEditor({
           alt: paragraph.type === 'image' ? paragraph.alt : undefined
         };
         break;
+      case 'background':
+        newParagraph = { 
+          id, 
+          type: 'background', 
+          url: paragraph.type === 'background' ? paragraph.url : 'https://via.placeholder.com/1920x1080',
+          alt: paragraph.type === 'background' ? paragraph.alt : undefined
+        };
+        break;
       default:
         return;
     }
@@ -107,7 +115,7 @@ function ParagraphEditor({
     setIsChangingType(false);
   };
 
-  const handleImageUpload = async (target: 'dialogue' | 'item' | 'image') => {
+  const handleImageUpload = async (target: 'dialogue' | 'item' | 'image' | 'background') => {
     const imageBase64 = await selectAndConvertImage();
     if (imageBase64) {
       if (target === 'dialogue' && paragraph.type === 'dialogue') {
@@ -116,12 +124,14 @@ function ParagraphEditor({
         onUpdate(index, { ...paragraph, imageUrl: imageBase64 });
       } else if (target === 'image' && paragraph.type === 'image') {
         onUpdate(index, { ...paragraph, url: imageBase64 });
+      } else if (target === 'background' && paragraph.type === 'background') {
+        onUpdate(index, { ...paragraph, url: imageBase64 });
       }
     }
     setImageUrl('');
   };
 
-  const handleImageUrl = (target: 'dialogue' | 'item' | 'image') => {
+  const handleImageUrl = (target: 'dialogue' | 'item' | 'image' | 'background') => {
     if (!imageUrl) return;
     
     if (target === 'dialogue' && paragraph.type === 'dialogue') {
@@ -129,6 +139,8 @@ function ParagraphEditor({
     } else if (target === 'item' && paragraph.type === 'item') {
       onUpdate(index, { ...paragraph, imageUrl });
     } else if (target === 'image' && paragraph.type === 'image') {
+      onUpdate(index, { ...paragraph, url: imageUrl });
+    } else if (target === 'background' && paragraph.type === 'background') {
       onUpdate(index, { ...paragraph, url: imageUrl });
     }
     setImageUrl('');
@@ -267,6 +279,7 @@ function ParagraphEditor({
                       <SelectItem value="choice">CHOICE</SelectItem>
                       <SelectItem value="item">ITEM</SelectItem>
                       <SelectItem value="image">IMAGE</SelectItem>
+                      <SelectItem value="background">BACKGROUND</SelectItem>
                     </SelectContent>
                   </Select>
                 ) : (
@@ -298,7 +311,7 @@ function ParagraphEditor({
               </div>
             </div>
 
-            {paragraph.type === 'text' && (
+            {(paragraph.type === 'text' || paragraph.type === 'dialogue' || paragraph.type === 'item') && (
               <div className="flex items-center gap-2 pb-2">
                 <Checkbox
                   id={`slow-fade-${index}`}
@@ -306,7 +319,7 @@ function ParagraphEditor({
                   onCheckedChange={(checked) => onUpdate(index, { ...paragraph, slowFade: checked as boolean })}
                 />
                 <Label htmlFor={`slow-fade-${index}`} className="text-sm text-muted-foreground cursor-pointer">
-                  Медленное растворение (1.5s)
+                  Breathing pause (0.3s)
                 </Label>
               </div>
             )}
@@ -368,6 +381,19 @@ function ParagraphEditor({
                 onUpdate={onUpdate}
                 handleImageUrl={handleImageUrl}
                 handleImageUpload={handleImageUpload}
+              />
+            )}
+
+            {paragraph.type === 'background' && (
+              <ImageEditor
+                paragraph={paragraph}
+                index={index}
+                imageUrl={imageUrl}
+                setImageUrl={setImageUrl}
+                onUpdate={onUpdate}
+                handleImageUrl={() => handleImageUrl('background')}
+                handleImageUpload={() => handleImageUpload('background')}
+                label="Фоновое изображение"
               />
             )}
           </div>

@@ -49,22 +49,24 @@ function NovelReaderContent({
   return (
     <>
       {currentParagraph.type === 'text' && (
-        <div className={`leading-relaxed text-left text-foreground px-2 py-4 md:p-8 ${
+        <div className={`bg-card/90 backdrop-blur-sm rounded-2xl p-6 md:p-8 shadow-xl border border-border ${
           currentParagraph.slowFade 
             ? `transition-opacity duration-300 ease-in-out ${isFading ? 'opacity-0' : 'opacity-100'}` 
             : ''
-        } ${
-          settings.textSize === 'small' ? 'text-base md:text-lg' :
-          settings.textSize === 'large' ? 'text-xl md:text-2xl' :
-          'text-lg md:text-xl'
-        }`} style={novelFontStyle}>
-          <TypewriterText
-            key={paragraphKey}
-            text={currentParagraph.content}
-            speed={settings.textSpeed}
-            skipTyping={skipTyping}
-            onComplete={handleTypingComplete}
-          />
+        }`}>
+          <div className={`leading-relaxed text-left text-foreground ${
+            settings.textSize === 'small' ? 'text-base md:text-lg' :
+            settings.textSize === 'large' ? 'text-xl md:text-2xl' :
+            'text-lg md:text-xl'
+          }`} style={novelFontStyle}>
+            <TypewriterText
+              key={paragraphKey}
+              text={currentParagraph.content}
+              speed={settings.textSpeed}
+              skipTyping={skipTyping}
+              onComplete={handleTypingComplete}
+            />
+          </div>
         </div>
       )}
 
