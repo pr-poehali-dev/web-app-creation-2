@@ -20,6 +20,8 @@ interface NavigationMenuProps {
   existingBookmark?: Bookmark;
   onAddBookmark?: (comment: string) => void;
   onRemoveBookmark?: () => void;
+  onGoToGreeting?: () => void;
+  showGreeting?: boolean;
 }
 
 function NavigationMenu({
@@ -35,11 +37,24 @@ function NavigationMenu({
   totalParagraphs,
   existingBookmark,
   onAddBookmark,
-  onRemoveBookmark
+  onRemoveBookmark,
+  onGoToGreeting,
+  showGreeting
 }: NavigationMenuProps) {
   return (
     <div className="fixed top-4 right-4 flex flex-col gap-2 z-50 items-end">
       <div className="flex gap-2 flex-wrap justify-end">
+        {!showGreeting && onGoToGreeting && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="bg-card/50 backdrop-blur-sm hover:bg-card/80 text-white"
+            onClick={onGoToGreeting}
+            title="Вернуться к приветствию"
+          >
+            <Icon name="Home" size={20} />
+          </Button>
+        )}
         <Button
           variant="ghost"
           size="icon"

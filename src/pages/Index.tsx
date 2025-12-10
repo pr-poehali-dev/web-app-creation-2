@@ -289,6 +289,17 @@ function Index() {
         )}
         onAddBookmark={handleAddBookmark}
         onRemoveBookmark={handleRemoveBookmark}
+        onGoToGreeting={() => {
+          const firstEpisode = novel.episodes[0];
+          if (firstEpisode) {
+            setProfile({
+              ...profile,
+              currentEpisodeId: firstEpisode.id,
+              currentParagraphIndex: 0
+            });
+          }
+        }}
+        showGreeting={profile.currentEpisodeId === novel.episodes[0]?.id && profile.currentParagraphIndex === 0}
       />
 
       <ParagraphsDialog
