@@ -44,7 +44,7 @@ function NavigationMenu({
   return (
     <div className="fixed top-4 right-4 flex flex-col gap-2 z-50 items-end">
       <div className="flex gap-2 flex-wrap justify-end">
-        {!showGreeting && onGoToGreeting && (
+        {onGoToGreeting && (
           <Button
             variant="ghost"
             size="icon"
