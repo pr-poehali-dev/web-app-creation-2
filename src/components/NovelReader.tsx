@@ -263,7 +263,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
 
   return (
     <div 
-      className={`min-h-screen flex ${showGreeting ? 'items-center' : 'items-end'} justify-center ${showGreeting ? '' : 'pb-1'} px-2 md:px-4 md:pr-32 md:pl-8 ${showGreeting ? '' : 'cursor-pointer'} relative`}
+      className={`min-h-screen flex ${showGreeting ? 'items-center' : 'items-end'} justify-center ${showGreeting ? '' : 'pb-1'} px-2 md:px-4 md:pr-32 md:pl-8 ${showGreeting ? '' : 'cursor-pointer'} relative bg-background`}
       onClick={showGreeting ? undefined : handleClick}
       onTouchStart={showGreeting ? undefined : onTouchStart}
       onTouchMove={showGreeting ? undefined : onTouchMove}
