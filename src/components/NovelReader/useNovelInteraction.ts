@@ -58,7 +58,23 @@ export function useNovelInteraction({
   };
 
   const onTouchEnd = () => {
-    if (!touchStart || !touchEnd) {
+    if (!touchStart) {
+      setTouchStart(null);
+      setTouchEnd(null);
+      return;
+    }
+
+    // Если touchEnd не установлен, это простое касание (тап), а не свайп
+    if (!touchEnd) {
+      // Простое касание - показать весь текст или перелистнуть
+      if (isTyping) {
+        setSkipTyping(true);
+        setIsTyping(false);
+      } else {
+        if (currentParagraph?.type !== 'choice') {
+          goToNextParagraph();
+        }
+      }
       setTouchStart(null);
       setTouchEnd(null);
       return;
