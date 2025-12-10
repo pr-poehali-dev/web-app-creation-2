@@ -1,0 +1,179 @@
+import { useCallback } from 'react';
+import { Episode, Paragraph } from '@/types/novel';
+import { UserProfile } from '@/types/settings';
+
+interface UseNovelNavigationProps {
+  currentEpisodeId: string;
+  currentParagraphIndex: number;
+  currentEpisode: Episode | undefined;
+  currentParagraph: Paragraph | undefined;
+  profile: UserProfile;
+  onProfileUpdate: (profile: UserProfile | ((prev: UserProfile) => UserProfile)) => void;
+  setIsTyping: (value: boolean) => void;
+  setSkipTyping: (value: boolean) => void;
+  setIsFading: (value: boolean) => void;
+}
+
+export function useNovelNavigation({
+  currentEpisodeId,
+  currentParagraphIndex,
+  currentEpisode,
+  currentParagraph,
+  profile,
+  onProfileUpdate,
+  setIsTyping,
+  setSkipTyping,
+  setIsFading
+}: UseNovelNavigationProps) {
+  // Проверка доступности параграфа
+  const isParagraphAccessible = (episodeId: string, paragraphIndex: number) => {
+    const paragraphId = `${episodeId}-${paragraphIndex}`;
+    if (paragraphIndex === 0) return true;
+    const prevParagraphId = `${episodeId}-${paragraphIndex - 1}`;
+    return profile.readParagraphs.includes(prevParagraphId);
+  };
+
+  const goToNextParagraph = useCallback(() => {
+    if (!currentEpisode) return;
+
+    // Отмечаем текущий параграф как прочитанный
+    const currentParagraphId = `${currentEpisodeId}-${currentParagraphIndex}`;
+    onProfileUpdate(prev => {
+      if (!prev.readParagraphs.includes(currentParagraphId)) {
+        return {
+          ...prev,
+          readParagraphs: [...prev.readParagraphs, currentParagraphId]
+        };
+      }
+      return prev;
+    });
+
+    let nextIndex = currentParagraphIndex + 1;
+    
+    // Пропускаем fade параграфы
+    while (nextIndex < currentEpisode.paragraphs.length && currentEpisode.paragraphs[nextIndex].type === 'fade') {
+      nextIndex++;
+    }
+
+    if (nextIndex < currentEpisode.paragraphs.length) {
+      // Если следующий параграф не fade, запускаем анимацию растворения
+      if (currentParagraph?.type === 'text') {
+        setIsFading(true);
+        setTimeout(() => {
+          onProfileUpdate(prev => ({
+            ...prev,
+            currentEpisodeId,
+            currentParagraphIndex: nextIndex
+          }));
+          setIsTyping(true);
+          setSkipTyping(false);
+          setTimeout(() => {
+            setIsFading(false);
+          }, 50);
+        }, 300);
+      } else {
+        onProfileUpdate(prev => ({
+          ...prev,
+          currentEpisodeId,
+          currentParagraphIndex: nextIndex
+        }));
+        setIsTyping(true);
+        setSkipTyping(false);
+      }
+    } else if (currentEpisode.nextEpisodeId) {
+      // Переход к следующему эпизоду
+      if (currentParagraph?.type === 'text') {
+        setIsFading(true);
+        setTimeout(() => {
+          onProfileUpdate(prev => ({
+            ...prev,
+            currentEpisodeId: currentEpisode.nextEpisodeId,
+            currentParagraphIndex: currentEpisode.nextParagraphIndex || 0
+          }));
+          setIsTyping(true);
+          setSkipTyping(false);
+          setTimeout(() => {
+            setIsFading(false);
+          }, 50);
+        }, 300);
+      } else {
+        onProfileUpdate(prev => ({
+          ...prev,
+          currentEpisodeId: currentEpisode.nextEpisodeId,
+          currentParagraphIndex: currentEpisode.nextParagraphIndex || 0
+        }));
+        setIsTyping(true);
+        setSkipTyping(false);
+      }
+    }
+  }, [currentEpisodeId, currentParagraphIndex, currentEpisode, currentParagraph, onProfileUpdate, setIsTyping, setSkipTyping, setIsFading]);
+
+  const goToPreviousParagraph = useCallback(() => {
+    if (currentParagraphIndex > 0) {
+      let prevIndex = currentParagraphIndex - 1;
+      
+      // Пропускаем fade параграфы при движении назад
+      while (prevIndex >= 0 && currentEpisode?.paragraphs[prevIndex].type === 'fade') {
+        prevIndex--;
+      }
+      
+      if (prevIndex >= 0) {
+        onProfileUpdate(prev => ({
+          ...prev,
+          currentEpisodeId,
+          currentParagraphIndex: prevIndex
+        }));
+        setIsTyping(true);
+        setSkipTyping(false);
+        setIsFading(false);
+      }
+    }
+  }, [currentParagraphIndex, currentEpisode, currentEpisodeId, onProfileUpdate, setIsTyping, setSkipTyping, setIsFading]);
+
+  const handleChoice = useCallback((choiceId: string, pathId: string | undefined, oneTime: boolean | undefined, nextEpisodeId?: string, nextParagraphIndex?: number) => {
+    // Отмечаем выбор как использованный если он одноразовый
+    if (oneTime) {
+      onProfileUpdate(prev => {
+        if (!prev.usedChoices.includes(choiceId)) {
+          return {
+            ...prev,
+            usedChoices: [...prev.usedChoices, choiceId]
+          };
+        }
+        return prev;
+      });
+    }
+
+    // Активируем путь если указан
+    if (pathId) {
+      onProfileUpdate(prev => {
+        if (!prev.activePaths.includes(pathId)) {
+          return {
+            ...prev,
+            activePaths: [...prev.activePaths, pathId]
+          };
+        }
+        return prev;
+      });
+    }
+
+    if (nextEpisodeId) {
+      onProfileUpdate(prev => ({
+        ...prev,
+        currentEpisodeId: nextEpisodeId,
+        currentParagraphIndex: nextParagraphIndex || 0
+      }));
+      setIsTyping(true);
+      setSkipTyping(false);
+    } else {
+      goToNextParagraph();
+    }
+  }, [onProfileUpdate, goToNextParagraph, setIsTyping, setSkipTyping]);
+
+  return {
+    isParagraphAccessible,
+    goToNextParagraph,
+    goToPreviousParagraph,
+    handleChoice
+  };
+}
