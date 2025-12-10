@@ -138,7 +138,7 @@ function NavigationMenu({
               )}
             </Button>
           )}
-          {episodeId && paragraphIndex !== undefined && onAddBookmark && onRemoveBookmark && (
+          {!isGuest && episodeId && paragraphIndex !== undefined && onAddBookmark && onRemoveBookmark && (
             <BookmarkButton
               episodeId={episodeId}
               paragraphIndex={paragraphIndex}
