@@ -138,16 +138,8 @@ function TypewriterText({ text, speed = 50, skipTyping = false, onComplete }: Ty
   const cleanText = getCleanText(text);
   const targetLength = cleanText.length;
 
-  console.log('[TypewriterText] Mount/Update:', {
-    textPreview: text.substring(0, 30) + '...',
-    skipTyping,
-    currentIndex,
-    targetLength
-  });
-
   useEffect(() => {
     if (skipTyping) {
-      console.log('[TypewriterText] Skip detected, showing full text');
       setDisplayedText(text);
       setCurrentIndex(targetLength);
       if (currentIndex < targetLength) {
@@ -158,17 +150,15 @@ function TypewriterText({ text, speed = 50, skipTyping = false, onComplete }: Ty
 
     if (currentIndex < targetLength) {
       const timeout = setTimeout(() => {
-        console.log('[TypewriterText] Typing:', currentIndex + 1, '/', targetLength);
         setDisplayedText(getDisplayText(text, currentIndex + 1));
         setCurrentIndex(currentIndex + 1);
       }, speed);
 
       return () => clearTimeout(timeout);
     } else if (currentIndex === targetLength && currentIndex > 0) {
-      console.log('[TypewriterText] Complete!');
       onComplete?.();
     }
-  }, [currentIndex, text, targetLength, speed, skipTyping]);
+  }, [currentIndex, text, targetLength, speed, skipTyping, onComplete]);
 
   useEffect(() => {
     setDisplayedText('');
