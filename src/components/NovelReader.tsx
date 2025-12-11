@@ -340,7 +340,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
             <div className="w-full max-w-4xl md:min-h-0 relative z-10">
               {/* Отображаемый параграф - скрываем на время смены фона */}
               {currentParagraph.type !== 'background' && !isBackgroundChanging && (
-                <div className={currentParagraph.mergedWith ? "space-y-2 md:space-y-3 max-h-[calc(100vh-10rem)] md:max-h-[calc(100vh-12rem)] overflow-y-auto pr-1 md:pr-2" : ""}>
+                <div className={currentParagraph.mergedWith ? "space-y-1.5 md:space-y-3 max-h-[calc(100vh-8rem)] md:max-h-[calc(100vh-12rem)] overflow-y-auto pr-1 md:pr-2 scrollbar-thin scrollbar-thumb-primary/30 scrollbar-track-transparent" : ""}>
                   <NovelReaderContent
                     currentParagraph={currentParagraph}
                     currentEpisode={currentEpisode}
