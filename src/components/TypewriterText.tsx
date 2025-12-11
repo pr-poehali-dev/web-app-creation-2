@@ -6,7 +6,6 @@ interface TypewriterTextProps {
   speed?: number;
   skipTyping?: boolean;
   onComplete?: () => void;
-  resetKey?: string; // Добавляем явный ключ для сброса
 }
 
 // Функция для получения текста без форматирования для подсчета длины
@@ -132,7 +131,7 @@ const getDisplayText = (text: string, targetLength: number): string => {
   return result;
 };
 
-function TypewriterText({ text, speed = 50, skipTyping = false, onComplete, resetKey }: TypewriterTextProps) {
+function TypewriterText({ text, speed = 50, skipTyping = false, onComplete }: TypewriterTextProps) {
   const [displayedText, setDisplayedText] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [hasCompleted, setHasCompleted] = useState(false);
@@ -161,13 +160,6 @@ function TypewriterText({ text, speed = 50, skipTyping = false, onComplete, rese
       setHasCompleted(true);
     }
   }, [currentIndex, text, targetLength, speed, skipTyping, hasCompleted]);
-
-  useEffect(() => {
-    console.log('[TypewriterText] ResetKey changed:', resetKey, 'Text:', text.substring(0, 50));
-    setDisplayedText('');
-    setCurrentIndex(0);
-    setHasCompleted(false);
-  }, [resetKey]);
 
   useEffect(() => {
     if (hasCompleted) {
