@@ -71,6 +71,21 @@ function NovelVisualization({ novel, onUpdate }: NovelVisualizationProps) {
           )
         }
       });
+    } else if (draggedItem.type === 'choice') {
+      const choice = novel.library.choices.find(c => c.id === draggedItem.id);
+      if (!choice) return;
+
+      onUpdate({
+        ...novel,
+        library: {
+          ...novel.library,
+          choices: novel.library.choices.map(c =>
+            c.id === draggedItem.id
+              ? { ...c, position: { x: (c.position?.x || 0) + movementX, y: (c.position?.y || 0) + movementY } }
+              : c
+          )
+        }
+      });
     }
   };
 
@@ -226,6 +241,7 @@ function NovelVisualization({ novel, onUpdate }: NovelVisualizationProps) {
       relatedEpisodes: string[];
       relatedPaths: string[];
       relatedItems: string[];
+      position?: { x: number; y: number };
     }> = [];
     
     novel.episodes.forEach(ep => {
@@ -250,6 +266,7 @@ function NovelVisualization({ novel, onUpdate }: NovelVisualizationProps) {
             }
           });
           
+          const existingChoice = novel.library.choices.find(c => c.id === para.id);
           stats.push({
             episodeId: ep.id,
             episodeTitle: ep.title,
@@ -260,7 +277,8 @@ function NovelVisualization({ novel, onUpdate }: NovelVisualizationProps) {
             hasItemConditions: para.options.some(opt => opt.requiredItem),
             relatedEpisodes,
             relatedPaths,
-            relatedItems
+            relatedItems,
+            position: existingChoice?.position
           });
         }
       });

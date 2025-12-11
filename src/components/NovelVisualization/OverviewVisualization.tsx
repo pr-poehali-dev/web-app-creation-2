@@ -54,6 +54,7 @@ interface OverviewVisualizationProps {
     relatedEpisodes: string[];
     relatedPaths: string[];
     relatedItems: string[];
+    position?: { x: number; y: number };
   }>;
 }
 
@@ -82,6 +83,9 @@ function OverviewVisualization({
     } else if (type === 'item') {
       const item = itemsStats.find(i => i.item.id === id);
       return item?.item.position || { x: defaultX, y: defaultY };
+    } else if (type === 'choice') {
+      const choice = choicesStats.find(c => c.choiceId === id);
+      return choice?.position || { x: defaultX, y: defaultY };
     }
     return { x: defaultX, y: defaultY };
   };
@@ -137,6 +141,7 @@ function OverviewVisualization({
             handleItemDragStart={handleItemDragStart}
             pathsStats={pathsStats}
             itemsStats={itemsStats}
+            choicesStats={choicesStats}
             getPosition={getPosition}
           />
         </div>

@@ -101,6 +101,7 @@ export interface LibraryChoice {
     nextEpisodeId?: string;
     nextParagraphIndex?: number;
   }[];
+  position?: { x: number; y: number };
 }
 
 export interface NewsItem {

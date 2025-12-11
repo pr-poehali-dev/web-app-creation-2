@@ -28,6 +28,19 @@ interface OverviewPathItemCardsProps {
     relatedEpisodes: string[];
     relatedChoices: Array<{ episodeId: string; choiceId: string }>;
   }>;
+  choicesStats: Array<{
+    episodeId: string;
+    episodeTitle: string;
+    choiceId: string;
+    question: string;
+    optionsCount: number;
+    hasPathConditions: boolean;
+    hasItemConditions: boolean;
+    relatedEpisodes: string[];
+    relatedPaths: string[];
+    relatedItems: string[];
+    position?: { x: number; y: number };
+  }>;
   getPosition: (type: string, id: string, defaultX: number, defaultY: number) => { x: number; y: number };
 }
 
@@ -37,6 +50,7 @@ function OverviewPathItemCards({
   handleItemDragStart,
   pathsStats,
   itemsStats,
+  choicesStats,
   getPosition
 }: OverviewPathItemCardsProps) {
   return (
@@ -137,6 +151,55 @@ function OverviewPathItemCards({
                     <Icon name="Minus" size={10} className="text-red-400" />
                     <span>{itemStat.loseActions}</span>
                   </div>
+                </div>
+              </div>
+            </Card>
+          </div>
+        );
+      })}
+
+      {choicesStats.map((choiceStat, index) => {
+        const pos = getPosition('choice', choiceStat.choiceId, 1800 + (index % 3) * 250, 100 + Math.floor(index / 3) * 220);
+        
+        return (
+          <div
+            key={choiceStat.choiceId}
+            className="absolute cursor-move"
+            style={{
+              left: `${pos.x * scale + offset.x}px`,
+              top: `${pos.y * scale + offset.y}px`,
+              transform: `scale(${scale})`,
+              transformOrigin: 'top left',
+              zIndex: 10
+            }}
+            onMouseDown={(e) => handleItemDragStart('choice', choiceStat.choiceId, e)}
+          >
+            <Card className="w-48 p-3 shadow-lg bg-purple-500/5 border-purple-500/30 hover:shadow-xl transition-all">
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center flex-shrink-0">
+                    <Icon name="GitMerge" size={16} className="text-purple-500" />
+                  </div>
+                  <h4 className="font-semibold text-xs truncate">{choiceStat.question}</h4>
+                </div>
+                <div className="flex items-center gap-2 text-xs">
+                  <Badge variant="secondary" className="text-[10px]">
+                    {choiceStat.optionsCount} вариантов
+                  </Badge>
+                </div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  {choiceStat.hasPathConditions && (
+                    <Badge variant="outline" className="text-[10px] bg-green-500/10 border-green-500/30">
+                      <Icon name="GitBranch" size={8} className="mr-1" />
+                      Пути
+                    </Badge>
+                  )}
+                  {choiceStat.hasItemConditions && (
+                    <Badge variant="outline" className="text-[10px] bg-blue-500/10 border-blue-500/30">
+                      <Icon name="Package" size={8} className="mr-1" />
+                      Предметы
+                    </Badge>
+                  )}
                 </div>
               </div>
             </Card>

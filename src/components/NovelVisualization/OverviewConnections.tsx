@@ -38,6 +38,7 @@ interface OverviewConnectionsProps {
     relatedEpisodes: string[];
     relatedPaths: string[];
     relatedItems: string[];
+    position?: { x: number; y: number };
   }>;
   getPosition: (type: string, id: string, defaultX: number, defaultY: number) => { x: number; y: number };
 }
