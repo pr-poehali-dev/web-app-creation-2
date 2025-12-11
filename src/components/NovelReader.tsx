@@ -371,9 +371,9 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
             className="absolute inset-0 bg-cover bg-center"
             style={{ 
               backgroundImage: `url(${backgroundImage})`,
-              opacity: !previousBackgroundImage || newImageReady ? 1 : 0,
-              filter: !previousBackgroundImage || newImageReady ? 'blur(0px)' : 'blur(16px)',
-              transition: 'opacity 2.4s ease-in-out, filter 2.4s ease-in-out',
+              opacity: previousBackgroundImage && !newImageReady ? 0 : 1,
+              filter: previousBackgroundImage && !newImageReady ? 'blur(16px)' : 'blur(0px)',
+              transition: previousBackgroundImage ? 'opacity 2.4s ease-in-out, filter 2.4s ease-in-out' : 'none',
               zIndex: 0
             }}
           />
