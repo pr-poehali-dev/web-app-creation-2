@@ -55,11 +55,11 @@ function NovelReaderContent({
           }`} style={novelFontStyle}>
             {console.log('[NovelReaderContent] Rendering TypewriterText with key:', paragraphKey, 'skipTyping:', skipTyping)}
             <TypewriterText
-              key={paragraphKey}
               text={currentParagraph.content}
               speed={settings.textSpeed}
               skipTyping={skipTyping}
               onComplete={handleTypingComplete}
+              resetKey={paragraphKey}
             />
           </div>
         </div>
