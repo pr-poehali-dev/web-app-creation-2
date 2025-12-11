@@ -272,28 +272,29 @@ function ProfileTabs({ profile, novel, achievements, username, onDeleteBookmark,
                     const currentImage = libraryCharacter?.defaultImage || character.image;
                     
                     return (
-                      <Card 
-                        key={character.id} 
-                        className="cursor-pointer hover:bg-accent/50 transition-colors"
+                      <div
+                        key={character.id}
+                        className="cursor-pointer group relative"
                         onClick={() => setSelectedCharacter(character.id)}
                       >
-                        <CardContent className="p-3">
-                          <div className="flex flex-col items-center text-center gap-2">
-                            <div className="w-20 h-20 md:w-24 md:h-24 flex items-center justify-center bg-secondary/30 rounded-full overflow-hidden border-2 border-primary/20">
-                              {currentImage ? (
-                                currentImage.startsWith('data:') || currentImage.startsWith('http') ? (
-                                  <img src={currentImage} alt={character.name} className="w-full h-full object-cover" />
-                                ) : (
-                                  <div className="text-4xl md:text-5xl">{currentImage}</div>
-                                )
-                              ) : (
-                                <Icon name="User" size={32} className="text-secondary" />
-                              )}
+                        <div className="relative aspect-[3/4] overflow-hidden rounded-lg border-2 border-border bg-card/50 backdrop-blur-sm transition-all group-hover:border-primary/50 group-hover:shadow-lg group-hover:shadow-primary/20">
+                          {currentImage ? (
+                            currentImage.startsWith('data:') || currentImage.startsWith('http') ? (
+                              <img src={currentImage} alt={character.name} className="w-full h-full object-cover" />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-6xl md:text-8xl">{currentImage}</div>
+                            )
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center bg-muted/30">
+                              <Icon name="User" size={48} className="text-muted-foreground" />
                             </div>
-                            <h4 className="font-semibold text-foreground text-sm">{character.name}</h4>
+                          )}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                          <div className="absolute bottom-0 left-0 right-0 p-3">
+                            <h4 className="font-bold text-white text-sm md:text-base drop-shadow-lg">{character.name}</h4>
                           </div>
-                        </CardContent>
-                      </Card>
+                        </div>
+                      </div>
                     );
                   })}
                 </div>
@@ -305,7 +306,7 @@ function ProfileTabs({ profile, novel, achievements, username, onDeleteBookmark,
                     setCommentText('');
                   }
                 }}>
-                  <DialogContent className="max-w-md">
+                  <DialogContent className="max-w-lg bg-background border-2 border-primary/30">
                     {selectedCharacter && (() => {
                       const character = profile.metCharacters.find(c => c.id === selectedCharacter);
                       const episode = novel.episodes.find(ep => ep.id === character?.episodeId);
@@ -334,95 +335,109 @@ function ProfileTabs({ profile, novel, achievements, username, onDeleteBookmark,
                       };
                       
                       return (
-                        <>
-                          <DialogHeader>
-                            <DialogTitle className="text-2xl">{character.name}</DialogTitle>
-                          </DialogHeader>
-                          <div className="space-y-4">
-                            <div className="flex justify-center">
-                              <div className="w-32 h-32 flex items-center justify-center bg-secondary/30 rounded-full overflow-hidden border-4 border-primary/30">
-                                {currentImage ? (
-                                  currentImage.startsWith('data:') || currentImage.startsWith('http') ? (
-                                    <ZoomableImage src={currentImage} alt={character.name} className="w-full h-full object-cover" />
-                                  ) : (
-                                    <div className="text-6xl">{currentImage}</div>
-                                  )
+                        <div className="space-y-6">
+                          <div className="flex gap-6">
+                            <div className="w-40 h-52 flex-shrink-0 rounded-lg overflow-hidden border-2 border-primary/30 bg-muted/20">
+                              {currentImage ? (
+                                currentImage.startsWith('data:') || currentImage.startsWith('http') ? (
+                                  <ZoomableImage src={currentImage} alt={character.name} className="w-full h-full object-cover" />
                                 ) : (
-                                  <Icon name="User" size={64} className="text-secondary" />
-                                )}
-                              </div>
-                            </div>
-                            
-                            <div className="space-y-3 text-sm">
-                              {currentDescription && (
-                                <div className="p-3 bg-secondary/20 rounded-lg">
-                                  <p className="text-muted-foreground">{currentDescription}</p>
+                                  <div className="w-full h-full flex items-center justify-center text-8xl">{currentImage}</div>
+                                )
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center">
+                                  <Icon name="User" size={64} className="text-muted-foreground" />
                                 </div>
                               )}
-                              
-                              <div className="flex items-center gap-2 text-muted-foreground">
-                                <Icon name="Calendar" size={16} />
-                                <span>Впервые встречен: {new Date(character.firstMetAt).toLocaleDateString('ru-RU')}</span>
-                              </div>
-                              
-                              <div className="flex items-center gap-2 text-muted-foreground">
-                                <Icon name="MapPin" size={16} />
-                                <span>{episode?.title || 'Неизвестный эпизод'}</span>
-                              </div>
                             </div>
-
-                            <div className="space-y-2">
-                              <div className="flex items-center justify-between">
-                                <Label className="text-sm font-semibold">Ваши заметки:</Label>
-                                {onProfileUpdate && !editingComment && (
-                                  <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    onClick={() => {
-                                      setEditingComment(true);
-                                      setCommentText(character.comment || '');
-                                    }}
-                                  >
-                                    <Icon name={character.comment ? "Edit" : "Plus"} size={14} />
-                                  </Button>
-                                )}
+                            
+                            <div className="flex-1 space-y-4">
+                              <div>
+                                <h2 className="text-2xl font-bold text-foreground mb-1">{character.name}</h2>
+                                <p className="text-xs text-muted-foreground uppercase tracking-wide">Возраст: 20</p>
                               </div>
                               
-                              {editingComment ? (
-                                <div className="space-y-2">
-                                  <Textarea
-                                    value={commentText}
-                                    onChange={(e) => setCommentText(e.target.value)}
-                                    placeholder="Добавьте заметку о персонаже..."
-                                    rows={4}
-                                    className="text-sm"
-                                  />
-                                  <div className="flex gap-2">
-                                    <Button size="sm" onClick={handleSaveComment}>
-                                      Сохранить
-                                    </Button>
-                                    <Button 
-                                      size="sm" 
-                                      variant="ghost" 
-                                      onClick={() => {
-                                        setEditingComment(false);
-                                        setCommentText('');
-                                      }}
-                                    >
-                                      Отмена
-                                    </Button>
-                                  </div>
+                              {currentDescription && (
+                                <div className="p-3 bg-card/50 border border-border rounded-lg">
+                                  <p className="text-sm text-muted-foreground leading-relaxed">{currentDescription}</p>
                                 </div>
-                              ) : character.comment ? (
-                                <div className="p-3 bg-secondary/20 rounded-lg text-sm text-foreground">
-                                  {character.comment}
-                                </div>
-                              ) : (
-                                <p className="text-sm text-muted-foreground italic">Нет заметок</p>
                               )}
                             </div>
                           </div>
-                        </>
+                          
+                          <div className="border-t border-border pt-4 space-y-3">
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                              <Icon name="Calendar" size={16} />
+                              <span>Впервые встречен: {new Date(character.firstMetAt).toLocaleDateString('ru-RU')}</span>
+                            </div>
+                            
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                              <Icon name="MapPin" size={16} />
+                              <span>{episode?.title || 'Неизвестный эпизод'}</span>
+                            </div>
+                          </div>
+
+                          <div className="border-t border-border pt-4">
+                            <div className="flex items-center justify-between mb-3">
+                              <h3 className="text-lg font-bold text-foreground uppercase tracking-wide">Ваши заметки</h3>
+                              {onProfileUpdate && !editingComment && (
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  className="hover:bg-primary/10"
+                                  onClick={() => {
+                                    setEditingComment(true);
+                                    setCommentText(character.comment || '');
+                                  }}
+                                >
+                                  <Icon name={character.comment ? "Edit" : "Plus"} size={16} />
+                                </Button>
+                              )}
+                            </div>
+                            
+                            {editingComment ? (
+                              <div className="space-y-3">
+                                <Textarea
+                                  value={commentText}
+                                  onChange={(e) => setCommentText(e.target.value)}
+                                  placeholder="Здесь вы можете написать свои мысли о персонаже..."
+                                  rows={4}
+                                  className="text-sm bg-card/30 border-border resize-none"
+                                />
+                                <Button 
+                                  size="sm" 
+                                  onClick={handleSaveComment}
+                                  className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
+                                >
+                                  <Icon name="Save" size={16} className="mr-2" />
+                                  Сохранить
+                                </Button>
+                                <p className="text-xs text-muted-foreground text-center">
+                                  Заметки сохраняются в вашем профиле и доступны с любого устройства.
+                                </p>
+                                <Button 
+                                  size="sm" 
+                                  variant="ghost" 
+                                  className="w-full" 
+                                  onClick={() => {
+                                    setEditingComment(false);
+                                    setCommentText('');
+                                  }}
+                                >
+                                  Отмена
+                                </Button>
+                              </div>
+                            ) : character.comment ? (
+                              <div className="p-4 bg-card/30 border border-border rounded-lg text-sm text-foreground leading-relaxed">
+                                {character.comment}
+                              </div>
+                            ) : (
+                              <p className="text-sm text-muted-foreground italic text-center p-4 bg-muted/10 rounded-lg">
+                                Здесь вы можете написать свои мысли о персонаже...
+                              </p>
+                            )}
+                          </div>
+                        </div>
                       );
                     })()}
                   </DialogContent>
