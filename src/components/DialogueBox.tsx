@@ -41,21 +41,21 @@ function DialogueBox({
 
   return (
     <>
-      <div className="relative flex flex-col md:flex-row gap-4 md:gap-6">
+      <div className="relative flex flex-col md:flex-row items-center gap-4 md:gap-6">
         {characterImage && (
-          <div className="flex flex-col items-center gap-3 animate-scale-in md:relative md:-mb-8 md:z-10">
+          <div className="flex flex-col items-center gap-3 animate-scale-in">
             <div className="flex items-center justify-center">
               {characterImage.startsWith('data:') || characterImage.startsWith('http') ? (
                 <ZoomableImage
                   src={characterImage}
                   alt={characterName}
                   className={isTopMerged 
-                    ? "w-20 h-20 md:w-20 md:h-20 lg:w-24 lg:h-24 object-contain rounded-xl md:rounded-2xl"
-                    : "w-24 h-24 md:w-24 md:h-24 lg:w-28 lg:h-28 object-contain rounded-2xl"
+                    ? "w-20 h-20 md:w-28 md:h-28 lg:w-40 lg:h-40 object-contain rounded-xl md:rounded-2xl"
+                    : "w-24 h-24 md:w-32 md:h-32 lg:w-48 lg:h-48 object-contain rounded-2xl md:rounded-3xl"
                   }
                 />
               ) : (
-                <div className={isTopMerged ? "text-4xl md:text-4xl lg:text-5xl" : "text-5xl md:text-5xl lg:text-6xl"}>{characterImage}</div>
+                <div className={isTopMerged ? "text-4xl md:text-5xl lg:text-7xl" : "text-5xl md:text-6xl lg:text-9xl"}>{characterImage}</div>
               )}
             </div>
             
@@ -64,7 +64,7 @@ function DialogueBox({
                 e.stopPropagation();
                 setShowCommentDialog(true);
               }}
-              className="text-xs md:text-xs font-bold text-primary-foreground bg-primary/90 backdrop-blur-sm px-2 md:px-3 py-1 md:py-1.5 rounded-full border-0 hover:bg-primary transition-all shadow-lg cursor-pointer"
+              className="text-xs md:text-sm font-bold text-primary-foreground bg-primary/90 backdrop-blur-sm px-3 md:px-4 py-1.5 md:py-2 rounded-full border-0 hover:bg-primary transition-all shadow-lg cursor-pointer"
             >
               {characterName}
             </button>
@@ -72,7 +72,7 @@ function DialogueBox({
         )}
         
         <Card className="flex-1 w-full bg-card/95 backdrop-blur-sm border-0 shadow-xl animate-scale-in rounded-xl md:rounded-2xl">
-          <CardContent className={isTopMerged ? "p-3 md:p-4 lg:p-5" : "p-3 md:p-4 lg:p-5"}>
+          <CardContent className={isTopMerged ? "p-3 md:p-4 lg:p-6" : "p-3 md:p-4 lg:p-8"}>
             {!characterImage && (
               <h3 className={isTopMerged 
                 ? "text-sm md:text-base lg:text-lg font-bold text-primary mb-1.5 md:mb-2"
