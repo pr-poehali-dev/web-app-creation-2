@@ -18,6 +18,23 @@ interface OverviewVisualizationProps {
   handleEpisodeDragStart: (episodeId: string, e: React.MouseEvent) => void;
   allConnections: { from: Episode; to: Episode; type: 'choice' | 'next' }[];
   getConnectionsForEpisode: (episodeId: string) => { from: Episode; to: Episode }[];
+  pathsStats: Array<{
+    path: { id: string; name: string; description?: string };
+    activatedBy: number;
+    requiredBy: number;
+  }>;
+  itemsStats: Array<{
+    item: {
+      id: string;
+      name: string;
+      description: string;
+      imageUrl?: string;
+      itemType: 'collectible' | 'story';
+    };
+    usedInEpisodes: number;
+    gainActions: number;
+    loseActions: number;
+  }>;
   choicesStats: Array<{
     episodeTitle: string;
     question: string;
@@ -40,6 +57,8 @@ function OverviewVisualization({
   handleEpisodeDragStart,
   allConnections,
   getConnectionsForEpisode,
+  pathsStats,
+  itemsStats,
   choicesStats
 }: OverviewVisualizationProps) {
   return (
@@ -105,7 +124,8 @@ function OverviewVisualization({
             </defs>
           </svg>
 
-          {novel.episodes.map((episode) => {
+          {/* Эпизоды */}
+          {novel.episodes.map((episode, epIndex) => {
             const connections = getConnectionsForEpisode(episode.id);
             const episodePaths = novel.paths?.filter(p => episode.requiredPath === p.id) || [];
             const episodeItems: string[] = [];
@@ -191,6 +211,152 @@ function OverviewVisualization({
               </div>
             );
           })}
+
+          {/* Пути */}
+          {pathsStats.map((pathStat, index) => {
+            const posX = 600 + (index % 3) * 250;
+            const posY = 100 + Math.floor(index / 3) * 200;
+            
+            return (
+              <div
+                key={pathStat.path.id}
+                className="absolute"
+                style={{
+                  left: `${posX * scale + offset.x}px`,
+                  top: `${posY * scale + offset.y}px`,
+                  transform: `scale(${scale})`,
+                  transformOrigin: 'top left'
+                }}
+              >
+                <Card className="w-48 p-3 shadow-lg bg-green-500/5 border-green-500/30 hover:shadow-xl transition-all">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0">
+                        <Icon name="GitBranch" size={16} className="text-green-500" />
+                      </div>
+                      <h4 className="font-semibold text-sm truncate">{pathStat.path.name}</h4>
+                    </div>
+                    {pathStat.path.description && (
+                      <p className="text-xs text-muted-foreground line-clamp-2">{pathStat.path.description}</p>
+                    )}
+                    <div className="flex items-center gap-3 text-xs">
+                      <div className="flex items-center gap-1">
+                        <Icon name="Unlock" size={10} className="text-green-400" />
+                        <span>{pathStat.activatedBy}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Icon name="Lock" size={10} className="text-orange-400" />
+                        <span>{pathStat.requiredBy}</span>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+              </div>
+            );
+          })}
+
+          {/* Предметы */}
+          {itemsStats.map((itemStat, index) => {
+            const posX = 1200 + (index % 3) * 250;
+            const posY = 100 + Math.floor(index / 3) * 220;
+            
+            return (
+              <div
+                key={itemStat.item.id}
+                className="absolute"
+                style={{
+                  left: `${posX * scale + offset.x}px`,
+                  top: `${posY * scale + offset.y}px`,
+                  transform: `scale(${scale})`,
+                  transformOrigin: 'top left'
+                }}
+              >
+                <Card className="w-48 p-3 shadow-lg bg-blue-500/5 border-blue-500/30 hover:shadow-xl transition-all">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center flex-shrink-0">
+                        {itemStat.item.imageUrl ? (
+                          itemStat.item.imageUrl.startsWith('http') || itemStat.item.imageUrl.startsWith('data:') ? (
+                            <img src={itemStat.item.imageUrl} alt={itemStat.item.name} className="w-full h-full object-cover rounded-lg" />
+                          ) : (
+                            <div className="text-lg">{itemStat.item.imageUrl}</div>
+                          )
+                        ) : (
+                          <Icon name="Package" size={16} className="text-blue-500" />
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-semibold text-xs truncate">{itemStat.item.name}</h4>
+                        <Badge variant="outline" className="text-[10px] px-1 py-0">
+                          {itemStat.item.itemType === 'story' ? 'Сюжет' : 'Колл.'}
+                        </Badge>
+                      </div>
+                    </div>
+                    {itemStat.item.description && (
+                      <p className="text-xs text-muted-foreground line-clamp-2">{itemStat.item.description}</p>
+                    )}
+                    <div className="flex items-center gap-2 text-xs">
+                      <div className="flex items-center gap-1">
+                        <Icon name="MapPin" size={10} className="text-blue-400" />
+                        <span>{itemStat.usedInEpisodes}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Icon name="Plus" size={10} className="text-green-400" />
+                        <span>{itemStat.gainActions}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Icon name="Minus" size={10} className="text-red-400" />
+                        <span>{itemStat.loseActions}</span>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+              </div>
+            );
+          })}
+
+          {/* Выборы */}
+          {choicesStats.map((choice, index) => {
+            const posX = 1800 + (index % 2) * 280;
+            const posY = 100 + Math.floor(index / 2) * 180;
+            
+            return (
+              <div
+                key={index}
+                className="absolute"
+                style={{
+                  left: `${posX * scale + offset.x}px`,
+                  top: `${posY * scale + offset.y}px`,
+                  transform: `scale(${scale})`,
+                  transformOrigin: 'top left'
+                }}
+              >
+                <Card className="w-64 p-3 shadow-lg bg-purple-500/5 border-purple-500/30 hover:shadow-xl transition-all">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center flex-shrink-0">
+                        <Icon name="GitMerge" size={16} className="text-purple-500" />
+                      </div>
+                      <Badge variant="outline" className="text-xs">{choice.episodeTitle}</Badge>
+                    </div>
+                    <p className="text-xs font-medium line-clamp-2">{choice.question}</p>
+                    <div className="flex items-center gap-2 flex-wrap text-xs">
+                      <div className="flex items-center gap-1">
+                        <Icon name="List" size={10} className="text-blue-400" />
+                        <span>{choice.optionsCount}</span>
+                      </div>
+                      {choice.hasPathConditions && (
+                        <Icon name="GitBranch" size={10} className="text-green-400" title="Условия путей" />
+                      )}
+                      {choice.hasItemConditions && (
+                        <Icon name="Package" size={10} className="text-orange-400" title="Условия предметов" />
+                      )}
+                    </div>
+                  </div>
+                </Card>
+              </div>
+            );
+          })}
         </div>
       </Card>
 
@@ -253,7 +419,7 @@ function OverviewVisualization({
       </div>
 
       <div className="text-xs text-muted-foreground">
-        💡 Перетаскивайте эпизоды для изменения расположения. Цветные иконки показывают: 🟢 пути, 🔵 предметы, 🟣 выборы.
+        💡 Перетаскивайте эпизоды для изменения расположения. На карте: 📄 эпизоды, 🟢 пути, 🔵 предметы, 🟣 выборы.
       </div>
     </div>
   );

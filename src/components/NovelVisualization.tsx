@@ -227,6 +227,8 @@ function NovelVisualization({ novel, onUpdate }: NovelVisualizationProps) {
             handleEpisodeDragStart={handleEpisodeDragStart}
             allConnections={allConnections}
             getConnectionsForEpisode={getConnectionsForEpisode}
+            pathsStats={pathsStats}
+            itemsStats={itemsStats}
             choicesStats={choicesStats}
           />
         </TabsContent>
