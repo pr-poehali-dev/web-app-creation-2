@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { ImageParagraph, BackgroundParagraph } from '@/types/novel';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -26,6 +27,18 @@ function ImageEditor({
   handleImageUpload,
   label = 'Изменить изображение'
 }: ImageEditorProps) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleUrlSubmit = () => {
+    handleImageUrl();
+    setIsOpen(false);
+  };
+
+  const handleFileUpload = async () => {
+    await handleImageUpload();
+    setIsOpen(false);
+  };
+
   return (
     <div className="space-y-2">
       <div className="flex gap-2">
@@ -37,7 +50,7 @@ function ImageEditor({
           }
           className="text-foreground"
         />
-        <Dialog>
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
           <DialogTrigger asChild>
             <Button size="sm" variant="outline">
               <Icon name="Image" size={14} />
@@ -56,7 +69,7 @@ function ImageEditor({
                   onChange={(e) => setImageUrl(e.target.value)}
                   className="text-foreground mt-1"
                 />
-                <Button onClick={handleImageUrl} className="w-full mt-2" disabled={!imageUrl}>
+                <Button onClick={handleUrlSubmit} className="w-full mt-2" disabled={!imageUrl}>
                   Добавить по URL
                 </Button>
               </div>
@@ -68,7 +81,7 @@ function ImageEditor({
                   <span className="bg-background px-2 text-muted-foreground">или</span>
                 </div>
               </div>
-              <Button onClick={handleImageUpload} variant="outline" className="w-full">
+              <Button onClick={handleFileUpload} variant="outline" className="w-full">
                 <Icon name="Upload" size={14} className="mr-2" />
                 Загрузить файл
               </Button>

@@ -384,8 +384,8 @@ function ParagraphEditor({
                 imageUrl={imageUrl}
                 setImageUrl={setImageUrl}
                 onUpdate={onUpdate}
-                handleImageUrl={handleImageUrl}
-                handleImageUpload={handleImageUpload}
+                handleImageUrl={() => handleImageUrl('image')}
+                handleImageUpload={() => handleImageUpload('image')}
               />
             )}
 
