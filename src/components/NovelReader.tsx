@@ -34,6 +34,8 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
 
   // Ключ для принудительного пересоздания компонентов при смене параграфа
   const paragraphKey = `${currentEpisodeId}-${currentParagraphIndex}`;
+  // Отложенный ключ - обновляется только когда фон сменился
+  const [delayedParagraphKey, setDelayedParagraphKey] = useState(paragraphKey);
   
   // Временные состояния для typing
   const [isTyping, setIsTyping] = useState(true);
@@ -50,6 +52,12 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
   // Ref для отслеживания предыдущего индекса - чтобы понять, клик или прыжок
   const previousParagraphIndexRef = useRef<number>(currentParagraphIndex);
   
+  // Ref для хранения ID таймаутов смены фона
+  const backgroundTimeoutRef = useRef<{ imageReady: NodeJS.Timeout | null; keyUpdate: NodeJS.Timeout | null }>({
+    imageReady: null,
+    keyUpdate: null
+  });
+  
   // Определяем какой фон должен быть для текущего параграфа
   useEffect(() => {
     if (!currentEpisode) return;
@@ -65,21 +73,53 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
     }
     
     if (bgUrl !== backgroundImage) {
+      // Отменяем предыдущие таймауты
+      if (backgroundTimeoutRef.current.imageReady) {
+        clearTimeout(backgroundTimeoutRef.current.imageReady);
+      }
+      if (backgroundTimeoutRef.current.keyUpdate) {
+        clearTimeout(backgroundTimeoutRef.current.keyUpdate);
+      }
+      
       setPreviousBackgroundImage(backgroundImage);
       setBackgroundImage(bgUrl);
       setIsBackgroundChanging(true);
       setNewImageReady(false);
       
-      setTimeout(() => {
+      // Захватываем текущий paragraphKey для использования в setTimeout
+      const keyToSet = paragraphKey;
+      
+      backgroundTimeoutRef.current.imageReady = setTimeout(() => {
         setNewImageReady(true);
       }, 400);
       
-      setTimeout(() => {
+      backgroundTimeoutRef.current.keyUpdate = setTimeout(() => {
         setIsBackgroundChanging(false);
         setPreviousBackgroundImage(null);
+        // Обновляем отложенный ключ только после завершения смены фона
+        setDelayedParagraphKey(keyToSet);
       }, 2800);
+    } else {
+      // Если фон не меняется, отменяем предыдущие таймауты и обновляем ключ сразу
+      if (backgroundTimeoutRef.current.imageReady) {
+        clearTimeout(backgroundTimeoutRef.current.imageReady);
+      }
+      if (backgroundTimeoutRef.current.keyUpdate) {
+        clearTimeout(backgroundTimeoutRef.current.keyUpdate);
+      }
+      setDelayedParagraphKey(paragraphKey);
     }
-  }, [currentEpisodeId, currentParagraphIndex, currentEpisode]);
+    
+    // Cleanup при размонтировании
+    return () => {
+      if (backgroundTimeoutRef.current.imageReady) {
+        clearTimeout(backgroundTimeoutRef.current.imageReady);
+      }
+      if (backgroundTimeoutRef.current.keyUpdate) {
+        clearTimeout(backgroundTimeoutRef.current.keyUpdate);
+      }
+    };
+  }, [currentEpisodeId, currentParagraphIndex, currentEpisode, backgroundImage, paragraphKey]);
   
   // Ref для отслеживания актуального значения isTyping в callbacks
   const isTypingRef = useRef(isTyping);
@@ -343,20 +383,25 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
           {/* Контент внутри фона */}
           <div className="relative w-full h-full flex items-end justify-center pb-20 px-6 md:pb-8 md:px-4 md:pr-8">
             <div className="w-full max-w-4xl md:min-h-0 relative z-10">
-              {/* Отображаемый параграф - скрываем на время смены фона */}
-              {currentParagraph.type !== 'background' && !isBackgroundChanging && (
-                <NovelReaderContent
-                  currentParagraph={currentParagraph}
-                  currentEpisode={currentEpisode}
-                  novel={novel}
-                  settings={settings}
-                  profile={profile}
-                  skipTyping={skipTyping}
-                  handleTypingComplete={handleTypingComplete}
-                  handleChoice={handleChoice}
-                  onProfileUpdate={onProfileUpdate}
-                  paragraphKey={paragraphKey}
-                />
+              {/* Отображаемый параграф - скрываем через opacity на время смены фона */}
+              {currentParagraph.type !== 'background' && (
+                <div 
+                  className="transition-opacity duration-500"
+                  style={{ opacity: isBackgroundChanging ? 0 : 1 }}
+                >
+                  <NovelReaderContent
+                    currentParagraph={currentParagraph}
+                    currentEpisode={currentEpisode}
+                    novel={novel}
+                    settings={settings}
+                    profile={profile}
+                    skipTyping={skipTyping}
+                    handleTypingComplete={handleTypingComplete}
+                    handleChoice={handleChoice}
+                    onProfileUpdate={onProfileUpdate}
+                    paragraphKey={delayedParagraphKey}
+                  />
+                </div>
               )}
 
               {/* Подсказка для десктопа */}

@@ -6,6 +6,7 @@ interface TypewriterTextProps {
   speed?: number;
   skipTyping?: boolean;
   onComplete?: () => void;
+  resetKey?: string; // Добавляем явный ключ для сброса
 }
 
 // Функция для получения текста без форматирования для подсчета длины
@@ -131,15 +132,26 @@ const getDisplayText = (text: string, targetLength: number): string => {
   return result;
 };
 
-function TypewriterText({ text, speed = 50, skipTyping = false, onComplete }: TypewriterTextProps) {
+function TypewriterText({ text, speed = 50, skipTyping = false, onComplete, resetKey }: TypewriterTextProps) {
   const [displayedText, setDisplayedText] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [hasCompleted, setHasCompleted] = useState(false);
+  const [lastResetKey, setLastResetKey] = useState(resetKey);
   
   const cleanText = getCleanText(text);
   const targetLength = cleanText.length;
 
   useEffect(() => {
+    // Проверяем, изменился ли resetKey - если да, сбрасываем состояние
+    if (resetKey !== lastResetKey) {
+      console.log('[TypewriterText] ResetKey changed from', lastResetKey, 'to', resetKey);
+      setLastResetKey(resetKey);
+      setDisplayedText('');
+      setCurrentIndex(0);
+      setHasCompleted(false);
+      return;
+    }
+
     if (skipTyping) {
       console.log('[TypewriterText] Skip typing activated');
       setDisplayedText(text);
@@ -159,7 +171,9 @@ function TypewriterText({ text, speed = 50, skipTyping = false, onComplete }: Ty
       console.log('[TypewriterText] Typing completed naturally');
       setHasCompleted(true);
     }
-  }, [currentIndex, text, targetLength, speed, skipTyping, hasCompleted]);
+  }, [currentIndex, text, targetLength, speed, skipTyping, hasCompleted, resetKey, lastResetKey]);
+
+
 
   useEffect(() => {
     if (hasCompleted) {
