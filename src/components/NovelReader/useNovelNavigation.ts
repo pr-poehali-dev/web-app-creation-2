@@ -12,10 +12,8 @@ interface UseNovelNavigationProps {
   onProfileUpdate: (profile: UserProfile | ((prev: UserProfile) => UserProfile)) => void;
   setIsTyping: (value: boolean) => void;
   setSkipTyping: (value: boolean) => void;
-  setIsFading: (value: boolean) => void;
   isGuest?: boolean;
   onGuestLimitReached?: () => void;
-  willBackgroundChange: (nextIndex: number) => boolean;
 }
 
 export function useNovelNavigation({
@@ -28,10 +26,8 @@ export function useNovelNavigation({
   onProfileUpdate,
   setIsTyping,
   setSkipTyping,
-  setIsFading,
   isGuest = false,
-  onGuestLimitReached,
-  willBackgroundChange
+  onGuestLimitReached
 }: UseNovelNavigationProps) {
   // Проверка, доступен ли эпизод для гостей
   const isEpisodeAccessibleForGuest = (episodeId: string) => {
@@ -73,34 +69,12 @@ export function useNovelNavigation({
     const nextIndex = currentParagraphIndex + 1;
 
     if (nextIndex < currentEpisode.paragraphs.length) {
-      // Запускаем анимацию растворения ТОЛЬКО если меняется фон
-      const bgWillChange = willBackgroundChange(nextIndex);
-      
-      if (currentParagraph?.type === 'text' && bgWillChange) {
-        // Фон меняется - делаем fade
-        const fadeDelay = currentParagraph.slowFade ? 1500 : 800;
-        setIsFading(true);
-        setTimeout(() => {
-          onProfileUpdate(prev => ({
-            ...prev,
-            currentEpisodeId,
-            currentParagraphIndex: nextIndex
-          }));
-          setIsTyping(true);
-          setSkipTyping(false);
-          setTimeout(() => {
-            setIsFading(false);
-          }, 50);
-        }, fadeDelay);
-      } else {
-        // Фон не меняется - просто меняем текст без fade
-        onProfileUpdate(prev => ({
-          ...prev,
-          currentEpisodeId,
-          currentParagraphIndex: nextIndex
-        }));
-        // isTyping устанавливается в NovelReader при обновлении displayParagraph
-      }
+      // Переходим к следующему параграфу
+      onProfileUpdate(prev => ({
+        ...prev,
+        currentEpisodeId,
+        currentParagraphIndex: nextIndex
+      }));
     } else {
       // Переход к следующему эпизоду
       const nextEpisodeId = currentEpisode.nextEpisodeId;
@@ -127,31 +101,12 @@ export function useNovelNavigation({
           return;
         }
 
-        // При смене эпизода фон всегда меняется, делаем fade
-        if (currentParagraph?.type === 'text') {
-          const fadeDelay = currentParagraph.slowFade ? 1500 : 300;
-          setIsFading(true);
-          setTimeout(() => {
-            onProfileUpdate(prev => ({
-              ...prev,
-              currentEpisodeId: targetEpisodeId,
-              currentParagraphIndex: targetParagraphIdx
-            }));
-            setIsTyping(true);
-            setSkipTyping(false);
-            setTimeout(() => {
-              setIsFading(false);
-            }, 50);
-          }, fadeDelay);
-        } else {
-          onProfileUpdate(prev => ({
-            ...prev,
-            currentEpisodeId: targetEpisodeId,
-            currentParagraphIndex: targetParagraphIdx
-          }));
-          setIsTyping(true);
-          setSkipTyping(false);
-        }
+        // Переходим к следующему эпизоду
+        onProfileUpdate(prev => ({
+          ...prev,
+          currentEpisodeId: targetEpisodeId,
+          currentParagraphIndex: targetParagraphIdx
+        }));
       }
     }
   }, [currentEpisodeId, currentParagraphIndex, currentEpisode, currentParagraph, onProfileUpdate, setIsTyping, setSkipTyping, setIsFading]);
@@ -166,9 +121,6 @@ export function useNovelNavigation({
           currentEpisodeId,
           currentParagraphIndex: prevIndex
         }));
-        setIsTyping(true);
-        setSkipTyping(false);
-        setIsFading(false);
       }
     }
   }, [currentParagraphIndex, currentEpisodeId, onProfileUpdate, setIsTyping, setSkipTyping, setIsFading]);
@@ -216,8 +168,6 @@ export function useNovelNavigation({
         currentEpisodeId: nextEpisodeId,
         currentParagraphIndex: nextParagraphIndex || 0
       }));
-      setIsTyping(true);
-      setSkipTyping(false);
     } else {
       goToNextParagraph();
     }

@@ -35,14 +35,10 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
   // Ключ для принудительного пересоздания компонентов при смене параграфа
   const paragraphKey = `${currentEpisodeId}-${currentParagraphIndex}`;
   
-  // Временные состояния для typing и fading
+  // Временные состояния для typing
   const [isTyping, setIsTyping] = useState(true);
   const [skipTyping, setSkipTyping] = useState(false);
-  const [isFading, setIsFading] = useState(false);
   const [canNavigate, setCanNavigate] = useState(false);
-  
-  // Сохраняем отображаемый параграф для плавного fade
-  const [displayParagraph, setDisplayParagraph] = useState(currentParagraph);
   
   // Фоновое изображение - находим последний background параграф до текущего
   const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
@@ -68,54 +64,11 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
       }
     }
     
-    if (bgUrl !== backgroundImage && backgroundImage !== null) {
-      // Проверяем разницу индексов - если больше 1, то это прыжок через диалог
-      const indexDiff = Math.abs(currentParagraphIndex - previousParagraphIndexRef.current);
-      const isJump = indexDiff > 1;
-      
-      if (isJump) {
-        // Прыжок через диалог - без анимации
-        setBackgroundImage(bgUrl);
-        setNewImageReady(true);
-        setPendingBackgroundUrl(null);
-      } else if (isFading && !pendingBackgroundUrl) {
-        // Текст исчезает - сохраняем новый URL и ждем (только если еще не сохранили)
-        setPendingBackgroundUrl(bgUrl);
-      } else if (!isFading && !pendingBackgroundUrl) {
-        // Обычный переход без fade - сразу меняем
-        setPreviousBackgroundImage(backgroundImage);
-        setBackgroundImage(bgUrl);
-        setIsBackgroundChanging(true);
-        setNewImageReady(false);
-        
-        setTimeout(() => {
-          setNewImageReady(true);
-        }, 400);
-        
-        setTimeout(() => {
-          setIsBackgroundChanging(false);
-          setPreviousBackgroundImage(null);
-        }, 2800);
-      }
-    } else if (backgroundImage === null) {
-      // Первое появление фона - без анимации
-      setBackgroundImage(bgUrl);
-      setNewImageReady(true);
-      setPendingBackgroundUrl(null);
-    }
-    
-    // Обновляем ref для следующего сравнения
-    previousParagraphIndexRef.current = currentParagraphIndex;
-  }, [currentEpisodeId, currentParagraphIndex, currentEpisode, backgroundImage, isFading]);
-  
-  // Когда текст исчез (isFading стал false), запускаем смену фона
-  useEffect(() => {
-    if (!isFading && pendingBackgroundUrl && pendingBackgroundUrl !== backgroundImage) {
+    if (bgUrl !== backgroundImage) {
       setPreviousBackgroundImage(backgroundImage);
-      setBackgroundImage(pendingBackgroundUrl);
+      setBackgroundImage(bgUrl);
       setIsBackgroundChanging(true);
       setNewImageReady(false);
-      setPendingBackgroundUrl(null);
       
       setTimeout(() => {
         setNewImageReady(true);
@@ -126,7 +79,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
         setPreviousBackgroundImage(null);
       }, 2800);
     }
-  }, [isFading, pendingBackgroundUrl, backgroundImage]);
+  }, [currentEpisodeId, currentParagraphIndex, currentEpisode]);
   
   // Ref для отслеживания актуального значения isTyping в callbacks
   const isTypingRef = useRef(isTyping);
@@ -144,49 +97,21 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
     }
   }, [isTyping]);
 
-  // Обновляем displayParagraph только когда не в процессе fade И фон не меняется
+  // При смене параграфа обновляем состояния
   useEffect(() => {
-    if (!isFading && !isBackgroundChanging) {
-      console.log('[NovelReader] Paragraph changed, updating display');
-      setDisplayParagraph(currentParagraph);
-      // Для текстовых параграфов запускаем эффект печатной машинки
-      if (currentParagraph?.type === 'text') {
-        setIsTyping(true);
-      } else {
-        // Для картинок и фонов сразу ставим isTyping=false
-        setIsTyping(false);
-      }
-      setSkipTyping(false);
-      setCanNavigate(false);
+    console.log('[NovelReader] Paragraph changed');
+    // Для текстовых параграфов запускаем эффект печатной машинки
+    if (currentParagraph?.type === 'text') {
+      setIsTyping(true);
+    } else {
+      // Для картинок и фонов сразу ставим isTyping=false
+      setIsTyping(false);
     }
-  }, [currentEpisodeId, currentParagraphIndex, currentParagraph, isFading, isBackgroundChanging]);
+    setSkipTyping(false);
+    setCanNavigate(false);
+  }, [currentEpisodeId, currentParagraphIndex, currentParagraph]);
 
-  // Функция для проверки, будет ли меняться фон при переходе к следующему параграфу
-  const willBackgroundChange = (nextIndex: number): boolean => {
-    if (!currentEpisode) return false;
-    
-    // Находим текущий фон
-    let currentBg: string | null = null;
-    for (let i = currentParagraphIndex; i >= 0; i--) {
-      const p = currentEpisode.paragraphs[i];
-      if (p.type === 'background') {
-        currentBg = p.url;
-        break;
-      }
-    }
-    
-    // Находим фон для следующего параграфа
-    let nextBg: string | null = null;
-    for (let i = nextIndex; i >= 0; i--) {
-      const p = currentEpisode.paragraphs[i];
-      if (p.type === 'background') {
-        nextBg = p.url;
-        break;
-      }
-    }
-    
-    return currentBg !== nextBg;
-  };
+
 
   // Хук навигации
   const {
@@ -204,10 +129,8 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
     onProfileUpdate,
     setIsTyping,
     setSkipTyping,
-    setIsFading,
     isGuest,
-    onGuestLimitReached,
-    willBackgroundChange
+    onGuestLimitReached
   });
 
   // Хук взаимодействия (клики, свайпы, typing)
@@ -230,13 +153,13 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
   
   // Авто-переход только для background параграфов
   useEffect(() => {
-    if (currentParagraph?.type === 'background' && !isFading) {
+    if (currentParagraph?.type === 'background') {
       const timer = setTimeout(() => {
         goToNextParagraph();
-      }, 500); // Задержка на плавную смену фона
+      }, 500);
       return () => clearTimeout(timer);
     }
-  }, [currentParagraph, isFading, goToNextParagraph]);
+  }, [currentParagraph, goToNextParagraph]);
 
   const handleAddBookmark = (comment: string) => {
     const newBookmark: Bookmark = {
@@ -417,16 +340,15 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
           {/* Контент внутри фона */}
           <div className="relative w-full h-full flex items-end justify-center pb-20 px-6 md:pb-8 md:px-4 md:pr-8">
             <div className="w-full max-w-4xl md:min-h-0 relative z-10">
-              {/* Отображаемый параграф (для плавного fade) */}
+              {/* Отображаемый параграф */}
               {currentParagraph.type !== 'background' && (
                 <NovelReaderContent
-                  currentParagraph={displayParagraph}
+                  currentParagraph={currentParagraph}
                   currentEpisode={currentEpisode}
                   novel={novel}
                   settings={settings}
                   profile={profile}
                   skipTyping={skipTyping}
-                  isFading={isFading}
                   handleTypingComplete={handleTypingComplete}
                   handleChoice={handleChoice}
                   onProfileUpdate={onProfileUpdate}

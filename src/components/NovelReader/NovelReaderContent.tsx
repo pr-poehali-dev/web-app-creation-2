@@ -13,7 +13,6 @@ interface NovelReaderContentProps {
   settings: UserSettings;
   profile: UserProfile;
   skipTyping: boolean;
-  isFading: boolean;
   handleTypingComplete: () => void;
   handleChoice: (choiceId: string, pathId: string | undefined, oneTime: boolean | undefined, nextEpisodeId?: string, nextParagraphIndex?: number) => void;
   onProfileUpdate: (profile: UserProfile | ((prev: UserProfile) => UserProfile)) => void;
@@ -27,7 +26,6 @@ function NovelReaderContent({
   settings,
   profile,
   skipTyping,
-  isFading,
   handleTypingComplete,
   handleChoice,
   onProfileUpdate,
@@ -49,11 +47,7 @@ function NovelReaderContent({
   return (
     <>
       {currentParagraph.type === 'text' && (
-        <div className={`bg-card/90 backdrop-blur-sm rounded-2xl p-6 md:p-8 shadow-xl border border-border h-[280px] md:min-h-[12rem] md:h-auto flex items-start ${
-          currentParagraph.slowFade 
-            ? `transition-opacity duration-[1500ms] ease-in-out ${isFading ? 'opacity-0' : 'opacity-100'}` 
-            : `transition-opacity duration-[800ms] ease-in-out ${isFading ? 'opacity-0' : 'opacity-100'}`
-        }`}>
+        <div className="bg-card/90 backdrop-blur-sm rounded-2xl p-6 md:p-8 shadow-xl border border-border h-[280px] md:min-h-[12rem] md:h-auto flex items-start">
           <div className={`leading-relaxed text-left text-foreground w-full pt-2 ${
             settings.textSize === 'small' ? 'text-base md:text-lg' :
             settings.textSize === 'large' ? 'text-xl md:text-2xl' :
@@ -71,10 +65,7 @@ function NovelReaderContent({
       )}
 
       {currentParagraph.type === 'dialogue' && (
-        <div className={currentParagraph.slowFade ? `transition-opacity duration-300 ease-in-out ${
-          isFading ? 'opacity-0' : 'opacity-100'
-        }` : ''}>
-          <DialogueBox
+        <DialogueBox
             key={paragraphKey}
             characterName={currentParagraph.characterName}
             characterImage={currentParagraph.characterImage}
@@ -103,7 +94,6 @@ function NovelReaderContent({
               }
             }}
           />
-        </div>
       )}
 
       {currentParagraph.type === 'choice' && (
@@ -123,19 +113,15 @@ function NovelReaderContent({
       )}
 
       {currentParagraph.type === 'item' && (
-        <div className={currentParagraph.slowFade ? `transition-opacity duration-300 ease-in-out ${
-          isFading ? 'opacity-0' : 'opacity-100'
-        }` : ''}>
-          <ItemBox
-            key={paragraphKey}
-            name={currentParagraph.name}
-            description={currentParagraph.description}
-            imageUrl={currentParagraph.imageUrl}
-            skipTyping={skipTyping}
-            onComplete={handleTypingComplete}
-            textSpeed={settings.textSpeed}
-          />
-        </div>
+        <ItemBox
+          key={paragraphKey}
+          name={currentParagraph.name}
+          description={currentParagraph.description}
+          imageUrl={currentParagraph.imageUrl}
+          skipTyping={skipTyping}
+          onComplete={handleTypingComplete}
+          textSpeed={settings.textSpeed}
+        />
       )}
 
       {currentParagraph.type === 'image' && (
