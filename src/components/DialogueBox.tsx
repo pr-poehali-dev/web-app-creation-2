@@ -50,8 +50,8 @@ function DialogueBox({
                   src={characterImage}
                   alt={characterName}
                   className={isTopMerged 
-                    ? "w-20 h-20 md:w-28 md:h-28 lg:w-40 lg:h-40 object-contain rounded-xl md:rounded-2xl shadow-xl"
-                    : "w-24 h-24 md:w-32 md:h-32 lg:w-48 lg:h-48 object-contain rounded-2xl md:rounded-3xl shadow-2xl"
+                    ? "w-20 h-20 md:w-28 md:h-28 lg:w-40 lg:h-40 object-contain rounded-xl md:rounded-2xl"
+                    : "w-24 h-24 md:w-32 md:h-32 lg:w-48 lg:h-48 object-contain rounded-2xl md:rounded-3xl"
                   }
                 />
               ) : (

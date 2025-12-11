@@ -99,7 +99,7 @@ function CharactersTab({ profile, novel, onProfileUpdate }: CharactersTabProps) 
                 return (
                   <div className="space-y-6">
                     <div className="flex gap-6">
-                      <div className="w-40 h-52 flex-shrink-0 rounded-lg overflow-hidden bg-muted/20">
+                      <div className="w-40 h-52 flex-shrink-0 rounded-lg overflow-hidden">
                         {currentImage ? (
                           currentImage.startsWith('data:') || currentImage.startsWith('http') ? (
                             <ZoomableImage src={currentImage} alt={character.name} className="w-full h-full object-cover" />
