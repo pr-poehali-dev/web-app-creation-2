@@ -91,12 +91,12 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
         
         setTimeout(() => {
           setNewImageReady(true);
-        }, 400);
+        }, 1200);
         
         setTimeout(() => {
           setIsBackgroundChanging(false);
           setPreviousBackgroundImage(null);
-        }, 2800);
+        }, 3600);
       }
     } else if (backgroundImage === null) {
       // Первое появление фона - без анимации
@@ -120,12 +120,12 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
       
       setTimeout(() => {
         setNewImageReady(true);
-      }, 400);
+      }, 1200);
       
       setTimeout(() => {
         setIsBackgroundChanging(false);
         setPreviousBackgroundImage(null);
-      }, 2800);
+      }, 3600);
     }
   }, [isFading, pendingBackgroundUrl, backgroundImage]);
   
