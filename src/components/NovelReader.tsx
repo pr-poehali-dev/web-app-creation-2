@@ -63,15 +63,18 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
     }
     
     if (bgUrl !== backgroundImage) {
+      // Сохраняем старое изображение
       setPreviousBackgroundImage(backgroundImage);
-      setBackgroundTransitioning(true);
+      // Устанавливаем новое
       setBackgroundImage(bgUrl);
+      // Запускаем transition
+      setBackgroundTransitioning(true);
       
       // Завершаем transition через время анимации
       setTimeout(() => {
         setBackgroundTransitioning(false);
         setPreviousBackgroundImage(null);
-      }, 1000);
+      }, 1200);
     }
   }, [currentEpisodeId, currentParagraphIndex, currentEpisode, backgroundImage]);
   
@@ -300,24 +303,27 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
       {!showGreeting && backgroundImage && (
         <div className="absolute top-20 left-4 right-4 bottom-4 md:left-8 md:right-32 rounded-2xl overflow-hidden">
           {/* Предыдущее фоновое изображение (для crossfade) */}
-          {previousBackgroundImage && (
+          {previousBackgroundImage && backgroundTransitioning && (
             <div 
-              className="absolute inset-0 bg-cover bg-center transition-all duration-1000"
+              className="absolute inset-0 bg-cover bg-center"
               style={{ 
                 backgroundImage: `url(${previousBackgroundImage})`,
-                opacity: backgroundTransitioning ? 1 : 0,
-                filter: backgroundTransitioning ? 'blur(0px)' : 'blur(8px)'
+                opacity: 1,
+                filter: 'blur(0px)',
+                transition: 'opacity 1.2s ease-out, filter 1.2s ease-out',
+                animation: 'fadeOutBlur 1.2s ease-out forwards'
               }}
             />
           )}
           
           {/* Новое фоновое изображение */}
           <div 
-            className="absolute inset-0 bg-cover bg-center transition-all duration-1000"
+            className="absolute inset-0 bg-cover bg-center"
             style={{ 
               backgroundImage: `url(${backgroundImage})`,
               opacity: backgroundTransitioning ? 0 : 1,
-              filter: backgroundTransitioning ? 'blur(8px)' : 'blur(0px)'
+              filter: backgroundTransitioning ? 'blur(10px)' : 'blur(0px)',
+              transition: 'opacity 1.2s ease-in, filter 1.2s ease-in'
             }}
           />
           
