@@ -79,7 +79,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
       setTimeout(() => {
         setIsBackgroundChanging(false);
         setPreviousBackgroundImage(null);
-      }, 1250);
+      }, 2050);
     } else if (backgroundImage === null) {
       // Первое появление фона - без анимации
       setBackgroundImage(bgUrl);
@@ -319,7 +319,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
                 backgroundImage: `url(${previousBackgroundImage})`,
                 opacity: newImageReady ? 0 : 1,
                 filter: newImageReady ? 'blur(12px)' : 'blur(0px)',
-                transition: 'opacity 1.2s ease-out, filter 1.2s ease-out',
+                transition: 'opacity 2s ease-out, filter 2s ease-out',
                 zIndex: 1
               }}
             />
@@ -332,7 +332,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
               backgroundImage: `url(${backgroundImage})`,
               opacity: !previousBackgroundImage || newImageReady ? 1 : 0,
               filter: !previousBackgroundImage || newImageReady ? 'blur(0px)' : 'blur(12px)',
-              transition: 'opacity 1.2s ease-in, filter 1.2s ease-in',
+              transition: 'opacity 2s ease-in, filter 2s ease-in',
               zIndex: 0
             }}
           />
