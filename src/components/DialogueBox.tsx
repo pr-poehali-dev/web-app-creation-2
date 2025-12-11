@@ -50,12 +50,12 @@ function DialogueBox({
                   src={characterImage}
                   alt={characterName}
                   className={isTopMerged 
-                    ? "w-24 h-24 md:w-36 md:h-36 object-contain rounded-2xl shadow-xl"
+                    ? "w-28 h-28 md:w-40 md:h-40 object-contain rounded-2xl shadow-xl"
                     : "w-32 h-32 md:w-48 md:h-48 object-contain rounded-3xl shadow-2xl"
                   }
                 />
               ) : (
-                <div className={isTopMerged ? "text-4xl md:text-6xl" : "text-6xl md:text-9xl"}>{characterImage}</div>
+                <div className={isTopMerged ? "text-5xl md:text-7xl" : "text-6xl md:text-9xl"}>{characterImage}</div>
               )}
             </div>
             
@@ -72,16 +72,16 @@ function DialogueBox({
         )}
         
         <Card className="flex-1 w-full bg-card/95 backdrop-blur-sm border-0 shadow-xl animate-scale-in">
-          <CardContent className={isTopMerged ? "p-3 md:p-5" : "p-4 md:p-8"}>
+          <CardContent className={isTopMerged ? "p-4 md:p-6" : "p-4 md:p-8"}>
             {!characterImage && (
               <h3 className={isTopMerged 
-                ? "text-sm md:text-base font-bold text-primary mb-2"
+                ? "text-base md:text-lg font-bold text-primary mb-2"
                 : "text-base md:text-lg font-bold text-primary mb-3"
               }>
                 {characterName}
               </h3>
             )}
-            <p className={`novel-text leading-relaxed text-foreground ${isTopMerged ? "text-sm md:text-base" : "text-base md:text-lg"}`} style={{ fontFamily }}>
+            <p className={`novel-text leading-relaxed text-foreground ${isTopMerged ? "text-base md:text-lg" : "text-base md:text-lg"}`} style={{ fontFamily }}>
               <TypewriterText 
                 text={text}
                 speed={textSpeed}
