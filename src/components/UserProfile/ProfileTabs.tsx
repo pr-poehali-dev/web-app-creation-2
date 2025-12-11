@@ -265,6 +265,12 @@ function ProfileTabs({ profile, novel, achievements, username, onDeleteBookmark,
               <>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                   {profile.metCharacters.map((character) => {
+                    // Синхронизируем изображение с библиотекой
+                    const libraryCharacter = novel.library.characters.find(
+                      c => c.name === character.name
+                    );
+                    const currentImage = libraryCharacter?.defaultImage || character.image;
+                    
                     return (
                       <Card 
                         key={character.id} 
@@ -274,11 +280,11 @@ function ProfileTabs({ profile, novel, achievements, username, onDeleteBookmark,
                         <CardContent className="p-3">
                           <div className="flex flex-col items-center text-center gap-2">
                             <div className="w-20 h-20 md:w-24 md:h-24 flex items-center justify-center bg-secondary/30 rounded-full overflow-hidden border-2 border-primary/20">
-                              {character.image ? (
-                                character.image.startsWith('data:') || character.image.startsWith('http') ? (
-                                  <img src={character.image} alt={character.name} className="w-full h-full object-cover" />
+                              {currentImage ? (
+                                currentImage.startsWith('data:') || currentImage.startsWith('http') ? (
+                                  <img src={currentImage} alt={character.name} className="w-full h-full object-cover" />
                                 ) : (
-                                  <div className="text-4xl md:text-5xl">{character.image}</div>
+                                  <div className="text-4xl md:text-5xl">{currentImage}</div>
                                 )
                               ) : (
                                 <Icon name="User" size={32} className="text-secondary" />
@@ -305,6 +311,13 @@ function ProfileTabs({ profile, novel, achievements, username, onDeleteBookmark,
                       const episode = novel.episodes.find(ep => ep.id === character?.episodeId);
                       if (!character) return null;
                       
+                      // Синхронизируем изображение и описание с библиотекой
+                      const libraryCharacter = novel.library.characters.find(
+                        c => c.name === character.name
+                      );
+                      const currentImage = libraryCharacter?.defaultImage || character.image;
+                      const currentDescription = libraryCharacter?.description;
+                      
                       const handleSaveComment = () => {
                         if (!onProfileUpdate) return;
                         
@@ -328,11 +341,11 @@ function ProfileTabs({ profile, novel, achievements, username, onDeleteBookmark,
                           <div className="space-y-4">
                             <div className="flex justify-center">
                               <div className="w-32 h-32 flex items-center justify-center bg-secondary/30 rounded-full overflow-hidden border-4 border-primary/30">
-                                {character.image ? (
-                                  character.image.startsWith('data:') || character.image.startsWith('http') ? (
-                                    <ZoomableImage src={character.image} alt={character.name} className="w-full h-full object-cover" />
+                                {currentImage ? (
+                                  currentImage.startsWith('data:') || currentImage.startsWith('http') ? (
+                                    <ZoomableImage src={currentImage} alt={character.name} className="w-full h-full object-cover" />
                                   ) : (
-                                    <div className="text-6xl">{character.image}</div>
+                                    <div className="text-6xl">{currentImage}</div>
                                   )
                                 ) : (
                                   <Icon name="User" size={64} className="text-secondary" />
@@ -341,6 +354,12 @@ function ProfileTabs({ profile, novel, achievements, username, onDeleteBookmark,
                             </div>
                             
                             <div className="space-y-3 text-sm">
+                              {currentDescription && (
+                                <div className="p-3 bg-secondary/20 rounded-lg">
+                                  <p className="text-muted-foreground">{currentDescription}</p>
+                                </div>
+                              )}
+                              
                               <div className="flex items-center gap-2 text-muted-foreground">
                                 <Icon name="Calendar" size={16} />
                                 <span>Впервые встречен: {new Date(character.firstMetAt).toLocaleDateString('ru-RU')}</span>
