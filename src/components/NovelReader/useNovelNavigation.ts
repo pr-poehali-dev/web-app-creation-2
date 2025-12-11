@@ -109,7 +109,7 @@ export function useNovelNavigation({
         }));
       }
     }
-  }, [currentEpisodeId, currentParagraphIndex, currentEpisode, currentParagraph, onProfileUpdate, setIsTyping, setSkipTyping, setIsFading]);
+  }, [currentEpisodeId, currentParagraphIndex, currentEpisode, currentParagraph, onProfileUpdate, isGuest, onGuestLimitReached, novel]);
 
   const goToPreviousParagraph = useCallback(() => {
     if (currentParagraphIndex > 0) {
@@ -123,7 +123,7 @@ export function useNovelNavigation({
         }));
       }
     }
-  }, [currentParagraphIndex, currentEpisodeId, onProfileUpdate, setIsTyping, setSkipTyping, setIsFading]);
+  }, [currentParagraphIndex, currentEpisodeId, onProfileUpdate]);
 
   const handleChoice = useCallback((choiceId: string, pathId: string | undefined, oneTime: boolean | undefined, nextEpisodeId?: string, nextParagraphIndex?: number) => {
     // Отмечаем выбор как использованный если он одноразовый
@@ -171,7 +171,7 @@ export function useNovelNavigation({
     } else {
       goToNextParagraph();
     }
-  }, [onProfileUpdate, goToNextParagraph, setIsTyping, setSkipTyping]);
+  }, [onProfileUpdate, goToNextParagraph, isGuest, onGuestLimitReached, isEpisodeAccessibleForGuest]);
 
   return {
     isParagraphAccessible,
