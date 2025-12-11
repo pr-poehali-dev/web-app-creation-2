@@ -47,7 +47,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
   // Фоновое изображение - находим последний background параграф до текущего
   const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
   const [previousBackgroundImage, setPreviousBackgroundImage] = useState<string | null>(null);
-  const [backgroundTransitioning, setBackgroundTransitioning] = useState(false);
+  const [isBackgroundChanging, setIsBackgroundChanging] = useState(false);
   
   useEffect(() => {
     if (!currentEpisode) return;
@@ -62,19 +62,24 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
       }
     }
     
-    if (bgUrl !== backgroundImage) {
-      // Сохраняем старое изображение
+    if (bgUrl !== backgroundImage && backgroundImage !== null) {
+      // Только если уже был фон - делаем переход
       setPreviousBackgroundImage(backgroundImage);
-      // Устанавливаем новое
-      setBackgroundImage(bgUrl);
-      // Запускаем transition
-      setBackgroundTransitioning(true);
+      setIsBackgroundChanging(true);
+      
+      // Небольшая задержка перед сменой для начала анимации исчезновения
+      setTimeout(() => {
+        setBackgroundImage(bgUrl);
+      }, 50);
       
       // Завершаем transition через время анимации
       setTimeout(() => {
-        setBackgroundTransitioning(false);
+        setIsBackgroundChanging(false);
         setPreviousBackgroundImage(null);
-      }, 1200);
+      }, 1250);
+    } else if (backgroundImage === null) {
+      // Первое появление фона - без анимации
+      setBackgroundImage(bgUrl);
     }
   }, [currentEpisodeId, currentParagraphIndex, currentEpisode, backgroundImage]);
   
@@ -302,28 +307,29 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
       {/* Фоновое изображение с контентом внутри (только если не приветствие) */}
       {!showGreeting && backgroundImage && (
         <div className="absolute top-20 left-4 right-4 bottom-4 md:left-8 md:right-32 rounded-2xl overflow-hidden">
-          {/* Предыдущее фоновое изображение (для crossfade) */}
-          {previousBackgroundImage && backgroundTransitioning && (
+          {/* Предыдущее фоновое изображение (исчезает) */}
+          {previousBackgroundImage && (
             <div 
               className="absolute inset-0 bg-cover bg-center"
               style={{ 
                 backgroundImage: `url(${previousBackgroundImage})`,
-                opacity: 1,
-                filter: 'blur(0px)',
+                opacity: isBackgroundChanging ? 0 : 1,
+                filter: isBackgroundChanging ? 'blur(12px)' : 'blur(0px)',
                 transition: 'opacity 1.2s ease-out, filter 1.2s ease-out',
-                animation: 'fadeOutBlur 1.2s ease-out forwards'
+                zIndex: 1
               }}
             />
           )}
           
-          {/* Новое фоновое изображение */}
+          {/* Новое фоновое изображение (появляется) */}
           <div 
             className="absolute inset-0 bg-cover bg-center"
             style={{ 
               backgroundImage: `url(${backgroundImage})`,
-              opacity: backgroundTransitioning ? 0 : 1,
-              filter: backgroundTransitioning ? 'blur(10px)' : 'blur(0px)',
-              transition: 'opacity 1.2s ease-in, filter 1.2s ease-in'
+              opacity: isBackgroundChanging && previousBackgroundImage ? 0 : 1,
+              filter: isBackgroundChanging && previousBackgroundImage ? 'blur(12px)' : 'blur(0px)',
+              transition: 'opacity 1.2s ease-in, filter 1.2s ease-in',
+              zIndex: 0
             }}
           />
           
