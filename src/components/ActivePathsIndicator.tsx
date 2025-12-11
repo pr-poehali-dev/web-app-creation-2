@@ -18,7 +18,7 @@ function ActivePathsIndicator({ novel, profile }: ActivePathsIndicatorProps) {
   }
 
   return (
-    <div className="fixed top-4 right-4 z-40 max-w-xs">
+    <div className="fixed top-20 right-4 z-40 max-w-xs">
       <div className="bg-card/90 backdrop-blur-sm rounded-lg border border-border shadow-lg p-3">
         <div className="flex items-center gap-2 mb-2">
           <Icon name="GitBranch" size={14} className="text-primary" />
