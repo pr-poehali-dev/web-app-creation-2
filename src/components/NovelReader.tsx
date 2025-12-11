@@ -34,6 +34,8 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
 
   // Ключ для принудительного пересоздания компонентов при смене параграфа
   const paragraphKey = `${currentEpisodeId}-${currentParagraphIndex}`;
+  // Отложенный ключ - обновляется только когда фон сменился
+  const [delayedParagraphKey, setDelayedParagraphKey] = useState(paragraphKey);
   
   // Временные состояния для typing
   const [isTyping, setIsTyping] = useState(true);
@@ -77,9 +79,14 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
       setTimeout(() => {
         setIsBackgroundChanging(false);
         setPreviousBackgroundImage(null);
+        // Обновляем отложенный ключ только после завершения смены фона
+        setDelayedParagraphKey(paragraphKey);
       }, 2800);
+    } else {
+      // Если фон не меняется, обновляем ключ сразу
+      setDelayedParagraphKey(paragraphKey);
     }
-  }, [currentEpisodeId, currentParagraphIndex, currentEpisode]);
+  }, [currentEpisodeId, currentParagraphIndex, currentEpisode, backgroundImage, paragraphKey]);
   
   // Ref для отслеживания актуального значения isTyping в callbacks
   const isTypingRef = useRef(isTyping);
@@ -359,7 +366,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
                     handleTypingComplete={handleTypingComplete}
                     handleChoice={handleChoice}
                     onProfileUpdate={onProfileUpdate}
-                    paragraphKey={paragraphKey}
+                    paragraphKey={delayedParagraphKey}
                   />
                 </div>
               )}
