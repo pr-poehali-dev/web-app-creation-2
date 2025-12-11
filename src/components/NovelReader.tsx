@@ -50,6 +50,9 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
   const [isBackgroundChanging, setIsBackgroundChanging] = useState(false);
   const [newImageReady, setNewImageReady] = useState(false);
   
+  // Ref для отслеживания предыдущего индекса - чтобы понять, клик или прыжок
+  const previousParagraphIndexRef = useRef<number>(currentParagraphIndex);
+  
   useEffect(() => {
     if (!currentEpisode) return;
     
@@ -64,27 +67,40 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
     }
     
     if (bgUrl !== backgroundImage && backgroundImage !== null) {
-      // Только если уже был фон - делаем переход
-      setPreviousBackgroundImage(backgroundImage);
-      setBackgroundImage(bgUrl);
-      setIsBackgroundChanging(true);
-      setNewImageReady(false);
+      // Проверяем разницу индексов - если больше 1, то это прыжок через диалог
+      const indexDiff = Math.abs(currentParagraphIndex - previousParagraphIndexRef.current);
+      const isJump = indexDiff > 1;
       
-      // Даем старой картинке начать размываться, затем запускаем появление новой
-      setTimeout(() => {
+      if (isJump) {
+        // Прыжок через диалог - без анимации
+        setBackgroundImage(bgUrl);
         setNewImageReady(true);
-      }, 400);
-      
-      // Завершаем transition через время анимации
-      setTimeout(() => {
-        setIsBackgroundChanging(false);
-        setPreviousBackgroundImage(null);
-      }, 2800);
+      } else {
+        // Обычный переход - с анимацией
+        setPreviousBackgroundImage(backgroundImage);
+        setBackgroundImage(bgUrl);
+        setIsBackgroundChanging(true);
+        setNewImageReady(false);
+        
+        // Даем старой картинке начать размываться, затем запускаем появление новой
+        setTimeout(() => {
+          setNewImageReady(true);
+        }, 400);
+        
+        // Завершаем transition через время анимации
+        setTimeout(() => {
+          setIsBackgroundChanging(false);
+          setPreviousBackgroundImage(null);
+        }, 2800);
+      }
     } else if (backgroundImage === null) {
       // Первое появление фона - без анимации
       setBackgroundImage(bgUrl);
       setNewImageReady(true);
     }
+    
+    // Обновляем ref для следующего сравнения
+    previousParagraphIndexRef.current = currentParagraphIndex;
   }, [currentEpisodeId, currentParagraphIndex, currentEpisode, backgroundImage]);
   
   // Ref для отслеживания актуального значения isTyping в callbacks
