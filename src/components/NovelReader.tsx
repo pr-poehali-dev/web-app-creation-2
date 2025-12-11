@@ -99,7 +99,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
 
   // При смене параграфа обновляем состояния
   useEffect(() => {
-    console.log('[NovelReader] Paragraph changed');
+    console.log('[NovelReader] Paragraph changed, type:', currentParagraph?.type);
     // Для текстовых параграфов запускаем эффект печатной машинки
     if (currentParagraph?.type === 'text') {
       setIsTyping(true);
@@ -109,7 +109,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
     }
     setSkipTyping(false);
     setCanNavigate(false);
-  }, [currentEpisodeId, currentParagraphIndex, currentParagraph]);
+  }, [currentEpisodeId, currentParagraphIndex, currentParagraph?.type]);
 
 
 
