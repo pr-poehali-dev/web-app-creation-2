@@ -343,8 +343,8 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
           {/* Контент внутри фона */}
           <div className="relative w-full h-full flex items-end justify-center pb-20 px-6 md:pb-8 md:px-4 md:pr-8">
             <div className="w-full max-w-4xl md:min-h-0 relative z-10">
-              {/* Отображаемый параграф */}
-              {currentParagraph.type !== 'background' && (
+              {/* Отображаемый параграф - скрываем на время смены фона */}
+              {currentParagraph.type !== 'background' && !isBackgroundChanging && (
                 <NovelReaderContent
                   currentParagraph={currentParagraph}
                   currentEpisode={currentEpisode}
