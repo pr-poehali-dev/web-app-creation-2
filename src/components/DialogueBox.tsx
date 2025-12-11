@@ -16,7 +16,6 @@ interface DialogueBoxProps {
   onCommentSave?: (comment: string) => void;
   existingComment?: string;
   fontFamily?: string;
-  isMerged?: boolean;
 }
 
 function DialogueBox({ 
@@ -28,8 +27,7 @@ function DialogueBox({
   textSpeed = 50,
   onCommentSave,
   existingComment,
-  fontFamily,
-  isMerged = false
+  fontFamily
 }: DialogueBoxProps) {
   const [showCommentDialog, setShowCommentDialog] = useState(false);
   const [comment, setComment] = useState(existingComment || '');
@@ -49,13 +47,10 @@ function DialogueBox({
                 <ZoomableImage
                   src={characterImage}
                   alt={characterName}
-                  className={isMerged 
-                    ? "w-20 h-20 md:w-32 md:h-32 object-contain rounded-2xl shadow-xl"
-                    : "w-32 h-32 md:w-48 md:h-48 object-contain rounded-3xl shadow-2xl"
-                  }
+                  className="w-32 h-32 md:w-48 md:h-48 object-contain rounded-3xl shadow-2xl"
                 />
               ) : (
-                <div className={isMerged ? "text-4xl md:text-6xl" : "text-6xl md:text-9xl"}>{characterImage}</div>
+                <div className="text-6xl md:text-9xl">{characterImage}</div>
               )}
             </div>
             
@@ -72,18 +67,13 @@ function DialogueBox({
         )}
         
         <Card className="flex-1 w-full bg-card/95 backdrop-blur-sm border-0 shadow-xl animate-scale-in">
-          <CardContent className={isMerged ? "p-3 md:p-4" : "p-4 md:p-8"}>
+          <CardContent className="p-4 md:p-8">
             {!characterImage && (
-              <h3 className={isMerged 
-                ? "text-sm md:text-base font-bold text-primary mb-2"
-                : "text-base md:text-lg font-bold text-primary mb-3"
-              }>
+              <h3 className="text-base md:text-lg font-bold text-primary mb-3">
                 {characterName}
               </h3>
             )}
-            <p className={`novel-text leading-relaxed text-foreground ${
-              isMerged ? "text-sm md:text-base" : "text-base md:text-lg"
-            }`} style={{ fontFamily }}>
+            <p className="novel-text text-base md:text-lg leading-relaxed text-foreground" style={{ fontFamily }}>
               <TypewriterText 
                 text={text}
                 speed={textSpeed}
