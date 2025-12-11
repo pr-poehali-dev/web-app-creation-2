@@ -70,16 +70,16 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
       setIsBackgroundChanging(true);
       setNewImageReady(false);
       
-      // Даем новой картинке замонтироваться, затем запускаем анимацию
+      // Даем старой картинке начать размываться, затем запускаем появление новой
       setTimeout(() => {
         setNewImageReady(true);
-      }, 50);
+      }, 400);
       
       // Завершаем transition через время анимации
       setTimeout(() => {
         setIsBackgroundChanging(false);
         setPreviousBackgroundImage(null);
-      }, 2050);
+      }, 2800);
     } else if (backgroundImage === null) {
       // Первое появление фона - без анимации
       setBackgroundImage(bgUrl);
@@ -318,8 +318,8 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
               style={{ 
                 backgroundImage: `url(${previousBackgroundImage})`,
                 opacity: newImageReady ? 0 : 1,
-                filter: newImageReady ? 'blur(12px)' : 'blur(0px)',
-                transition: 'opacity 2s ease-out, filter 2s ease-out',
+                filter: newImageReady ? 'blur(16px)' : 'blur(0px)',
+                transition: 'opacity 2.4s ease-in-out, filter 2.4s ease-in-out',
                 zIndex: 1
               }}
             />
@@ -331,8 +331,8 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
             style={{ 
               backgroundImage: `url(${backgroundImage})`,
               opacity: !previousBackgroundImage || newImageReady ? 1 : 0,
-              filter: !previousBackgroundImage || newImageReady ? 'blur(0px)' : 'blur(12px)',
-              transition: 'opacity 2s ease-in, filter 2s ease-in',
+              filter: !previousBackgroundImage || newImageReady ? 'blur(0px)' : 'blur(16px)',
+              transition: 'opacity 2.4s ease-in-out, filter 2.4s ease-in-out',
               zIndex: 0
             }}
           />
