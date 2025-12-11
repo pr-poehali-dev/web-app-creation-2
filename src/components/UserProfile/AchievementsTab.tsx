@@ -126,20 +126,33 @@ function AchievementsTab({ profile, novel, achievements, onDeleteBookmark, onNav
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {profile.collectedItems.map((item) => {
               const episode = novel.episodes.find(ep => ep.id === item.episodeId);
+              const libraryItem = novel.library.items.find(i => i.id === item.id);
+              const itemName = libraryItem?.name || item.name;
+              const itemDescription = libraryItem?.description || item.description;
+              const itemImage = libraryItem?.imageUrl || item.imageUrl;
+              const itemType = libraryItem?.itemType || item.itemType || 'collectible';
+              
               return (
                 <Card key={item.id}>
                   <CardContent className="p-4">
                     <div className="flex items-start gap-3">
                       <div className="w-12 h-12 flex items-center justify-center bg-secondary/30 rounded-lg">
-                        {item.imageUrl ? (
-                          <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover rounded-lg" />
+                        {itemImage ? (
+                          <img src={itemImage} alt={itemName} className="w-full h-full object-cover rounded-lg" />
                         ) : (
                           <Icon name="Package" size={24} className="text-secondary" />
                         )}
                       </div>
                       <div className="flex-1">
-                        <h4 className="font-semibold text-foreground mb-1">{item.name}</h4>
-                        <p className="text-sm text-muted-foreground">{item.description}</p>
+                        <div className="flex items-center gap-2 mb-1">
+                          <h4 className="font-semibold text-foreground">{itemName}</h4>
+                          <span className={`text-xs px-2 py-0.5 rounded-full ${
+                            itemType === 'story' ? 'bg-blue-500/20 text-blue-600' : 'bg-primary/20 text-primary'
+                          }`}>
+                            {itemType === 'story' ? 'Сюжетный' : 'Коллекционный'}
+                          </span>
+                        </div>
+                        <p className="text-sm text-muted-foreground">{itemDescription}</p>
                         <p className="text-xs text-muted-foreground mt-2">
                           <Icon name="MapPin" size={12} className="inline mr-1" />
                           {episode?.title || 'Неизвестный эпизод'}
