@@ -302,20 +302,22 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
           {/* Предыдущее фоновое изображение (для crossfade) */}
           {previousBackgroundImage && (
             <div 
-              className="absolute inset-0 bg-cover bg-center transition-opacity duration-1000"
+              className="absolute inset-0 bg-cover bg-center transition-all duration-1000"
               style={{ 
                 backgroundImage: `url(${previousBackgroundImage})`,
-                opacity: backgroundTransitioning ? 1 : 0
+                opacity: backgroundTransitioning ? 1 : 0,
+                filter: backgroundTransitioning ? 'blur(0px)' : 'blur(8px)'
               }}
             />
           )}
           
           {/* Новое фоновое изображение */}
           <div 
-            className="absolute inset-0 bg-cover bg-center transition-opacity duration-1000"
+            className="absolute inset-0 bg-cover bg-center transition-all duration-1000"
             style={{ 
               backgroundImage: `url(${backgroundImage})`,
-              opacity: backgroundTransitioning ? 0 : 1
+              opacity: backgroundTransitioning ? 0 : 1,
+              filter: backgroundTransitioning ? 'blur(8px)' : 'blur(0px)'
             }}
           />
           
