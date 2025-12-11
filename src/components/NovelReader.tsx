@@ -136,13 +136,10 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
     onGuestLimitReached
   });
 
-  // Хук взаимодействия (клики, свайпы, typing)
+  // Хук взаимодействия (клики, typing)
   const {
     handleClick,
-    handleTypingComplete,
-    onTouchStart,
-    onTouchMove,
-    onTouchEnd
+    handleTypingComplete
   } = useNovelInteraction({
     currentParagraph,
     goToNextParagraph,
@@ -288,9 +285,6 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
     <div 
       className={`min-h-screen flex ${showGreeting ? 'items-center justify-center px-2 md:px-4 md:pr-32 md:pl-8' : ''} ${showGreeting ? '' : 'cursor-pointer'} relative bg-background`}
       onClick={showGreeting ? undefined : handleClick}
-      onTouchStart={showGreeting ? undefined : onTouchStart}
-      onTouchMove={showGreeting ? undefined : onTouchMove}
-      onTouchEnd={showGreeting ? undefined : onTouchEnd}
       style={{
         fontFamily: settings.fontFamily === 'merriweather' ? '"Merriweather", serif' :
                     settings.fontFamily === 'montserrat' ? '"Montserrat", sans-serif' :
@@ -403,33 +397,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
         </div>
       )}
 
-      {/* Навигация для мобильных (только если не приветствие) */}
-      {!showGreeting && !isTyping && currentParagraph.type !== 'choice' && (
-        <div className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 flex gap-3 z-50">
-          <Button
-            size="icon"
-            variant="secondary"
-            onClick={(e) => {
-              e.stopPropagation();
-              goToPreviousParagraph();
-            }}
-            className="bg-card/90 backdrop-blur-sm shadow-xl"
-          >
-            <Icon name="ChevronLeft" size={24} />
-          </Button>
-          <Button
-            size="icon"
-            variant="secondary"
-            onClick={(e) => {
-              e.stopPropagation();
-              goToNextParagraph();
-            }}
-            className="bg-card/90 backdrop-blur-sm shadow-xl"
-          >
-            <Icon name="ChevronRight" size={24} />
-          </Button>
-        </div>
-      )}
+
     </div>
   );
 }
