@@ -149,8 +149,11 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
     if (!isFading && !isBackgroundChanging) {
       console.log('[NovelReader] Paragraph changed, updating display');
       setDisplayParagraph(currentParagraph);
-      // Для картинок и фонов сразу ставим isTyping=false (текстовые параграфы управляются в useNovelNavigation)
-      if (currentParagraph?.type === 'image' || currentParagraph?.type === 'background') {
+      // Для текстовых параграфов запускаем эффект печатной машинки
+      if (currentParagraph?.type === 'text') {
+        setIsTyping(true);
+      } else {
+        // Для картинок и фонов сразу ставим isTyping=false
         setIsTyping(false);
       }
       setSkipTyping(false);

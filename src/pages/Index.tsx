@@ -38,6 +38,8 @@ function Index() {
     setShowGreetingScreen,
     showAuthPrompt,
     setShowAuthPrompt,
+    authPromptDismissed,
+    setAuthPromptDismissed,
     isMusicPlaying,
     setIsMusicPlaying
   } = useAppState();
@@ -71,12 +73,16 @@ function Index() {
   });
 
   // Показываем экран авторизации только если пользователь явно запросил или достиг конца доступного контента
-  if (showAuthPrompt && !authState.isAuthenticated) {
+  // И только если он ещё не отказался от входа в этой сессии
+  if (showAuthPrompt && !authState.isAuthenticated && !authPromptDismissed) {
     return (
       <div className="relative min-h-screen bg-background dark">
         <AuthScreen 
           onAuthSuccess={handleAuthSuccess} 
-          onClose={authState.isGuest ? () => setShowAuthPrompt(false) : undefined}
+          onClose={authState.isGuest ? () => {
+            setShowAuthPrompt(false);
+            setAuthPromptDismissed(true); // Запоминаем, что пользователь отказался
+          } : undefined}
         />
       </div>
     );

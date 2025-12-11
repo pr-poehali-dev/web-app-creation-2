@@ -93,18 +93,13 @@ export function useNovelNavigation({
           }, 50);
         }, fadeDelay);
       } else {
-        // Фон не меняется - просто меняем текст
-        // Сначала обновляем индекс, потом сбрасываем состояния для нового эффекта печатной машинки
+        // Фон не меняется - просто меняем текст без fade
         onProfileUpdate(prev => ({
           ...prev,
           currentEpisodeId,
           currentParagraphIndex: nextIndex
         }));
-        // Небольшая задержка чтобы displayParagraph успел обновиться
-        setTimeout(() => {
-          setIsTyping(true);
-          setSkipTyping(false);
-        }, 10);
+        // isTyping устанавливается в NovelReader при обновлении displayParagraph
       }
     } else {
       // Переход к следующему эпизоду
