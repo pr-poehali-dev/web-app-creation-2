@@ -41,21 +41,21 @@ function DialogueBox({
 
   return (
     <>
-      <div className="relative flex flex-col md:flex-row items-center gap-4 md:gap-6">
+      <div className="relative flex flex-col md:flex-row md:items-end gap-4 md:gap-6">
         {characterImage && (
-          <div className="flex flex-col items-center gap-3 animate-scale-in">
+          <div className="flex flex-col items-center gap-3 animate-scale-in md:mb-4">
             <div className="flex items-center justify-center">
               {characterImage.startsWith('data:') || characterImage.startsWith('http') ? (
                 <ZoomableImage
                   src={characterImage}
                   alt={characterName}
                   className={isTopMerged 
-                    ? "w-20 h-20 md:w-28 md:h-28 lg:w-40 lg:h-40 object-contain rounded-xl md:rounded-2xl"
-                    : "w-24 h-24 md:w-32 md:h-32 lg:w-48 lg:h-48 object-contain rounded-2xl md:rounded-3xl"
+                    ? "w-20 h-20 md:w-28 md:h-28 lg:w-32 lg:h-32 object-contain rounded-xl md:rounded-2xl"
+                    : "w-24 h-24 md:w-32 md:h-32 lg:w-40 lg:h-40 object-contain rounded-2xl md:rounded-3xl"
                   }
                 />
               ) : (
-                <div className={isTopMerged ? "text-4xl md:text-5xl lg:text-7xl" : "text-5xl md:text-6xl lg:text-9xl"}>{characterImage}</div>
+                <div className={isTopMerged ? "text-4xl md:text-5xl lg:text-6xl" : "text-5xl md:text-6xl lg:text-8xl"}>{characterImage}</div>
               )}
             </div>
             
