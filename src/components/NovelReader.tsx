@@ -337,8 +337,8 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
           <div className="absolute inset-0 bg-black/20" />
           
           {/* Контент внутри фона */}
-          <div className="relative w-full h-full flex items-end justify-center pb-24 px-6 md:pb-8 md:px-4 md:pr-8">
-            <div className="w-full max-w-4xl relative z-10">
+          <div className="relative w-full h-full flex items-end justify-center pb-19 px-6 md:pb-8 md:px-4 md:pr-8">
+            <div className="w-full max-w-4xl min-h-[280px] md:min-h-0 relative z-10">
               {/* Отображаемый параграф (для плавного fade) */}
               {currentParagraph.type !== 'background' && (
                 <NovelReaderContent
