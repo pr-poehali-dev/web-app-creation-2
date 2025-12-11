@@ -28,7 +28,6 @@ function ChoiceBox({ question, options, novel, onChoice }: ChoiceBoxProps) {
         </h3>
         <div className="space-y-2 md:space-y-3 lg:space-y-4">
           {options.map((option, index) => {
-            const activatesPath = option.activatesPath ? novel.paths?.find(p => p.id === option.activatesPath) : null;
             return (
               <div key={option.id} className="relative">
                 <Button
@@ -41,27 +40,7 @@ function ChoiceBox({ question, options, novel, onChoice }: ChoiceBoxProps) {
                     onChoice(option.id, option.activatesPath, option.oneTime, option.nextEpisodeId, option.nextParagraphIndex);
                   }}
                 >
-                  <span className="flex-1">{option.text}</span>
-                  {activatesPath && (
-                    <Badge 
-                      variant="secondary" 
-                      className="ml-2 text-xs"
-                      style={{
-                        backgroundColor: activatesPath.color ? `${activatesPath.color}30` : undefined,
-                        borderColor: activatesPath.color || undefined,
-                        color: activatesPath.color || undefined
-                      }}
-                    >
-                      <Icon name="GitBranch" size={12} className="mr-1" />
-                      {activatesPath.name}
-                    </Badge>
-                  )}
-                  {option.oneTime && (
-                    <Badge variant="outline" className="ml-2 text-xs">
-                      <Icon name="AlertCircle" size={12} className="mr-1" />
-                      Одноразовый
-                    </Badge>
-                  )}
+                  {option.text}
                 </Button>
               </div>
             );
