@@ -78,6 +78,7 @@ function UserProfilePanel({ profile, novel, onUpdate, onBack, onNavigateTo, user
           username={username}
           onDeleteBookmark={handleDeleteBookmark}
           onNavigateTo={onNavigateTo}
+          onProfileUpdate={onUpdate}
         />
 
         <ProfileActions onUpdate={onUpdate} />

@@ -6,8 +6,11 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
 import Icon from '@/components/ui/icon';
 import { getParagraphNumber } from '@/utils/paragraphNumbers';
+import ZoomableImage from '../ZoomableImage';
 
 interface ProfileTabsProps {
   profile: UserProfile;
@@ -16,16 +19,20 @@ interface ProfileTabsProps {
   username?: string;
   onDeleteBookmark: (bookmarkId: string) => void;
   onNavigateTo?: (episodeId: string, paragraphIndex: number) => void;
+  onProfileUpdate?: (profile: UserProfile) => void;
 }
 
 const AUTH_API = 'https://functions.poehali.dev/f895202d-2b99-4eae-a334-8b273bf2cbd1';
 
-function ProfileTabs({ profile, novel, achievements, username, onDeleteBookmark, onNavigateTo }: ProfileTabsProps) {
+function ProfileTabs({ profile, novel, achievements, username, onDeleteBookmark, onNavigateTo, onProfileUpdate }: ProfileTabsProps) {
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [passwordSuccess, setPasswordSuccess] = useState('');
+  const [selectedCharacter, setSelectedCharacter] = useState<string | null>(null);
+  const [editingComment, setEditingComment] = useState(false);
+  const [commentText, setCommentText] = useState('');
 
   const handlePasswordChange = async () => {
     setPasswordError('');
@@ -255,41 +262,153 @@ function ProfileTabs({ profile, novel, achievements, username, onDeleteBookmark,
 
           <TabsContent value="characters" className="mt-6">
             {profile.metCharacters.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {profile.metCharacters.map((character) => {
-                  const episode = novel.episodes.find(ep => ep.id === character.episodeId);
-                  return (
-                    <Card key={character.id}>
-                      <CardContent className="p-4">
-                        <div className="flex items-start gap-3">
-                          <div className="w-16 h-16 flex items-center justify-center bg-secondary/30 rounded-lg overflow-hidden">
-                            {character.image ? (
-                              <img src={character.image} alt={character.name} className="w-full h-full object-cover" />
-                            ) : (
-                              <Icon name="User" size={24} className="text-secondary" />
-                            )}
+              <>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {profile.metCharacters.map((character) => {
+                    return (
+                      <Card 
+                        key={character.id} 
+                        className="cursor-pointer hover:bg-accent/50 transition-colors"
+                        onClick={() => setSelectedCharacter(character.id)}
+                      >
+                        <CardContent className="p-3">
+                          <div className="flex flex-col items-center text-center gap-2">
+                            <div className="w-20 h-20 md:w-24 md:h-24 flex items-center justify-center bg-secondary/30 rounded-full overflow-hidden border-2 border-primary/20">
+                              {character.image ? (
+                                character.image.startsWith('data:') || character.image.startsWith('http') ? (
+                                  <img src={character.image} alt={character.name} className="w-full h-full object-cover" />
+                                ) : (
+                                  <div className="text-4xl md:text-5xl">{character.image}</div>
+                                )
+                              ) : (
+                                <Icon name="User" size={32} className="text-secondary" />
+                              )}
+                            </div>
+                            <h4 className="font-semibold text-foreground text-sm">{character.name}</h4>
                           </div>
-                          <div className="flex-1">
-                            <h4 className="font-semibold text-foreground mb-1">{character.name}</h4>
-                            <p className="text-xs text-muted-foreground mb-2">
-                              Впервые встречен: {new Date(character.firstMetAt).toLocaleDateString('ru-RU')}
-                            </p>
-                            <p className="text-xs text-muted-foreground mb-2">
-                              <Icon name="MapPin" size={12} className="inline mr-1" />
-                              {episode?.title || 'Неизвестный эпизод'}
-                            </p>
-                            {character.comment && (
-                              <p className="text-sm text-foreground mt-2 p-2 bg-secondary/20 rounded">
-                                {character.comment}
-                              </p>
-                            )}
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                </div>
+
+                <Dialog open={!!selectedCharacter} onOpenChange={(open) => {
+                  if (!open) {
+                    setSelectedCharacter(null);
+                    setEditingComment(false);
+                    setCommentText('');
+                  }
+                }}>
+                  <DialogContent className="max-w-md">
+                    {selectedCharacter && (() => {
+                      const character = profile.metCharacters.find(c => c.id === selectedCharacter);
+                      const episode = novel.episodes.find(ep => ep.id === character?.episodeId);
+                      if (!character) return null;
+                      
+                      const handleSaveComment = () => {
+                        if (!onProfileUpdate) return;
+                        
+                        const updatedCharacters = profile.metCharacters.map(c => 
+                          c.id === character.id ? { ...c, comment: commentText } : c
+                        );
+                        
+                        onProfileUpdate({
+                          ...profile,
+                          metCharacters: updatedCharacters
+                        });
+                        
+                        setEditingComment(false);
+                      };
+                      
+                      return (
+                        <>
+                          <DialogHeader>
+                            <DialogTitle className="text-2xl">{character.name}</DialogTitle>
+                          </DialogHeader>
+                          <div className="space-y-4">
+                            <div className="flex justify-center">
+                              <div className="w-32 h-32 flex items-center justify-center bg-secondary/30 rounded-full overflow-hidden border-4 border-primary/30">
+                                {character.image ? (
+                                  character.image.startsWith('data:') || character.image.startsWith('http') ? (
+                                    <ZoomableImage src={character.image} alt={character.name} className="w-full h-full object-cover" />
+                                  ) : (
+                                    <div className="text-6xl">{character.image}</div>
+                                  )
+                                ) : (
+                                  <Icon name="User" size={64} className="text-secondary" />
+                                )}
+                              </div>
+                            </div>
+                            
+                            <div className="space-y-3 text-sm">
+                              <div className="flex items-center gap-2 text-muted-foreground">
+                                <Icon name="Calendar" size={16} />
+                                <span>Впервые встречен: {new Date(character.firstMetAt).toLocaleDateString('ru-RU')}</span>
+                              </div>
+                              
+                              <div className="flex items-center gap-2 text-muted-foreground">
+                                <Icon name="MapPin" size={16} />
+                                <span>{episode?.title || 'Неизвестный эпизод'}</span>
+                              </div>
+                            </div>
+
+                            <div className="space-y-2">
+                              <div className="flex items-center justify-between">
+                                <Label className="text-sm font-semibold">Ваши заметки:</Label>
+                                {onProfileUpdate && !editingComment && (
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={() => {
+                                      setEditingComment(true);
+                                      setCommentText(character.comment || '');
+                                    }}
+                                  >
+                                    <Icon name={character.comment ? "Edit" : "Plus"} size={14} />
+                                  </Button>
+                                )}
+                              </div>
+                              
+                              {editingComment ? (
+                                <div className="space-y-2">
+                                  <Textarea
+                                    value={commentText}
+                                    onChange={(e) => setCommentText(e.target.value)}
+                                    placeholder="Добавьте заметку о персонаже..."
+                                    rows={4}
+                                    className="text-sm"
+                                  />
+                                  <div className="flex gap-2">
+                                    <Button size="sm" onClick={handleSaveComment}>
+                                      Сохранить
+                                    </Button>
+                                    <Button 
+                                      size="sm" 
+                                      variant="ghost" 
+                                      onClick={() => {
+                                        setEditingComment(false);
+                                        setCommentText('');
+                                      }}
+                                    >
+                                      Отмена
+                                    </Button>
+                                  </div>
+                                </div>
+                              ) : character.comment ? (
+                                <div className="p-3 bg-secondary/20 rounded-lg text-sm text-foreground">
+                                  {character.comment}
+                                </div>
+                              ) : (
+                                <p className="text-sm text-muted-foreground italic">Нет заметок</p>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  );
-                })}
-              </div>
+                        </>
+                      );
+                    })()}
+                  </DialogContent>
+                </Dialog>
+              </>
             ) : (
               <p className="text-center py-8 text-muted-foreground">Вы ещё не встретили персонажей</p>
             )}
