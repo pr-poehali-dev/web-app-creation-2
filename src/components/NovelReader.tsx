@@ -72,6 +72,9 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
       setIsBackgroundChanging(true);
       setNewImageReady(false);
       
+      // Захватываем текущий paragraphKey для использования в setTimeout
+      const keyToSet = paragraphKey;
+      
       setTimeout(() => {
         setNewImageReady(true);
       }, 400);
@@ -80,7 +83,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
         setIsBackgroundChanging(false);
         setPreviousBackgroundImage(null);
         // Обновляем отложенный ключ только после завершения смены фона
-        setDelayedParagraphKey(paragraphKey);
+        setDelayedParagraphKey(keyToSet);
       }, 2800);
     } else {
       // Если фон не меняется, обновляем ключ сразу
