@@ -18,11 +18,13 @@ function PathsManager({ novel, onUpdate }: PathsManagerProps) {
   const selectedPath = paths.find(p => p.id === selectedPathId);
 
   const pathUsage = useMemo(() => {
-    if (!selectedPath) return { episodes: [], choices: [], items: [] };
+    if (!selectedPath) return { episodes: [], choices: [], activatingChoices: [] };
 
     const linkedEpisodes = novel.episodes.filter(ep => ep.requiredPath === selectedPath.id);
     
     const linkedChoices: Array<{ episodeTitle: string; question: string; optionText: string }> = [];
+    const activatingChoices: Array<{ episodeTitle: string; question: string; optionText: string }> = [];
+    
     novel.episodes.forEach(ep => {
       ep.paragraphs.forEach(para => {
         if (para.type === 'choice') {
@@ -34,12 +36,19 @@ function PathsManager({ novel, onUpdate }: PathsManagerProps) {
                 optionText: opt.text
               });
             }
+            if (opt.activatesPath === selectedPath.id) {
+              activatingChoices.push({
+                episodeTitle: ep.title,
+                question: para.question,
+                optionText: opt.text
+              });
+            }
           });
         }
       });
     });
 
-    return { episodes: linkedEpisodes, choices: linkedChoices };
+    return { episodes: linkedEpisodes, choices: linkedChoices, activatingChoices };
   }, [selectedPath, novel.episodes]);
 
   const handleAddPath = () => {
@@ -182,14 +191,14 @@ function PathsManager({ novel, onUpdate }: PathsManagerProps) {
                       Связанные элементы
                     </h3>
                     
-                    {pathUsage.episodes.length === 0 && pathUsage.choices.length === 0 ? (
+                    {pathUsage.episodes.length === 0 && pathUsage.choices.length === 0 && pathUsage.activatingChoices.length === 0 ? (
                       <p className="text-sm text-muted-foreground">Нет элементов, связанных с этим путём</p>
                     ) : (
                       <div className="space-y-3">
                         {pathUsage.episodes.length > 0 && (
                           <div>
                             <p className="text-xs font-medium text-muted-foreground mb-1">
-                              Эпизоды ({pathUsage.episodes.length})
+                              Эпизоды, требующие путь ({pathUsage.episodes.length})
                             </p>
                             <div className="space-y-1">
                               {pathUsage.episodes.map(ep => (
@@ -205,10 +214,33 @@ function PathsManager({ novel, onUpdate }: PathsManagerProps) {
                         {pathUsage.choices.length > 0 && (
                           <div>
                             <p className="text-xs font-medium text-muted-foreground mb-1">
-                              Выборы ({pathUsage.choices.length})
+                              Варианты, требующие путь ({pathUsage.choices.length})
                             </p>
                             <div className="space-y-1">
                               {pathUsage.choices.map((choice, idx) => (
+                                <div key={idx} className="text-sm p-2 bg-muted/30 rounded">
+                                  <div className="flex items-start gap-2">
+                                    <Icon name="Lock" size={12} className="mt-0.5" />
+                                    <div>
+                                      <p className="font-medium">{choice.episodeTitle}</p>
+                                      <p className="text-xs text-muted-foreground">
+                                        {choice.question} → {choice.optionText}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {pathUsage.activatingChoices.length > 0 && (
+                          <div>
+                            <p className="text-xs font-medium text-muted-foreground mb-1">
+                              Варианты, активирующие путь ({pathUsage.activatingChoices.length})
+                            </p>
+                            <div className="space-y-1">
+                              {pathUsage.activatingChoices.map((choice, idx) => (
                                 <div key={idx} className="text-sm p-2 bg-muted/30 rounded">
                                   <div className="flex items-start gap-2">
                                     <Icon name="GitBranch" size={12} className="mt-0.5" />
