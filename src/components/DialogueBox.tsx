@@ -50,12 +50,12 @@ function DialogueBox({
                   src={characterImage}
                   alt={characterName}
                   className={isTopMerged 
-                    ? "w-28 h-28 md:w-40 md:h-40 object-contain rounded-2xl shadow-xl"
-                    : "w-32 h-32 md:w-48 md:h-48 object-contain rounded-3xl shadow-2xl"
+                    ? "w-20 h-20 md:w-28 md:h-28 lg:w-40 lg:h-40 object-contain rounded-xl md:rounded-2xl shadow-xl"
+                    : "w-24 h-24 md:w-32 md:h-32 lg:w-48 lg:h-48 object-contain rounded-2xl md:rounded-3xl shadow-2xl"
                   }
                 />
               ) : (
-                <div className={isTopMerged ? "text-5xl md:text-7xl" : "text-6xl md:text-9xl"}>{characterImage}</div>
+                <div className={isTopMerged ? "text-4xl md:text-5xl lg:text-7xl" : "text-5xl md:text-6xl lg:text-9xl"}>{characterImage}</div>
               )}
             </div>
             
@@ -64,24 +64,24 @@ function DialogueBox({
                 e.stopPropagation();
                 setShowCommentDialog(true);
               }}
-              className="text-sm font-bold text-primary-foreground bg-primary/90 backdrop-blur-sm px-4 py-2 rounded-full border-0 hover:bg-primary transition-all shadow-lg cursor-pointer"
+              className="text-xs md:text-sm font-bold text-primary-foreground bg-primary/90 backdrop-blur-sm px-3 md:px-4 py-1.5 md:py-2 rounded-full border-0 hover:bg-primary transition-all shadow-lg cursor-pointer"
             >
               {characterName}
             </button>
           </div>
         )}
         
-        <Card className="flex-1 w-full bg-card/95 backdrop-blur-sm border-0 shadow-xl animate-scale-in">
-          <CardContent className={isTopMerged ? "p-4 md:p-6" : "p-4 md:p-8"}>
+        <Card className="flex-1 w-full bg-card/95 backdrop-blur-sm border-0 shadow-xl animate-scale-in rounded-xl md:rounded-2xl">
+          <CardContent className={isTopMerged ? "p-3 md:p-4 lg:p-6" : "p-3 md:p-4 lg:p-8"}>
             {!characterImage && (
               <h3 className={isTopMerged 
-                ? "text-base md:text-lg font-bold text-primary mb-2"
-                : "text-base md:text-lg font-bold text-primary mb-3"
+                ? "text-sm md:text-base lg:text-lg font-bold text-primary mb-1.5 md:mb-2"
+                : "text-sm md:text-base lg:text-lg font-bold text-primary mb-2 md:mb-3"
               }>
                 {characterName}
               </h3>
             )}
-            <p className={`novel-text leading-relaxed text-foreground ${isTopMerged ? "text-base md:text-lg" : "text-base md:text-lg"}`} style={{ fontFamily }}>
+            <p className={`novel-text leading-relaxed text-foreground ${isTopMerged ? "text-sm md:text-base lg:text-lg" : "text-sm md:text-base lg:text-lg"}`} style={{ fontFamily }}>
               <TypewriterText 
                 text={text}
                 speed={textSpeed}

@@ -20,12 +20,12 @@ interface ChoiceBoxProps {
 
 function ChoiceBox({ question, options, novel, onChoice }: ChoiceBoxProps) {
   return (
-    <Card className="bg-card/95 backdrop-blur-sm border-0 shadow-2xl animate-scale-in">
-      <CardContent className="p-4 md:p-10">
-        <h3 className="text-lg md:text-2xl font-bold text-center mb-6 md:mb-8 text-foreground">
+    <Card className="bg-card/95 backdrop-blur-sm border-0 shadow-2xl animate-scale-in rounded-xl md:rounded-2xl">
+      <CardContent className="p-3 md:p-6 lg:p-10">
+        <h3 className="text-base md:text-lg lg:text-2xl font-bold text-center mb-4 md:mb-6 lg:mb-8 text-foreground">
           {question}
         </h3>
-        <div className="space-y-3 md:space-y-4">
+        <div className="space-y-2 md:space-y-3 lg:space-y-4">
           {options.map((option, index) => {
             const activatesPath = option.requiredPath ? novel.paths?.find(p => p.id === option.requiredPath) : null;
             return (
@@ -33,7 +33,7 @@ function ChoiceBox({ question, options, novel, onChoice }: ChoiceBoxProps) {
                 <Button
                   variant="outline"
                   size="lg"
-                  className="w-full text-sm md:text-base py-4 md:py-6 rounded-2xl border-2 hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all hover:scale-[1.02] hover:shadow-xl animate-fade-in text-foreground font-semibold"
+                  className="w-full text-xs md:text-sm lg:text-base py-3 md:py-4 lg:py-6 rounded-xl md:rounded-2xl border-2 hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all hover:scale-[1.02] hover:shadow-xl animate-fade-in text-foreground font-semibold"
                   style={{ animationDelay: `${index * 100}ms` }}
                   onClick={(e) => {
                     e.stopPropagation();

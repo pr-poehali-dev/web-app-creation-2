@@ -13,8 +13,8 @@ function ImageBox({ url, alt, isTopMerged = false }: ImageBoxProps) {
         src={url}
         alt={alt || 'Novel image'}
         className={isTopMerged 
-          ? "max-w-full max-h-[45vh] rounded-2xl shadow-xl object-contain"
-          : "max-w-full max-h-[80vh] rounded-3xl shadow-2xl object-contain"
+          ? "max-w-full max-h-[35vh] md:max-h-[45vh] rounded-xl md:rounded-2xl shadow-xl object-contain"
+          : "max-w-full max-h-[60vh] md:max-h-[80vh] rounded-2xl md:rounded-3xl shadow-2xl object-contain"
         }
       />
     </div>
