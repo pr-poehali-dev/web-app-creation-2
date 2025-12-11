@@ -28,31 +28,59 @@ function InteractiveText({ text, className = '' }: InteractiveTextProps) {
     const windowWidth = window.innerWidth;
     const windowHeight = window.innerHeight;
 
-    // Расстояния до краёв
-    const distanceToRight = windowWidth - mouseX;
-    const distanceToLeft = mouseX;
-    const distanceToBottom = windowHeight - mouseY;
-    const distanceToTop = mouseY;
+    // Примерные размеры подсказки (320px width, ~100-150px height)
+    const tooltipWidth = 320;
+    const tooltipHeight = 120;
+    const offset = 10;
 
-    // Находим максимальное расстояние
-    const maxDistance = Math.max(distanceToRight, distanceToLeft, distanceToBottom, distanceToTop);
+    // Расстояния до краёв с учётом размеров подсказки
+    const spaceRight = windowWidth - mouseX - offset;
+    const spaceLeft = mouseX - offset;
+    const spaceBottom = windowHeight - mouseY - offset;
+    const spaceTop = mouseY - offset;
+
+    // Проверяем, где больше места для подсказки
+    const canFitTop = spaceTop >= tooltipHeight;
+    const canFitBottom = spaceBottom >= tooltipHeight;
+    const canFitLeft = spaceLeft >= tooltipWidth;
+    const canFitRight = spaceRight >= tooltipWidth;
 
     let side: 'top' | 'bottom' | 'left' | 'right' = 'top';
     let align: 'start' | 'center' | 'end' = 'center';
 
-    // Выбираем сторону с наибольшим пространством
-    if (maxDistance === distanceToTop) {
-      side = 'top';
-      align = distanceToLeft > distanceToRight ? 'end' : 'start';
-    } else if (maxDistance === distanceToBottom) {
-      side = 'bottom';
-      align = distanceToLeft > distanceToRight ? 'end' : 'start';
-    } else if (maxDistance === distanceToLeft) {
-      side = 'left';
-      align = distanceToTop > distanceToBottom ? 'end' : 'start';
+    // Приоритет: сначала vertical (top/bottom), потом horizontal (left/right)
+    if (canFitTop || canFitBottom) {
+      // Выбираем между top и bottom
+      if (canFitTop && canFitBottom) {
+        side = spaceTop > spaceBottom ? 'top' : 'bottom';
+      } else if (canFitTop) {
+        side = 'top';
+      } else {
+        side = 'bottom';
+      }
+      // Для vertical alignment проверяем horizontal space
+      if (spaceRight >= tooltipWidth / 2 && spaceLeft >= tooltipWidth / 2) {
+        align = 'center';
+      } else if (spaceLeft > spaceRight) {
+        align = 'end'; // Подсказка справа от курсора
+      } else {
+        align = 'start'; // Подсказка слева от курсора
+      }
     } else {
-      side = 'right';
-      align = distanceToTop > distanceToBottom ? 'end' : 'start';
+      // Используем horizontal (left/right)
+      if (canFitLeft && canFitRight) {
+        side = spaceLeft > spaceRight ? 'left' : 'right';
+      } else if (canFitLeft) {
+        side = 'left';
+      } else {
+        side = 'right';
+      }
+      // Для horizontal alignment проверяем vertical space
+      if (spaceTop > spaceBottom) {
+        align = 'end';
+      } else {
+        align = 'start';
+      }
     }
 
     setTooltipPosition({ side, align });
