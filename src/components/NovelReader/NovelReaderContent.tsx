@@ -17,6 +17,7 @@ interface NovelReaderContentProps {
   handleChoice: (choiceId: string, pathId: string | undefined, oneTime: boolean | undefined, nextEpisodeId?: string, nextParagraphIndex?: number) => void;
   onProfileUpdate: (profile: UserProfile | ((prev: UserProfile) => UserProfile)) => void;
   paragraphKey: string;
+  isMerged?: boolean;
 }
 
 function NovelReaderContent({
@@ -29,7 +30,8 @@ function NovelReaderContent({
   handleTypingComplete,
   handleChoice,
   onProfileUpdate,
-  paragraphKey
+  paragraphKey,
+  isMerged = false
 }: NovelReaderContentProps) {
   const novelFontStyle = {
     fontFamily: settings.fontFamily === 'merriweather' ? '"Merriweather", serif' :
@@ -47,11 +49,17 @@ function NovelReaderContent({
   return (
     <>
       {currentParagraph.type === 'text' && (
-        <div className="bg-card/90 backdrop-blur-sm rounded-2xl p-6 md:p-8 shadow-xl border border-border h-[280px] md:min-h-[12rem] md:h-auto flex items-start">
+        <div className={`bg-card/90 backdrop-blur-sm rounded-2xl shadow-xl border border-border flex items-start ${
+          isMerged ? 'p-3 md:p-4 h-auto' : 'p-6 md:p-8 h-[280px] md:min-h-[12rem] md:h-auto'
+        }`}>
           <div className={`leading-relaxed text-left text-foreground w-full pt-2 ${
-            settings.textSize === 'small' ? 'text-base md:text-lg' :
-            settings.textSize === 'large' ? 'text-xl md:text-2xl' :
-            'text-lg md:text-xl'
+            isMerged 
+              ? (settings.textSize === 'small' ? 'text-sm md:text-base' :
+                 settings.textSize === 'large' ? 'text-base md:text-lg' :
+                 'text-sm md:text-base')
+              : (settings.textSize === 'small' ? 'text-base md:text-lg' :
+                 settings.textSize === 'large' ? 'text-xl md:text-2xl' :
+                 'text-lg md:text-xl')
           }`} style={novelFontStyle}>
             {console.log('[NovelReaderContent] Rendering TypewriterText with key:', paragraphKey, 'skipTyping:', skipTyping)}
             <TypewriterText
@@ -75,6 +83,7 @@ function NovelReaderContent({
             onComplete={handleTypingComplete}
             textSpeed={settings.textSpeed}
             fontFamily={novelFontStyle.fontFamily}
+            isMerged={isMerged}
             existingComment={profile.metCharacters?.find(
               c => c.name === currentParagraph.characterName
             )?.comment}
@@ -122,6 +131,7 @@ function NovelReaderContent({
           skipTyping={skipTyping}
           onComplete={handleTypingComplete}
           textSpeed={settings.textSpeed}
+          isMerged={isMerged}
         />
       )}
 
@@ -129,6 +139,7 @@ function NovelReaderContent({
         <ImageBox
           url={currentParagraph.url}
           alt={currentParagraph.alt}
+          isMerged={isMerged}
         />
       )}
     </>
