@@ -81,7 +81,7 @@ function DialogueBox({
                 {characterName}
               </h3>
             )}
-            <p className={`novel-text leading-relaxed text-foreground ${\n              isTopMerged ? "text-sm md:text-base" : "text-base md:text-lg"\n            }`} style={{ fontFamily }}>
+            <p className={`novel-text leading-relaxed text-foreground ${isTopMerged ? "text-sm md:text-base" : "text-base md:text-lg"}`} style={{ fontFamily }}>
               <TypewriterText 
                 text={text}
                 speed={textSpeed}
