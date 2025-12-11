@@ -260,6 +260,23 @@ function ParagraphEditor({
             >
               <Icon name="ChevronDown" size={16} />
             </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              onClick={() => {
+                const nextParagraph = totalParagraphs > index + 1 ? novel.episodes.find(e => e.id === episodeId)?.paragraphs[index + 1] : null;
+                if (paragraph.mergedWith) {
+                  onUpdate(index, { ...paragraph, mergedWith: undefined });
+                } else if (nextParagraph) {
+                  onUpdate(index, { ...paragraph, mergedWith: nextParagraph.id });
+                }
+              }}
+              disabled={index === totalParagraphs - 1}
+              title={paragraph.mergedWith ? 'Разъединить' : 'Объединить со следующим'}
+            >
+              <Icon name={paragraph.mergedWith ? "Unlink" : "Link"} size={16} />
+            </Button>
           </div>
 
           <div className="flex-1 space-y-3">
@@ -267,6 +284,7 @@ function ParagraphEditor({
               <div className="flex items-center gap-2">
                 <span className="text-sm font-bold text-primary">
                   {getParagraphNumber(novel, episodeId, index)}
+                  {paragraph.mergedWith && <span className="ml-2 text-xs text-primary">(объединён со следующим)</span>}
                 </span>
                 {isChangingType ? (
                   <Select value={paragraph.type} onValueChange={handleTypeChange}>

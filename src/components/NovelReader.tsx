@@ -340,18 +340,35 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
             <div className="w-full max-w-4xl md:min-h-0 relative z-10">
               {/* Отображаемый параграф - скрываем на время смены фона */}
               {currentParagraph.type !== 'background' && !isBackgroundChanging && (
-                <NovelReaderContent
-                  currentParagraph={currentParagraph}
-                  currentEpisode={currentEpisode}
-                  novel={novel}
-                  settings={settings}
-                  profile={profile}
-                  skipTyping={skipTyping}
-                  handleTypingComplete={handleTypingComplete}
-                  handleChoice={handleChoice}
-                  onProfileUpdate={onProfileUpdate}
-                  paragraphKey={paragraphKey}
-                />
+                <div className="space-y-4">
+                  <NovelReaderContent
+                    currentParagraph={currentParagraph}
+                    currentEpisode={currentEpisode}
+                    novel={novel}
+                    settings={settings}
+                    profile={profile}
+                    skipTyping={skipTyping}
+                    handleTypingComplete={handleTypingComplete}
+                    handleChoice={handleChoice}
+                    onProfileUpdate={onProfileUpdate}
+                    paragraphKey={paragraphKey}
+                  />
+                  {/* Объединённый параграф */}
+                  {currentParagraph.mergedWith && currentEpisode.paragraphs[currentParagraphIndex + 1] && (
+                    <NovelReaderContent
+                      currentParagraph={currentEpisode.paragraphs[currentParagraphIndex + 1]}
+                      currentEpisode={currentEpisode}
+                      novel={novel}
+                      settings={settings}
+                      profile={profile}
+                      skipTyping={skipTyping}
+                      handleTypingComplete={() => {}}
+                      handleChoice={handleChoice}
+                      onProfileUpdate={onProfileUpdate}
+                      paragraphKey={`${paragraphKey}-merged`}
+                    />
+                  )}
+                </div>
               )}
 
               {/* Подсказка для десктопа */}

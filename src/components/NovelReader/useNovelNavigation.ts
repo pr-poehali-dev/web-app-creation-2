@@ -66,7 +66,11 @@ export function useNovelNavigation({
       return prev;
     });
 
-    const nextIndex = currentParagraphIndex + 1;
+    // Если текущий параграф объединён со следующим, пропускаем его
+    let nextIndex = currentParagraphIndex + 1;
+    if (currentParagraph?.mergedWith && nextIndex < currentEpisode.paragraphs.length) {
+      nextIndex = currentParagraphIndex + 2;
+    }
 
     if (nextIndex < currentEpisode.paragraphs.length) {
       // Переходим к следующему параграфу
@@ -112,8 +116,14 @@ export function useNovelNavigation({
   }, [currentEpisodeId, currentParagraphIndex, currentEpisode, currentParagraph, onProfileUpdate, isGuest, onGuestLimitReached, novel]);
 
   const goToPreviousParagraph = useCallback(() => {
+    if (!currentEpisode) return;
     if (currentParagraphIndex > 0) {
-      const prevIndex = currentParagraphIndex - 1;
+      let prevIndex = currentParagraphIndex - 1;
+      
+      // Если предыдущий параграф объединён с текущим, пропускаем его
+      if (prevIndex > 0 && currentEpisode.paragraphs[prevIndex - 1]?.mergedWith === currentEpisode.paragraphs[prevIndex]?.id) {
+        prevIndex = currentParagraphIndex - 2;
+      }
       
       if (prevIndex >= 0) {
         onProfileUpdate(prev => ({
@@ -123,7 +133,7 @@ export function useNovelNavigation({
         }));
       }
     }
-  }, [currentParagraphIndex, currentEpisodeId, onProfileUpdate]);
+  }, [currentParagraphIndex, currentEpisodeId, currentEpisode, onProfileUpdate]);
 
   const handleChoice = useCallback((choiceId: string, pathId: string | undefined, oneTime: boolean | undefined, nextEpisodeId?: string, nextParagraphIndex?: number) => {
     // Отмечаем выбор как использованный если он одноразовый

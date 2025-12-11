@@ -4,6 +4,7 @@ export interface BaseParagraph {
   id: string;
   type: ParagraphType;
   order?: number;
+  mergedWith?: string; // ID следующего параграфа для объединения
 }
 
 export interface TextParagraph extends BaseParagraph {
