@@ -84,6 +84,7 @@ export interface LibraryCharacter {
   defaultImage?: string;
   images: { id: string; url: string; name?: string }[];
   description?: string;
+  isStoryCharacter?: boolean;
 }
 
 export interface LibraryChoice {

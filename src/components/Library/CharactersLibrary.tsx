@@ -155,6 +155,18 @@ function CharactersLibrary({ novel, onUpdate }: CharactersLibraryProps) {
                           rows={2}
                           className="text-foreground text-sm"
                         />
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="checkbox"
+                            id={`story-${character.id}`}
+                            checked={character.isStoryCharacter ?? true}
+                            onChange={(e) => handleUpdateCharacter(character.id, { isStoryCharacter: e.target.checked })}
+                            className="w-4 h-4 rounded border-border"
+                          />
+                          <Label htmlFor={`story-${character.id}`} className="text-sm cursor-pointer">
+                            Сюжетный персонаж (показывать в профиле)
+                          </Label>
+                        </div>
                       </div>
                     ) : (
                       <div className="flex gap-3">
@@ -164,7 +176,15 @@ function CharactersLibrary({ novel, onUpdate }: CharactersLibraryProps) {
                           </div>
                         )}
                         <div>
-                          <h4 className="font-semibold text-foreground text-lg">{character.name}</h4>
+                          <div className="flex items-center gap-2">
+                            <h4 className="font-semibold text-foreground text-lg">{character.name}</h4>
+                            {character.isStoryCharacter !== false && (
+                              <span className="px-2 py-0.5 bg-primary/20 text-primary text-xs rounded-full font-medium">Сюжетный</span>
+                            )}
+                            {character.isStoryCharacter === false && (
+                              <span className="px-2 py-0.5 bg-muted text-muted-foreground text-xs rounded-full font-medium">Второстепенный</span>
+                            )}
+                          </div>
                           {character.description && (
                             <p className="text-sm text-muted-foreground mt-1">{character.description}</p>
                           )}

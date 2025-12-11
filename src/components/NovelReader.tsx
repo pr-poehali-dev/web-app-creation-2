@@ -199,6 +199,12 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
           const libraryCharacter = novel.library.characters.find(
             c => c.name === currentParagraph.characterName
           );
+          
+          // Добавляем персонажа только если он сюжетный (или isStoryCharacter не указан)
+          if (libraryCharacter?.isStoryCharacter === false) {
+            return prev;
+          }
+          
           const defaultImage = libraryCharacter?.defaultImage || currentParagraph.characterImage;
           
           return {
