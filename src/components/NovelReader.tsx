@@ -52,6 +52,12 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
   // Ref для отслеживания предыдущего индекса - чтобы понять, клик или прыжок
   const previousParagraphIndexRef = useRef<number>(currentParagraphIndex);
   
+  // Ref для хранения ID таймаутов смены фона
+  const backgroundTimeoutRef = useRef<{ imageReady: NodeJS.Timeout | null; keyUpdate: NodeJS.Timeout | null }>({
+    imageReady: null,
+    keyUpdate: null
+  });
+  
   // Определяем какой фон должен быть для текущего параграфа
   useEffect(() => {
     if (!currentEpisode) return;
@@ -67,6 +73,14 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
     }
     
     if (bgUrl !== backgroundImage) {
+      // Отменяем предыдущие таймауты
+      if (backgroundTimeoutRef.current.imageReady) {
+        clearTimeout(backgroundTimeoutRef.current.imageReady);
+      }
+      if (backgroundTimeoutRef.current.keyUpdate) {
+        clearTimeout(backgroundTimeoutRef.current.keyUpdate);
+      }
+      
       setPreviousBackgroundImage(backgroundImage);
       setBackgroundImage(bgUrl);
       setIsBackgroundChanging(true);
@@ -75,20 +89,36 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
       // Захватываем текущий paragraphKey для использования в setTimeout
       const keyToSet = paragraphKey;
       
-      setTimeout(() => {
+      backgroundTimeoutRef.current.imageReady = setTimeout(() => {
         setNewImageReady(true);
       }, 400);
       
-      setTimeout(() => {
+      backgroundTimeoutRef.current.keyUpdate = setTimeout(() => {
         setIsBackgroundChanging(false);
         setPreviousBackgroundImage(null);
         // Обновляем отложенный ключ только после завершения смены фона
         setDelayedParagraphKey(keyToSet);
       }, 2800);
     } else {
-      // Если фон не меняется, обновляем ключ сразу
+      // Если фон не меняется, отменяем предыдущие таймауты и обновляем ключ сразу
+      if (backgroundTimeoutRef.current.imageReady) {
+        clearTimeout(backgroundTimeoutRef.current.imageReady);
+      }
+      if (backgroundTimeoutRef.current.keyUpdate) {
+        clearTimeout(backgroundTimeoutRef.current.keyUpdate);
+      }
       setDelayedParagraphKey(paragraphKey);
     }
+    
+    // Cleanup при размонтировании
+    return () => {
+      if (backgroundTimeoutRef.current.imageReady) {
+        clearTimeout(backgroundTimeoutRef.current.imageReady);
+      }
+      if (backgroundTimeoutRef.current.keyUpdate) {
+        clearTimeout(backgroundTimeoutRef.current.keyUpdate);
+      }
+    };
   }, [currentEpisodeId, currentParagraphIndex, currentEpisode, backgroundImage, paragraphKey]);
   
   // Ref для отслеживания актуального значения isTyping в callbacks
