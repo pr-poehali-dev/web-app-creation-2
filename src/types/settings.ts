@@ -23,6 +23,7 @@ export interface CollectedItem {
   description: string;
   imageUrl?: string;
   episodeId: string;
+  itemType: 'collectible' | 'story';
 }
 
 export interface MetCharacter {
@@ -43,6 +44,7 @@ export interface UserProfile {
   achievements: string[];
   bookmarks: Bookmark[];
   collectedItems: CollectedItem[];
+  storyItems: string[];
   metCharacters: MetCharacter[];
   currentEpisodeId: string;
   currentParagraphIndex: number;
@@ -77,6 +79,7 @@ export const defaultProfile: UserProfile = {
   achievements: [],
   bookmarks: [],
   collectedItems: [],
+  storyItems: [],
   metCharacters: [],
   currentEpisodeId: 'ep1',
   currentParagraphIndex: 0,

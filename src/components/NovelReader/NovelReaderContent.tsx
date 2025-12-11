@@ -132,6 +132,8 @@ function NovelReaderContent({
           onComplete={handleTypingComplete}
           textSpeed={settings.textSpeed}
           isTopMerged={isTopMerged}
+          itemType={currentParagraph.itemType}
+          action={currentParagraph.action}
         />
       )}
 

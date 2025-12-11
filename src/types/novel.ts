@@ -37,6 +37,8 @@ export interface ItemParagraph extends BaseParagraph {
   name: string;
   description: string;
   imageUrl?: string;
+  itemType?: 'collectible' | 'story';
+  action?: 'gain' | 'lose';
 }
 
 export interface DialogueParagraph extends BaseParagraph {
@@ -77,6 +79,7 @@ export interface LibraryItem {
   name: string;
   description: string;
   imageUrl?: string;
+  itemType?: 'collectible' | 'story';
 }
 
 export interface LibraryCharacter {

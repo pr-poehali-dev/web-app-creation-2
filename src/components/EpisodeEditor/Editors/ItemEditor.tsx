@@ -129,6 +129,46 @@ function ItemEditor({
         rows={3}
         className="text-foreground"
       />
+      
+      <div className="space-y-2 p-2 bg-muted/30 rounded">
+        <div className="grid grid-cols-2 gap-2">
+          <div>
+            <Label className="text-xs">Тип предмета</Label>
+            <Select
+              value={paragraph.itemType || 'collectible'}
+              onValueChange={(value: 'collectible' | 'story') => {
+                onUpdate(index, { ...paragraph, itemType: value });
+              }}
+            >
+              <SelectTrigger className="text-foreground text-xs h-8">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="collectible">Коллекционный</SelectItem>
+                <SelectItem value="story">Сюжетный</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div>
+            <Label className="text-xs">Действие</Label>
+            <Select
+              value={paragraph.action || 'gain'}
+              onValueChange={(value: 'gain' | 'lose') => {
+                onUpdate(index, { ...paragraph, action: value });
+              }}
+            >
+              <SelectTrigger className="text-foreground text-xs h-8">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="gain">Получить</SelectItem>
+                <SelectItem value="lose">Потерять</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

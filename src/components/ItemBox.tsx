@@ -11,18 +11,31 @@ interface ItemBoxProps {
   onComplete?: () => void;
   textSpeed?: number;
   isTopMerged?: boolean;
+  itemType?: 'collectible' | 'story';
+  action?: 'gain' | 'lose';
 }
 
-function ItemBox({ name, description, imageUrl, skipTyping, onComplete, textSpeed = 50, isTopMerged = false }: ItemBoxProps) {
+function ItemBox({ name, description, imageUrl, skipTyping, onComplete, textSpeed = 50, isTopMerged = false, itemType = 'collectible', action = 'gain' }: ItemBoxProps) {
+  const getBadgeText = () => {
+    if (action === 'lose') return 'Потерян предмет';
+    if (itemType === 'story') return 'Получен предмет';
+    return 'Коллекционный предмет';
+  };
+
+  const getBadgeColor = () => {
+    if (action === 'lose') return 'bg-destructive text-destructive-foreground';
+    if (itemType === 'story') return 'bg-blue-500 text-white';
+    return 'bg-primary text-primary-foreground';
+  };
 
   return (
     <Card className="bg-gradient-to-br from-card via-secondary/10 to-accent/20 backdrop-blur-sm border-0 shadow-2xl animate-scale-in max-w-md mx-auto rounded-xl md:rounded-2xl">
       <CardContent className={isTopMerged ? "p-3 md:p-4 lg:p-6 text-center" : "p-3 md:p-4 lg:p-8 text-center"}>
-        <Badge variant="default" className={isTopMerged 
-          ? "mb-2 md:mb-3 lg:mb-4 text-xs md:text-xs bg-primary text-primary-foreground border-0 shadow-lg px-2 md:px-3 py-0.5 md:py-1 rounded-full font-semibold"
-          : "mb-3 md:mb-4 lg:mb-6 text-xs md:text-sm bg-primary text-primary-foreground border-0 shadow-lg px-2 md:px-3 lg:px-4 py-0.5 md:py-1 lg:py-1.5 rounded-full font-semibold"
-        }>
-          Получен предмет
+        <Badge variant="default" className={`${isTopMerged 
+          ? "mb-2 md:mb-3 lg:mb-4 text-xs md:text-xs border-0 shadow-lg px-2 md:px-3 py-0.5 md:py-1 rounded-full font-semibold"
+          : "mb-3 md:mb-4 lg:mb-6 text-xs md:text-sm border-0 shadow-lg px-2 md:px-3 lg:px-4 py-0.5 md:py-1 lg:py-1.5 rounded-full font-semibold"
+        } ${getBadgeColor()}`}>
+          {getBadgeText()}
         </Badge>
         <div className={isTopMerged 
           ? "mb-3 md:mb-4 lg:mb-5 animate-scale-in flex justify-center p-2 md:p-3 lg:p-4 bg-background/50 rounded-xl md:rounded-2xl border-0 shadow-inner"

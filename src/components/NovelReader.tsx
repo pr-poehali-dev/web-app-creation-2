@@ -226,26 +226,61 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
     }
   }, [currentParagraph?.type, currentParagraph?.characterName, currentEpisodeId, novel.library.characters, onProfileUpdate]);
 
-  // Сохранить предмет при показе
+  // Сохранить/удалить предмет при показе
   useEffect(() => {
     if (currentParagraph?.type === 'item') {
       onProfileUpdate(prev => {
-        const itemExists = prev.collectedItems?.some(i => i.id === currentParagraph.id);
-        if (!itemExists) {
-          return {
-            ...prev,
-            collectedItems: [
-              ...(prev.collectedItems || []),
-              {
-                id: currentParagraph.id,
-                name: currentParagraph.name,
-                description: currentParagraph.description,
-                imageUrl: currentParagraph.imageUrl,
-                episodeId: currentEpisodeId
-              }
-            ]
-          };
+        const itemType = currentParagraph.itemType || 'collectible';
+        const action = currentParagraph.action || 'gain';
+        
+        if (itemType === 'collectible') {
+          // Коллекционные предметы всегда добавляются (только gain)
+          const itemExists = prev.collectedItems?.some(i => i.id === currentParagraph.id);
+          if (!itemExists && action === 'gain') {
+            return {
+              ...prev,
+              collectedItems: [
+                ...(prev.collectedItems || []),
+                {
+                  id: currentParagraph.id,
+                  name: currentParagraph.name,
+                  description: currentParagraph.description,
+                  imageUrl: currentParagraph.imageUrl,
+                  episodeId: currentEpisodeId,
+                  itemType: 'collectible'
+                }
+              ]
+            };
+          }
+        } else {
+          // Сюжетные предметы можно добавлять и удалять
+          const storyItemExists = prev.storyItems?.includes(currentParagraph.id);
+          
+          if (action === 'gain' && !storyItemExists) {
+            return {
+              ...prev,
+              storyItems: [...(prev.storyItems || []), currentParagraph.id],
+              collectedItems: [
+                ...(prev.collectedItems || []),
+                {
+                  id: currentParagraph.id,
+                  name: currentParagraph.name,
+                  description: currentParagraph.description,
+                  imageUrl: currentParagraph.imageUrl,
+                  episodeId: currentEpisodeId,
+                  itemType: 'story'
+                }
+              ]
+            };
+          } else if (action === 'lose' && storyItemExists) {
+            return {
+              ...prev,
+              storyItems: prev.storyItems.filter(id => id !== currentParagraph.id),
+              collectedItems: prev.collectedItems.filter(i => i.id !== currentParagraph.id)
+            };
+          }
         }
+        
         return prev;
       });
     }
