@@ -134,15 +134,17 @@ const getDisplayText = (text: string, targetLength: number): string => {
 function TypewriterText({ text, speed = 50, skipTyping = false, onComplete }: TypewriterTextProps) {
   const [displayedText, setDisplayedText] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [hasCompleted, setHasCompleted] = useState(false);
   
   const cleanText = getCleanText(text);
   const targetLength = cleanText.length;
 
   useEffect(() => {
     if (skipTyping) {
+      console.log('[TypewriterText] Skip typing activated');
       setDisplayedText(text);
       setCurrentIndex(targetLength);
-      onComplete?.();
+      setHasCompleted(true);
       return;
     }
 
@@ -153,15 +155,25 @@ function TypewriterText({ text, speed = 50, skipTyping = false, onComplete }: Ty
       }, speed);
 
       return () => clearTimeout(timeout);
-    } else if (currentIndex === targetLength && currentIndex > 0) {
-      onComplete?.();
+    } else if (currentIndex === targetLength && currentIndex > 0 && !hasCompleted) {
+      console.log('[TypewriterText] Typing completed naturally');
+      setHasCompleted(true);
     }
-  }, [currentIndex, text, targetLength, speed, skipTyping, onComplete]);
+  }, [currentIndex, text, targetLength, speed, skipTyping, hasCompleted]);
 
   useEffect(() => {
+    console.log('[TypewriterText] Text changed, resetting');
     setDisplayedText('');
     setCurrentIndex(0);
+    setHasCompleted(false);
   }, [text]);
+
+  useEffect(() => {
+    if (hasCompleted) {
+      console.log('[TypewriterText] Calling onComplete');
+      onComplete?.();
+    }
+  }, [hasCompleted, onComplete]);
 
   return <InteractiveText text={displayedText} />;
 }
