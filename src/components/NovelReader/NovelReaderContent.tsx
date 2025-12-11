@@ -49,12 +49,12 @@ function NovelReaderContent({
   return (
     <>
       {currentParagraph.type === 'text' && (
-        <div className={`bg-card/90 backdrop-blur-sm rounded-2xl p-6 md:p-8 shadow-xl border border-border h-[280px] md:min-h-[12rem] md:h-auto flex items-start ${
+        <div className={`bg-card/90 backdrop-blur-sm rounded-2xl p-6 md:p-8 shadow-xl border border-border h-[240px] md:min-h-[12rem] md:h-auto flex items-start ${
           currentParagraph.slowFade 
             ? `transition-opacity duration-[1500ms] ease-in-out ${isFading ? 'opacity-0' : 'opacity-100'}` 
             : `transition-opacity duration-[800ms] ease-in-out ${isFading ? 'opacity-0' : 'opacity-100'}`
         }`}>
-          <div className={`leading-relaxed text-left text-foreground w-full pt-2 ${
+          <div className={`leading-relaxed text-left text-foreground w-full ${
             settings.textSize === 'small' ? 'text-base md:text-lg' :
             settings.textSize === 'large' ? 'text-xl md:text-2xl' :
             'text-lg md:text-xl'
