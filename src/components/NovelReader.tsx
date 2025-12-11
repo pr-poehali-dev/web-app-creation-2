@@ -105,13 +105,14 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
       console.log('[NovelReader] Setting isTyping=true, skipTyping=false for typing paragraph');
       setIsTyping(true);
       setSkipTyping(false);
+      setCanNavigate(false);
     } else {
-      // Для картинок и фонов сразу ставим isTyping=false
-      console.log('[NovelReader] Setting isTyping=false for non-typing paragraph');
+      // Для картинок и фонов сразу ставим isTyping=false и разрешаем навигацию
+      console.log('[NovelReader] Setting isTyping=false, canNavigate=true for non-typing paragraph');
       setIsTyping(false);
       setSkipTyping(false);
+      setCanNavigate(true);
     }
-    setCanNavigate(false);
   }, [currentEpisodeId, currentParagraphIndex, currentParagraph?.type]);
 
 
