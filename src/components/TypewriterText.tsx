@@ -136,11 +136,22 @@ function TypewriterText({ text, speed = 50, skipTyping = false, onComplete, rese
   const [displayedText, setDisplayedText] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [hasCompleted, setHasCompleted] = useState(false);
+  const [lastResetKey, setLastResetKey] = useState(resetKey);
   
   const cleanText = getCleanText(text);
   const targetLength = cleanText.length;
 
   useEffect(() => {
+    // Проверяем, изменился ли resetKey - если да, сбрасываем состояние
+    if (resetKey !== lastResetKey) {
+      console.log('[TypewriterText] ResetKey changed from', lastResetKey, 'to', resetKey);
+      setLastResetKey(resetKey);
+      setDisplayedText('');
+      setCurrentIndex(0);
+      setHasCompleted(false);
+      return;
+    }
+
     if (skipTyping) {
       console.log('[TypewriterText] Skip typing activated');
       setDisplayedText(text);
@@ -160,14 +171,9 @@ function TypewriterText({ text, speed = 50, skipTyping = false, onComplete, rese
       console.log('[TypewriterText] Typing completed naturally');
       setHasCompleted(true);
     }
-  }, [currentIndex, text, targetLength, speed, skipTyping, hasCompleted]);
+  }, [currentIndex, text, targetLength, speed, skipTyping, hasCompleted, resetKey, lastResetKey]);
 
-  useEffect(() => {
-    console.log('[TypewriterText] ResetKey changed:', resetKey, 'Text:', text.substring(0, 50));
-    setDisplayedText('');
-    setCurrentIndex(0);
-    setHasCompleted(false);
-  }, [resetKey]);
+
 
   useEffect(() => {
     if (hasCompleted) {
