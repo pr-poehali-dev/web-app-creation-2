@@ -48,7 +48,13 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
   const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
   const [previousBackgroundImage, setPreviousBackgroundImage] = useState<string | null>(null);
   const [isBackgroundChanging, setIsBackgroundChanging] = useState(false);
+  const [newImageReady, setNewImageReady] = useState(false);
+  const [pendingBackgroundUrl, setPendingBackgroundUrl] = useState<string | null>(null);
   
+  // Ref для отслеживания предыдущего индекса - чтобы понять, клик или прыжок
+  const previousParagraphIndexRef = useRef<number>(currentParagraphIndex);
+  
+  // Определяем какой фон должен быть для текущего параграфа
   useEffect(() => {
     if (!currentEpisode) return;
     
@@ -63,25 +69,65 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
     }
     
     if (bgUrl !== backgroundImage && backgroundImage !== null) {
-      // Только если уже был фон - делаем переход
-      setPreviousBackgroundImage(backgroundImage);
-      setIsBackgroundChanging(true);
+      // Проверяем разницу индексов - если больше 1, то это прыжок через диалог
+      const indexDiff = Math.abs(currentParagraphIndex - previousParagraphIndexRef.current);
+      const isJump = indexDiff > 1;
       
-      // Небольшая задержка перед сменой для начала анимации исчезновения
-      setTimeout(() => {
+      if (isJump) {
+        // Прыжок через диалог - без анимации
         setBackgroundImage(bgUrl);
-      }, 50);
-      
-      // Завершаем transition через время анимации
-      setTimeout(() => {
-        setIsBackgroundChanging(false);
-        setPreviousBackgroundImage(null);
-      }, 1250);
+        setNewImageReady(true);
+        setPendingBackgroundUrl(null);
+      } else if (isFading) {
+        // Текст исчезает - сохраняем новый URL и ждем
+        setPendingBackgroundUrl(bgUrl);
+      } else {
+        // Обычный переход без fade - сразу меняем
+        setPreviousBackgroundImage(backgroundImage);
+        setBackgroundImage(bgUrl);
+        setIsBackgroundChanging(true);
+        setNewImageReady(false);
+        setPendingBackgroundUrl(null);
+        
+        setTimeout(() => {
+          setNewImageReady(true);
+        }, 400);
+        
+        setTimeout(() => {
+          setIsBackgroundChanging(false);
+          setPreviousBackgroundImage(null);
+        }, 2800);
+      }
     } else if (backgroundImage === null) {
       // Первое появление фона - без анимации
       setBackgroundImage(bgUrl);
+      setNewImageReady(true);
+      setPendingBackgroundUrl(null);
     }
-  }, [currentEpisodeId, currentParagraphIndex, currentEpisode, backgroundImage]);
+    
+    // Обновляем ref для следующего сравнения
+    previousParagraphIndexRef.current = currentParagraphIndex;
+  }, [currentEpisodeId, currentParagraphIndex, currentEpisode, backgroundImage, isFading]);
+  
+  // Когда текст исчез (isFading стал false), запускаем смену фона
+  useEffect(() => {
+    if (!isFading && pendingBackgroundUrl && pendingBackgroundUrl !== backgroundImage) {
+      setPreviousBackgroundImage(backgroundImage);
+      setBackgroundImage(pendingBackgroundUrl);
+      setIsBackgroundChanging(true);
+      setNewImageReady(false);
+      setPendingBackgroundUrl(null);
+      
+      setTimeout(() => {
+        setNewImageReady(true);
+      }, 400);
+      
+      setTimeout(() => {
+        setIsBackgroundChanging(false);
+        setPreviousBackgroundImage(null);
+      }, 2800);
+    }
+  }, [isFading, pendingBackgroundUrl, backgroundImage]);
   
   // Ref для отслеживания актуального значения isTyping в callbacks
   const isTypingRef = useRef(isTyping);
@@ -99,9 +145,9 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
     }
   }, [isTyping]);
 
-  // Обновляем displayParagraph только когда не в процессе fade
+  // Обновляем displayParagraph только когда не в процессе fade И фон не меняется
   useEffect(() => {
-    if (!isFading) {
+    if (!isFading && !isBackgroundChanging) {
       console.log('[NovelReader] Paragraph changed, updating display and resetting isTyping');
       setDisplayParagraph(currentParagraph);
       // Для картинок и фонов сразу ставим isTyping=false
@@ -109,7 +155,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
       setSkipTyping(false);
       setCanNavigate(false);
     }
-  }, [currentEpisodeId, currentParagraphIndex, currentParagraph, isFading]);
+  }, [currentEpisodeId, currentParagraphIndex, currentParagraph, isFading, isBackgroundChanging]);
 
   // Хук навигации
   const {
@@ -306,29 +352,29 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
 
       {/* Фоновое изображение с контентом внутри (только если не приветствие) */}
       {!showGreeting && backgroundImage && (
-        <div className="absolute top-16 left-4 right-4 bottom-4 md:top-20 md:left-8 md:right-32 rounded-2xl overflow-hidden">
-          {/* Предыдущее фоновое изображение (исчезает) */}
+        <div className="absolute top-20 left-4 right-4 bottom-4 md:top-20 md:left-8 md:right-32 rounded-2xl overflow-hidden">
+          {/* Предыдущее фоновое изображение (исчезает с размытием) */}
           {previousBackgroundImage && (
             <div 
               className="absolute inset-0 bg-cover bg-center"
               style={{ 
                 backgroundImage: `url(${previousBackgroundImage})`,
-                opacity: isBackgroundChanging ? 0 : 1,
-                filter: isBackgroundChanging ? 'blur(12px)' : 'blur(0px)',
-                transition: 'opacity 1.2s ease-out, filter 1.2s ease-out',
+                opacity: newImageReady ? 0 : 1,
+                filter: newImageReady ? 'blur(16px)' : 'blur(0px)',
+                transition: 'opacity 2.4s ease-in-out, filter 2.4s ease-in-out',
                 zIndex: 1
               }}
             />
           )}
           
-          {/* Новое фоновое изображение (появляется) */}
+          {/* Новое фоновое изображение (появляется из размытия) */}
           <div 
             className="absolute inset-0 bg-cover bg-center"
             style={{ 
               backgroundImage: `url(${backgroundImage})`,
-              opacity: isBackgroundChanging && previousBackgroundImage ? 0 : 1,
-              filter: isBackgroundChanging && previousBackgroundImage ? 'blur(12px)' : 'blur(0px)',
-              transition: 'opacity 1.2s ease-in, filter 1.2s ease-in',
+              opacity: !previousBackgroundImage || newImageReady ? 1 : 0,
+              filter: !previousBackgroundImage || newImageReady ? 'blur(0px)' : 'blur(16px)',
+              transition: 'opacity 2.4s ease-in-out, filter 2.4s ease-in-out',
               zIndex: 0
             }}
           />
@@ -338,7 +384,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
           
           {/* Контент внутри фона */}
           <div className="relative w-full h-full flex items-end justify-center pb-20 px-6 md:pb-8 md:px-4 md:pr-8">
-            <div className="w-full max-w-4xl min-h-[320px] md:min-h-0 relative z-10">
+            <div className="w-full max-w-4xl md:min-h-0 relative z-10">
               {/* Отображаемый параграф (для плавного fade) */}
               {currentParagraph.type !== 'background' && (
                 <NovelReaderContent
