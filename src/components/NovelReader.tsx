@@ -343,20 +343,25 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
           {/* Контент внутри фона */}
           <div className="relative w-full h-full flex items-end justify-center pb-20 px-6 md:pb-8 md:px-4 md:pr-8">
             <div className="w-full max-w-4xl md:min-h-0 relative z-10">
-              {/* Отображаемый параграф - скрываем на время смены фона */}
-              {currentParagraph.type !== 'background' && !isBackgroundChanging && (
-                <NovelReaderContent
-                  currentParagraph={currentParagraph}
-                  currentEpisode={currentEpisode}
-                  novel={novel}
-                  settings={settings}
-                  profile={profile}
-                  skipTyping={skipTyping}
-                  handleTypingComplete={handleTypingComplete}
-                  handleChoice={handleChoice}
-                  onProfileUpdate={onProfileUpdate}
-                  paragraphKey={paragraphKey}
-                />
+              {/* Отображаемый параграф - скрываем через opacity на время смены фона */}
+              {currentParagraph.type !== 'background' && (
+                <div 
+                  className="transition-opacity duration-500"
+                  style={{ opacity: isBackgroundChanging ? 0 : 1 }}
+                >
+                  <NovelReaderContent
+                    currentParagraph={currentParagraph}
+                    currentEpisode={currentEpisode}
+                    novel={novel}
+                    settings={settings}
+                    profile={profile}
+                    skipTyping={skipTyping}
+                    handleTypingComplete={handleTypingComplete}
+                    handleChoice={handleChoice}
+                    onProfileUpdate={onProfileUpdate}
+                    paragraphKey={paragraphKey}
+                  />
+                </div>
               )}
 
               {/* Подсказка для десктопа */}
