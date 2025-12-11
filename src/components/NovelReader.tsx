@@ -48,6 +48,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
   const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
   const [previousBackgroundImage, setPreviousBackgroundImage] = useState<string | null>(null);
   const [isBackgroundChanging, setIsBackgroundChanging] = useState(false);
+  const [newImageReady, setNewImageReady] = useState(false);
   
   useEffect(() => {
     if (!currentEpisode) return;
@@ -65,11 +66,13 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
     if (bgUrl !== backgroundImage && backgroundImage !== null) {
       // Только если уже был фон - делаем переход
       setPreviousBackgroundImage(backgroundImage);
+      setBackgroundImage(bgUrl);
       setIsBackgroundChanging(true);
+      setNewImageReady(false);
       
-      // Небольшая задержка перед сменой для начала анимации исчезновения
+      // Даем новой картинке замонтироваться, затем запускаем анимацию
       setTimeout(() => {
-        setBackgroundImage(bgUrl);
+        setNewImageReady(true);
       }, 50);
       
       // Завершаем transition через время анимации
@@ -80,6 +83,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
     } else if (backgroundImage === null) {
       // Первое появление фона - без анимации
       setBackgroundImage(bgUrl);
+      setNewImageReady(true);
     }
   }, [currentEpisodeId, currentParagraphIndex, currentEpisode, backgroundImage]);
   
@@ -307,27 +311,27 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
       {/* Фоновое изображение с контентом внутри (только если не приветствие) */}
       {!showGreeting && backgroundImage && (
         <div className="absolute top-20 left-4 right-4 bottom-4 md:top-20 md:left-8 md:right-32 rounded-2xl overflow-hidden">
-          {/* Предыдущее фоновое изображение (исчезает) */}
+          {/* Предыдущее фоновое изображение (исчезает с размытием) */}
           {previousBackgroundImage && (
             <div 
               className="absolute inset-0 bg-cover bg-center"
               style={{ 
                 backgroundImage: `url(${previousBackgroundImage})`,
-                opacity: isBackgroundChanging ? 0 : 1,
-                filter: isBackgroundChanging ? 'blur(12px)' : 'blur(0px)',
+                opacity: newImageReady ? 0 : 1,
+                filter: newImageReady ? 'blur(12px)' : 'blur(0px)',
                 transition: 'opacity 1.2s ease-out, filter 1.2s ease-out',
                 zIndex: 1
               }}
             />
           )}
           
-          {/* Новое фоновое изображение (появляется) */}
+          {/* Новое фоновое изображение (появляется из размытия) */}
           <div 
             className="absolute inset-0 bg-cover bg-center"
             style={{ 
               backgroundImage: `url(${backgroundImage})`,
-              opacity: isBackgroundChanging && previousBackgroundImage ? 0 : 1,
-              filter: isBackgroundChanging && previousBackgroundImage ? 'blur(12px)' : 'blur(0px)',
+              opacity: !previousBackgroundImage || newImageReady ? 1 : 0,
+              filter: !previousBackgroundImage || newImageReady ? 'blur(0px)' : 'blur(12px)',
               transition: 'opacity 1.2s ease-in, filter 1.2s ease-in',
               zIndex: 0
             }}
