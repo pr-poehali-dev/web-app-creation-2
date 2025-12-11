@@ -91,12 +91,12 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
         
         setTimeout(() => {
           setNewImageReady(true);
-        }, 50);
+        }, 400);
         
         setTimeout(() => {
           setIsBackgroundChanging(false);
           setPreviousBackgroundImage(null);
-        }, 2450);
+        }, 2800);
       }
     } else if (backgroundImage === null) {
       // Первое появление фона - без анимации
@@ -118,15 +118,14 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
       setNewImageReady(false);
       setPendingBackgroundUrl(null);
       
-      // Запускаем анимацию сразу после монтирования
       setTimeout(() => {
         setNewImageReady(true);
-      }, 50);
+      }, 400);
       
       setTimeout(() => {
         setIsBackgroundChanging(false);
         setPreviousBackgroundImage(null);
-      }, 2450);
+      }, 2800);
     }
   }, [isFading, pendingBackgroundUrl, backgroundImage]);
   
@@ -354,27 +353,29 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
       {/* Фоновое изображение с контентом внутри (только если не приветствие) */}
       {!showGreeting && backgroundImage && (
         <div className="absolute top-20 left-4 right-4 bottom-4 md:top-20 md:left-8 md:right-32 rounded-2xl overflow-hidden">
-          {/* Предыдущее фоновое изображение (исчезает) */}
+          {/* Предыдущее фоновое изображение (исчезает с размытием) */}
           {previousBackgroundImage && (
             <div 
               className="absolute inset-0 bg-cover bg-center"
               style={{ 
                 backgroundImage: `url(${previousBackgroundImage})`,
-                opacity: !newImageReady ? 1 : 0,
-                transition: 'opacity 2.4s ease-in-out',
-                zIndex: 0
+                opacity: isBackgroundChanging && !newImageReady ? 1 : 0,
+                filter: isBackgroundChanging && !newImageReady ? 'blur(0px)' : 'blur(16px)',
+                transition: isBackgroundChanging ? 'opacity 2.4s ease-in-out, filter 2.4s ease-in-out' : 'none',
+                zIndex: 1
               }}
             />
           )}
           
-          {/* Новое фоновое изображение (появляется) */}
+          {/* Новое фоновое изображение (появляется из размытия) */}
           <div 
             className="absolute inset-0 bg-cover bg-center"
             style={{ 
               backgroundImage: `url(${backgroundImage})`,
               opacity: !previousBackgroundImage || newImageReady ? 1 : 0,
-              transition: 'opacity 2.4s ease-in-out',
-              zIndex: 1
+              filter: !previousBackgroundImage || newImageReady ? 'blur(0px)' : 'blur(16px)',
+              transition: 'opacity 2.4s ease-in-out, filter 2.4s ease-in-out',
+              zIndex: 0
             }}
           />
           
