@@ -4,7 +4,6 @@ export interface BaseParagraph {
   id: string;
   type: ParagraphType;
   order?: number;
-  slowFade?: boolean;
 }
 
 export interface TextParagraph extends BaseParagraph {
