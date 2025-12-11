@@ -338,9 +338,39 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
           {/* Контент внутри фона */}
           <div className="relative w-full h-full flex items-end justify-center pb-20 px-4 md:pb-8 md:px-6 md:pr-8">
             <div className="w-full max-w-4xl md:min-h-0 relative z-10">
+              {/* Мобильные кнопки навигации */}
+              {!isTyping && currentParagraph.type !== 'choice' && (
+                <div className="md:hidden flex justify-between items-center mb-2 gap-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      goToPreviousParagraph();
+                    }}
+                    disabled={currentParagraphIndex === 0}
+                    className="h-8 px-3 bg-card/80 backdrop-blur-sm hover:bg-card/90 border border-border/50"
+                  >
+                    <Icon name="ChevronLeft" size={16} />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      goToNextParagraph();
+                    }}
+                    disabled={currentParagraphIndex === currentEpisode.paragraphs.length - 1}
+                    className="h-8 px-3 bg-card/80 backdrop-blur-sm hover:bg-card/90 border border-border/50"
+                  >
+                    <Icon name="ChevronRight" size={16} />
+                  </Button>
+                </div>
+              )}
+              
               {/* Отображаемый параграф - скрываем на время смены фона */}
               {currentParagraph.type !== 'background' && !isBackgroundChanging && (
-                <div className={currentParagraph.mergedWith ? "space-y-1.5 md:space-y-3 max-h-[calc(100vh-8rem)] md:max-h-[calc(100vh-12rem)] overflow-y-auto pr-1 md:pr-2 scrollbar-thin scrollbar-thumb-primary/30 scrollbar-track-transparent" : ""}>
+                <div className={currentParagraph.mergedWith ? "space-y-2 md:space-y-3 max-h-[calc(100vh-10rem)] md:max-h-[calc(100vh-12rem)] overflow-y-auto pr-1 md:pr-2 scrollbar-thin scrollbar-thumb-primary/30 scrollbar-track-transparent" : ""}>
                   <NovelReaderContent
                     currentParagraph={currentParagraph}
                     currentEpisode={currentEpisode}

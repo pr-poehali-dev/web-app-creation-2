@@ -50,12 +50,12 @@ function DialogueBox({
                   src={characterImage}
                   alt={characterName}
                   className={isTopMerged 
-                    ? "w-16 h-16 md:w-28 md:h-28 lg:w-40 lg:h-40 object-contain rounded-xl md:rounded-2xl shadow-xl"
+                    ? "w-20 h-20 md:w-28 md:h-28 lg:w-40 lg:h-40 object-contain rounded-xl md:rounded-2xl shadow-xl"
                     : "w-24 h-24 md:w-32 md:h-32 lg:w-48 lg:h-48 object-contain rounded-2xl md:rounded-3xl shadow-2xl"
                   }
                 />
               ) : (
-                <div className={isTopMerged ? "text-3xl md:text-5xl lg:text-7xl" : "text-5xl md:text-6xl lg:text-9xl"}>{characterImage}</div>
+                <div className={isTopMerged ? "text-4xl md:text-5xl lg:text-7xl" : "text-5xl md:text-6xl lg:text-9xl"}>{characterImage}</div>
               )}
             </div>
             
@@ -72,16 +72,16 @@ function DialogueBox({
         )}
         
         <Card className="flex-1 w-full bg-card/95 backdrop-blur-sm border-0 shadow-xl animate-scale-in rounded-xl md:rounded-2xl">
-          <CardContent className={isTopMerged ? "p-2 md:p-4 lg:p-6" : "p-3 md:p-4 lg:p-8"}>
+          <CardContent className={isTopMerged ? "p-3 md:p-4 lg:p-6" : "p-3 md:p-4 lg:p-8"}>
             {!characterImage && (
               <h3 className={isTopMerged 
-                ? "text-xs md:text-base lg:text-lg font-bold text-primary mb-1 md:mb-2"
+                ? "text-sm md:text-base lg:text-lg font-bold text-primary mb-1.5 md:mb-2"
                 : "text-sm md:text-base lg:text-lg font-bold text-primary mb-2 md:mb-3"
               }>
                 {characterName}
               </h3>
             )}
-            <p className={`novel-text leading-snug md:leading-relaxed text-foreground ${isTopMerged ? "text-xs md:text-base lg:text-lg" : "text-sm md:text-base lg:text-lg"}`} style={{ fontFamily }}>
+            <p className={`novel-text leading-snug md:leading-relaxed text-foreground ${isTopMerged ? "text-sm md:text-base lg:text-lg" : "text-sm md:text-base lg:text-lg"}`} style={{ fontFamily }}>
               <TypewriterText 
                 text={text}
                 speed={textSpeed}
