@@ -340,7 +340,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
             <div className="w-full max-w-4xl md:min-h-0 relative z-10">
               {/* Отображаемый параграф - скрываем на время смены фона */}
               {currentParagraph.type !== 'background' && !isBackgroundChanging && (
-                <div className="space-y-4">
+                <div className={currentParagraph.mergedWith ? "space-y-3 max-h-[calc(100vh-12rem)] overflow-y-auto pr-2" : ""}>
                   <NovelReaderContent
                     currentParagraph={currentParagraph}
                     currentEpisode={currentEpisode}
@@ -352,6 +352,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
                     handleChoice={handleChoice}
                     onProfileUpdate={onProfileUpdate}
                     paragraphKey={paragraphKey}
+                    isTopMerged={!!currentParagraph.mergedWith}
                   />
                   {/* Объединённый параграф */}
                   {currentParagraph.mergedWith && currentEpisode.paragraphs[currentParagraphIndex + 1] && (
@@ -366,6 +367,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
                       handleChoice={handleChoice}
                       onProfileUpdate={onProfileUpdate}
                       paragraphKey={`${paragraphKey}-merged`}
+                      isTopMerged={false}
                     />
                   )}
                 </div>

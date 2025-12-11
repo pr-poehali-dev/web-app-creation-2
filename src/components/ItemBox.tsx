@@ -10,35 +10,53 @@ interface ItemBoxProps {
   skipTyping?: boolean;
   onComplete?: () => void;
   textSpeed?: number;
+  isTopMerged?: boolean;
 }
 
-function ItemBox({ name, description, imageUrl, skipTyping, onComplete, textSpeed = 50 }: ItemBoxProps) {
+function ItemBox({ name, description, imageUrl, skipTyping, onComplete, textSpeed = 50, isTopMerged = false }: ItemBoxProps) {
 
   return (
     <Card className="bg-gradient-to-br from-card via-secondary/10 to-accent/20 backdrop-blur-sm border-0 shadow-2xl animate-scale-in max-w-md mx-auto">
-      <CardContent className="p-4 md:p-8 text-center">
-        <Badge variant="default" className="mb-4 md:mb-6 text-xs md:text-sm bg-primary text-primary-foreground border-0 shadow-lg px-3 md:px-4 py-1 md:py-1.5 rounded-full font-semibold">
+      <CardContent className={isTopMerged ? "p-3 md:p-5 text-center" : "p-4 md:p-8 text-center"}>
+        <Badge variant="default" className={isTopMerged 
+          ? "mb-2 md:mb-3 text-xs bg-primary text-primary-foreground border-0 shadow-lg px-2 md:px-3 py-0.5 md:py-1 rounded-full font-semibold"
+          : "mb-4 md:mb-6 text-xs md:text-sm bg-primary text-primary-foreground border-0 shadow-lg px-3 md:px-4 py-1 md:py-1.5 rounded-full font-semibold"
+        }>
           Получен предмет
         </Badge>
-        <div className="mb-6 md:mb-8 animate-scale-in flex justify-center p-4 md:p-6 bg-background/50 rounded-3xl border-0 shadow-inner">
+        <div className={isTopMerged 
+          ? "mb-3 md:mb-4 animate-scale-in flex justify-center p-2 md:p-3 bg-background/50 rounded-2xl border-0 shadow-inner"
+          : "mb-6 md:mb-8 animate-scale-in flex justify-center p-4 md:p-6 bg-background/50 rounded-3xl border-0 shadow-inner"
+        }>
           {imageUrl && (imageUrl.startsWith('data:') || imageUrl.startsWith('http')) ? (
             <ZoomableImage
               src={imageUrl}
               alt={name}
-              className="max-w-[200px] md:max-w-xs max-h-48 md:max-h-64 object-contain rounded-2xl drop-shadow-2xl"
+              className={isTopMerged 
+                ? "max-w-[120px] md:max-w-[180px] max-h-24 md:max-h-32 object-contain rounded-xl drop-shadow-2xl"
+                : "max-w-[200px] md:max-w-xs max-h-48 md:max-h-64 object-contain rounded-2xl drop-shadow-2xl"
+              }
             />
           ) : imageUrl ? (
-            <div className="text-6xl md:text-9xl drop-shadow-2xl">{imageUrl}</div>
+            <div className={isTopMerged ? "text-4xl md:text-6xl drop-shadow-2xl" : "text-6xl md:text-9xl drop-shadow-2xl"}>{imageUrl}</div>
           ) : (
-            <div className="w-48 h-48 bg-muted rounded-2xl flex items-center justify-center text-muted-foreground">
-              <div className="text-6xl">📦</div>
+            <div className={isTopMerged 
+              ? "w-24 h-24 bg-muted rounded-xl flex items-center justify-center text-muted-foreground"
+              : "w-48 h-48 bg-muted rounded-2xl flex items-center justify-center text-muted-foreground"
+            }>
+              <div className={isTopMerged ? "text-4xl" : "text-6xl"}>📦</div>
             </div>
           )}
         </div>
-        <h3 className="text-xl md:text-3xl font-bold text-primary mb-4 md:mb-6 drop-shadow-lg">
+        <h3 className={isTopMerged 
+          ? "text-base md:text-xl font-bold text-primary mb-2 md:mb-3 drop-shadow-lg"
+          : "text-xl md:text-3xl font-bold text-primary mb-4 md:mb-6 drop-shadow-lg"
+        }>
           {name}
         </h3>
-        <p className="novel-text text-base md:text-lg leading-relaxed text-foreground font-medium">
+        <p className={`novel-text leading-relaxed text-foreground font-medium ${
+          isTopMerged ? "text-sm md:text-base" : "text-base md:text-lg"
+        }`}>
           <TypewriterText 
             text={description}
             speed={textSpeed}
