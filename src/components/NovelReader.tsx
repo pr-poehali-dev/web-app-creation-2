@@ -78,16 +78,15 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
         setBackgroundImage(bgUrl);
         setNewImageReady(true);
         setPendingBackgroundUrl(null);
-      } else if (isFading) {
-        // Текст исчезает - сохраняем новый URL и ждем
+      } else if (isFading && !pendingBackgroundUrl) {
+        // Текст исчезает - сохраняем новый URL и ждем (только если еще не сохранили)
         setPendingBackgroundUrl(bgUrl);
-      } else {
+      } else if (!isFading && !pendingBackgroundUrl) {
         // Обычный переход без fade - сразу меняем
         setPreviousBackgroundImage(backgroundImage);
         setBackgroundImage(bgUrl);
         setIsBackgroundChanging(true);
         setNewImageReady(false);
-        setPendingBackgroundUrl(null);
         
         setTimeout(() => {
           setNewImageReady(true);
