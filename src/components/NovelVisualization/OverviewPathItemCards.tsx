@@ -172,7 +172,10 @@ function OverviewPathItemCards({
               transformOrigin: 'top left',
               zIndex: 10
             }}
-            onMouseDown={(e) => handleItemDragStart('choice', choiceStat.choiceId, e)}
+            onMouseDown={(e) => {
+              e.stopPropagation();
+              handleItemDragStart('choice', choiceStat.choiceId, e);
+            }}
           >
             <Card className="w-48 p-3 shadow-lg bg-purple-500/5 border-purple-500/30 hover:shadow-xl transition-all">
               <div className="space-y-2">
