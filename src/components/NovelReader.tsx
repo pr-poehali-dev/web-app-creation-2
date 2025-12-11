@@ -156,6 +156,33 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
     }
   }, [currentEpisodeId, currentParagraphIndex, currentParagraph, isFading, isBackgroundChanging]);
 
+  // Функция для проверки, будет ли меняться фон при переходе к следующему параграфу
+  const willBackgroundChange = (nextIndex: number): boolean => {
+    if (!currentEpisode) return false;
+    
+    // Находим текущий фон
+    let currentBg: string | null = null;
+    for (let i = currentParagraphIndex; i >= 0; i--) {
+      const p = currentEpisode.paragraphs[i];
+      if (p.type === 'background') {
+        currentBg = p.url;
+        break;
+      }
+    }
+    
+    // Находим фон для следующего параграфа
+    let nextBg: string | null = null;
+    for (let i = nextIndex; i >= 0; i--) {
+      const p = currentEpisode.paragraphs[i];
+      if (p.type === 'background') {
+        nextBg = p.url;
+        break;
+      }
+    }
+    
+    return currentBg !== nextBg;
+  };
+
   // Хук навигации
   const {
     isParagraphAccessible,
@@ -174,7 +201,8 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
     setSkipTyping,
     setIsFading,
     isGuest,
-    onGuestLimitReached
+    onGuestLimitReached,
+    willBackgroundChange
   });
 
   // Хук взаимодействия (клики, свайпы, typing)

@@ -15,6 +15,7 @@ interface UseNovelNavigationProps {
   setIsFading: (value: boolean) => void;
   isGuest?: boolean;
   onGuestLimitReached?: () => void;
+  willBackgroundChange: (nextIndex: number) => boolean;
 }
 
 export function useNovelNavigation({
@@ -29,7 +30,8 @@ export function useNovelNavigation({
   setSkipTyping,
   setIsFading,
   isGuest = false,
-  onGuestLimitReached
+  onGuestLimitReached,
+  willBackgroundChange
 }: UseNovelNavigationProps) {
   // Проверка, доступен ли эпизод для гостей
   const isEpisodeAccessibleForGuest = (episodeId: string) => {
@@ -71,9 +73,11 @@ export function useNovelNavigation({
     const nextIndex = currentParagraphIndex + 1;
 
     if (nextIndex < currentEpisode.paragraphs.length) {
-      // Запускаем анимацию растворения для текстовых параграфов
-      if (currentParagraph?.type === 'text') {
-        // Если у текущего параграфа установлен slowFade, делаем растворение медленнее
+      // Запускаем анимацию растворения ТОЛЬКО если меняется фон
+      const bgWillChange = willBackgroundChange(nextIndex);
+      
+      if (currentParagraph?.type === 'text' && bgWillChange) {
+        // Фон меняется - делаем fade
         const fadeDelay = currentParagraph.slowFade ? 1500 : 800;
         setIsFading(true);
         setTimeout(() => {
@@ -84,12 +88,12 @@ export function useNovelNavigation({
           }));
           setIsTyping(true);
           setSkipTyping(false);
-          // Сбрасываем fade только после смены параграфа
           setTimeout(() => {
             setIsFading(false);
           }, 50);
         }, fadeDelay);
       } else {
+        // Фон не меняется - просто меняем текст
         onProfileUpdate(prev => ({
           ...prev,
           currentEpisodeId,
@@ -124,8 +128,8 @@ export function useNovelNavigation({
           return;
         }
 
+        // При смене эпизода фон всегда меняется, делаем fade
         if (currentParagraph?.type === 'text') {
-          // Если у текущего параграфа установлен slowFade, делаем растворение медленнее
           const fadeDelay = currentParagraph.slowFade ? 1500 : 300;
           setIsFading(true);
           setTimeout(() => {
@@ -136,7 +140,6 @@ export function useNovelNavigation({
             }));
             setIsTyping(true);
             setSkipTyping(false);
-            // Сбрасываем fade только после смены параграфа
             setTimeout(() => {
               setIsFading(false);
             }, 50);
