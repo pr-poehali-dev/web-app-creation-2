@@ -311,19 +311,6 @@ function ParagraphEditor({
               </div>
             </div>
 
-            {(paragraph.type === 'text' || paragraph.type === 'dialogue' || paragraph.type === 'item') && (
-              <div className="flex items-center gap-2 pb-2">
-                <Checkbox
-                  id={`slow-fade-${index}`}
-                  checked={paragraph.slowFade || false}
-                  onCheckedChange={(checked) => onUpdate(index, { ...paragraph, slowFade: checked as boolean })}
-                />
-                <Label htmlFor={`slow-fade-${index}`} className="text-sm text-muted-foreground cursor-pointer">
-                  Breathing pause (0.3s)
-                </Label>
-              </div>
-            )}
-
             {paragraph.type === 'text' && (
               <TextEditor
                 paragraph={paragraph}
