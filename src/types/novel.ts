@@ -27,6 +27,7 @@ export interface ChoiceParagraph extends BaseParagraph {
     nextEpisodeId?: string;
     nextParagraphIndex?: number;
     requiredPath?: string;
+    activatesPath?: string;
     oneTime?: boolean;
   }[];
 }

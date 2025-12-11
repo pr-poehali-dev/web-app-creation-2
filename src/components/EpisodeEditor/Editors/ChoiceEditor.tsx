@@ -78,6 +78,31 @@ function ChoiceEditor({
                   Активирует путь
                 </Label>
                 <Select
+                  value={option.activatesPath || 'none'}
+                  onValueChange={(value) => {
+                    const newOptions = [...paragraph.options];
+                    newOptions[optIndex] = { ...option, activatesPath: value === 'none' ? undefined : value };
+                    onUpdate(index, { ...paragraph, options: newOptions });
+                  }}
+                >
+                  <SelectTrigger className="text-foreground text-xs h-8">
+                    <SelectValue placeholder="Нет" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">Нет</SelectItem>
+                    {novel.paths?.map((path) => (
+                      <SelectItem key={path.id} value={path.id}>{path.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label className="text-xs flex items-center gap-1">
+                  <Icon name="Lock" size={12} />
+                  Требует путь
+                </Label>
+                <Select
                   value={option.requiredPath || 'none'}
                   onValueChange={(value) => {
                     const newOptions = [...paragraph.options];
@@ -96,22 +121,22 @@ function ChoiceEditor({
                   </SelectContent>
                 </Select>
               </div>
-
-              <div className="flex items-end">
-                <label className="flex items-center gap-2 cursor-pointer text-xs">
-                  <input
-                    type="checkbox"
-                    checked={option.oneTime || false}
-                    onChange={(e) => {
-                      const newOptions = [...paragraph.options];
-                      newOptions[optIndex] = { ...option, oneTime: e.target.checked };
-                      onUpdate(index, { ...paragraph, options: newOptions });
-                    }}
-                    className="rounded"
-                  />
-                  Одноразовый
-                </label>
-              </div>
+            </div>
+            
+            <div className="flex items-center">
+              <label className="flex items-center gap-2 cursor-pointer text-xs">
+                <input
+                  type="checkbox"
+                  checked={option.oneTime || false}
+                  onChange={(e) => {
+                    const newOptions = [...paragraph.options];
+                    newOptions[optIndex] = { ...option, oneTime: e.target.checked };
+                    onUpdate(index, { ...paragraph, options: newOptions });
+                  }}
+                  className="rounded"
+                />
+                Одноразовый
+              </label>
             </div>
           </div>
 

@@ -12,6 +12,7 @@ interface ChoiceBoxProps {
     nextEpisodeId?: string;
     nextParagraphIndex?: number;
     requiredPath?: string;
+    activatesPath?: string;
     oneTime?: boolean;
   }[];
   novel: Novel;
@@ -27,7 +28,7 @@ function ChoiceBox({ question, options, novel, onChoice }: ChoiceBoxProps) {
         </h3>
         <div className="space-y-2 md:space-y-3 lg:space-y-4">
           {options.map((option, index) => {
-            const activatesPath = option.requiredPath ? novel.paths?.find(p => p.id === option.requiredPath) : null;
+            const activatesPath = option.activatesPath ? novel.paths?.find(p => p.id === option.activatesPath) : null;
             return (
               <div key={option.id} className="relative">
                 <Button
@@ -37,7 +38,7 @@ function ChoiceBox({ question, options, novel, onChoice }: ChoiceBoxProps) {
                   style={{ animationDelay: `${index * 100}ms` }}
                   onClick={(e) => {
                     e.stopPropagation();
-                    onChoice(option.id, option.requiredPath, option.oneTime, option.nextEpisodeId, option.nextParagraphIndex);
+                    onChoice(option.id, option.activatesPath, option.oneTime, option.nextEpisodeId, option.nextParagraphIndex);
                   }}
                 >
                   <span className="flex-1">{option.text}</span>
