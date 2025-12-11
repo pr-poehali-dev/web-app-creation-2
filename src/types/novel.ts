@@ -80,6 +80,7 @@ export interface LibraryItem {
   description: string;
   imageUrl?: string;
   itemType?: 'collectible' | 'story';
+  position?: { x: number; y: number };
 }
 
 export interface LibraryCharacter {
@@ -121,6 +122,7 @@ export interface Path {
   name: string;
   description?: string;
   color?: string;
+  position?: { x: number; y: number };
 }
 
 export interface Novel {

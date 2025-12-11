@@ -10,18 +10,20 @@ interface OverviewVisualizationProps {
   offset: { x: number; y: number };
   setScale: (scale: number) => void;
   setOffset: (offset: { x: number; y: number }) => void;
-  draggedEpisode: string | null;
+  draggedItem: { type: 'episode' | 'path' | 'item' | 'choice'; id: string } | null;
   containerRef: React.RefObject<HTMLDivElement>;
   handleMouseDown: (e: React.MouseEvent) => void;
   handleMouseMove: (e: React.MouseEvent) => void;
   handleMouseUp: () => void;
-  handleEpisodeDragStart: (episodeId: string, e: React.MouseEvent) => void;
+  handleItemDragStart: (type: 'episode' | 'path' | 'item' | 'choice', id: string, e: React.MouseEvent) => void;
   allConnections: { from: Episode; to: Episode; type: 'choice' | 'next' }[];
   getConnectionsForEpisode: (episodeId: string) => { from: Episode; to: Episode }[];
   pathsStats: Array<{
-    path: { id: string; name: string; description?: string };
+    path: { id: string; name: string; description?: string; position?: { x: number; y: number } };
     activatedBy: number;
     requiredBy: number;
+    relatedEpisodes: string[];
+    relatedChoices: Array<{ episodeId: string; choiceId: string }>;
   }>;
   itemsStats: Array<{
     item: {
@@ -30,17 +32,25 @@ interface OverviewVisualizationProps {
       description: string;
       imageUrl?: string;
       itemType: 'collectible' | 'story';
+      position?: { x: number; y: number };
     };
     usedInEpisodes: number;
     gainActions: number;
     loseActions: number;
+    relatedEpisodes: string[];
+    relatedChoices: Array<{ episodeId: string; choiceId: string }>;
   }>;
   choicesStats: Array<{
+    episodeId: string;
     episodeTitle: string;
+    choiceId: string;
     question: string;
     optionsCount: number;
     hasPathConditions: boolean;
     hasItemConditions: boolean;
+    relatedEpisodes: string[];
+    relatedPaths: string[];
+    relatedItems: string[];
   }>;
 }
 
@@ -54,13 +64,25 @@ function OverviewVisualization({
   handleMouseDown,
   handleMouseMove,
   handleMouseUp,
-  handleEpisodeDragStart,
+  handleItemDragStart,
   allConnections,
   getConnectionsForEpisode,
   pathsStats,
   itemsStats,
   choicesStats
 }: OverviewVisualizationProps) {
+  
+  const getPosition = (type: string, id: string, defaultX: number, defaultY: number) => {
+    if (type === 'path') {
+      const path = pathsStats.find(p => p.path.id === id);
+      return path?.path.position || { x: defaultX, y: defaultY };
+    } else if (type === 'item') {
+      const item = itemsStats.find(i => i.item.id === id);
+      return item?.item.position || { x: defaultX, y: defaultY };
+    }
+    return { x: defaultX, y: defaultY };
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -87,15 +109,16 @@ function OverviewVisualization({
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
         >
-          <svg className="absolute inset-0 pointer-events-none" style={{ width: '100%', height: '100%' }}>
+          <svg className="absolute inset-0 pointer-events-none" style={{ width: '100%', height: '100%', zIndex: 1 }}>
+            {/* Связи между эпизодами */}
             {allConnections.map((conn, idx) => {
-              const fromX = conn.from.position.x * scale + offset.x + 100;
+              const fromX = conn.from.position.x * scale + offset.x + 112;
               const fromY = conn.from.position.y * scale + offset.y + 40;
-              const toX = conn.to.position.x * scale + offset.x + 100;
+              const toX = conn.to.position.x * scale + offset.x + 112;
               const toY = conn.to.position.y * scale + offset.y + 40;
 
               return (
-                <g key={idx}>
+                <g key={`ep-${idx}`}>
                   <line
                     x1={fromX}
                     y1={fromY}
@@ -110,6 +133,124 @@ function OverviewVisualization({
                 </g>
               );
             })}
+
+            {/* Связи путей с эпизодами */}
+            {pathsStats.map((pathStat, idx) => {
+              const pathPos = getPosition('path', pathStat.path.id, 600 + (idx % 3) * 250, 100 + Math.floor(idx / 3) * 200);
+              const pathX = pathPos.x * scale + offset.x + 96;
+              const pathY = pathPos.y * scale + offset.y + 40;
+
+              return (
+                <g key={`path-${idx}`}>
+                  {pathStat.relatedEpisodes.map((epId, i) => {
+                    const episode = novel.episodes.find(ep => ep.id === epId);
+                    if (!episode) return null;
+                    const epX = episode.position.x * scale + offset.x + 112;
+                    const epY = episode.position.y * scale + offset.y + 40;
+                    return (
+                      <line
+                        key={`path-ep-${i}`}
+                        x1={pathX}
+                        y1={pathY}
+                        x2={epX}
+                        y2={epY}
+                        stroke="rgb(34, 197, 94)"
+                        strokeWidth="1.5"
+                        strokeOpacity="0.3"
+                        strokeDasharray="3,3"
+                      />
+                    );
+                  })}
+                </g>
+              );
+            })}
+
+            {/* Связи предметов с эпизодами */}
+            {itemsStats.map((itemStat, idx) => {
+              const itemPos = getPosition('item', itemStat.item.id, 1200 + (idx % 3) * 250, 100 + Math.floor(idx / 3) * 220);
+              const itemX = itemPos.x * scale + offset.x + 96;
+              const itemY = itemPos.y * scale + offset.y + 40;
+
+              return (
+                <g key={`item-${idx}`}>
+                  {itemStat.relatedEpisodes.map((epId, i) => {
+                    const episode = novel.episodes.find(ep => ep.id === epId);
+                    if (!episode) return null;
+                    const epX = episode.position.x * scale + offset.x + 112;
+                    const epY = episode.position.y * scale + offset.y + 40;
+                    return (
+                      <line
+                        key={`item-ep-${i}`}
+                        x1={itemX}
+                        y1={itemY}
+                        x2={epX}
+                        y2={epY}
+                        stroke="rgb(59, 130, 246)"
+                        strokeWidth="1.5"
+                        strokeOpacity="0.3"
+                        strokeDasharray="3,3"
+                      />
+                    );
+                  })}
+                </g>
+              );
+            })}
+
+            {/* Связи выборов с путями и предметами */}
+            {choicesStats.map((choice, idx) => {
+              const sourceEpisode = novel.episodes.find(ep => ep.id === choice.episodeId);
+              if (!sourceEpisode) return null;
+              const choiceX = sourceEpisode.position.x * scale + offset.x + 112;
+              const choiceY = sourceEpisode.position.y * scale + offset.y + 40;
+
+              return (
+                <g key={`choice-${idx}`}>
+                  {/* Связи с путями */}
+                  {choice.relatedPaths.map((pathId, i) => {
+                    const pathStat = pathsStats.find(p => p.path.id === pathId);
+                    if (!pathStat) return null;
+                    const pathPos = getPosition('path', pathId, 0, 0);
+                    const pathX = pathPos.x * scale + offset.x + 96;
+                    const pathY = pathPos.y * scale + offset.y + 40;
+                    return (
+                      <line
+                        key={`choice-path-${i}`}
+                        x1={choiceX}
+                        y1={choiceY}
+                        x2={pathX}
+                        y2={pathY}
+                        stroke="rgb(168, 85, 247)"
+                        strokeWidth="1.5"
+                        strokeOpacity="0.2"
+                        strokeDasharray="2,2"
+                      />
+                    );
+                  })}
+                  {/* Связи с предметами */}
+                  {choice.relatedItems.map((itemId, i) => {
+                    const itemStat = itemsStats.find(it => it.item.id === itemId);
+                    if (!itemStat) return null;
+                    const itemPos = getPosition('item', itemId, 0, 0);
+                    const itemX = itemPos.x * scale + offset.x + 96;
+                    const itemY = itemPos.y * scale + offset.y + 40;
+                    return (
+                      <line
+                        key={`choice-item-${i}`}
+                        x1={choiceX}
+                        y1={choiceY}
+                        x2={itemX}
+                        y2={itemY}
+                        stroke="rgb(168, 85, 247)"
+                        strokeWidth="1.5"
+                        strokeOpacity="0.2"
+                        strokeDasharray="2,2"
+                      />
+                    );
+                  })}
+                </g>
+              );
+            })}
+
             <defs>
               <marker
                 id="arrowhead"
@@ -125,7 +266,7 @@ function OverviewVisualization({
           </svg>
 
           {/* Эпизоды */}
-          {novel.episodes.map((episode, epIndex) => {
+          {novel.episodes.map((episode) => {
             const connections = getConnectionsForEpisode(episode.id);
             const episodePaths = novel.paths?.filter(p => episode.requiredPath === p.id) || [];
             const episodeItems: string[] = [];
@@ -148,9 +289,10 @@ function OverviewVisualization({
                   left: `${episode.position.x * scale + offset.x}px`,
                   top: `${episode.position.y * scale + offset.y}px`,
                   transform: `scale(${scale})`,
-                  transformOrigin: 'top left'
+                  transformOrigin: 'top left',
+                  zIndex: 10
                 }}
-                onMouseDown={(e) => handleEpisodeDragStart(episode.id, e)}
+                onMouseDown={(e) => handleItemDragStart('episode', episode.id, e)}
               >
                 <Card 
                   className={`w-56 p-4 shadow-lg transition-all ${
@@ -214,19 +356,20 @@ function OverviewVisualization({
 
           {/* Пути */}
           {pathsStats.map((pathStat, index) => {
-            const posX = 600 + (index % 3) * 250;
-            const posY = 100 + Math.floor(index / 3) * 200;
+            const pos = getPosition('path', pathStat.path.id, 600 + (index % 3) * 250, 100 + Math.floor(index / 3) * 200);
             
             return (
               <div
                 key={pathStat.path.id}
-                className="absolute"
+                className="absolute cursor-move"
                 style={{
-                  left: `${posX * scale + offset.x}px`,
-                  top: `${posY * scale + offset.y}px`,
+                  left: `${pos.x * scale + offset.x}px`,
+                  top: `${pos.y * scale + offset.y}px`,
                   transform: `scale(${scale})`,
-                  transformOrigin: 'top left'
+                  transformOrigin: 'top left',
+                  zIndex: 10
                 }}
+                onMouseDown={(e) => handleItemDragStart('path', pathStat.path.id, e)}
               >
                 <Card className="w-48 p-3 shadow-lg bg-green-500/5 border-green-500/30 hover:shadow-xl transition-all">
                   <div className="space-y-2">
@@ -257,19 +400,20 @@ function OverviewVisualization({
 
           {/* Предметы */}
           {itemsStats.map((itemStat, index) => {
-            const posX = 1200 + (index % 3) * 250;
-            const posY = 100 + Math.floor(index / 3) * 220;
+            const pos = getPosition('item', itemStat.item.id, 1200 + (index % 3) * 250, 100 + Math.floor(index / 3) * 220);
             
             return (
               <div
                 key={itemStat.item.id}
-                className="absolute"
+                className="absolute cursor-move"
                 style={{
-                  left: `${posX * scale + offset.x}px`,
-                  top: `${posY * scale + offset.y}px`,
+                  left: `${pos.x * scale + offset.x}px`,
+                  top: `${pos.y * scale + offset.y}px`,
                   transform: `scale(${scale})`,
-                  transformOrigin: 'top left'
+                  transformOrigin: 'top left',
+                  zIndex: 10
                 }}
+                onMouseDown={(e) => handleItemDragStart('item', itemStat.item.id, e)}
               >
                 <Card className="w-48 p-3 shadow-lg bg-blue-500/5 border-blue-500/30 hover:shadow-xl transition-all">
                   <div className="space-y-2">
@@ -308,49 +452,6 @@ function OverviewVisualization({
                         <Icon name="Minus" size={10} className="text-red-400" />
                         <span>{itemStat.loseActions}</span>
                       </div>
-                    </div>
-                  </div>
-                </Card>
-              </div>
-            );
-          })}
-
-          {/* Выборы */}
-          {choicesStats.map((choice, index) => {
-            const posX = 1800 + (index % 2) * 280;
-            const posY = 100 + Math.floor(index / 2) * 180;
-            
-            return (
-              <div
-                key={index}
-                className="absolute"
-                style={{
-                  left: `${posX * scale + offset.x}px`,
-                  top: `${posY * scale + offset.y}px`,
-                  transform: `scale(${scale})`,
-                  transformOrigin: 'top left'
-                }}
-              >
-                <Card className="w-64 p-3 shadow-lg bg-purple-500/5 border-purple-500/30 hover:shadow-xl transition-all">
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center flex-shrink-0">
-                        <Icon name="GitMerge" size={16} className="text-purple-500" />
-                      </div>
-                      <Badge variant="outline" className="text-xs">{choice.episodeTitle}</Badge>
-                    </div>
-                    <p className="text-xs font-medium line-clamp-2">{choice.question}</p>
-                    <div className="flex items-center gap-2 flex-wrap text-xs">
-                      <div className="flex items-center gap-1">
-                        <Icon name="List" size={10} className="text-blue-400" />
-                        <span>{choice.optionsCount}</span>
-                      </div>
-                      {choice.hasPathConditions && (
-                        <Icon name="GitBranch" size={10} className="text-green-400" title="Условия путей" />
-                      )}
-                      {choice.hasItemConditions && (
-                        <Icon name="Package" size={10} className="text-orange-400" title="Условия предметов" />
-                      )}
                     </div>
                   </div>
                 </Card>
@@ -419,7 +520,7 @@ function OverviewVisualization({
       </div>
 
       <div className="text-xs text-muted-foreground">
-        💡 Перетаскивайте эпизоды для изменения расположения. На карте: 📄 эпизоды, 🟢 пути, 🔵 предметы, 🟣 выборы.
+        💡 Перетаскивайте любые элементы для изменения их расположения. Линии показывают связи между элементами.
       </div>
     </div>
   );
