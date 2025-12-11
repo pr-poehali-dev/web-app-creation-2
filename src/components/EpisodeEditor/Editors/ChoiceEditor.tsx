@@ -1,4 +1,4 @@
-import { ChoiceParagraph, Novel, ChoiceParagraph as ChoiceType } from '@/types/novel';
+import { ChoiceParagraph, Novel } from '@/types/novel';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -22,22 +22,6 @@ function ChoiceEditor({
   handleSelectChoice,
   addChoiceToLibrary
 }: ChoiceEditorProps) {
-  const getPathRelatedCount = (pathId: string) => {
-    const relatedEpisodes = novel.episodes.filter(ep => ep.requiredPath === pathId);
-    let relatedChoicesCount = 0;
-    
-    novel.episodes.forEach(ep => {
-      ep.paragraphs.forEach(p => {
-        if (p.type === 'choice') {
-          const choicePara = p as ChoiceType;
-          const opts = choicePara.options?.filter(opt => opt.requiredPath === pathId) || [];
-          relatedChoicesCount += opts.length;
-        }
-      });
-    });
-    
-    return relatedEpisodes.length + relatedChoicesCount;
-  };
   return (
     <div className="space-y-2">
       <Input
@@ -106,20 +90,9 @@ function ChoiceEditor({
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none">Нет</SelectItem>
-                    {novel.paths?.map((path) => {
-                      const relatedCount = getPathRelatedCount(path.id);
-                      
-                      return (
-                        <SelectItem key={path.id} value={path.id}>
-                          {path.name}
-                          {relatedCount > 0 && (
-                            <span className="ml-2 text-xs text-muted-foreground">
-                              ({relatedCount} связ.)
-                            </span>
-                          )}
-                        </SelectItem>
-                      );
-                    })}
+                    {novel.paths?.map((path) => (
+                      <SelectItem key={path.id} value={path.id}>{path.name}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -149,41 +122,6 @@ function ChoiceEditor({
                 </Select>
               </div>
             </div>
-
-            {option.activatesPath && (() => {
-              const path = novel.paths?.find(p => p.id === option.activatesPath);
-              if (!path) return null;
-              
-              const relatedEpisodes = novel.episodes.filter(ep => ep.requiredPath === path.id);
-              let relatedChoicesCount = 0;
-              
-              novel.episodes.forEach(ep => {
-                ep.paragraphs.forEach(p => {
-                  if (p.type === 'choice') {
-                    const choicePara = p as ChoiceType;
-                    const opts = choicePara.options?.filter(opt => opt.requiredPath === path.id) || [];
-                    relatedChoicesCount += opts.length;
-                  }
-                });
-              });
-              
-              if (relatedEpisodes.length === 0 && relatedChoicesCount === 0) return null;
-              
-              return (
-                <div className="mt-2 p-2 bg-muted/50 rounded text-xs text-muted-foreground">
-                  <div className="flex items-center gap-1 font-medium">
-                    <Icon name="Link" size={10} />
-                    <span>Связанные элементы:</span>
-                  </div>
-                  {relatedEpisodes.length > 0 && (
-                    <div className="ml-3 mt-1">• {relatedEpisodes.length} эпизод(ов)</div>
-                  )}
-                  {relatedChoicesCount > 0 && (
-                    <div className="ml-3">• {relatedChoicesCount} вариант(ов)</div>
-                  )}
-                </div>
-              );
-            })()}
             
             <div className="flex items-center">
               <label className="flex items-center gap-2 cursor-pointer text-xs">
