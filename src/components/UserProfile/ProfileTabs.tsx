@@ -379,7 +379,7 @@ function ProfileTabs({ profile, novel, achievements, username, onDeleteBookmark,
 
                           <div className="border-t border-border pt-4">
                             <div className="flex items-center justify-between mb-3">
-                              <h3 className="text-lg font-bold text-foreground uppercase tracking-wide">Ваши заметки</h3>
+                              <h3 className="text-lg font-bold text-white uppercase tracking-wide">Ваши заметки</h3>
                               {onProfileUpdate && !editingComment && (
                                 <Button
                                   size="sm"
