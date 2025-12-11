@@ -49,29 +49,6 @@ function AchievementsTab({ profile, novel, achievements, onDeleteBookmark, onNav
         </div>
       </TabsContent>
 
-      <TabsContent value="paths" className="mt-6">
-        {profile.activePaths && profile.activePaths.length > 0 ? (
-          <div className="space-y-3">
-            {profile.activePaths.map((pathId) => {
-              const path = novel.paths?.find(p => p.id === pathId);
-              return path ? (
-                <div key={pathId} className="p-3 rounded-lg border border-border bg-card">
-                  <div className="flex items-center gap-2">
-                    <Icon name="GitBranch" size={16} className="text-primary" />
-                    <h4 className="font-semibold text-foreground">{path.name}</h4>
-                  </div>
-                  {path.description && (
-                    <p className="text-sm text-muted-foreground mt-2">{path.description}</p>
-                  )}
-                </div>
-              ) : null;
-            })}
-          </div>
-        ) : (
-          <p className="text-center py-8 text-muted-foreground">Нет активных путей</p>
-        )}
-      </TabsContent>
-
       <TabsContent value="bookmarks" className="mt-6">
         {profile.bookmarks.length > 0 ? (
           profile.bookmarks.map((bookmark) => {

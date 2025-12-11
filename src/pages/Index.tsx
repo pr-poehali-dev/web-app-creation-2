@@ -7,7 +7,6 @@ import HomePage from '@/components/HomePage';
 import EpisodesSidebar from '@/components/EpisodesSidebar';
 import NavigationMenu from '@/components/NavigationMenu';
 import ParagraphsDialog from '@/components/ParagraphsDialog';
-import ActivePathsIndicator from '@/components/ActivePathsIndicator';
 import AuthScreen from '@/components/AuthScreen';
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
@@ -293,7 +292,6 @@ function Index() {
           isMusicPlaying={isMusicPlaying}
           onToggleMusic={() => setIsMusicPlaying(!isMusicPlaying)}
         />
-        <ActivePathsIndicator novel={novel} profile={profile} />
       </div>
       
       <NavigationMenu
