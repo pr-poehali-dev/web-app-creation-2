@@ -94,13 +94,17 @@ export function useNovelNavigation({
         }, fadeDelay);
       } else {
         // Фон не меняется - просто меняем текст
+        // Сначала обновляем индекс, потом сбрасываем состояния для нового эффекта печатной машинки
         onProfileUpdate(prev => ({
           ...prev,
           currentEpisodeId,
           currentParagraphIndex: nextIndex
         }));
-        setIsTyping(true);
-        setSkipTyping(false);
+        // Небольшая задержка чтобы displayParagraph успел обновиться
+        setTimeout(() => {
+          setIsTyping(true);
+          setSkipTyping(false);
+        }, 10);
       }
     } else {
       // Переход к следующему эпизоду

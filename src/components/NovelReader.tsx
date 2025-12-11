@@ -147,10 +147,12 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
   // Обновляем displayParagraph только когда не в процессе fade И фон не меняется
   useEffect(() => {
     if (!isFading && !isBackgroundChanging) {
-      console.log('[NovelReader] Paragraph changed, updating display and resetting isTyping');
+      console.log('[NovelReader] Paragraph changed, updating display');
       setDisplayParagraph(currentParagraph);
-      // Для картинок и фонов сразу ставим isTyping=false
-      setIsTyping(currentParagraph?.type === 'image' || currentParagraph?.type === 'background' ? false : true);
+      // Для картинок и фонов сразу ставим isTyping=false (текстовые параграфы управляются в useNovelNavigation)
+      if (currentParagraph?.type === 'image' || currentParagraph?.type === 'background') {
+        setIsTyping(false);
+      }
       setSkipTyping(false);
       setCanNavigate(false);
     }
