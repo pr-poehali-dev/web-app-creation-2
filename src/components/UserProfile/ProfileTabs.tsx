@@ -306,7 +306,7 @@ function ProfileTabs({ profile, novel, achievements, username, onDeleteBookmark,
                     setCommentText('');
                   }
                 }}>
-                  <DialogContent className="max-w-lg bg-background border-2 border-primary/30">
+                  <DialogContent className="max-w-lg bg-card/95 backdrop-blur-sm border-2 border-primary/30">
                     {selectedCharacter && (() => {
                       const character = profile.metCharacters.find(c => c.id === selectedCharacter);
                       const episode = novel.episodes.find(ep => ep.id === character?.episodeId);
