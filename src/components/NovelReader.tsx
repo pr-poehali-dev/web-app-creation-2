@@ -49,10 +49,12 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
   const [previousBackgroundImage, setPreviousBackgroundImage] = useState<string | null>(null);
   const [isBackgroundChanging, setIsBackgroundChanging] = useState(false);
   const [newImageReady, setNewImageReady] = useState(false);
+  const [pendingBackgroundUrl, setPendingBackgroundUrl] = useState<string | null>(null);
   
   // Ref для отслеживания предыдущего индекса - чтобы понять, клик или прыжок
   const previousParagraphIndexRef = useRef<number>(currentParagraphIndex);
   
+  // Определяем какой фон должен быть для текущего параграфа
   useEffect(() => {
     if (!currentEpisode) return;
     
@@ -75,19 +77,22 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
         // Прыжок через диалог - без анимации
         setBackgroundImage(bgUrl);
         setNewImageReady(true);
+        setPendingBackgroundUrl(null);
+      } else if (isFading) {
+        // Текст исчезает - сохраняем новый URL и ждем
+        setPendingBackgroundUrl(bgUrl);
       } else {
-        // Обычный переход - с анимацией
+        // Обычный переход без fade - сразу меняем
         setPreviousBackgroundImage(backgroundImage);
         setBackgroundImage(bgUrl);
         setIsBackgroundChanging(true);
         setNewImageReady(false);
+        setPendingBackgroundUrl(null);
         
-        // Даем старой картинке начать размываться, затем запускаем появление новой
         setTimeout(() => {
           setNewImageReady(true);
         }, 400);
         
-        // Завершаем transition через время анимации
         setTimeout(() => {
           setIsBackgroundChanging(false);
           setPreviousBackgroundImage(null);
@@ -97,11 +102,32 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
       // Первое появление фона - без анимации
       setBackgroundImage(bgUrl);
       setNewImageReady(true);
+      setPendingBackgroundUrl(null);
     }
     
     // Обновляем ref для следующего сравнения
     previousParagraphIndexRef.current = currentParagraphIndex;
-  }, [currentEpisodeId, currentParagraphIndex, currentEpisode, backgroundImage]);
+  }, [currentEpisodeId, currentParagraphIndex, currentEpisode, backgroundImage, isFading]);
+  
+  // Когда текст исчез (isFading стал false), запускаем смену фона
+  useEffect(() => {
+    if (!isFading && pendingBackgroundUrl && pendingBackgroundUrl !== backgroundImage) {
+      setPreviousBackgroundImage(backgroundImage);
+      setBackgroundImage(pendingBackgroundUrl);
+      setIsBackgroundChanging(true);
+      setNewImageReady(false);
+      setPendingBackgroundUrl(null);
+      
+      setTimeout(() => {
+        setNewImageReady(true);
+      }, 400);
+      
+      setTimeout(() => {
+        setIsBackgroundChanging(false);
+        setPreviousBackgroundImage(null);
+      }, 2800);
+    }
+  }, [isFading, pendingBackgroundUrl, backgroundImage]);
   
   // Ref для отслеживания актуального значения isTyping в callbacks
   const isTypingRef = useRef(isTyping);
