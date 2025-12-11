@@ -72,18 +72,43 @@ function NovelVisualization({ novel, onUpdate }: NovelVisualizationProps) {
         }
       });
     } else if (draggedItem.type === 'choice') {
-      const choice = novel.library.choices.find(c => c.id === draggedItem.id);
+      let choice = novel.library.choices.find(c => c.id === draggedItem.id);
+      
+      if (!choice) {
+        novel.episodes.forEach(ep => {
+          ep.paragraphs.forEach(para => {
+            if (para.type === 'choice' && para.id === draggedItem.id) {
+              choice = {
+                id: para.id,
+                question: para.question,
+                options: para.options.map(opt => ({
+                  id: opt.id,
+                  text: opt.text,
+                  nextEpisodeId: opt.nextEpisodeId,
+                  nextParagraphIndex: opt.nextParagraphIndex
+                })),
+                position: { x: 0, y: 0 }
+              };
+            }
+          });
+        });
+      }
+      
       if (!choice) return;
+
+      const updatedChoices = novel.library.choices.some(c => c.id === draggedItem.id)
+        ? novel.library.choices.map(c =>
+            c.id === draggedItem.id
+              ? { ...c, position: { x: (c.position?.x || 0) + movementX, y: (c.position?.y || 0) + movementY } }
+              : c
+          )
+        : [...novel.library.choices, { ...choice, position: { x: movementX, y: movementY } }];
 
       onUpdate({
         ...novel,
         library: {
           ...novel.library,
-          choices: novel.library.choices.map(c =>
-            c.id === draggedItem.id
-              ? { ...c, position: { x: (c.position?.x || 0) + movementX, y: (c.position?.y || 0) + movementY } }
-              : c
-          )
+          choices: updatedChoices
         }
       });
     }
