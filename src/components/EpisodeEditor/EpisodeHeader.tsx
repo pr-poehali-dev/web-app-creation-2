@@ -132,10 +132,26 @@ function EpisodeHeader({ episode, novel, onUpdate, onNovelUpdate }: EpisodeHeade
       console.log('Choices:', newChoices);
       console.log('Всего параграфов для импорта:', importedEpisode.paragraphs.length);
       
+      // Сохраняем первый параграф-фон, если он уже был создан
+      const existingBackground = episode.paragraphs[0]?.type === 'background' ? episode.paragraphs[0] : null;
+      let mergedParagraphs = importedEpisode.paragraphs;
+      
+      if (existingBackground) {
+        // Проверяем, есть ли фон в импортированных параграфах
+        const hasImportedBackground = importedEpisode.paragraphs[0]?.type === 'background';
+        if (hasImportedBackground) {
+          // Заменяем импортированный фон на существующий
+          mergedParagraphs = [existingBackground, ...importedEpisode.paragraphs.slice(1)];
+        } else {
+          // Добавляем существующий фон в начало
+          mergedParagraphs = [existingBackground, ...importedEpisode.paragraphs];
+        }
+      }
+      
       const updatedEpisode = {
         ...episode,
         title: importedEpisode.title,
-        paragraphs: importedEpisode.paragraphs,
+        paragraphs: mergedParagraphs,
         backgroundMusic: importedEpisode.backgroundMusic || episode.backgroundMusic
       };
       
