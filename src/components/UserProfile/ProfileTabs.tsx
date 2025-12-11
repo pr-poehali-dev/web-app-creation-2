@@ -353,8 +353,7 @@ function ProfileTabs({ profile, novel, achievements, username, onDeleteBookmark,
                             
                             <div className="flex-1 space-y-4">
                               <div>
-                                <h2 className="text-2xl font-bold text-foreground mb-1">{character.name}</h2>
-                                <p className="text-xs text-muted-foreground uppercase tracking-wide">Возраст: 20</p>
+                                <h2 className="text-2xl font-bold text-white">{character.name}</h2>
                               </div>
                               
                               {currentDescription && (
