@@ -306,7 +306,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
 
       {/* Фоновое изображение с контентом внутри (только если не приветствие) */}
       {!showGreeting && backgroundImage && (
-        <div className="absolute top-16 left-4 right-4 bottom-4 md:top-20 md:left-8 md:right-32 rounded-2xl overflow-hidden">
+        <div className="absolute top-18 left-4 right-4 bottom-4 md:top-20 md:left-8 md:right-32 rounded-2xl overflow-hidden">
           {/* Предыдущее фоновое изображение (исчезает) */}
           {previousBackgroundImage && (
             <div 
@@ -338,7 +338,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
           
           {/* Контент внутри фона */}
           <div className="relative w-full h-full flex items-end justify-center pb-20 px-6 md:pb-8 md:px-4 md:pr-8">
-            <div className="w-full max-w-4xl min-h-[320px] md:min-h-0 relative z-10">
+            <div className="w-full max-w-4xl h-[300px] md:h-auto md:min-h-0 relative z-10">
               {/* Отображаемый параграф (для плавного fade) */}
               {currentParagraph.type !== 'background' && (
                 <NovelReaderContent
