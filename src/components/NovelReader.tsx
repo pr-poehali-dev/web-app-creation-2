@@ -102,14 +102,15 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
     console.log('[NovelReader] Paragraph changed, type:', currentParagraph?.type, 'index:', currentParagraphIndex);
     // Для текстовых параграфов запускаем эффект печатной машинки
     if (currentParagraph?.type === 'text') {
-      console.log('[NovelReader] Setting isTyping=true for text paragraph');
+      console.log('[NovelReader] Setting isTyping=true, skipTyping=false for text paragraph');
       setIsTyping(true);
+      setSkipTyping(false);
     } else {
       // Для картинок и фонов сразу ставим isTyping=false
       console.log('[NovelReader] Setting isTyping=false for non-text paragraph');
       setIsTyping(false);
+      setSkipTyping(false);
     }
-    setSkipTyping(false);
     setCanNavigate(false);
   }, [currentEpisodeId, currentParagraphIndex, currentParagraph?.type]);
 

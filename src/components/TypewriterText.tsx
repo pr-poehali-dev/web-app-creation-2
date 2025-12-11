@@ -162,11 +162,15 @@ function TypewriterText({ text, speed = 50, skipTyping = false, onComplete }: Ty
   }, [currentIndex, text, targetLength, speed, skipTyping, hasCompleted]);
 
   useEffect(() => {
-    console.log('[TypewriterText] Text changed, resetting');
+    console.log('[TypewriterText] Text changed, resetting. New text:', text.substring(0, 50));
     setDisplayedText('');
     setCurrentIndex(0);
     setHasCompleted(false);
   }, [text]);
+  
+  useEffect(() => {
+    console.log('[TypewriterText] SkipTyping changed:', skipTyping);
+  }, [skipTyping]);
 
   useEffect(() => {
     if (hasCompleted) {
