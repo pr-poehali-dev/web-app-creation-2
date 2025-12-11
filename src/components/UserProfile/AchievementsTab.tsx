@@ -121,14 +121,7 @@ function AchievementsTab({ profile, novel, achievements, onDeleteBookmark, onNav
                         )}
                       </div>
                       <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <h4 className="font-semibold text-foreground">{itemName}</h4>
-                          <span className={`text-xs px-2 py-0.5 rounded-full ${
-                            itemType === 'story' ? 'bg-blue-500/20 text-blue-600' : 'bg-primary/20 text-primary'
-                          }`}>
-                            {itemType === 'story' ? 'Сюжетный' : 'Коллекционный'}
-                          </span>
-                        </div>
+                        <h4 className="font-semibold text-foreground mb-1">{itemName}</h4>
                         <p className="text-sm text-muted-foreground">{itemDescription}</p>
                         <p className="text-xs text-muted-foreground mt-2">
                           <Icon name="MapPin" size={12} className="inline mr-1" />

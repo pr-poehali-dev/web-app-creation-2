@@ -18,13 +18,11 @@ interface ItemBoxProps {
 function ItemBox({ name, description, imageUrl, skipTyping, onComplete, textSpeed = 50, isTopMerged = false, itemType = 'collectible', action = 'gain' }: ItemBoxProps) {
   const getBadgeText = () => {
     if (action === 'lose') return 'Потерян предмет';
-    if (itemType === 'story') return 'Получен предмет';
-    return 'Коллекционный предмет';
+    return 'Получен предмет';
   };
 
   const getBadgeColor = () => {
     if (action === 'lose') return 'bg-destructive text-destructive-foreground';
-    if (itemType === 'story') return 'bg-blue-500 text-white';
     return 'bg-primary text-primary-foreground';
   };
 
