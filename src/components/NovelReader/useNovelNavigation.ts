@@ -71,30 +71,8 @@ export function useNovelNavigation({
     const nextIndex = currentParagraphIndex + 1;
 
     if (nextIndex < currentEpisode.paragraphs.length) {
-      // Проверяем, меняется ли фон при переходе к следующему параграфу
-      let currentBg: string | null = null;
-      let nextBg: string | null = null;
-      
-      // Ищем текущий фон
-      for (let i = currentParagraphIndex; i >= 0; i--) {
-        if (currentEpisode.paragraphs[i].type === 'background') {
-          currentBg = currentEpisode.paragraphs[i].url;
-          break;
-        }
-      }
-      
-      // Ищем следующий фон
-      for (let i = nextIndex; i >= 0; i--) {
-        if (currentEpisode.paragraphs[i].type === 'background') {
-          nextBg = currentEpisode.paragraphs[i].url;
-          break;
-        }
-      }
-      
-      const isBackgroundChanging = currentBg !== nextBg;
-      
-      // Запускаем анимацию растворения только если меняется фон
-      if (currentParagraph?.type === 'text' && isBackgroundChanging) {
+      // Запускаем анимацию растворения для текстовых параграфов
+      if (currentParagraph?.type === 'text') {
         // Если у текущего параграфа установлен slowFade, делаем растворение медленнее
         const fadeDelay = currentParagraph.slowFade ? 1500 : 800;
         setIsFading(true);
@@ -146,34 +124,9 @@ export function useNovelNavigation({
           return;
         }
 
-        // Проверяем, меняется ли фон при переходе к следующему эпизоду
-        let currentBg: string | null = null;
-        let nextBg: string | null = null;
-        
-        // Ищем текущий фон
-        for (let i = currentParagraphIndex; i >= 0; i--) {
-          if (currentEpisode.paragraphs[i].type === 'background') {
-            currentBg = currentEpisode.paragraphs[i].url;
-            break;
-          }
-        }
-        
-        // Ищем следующий фон в новом эпизоде
-        const nextEpisode = novel.episodes.find(ep => ep.id === targetEpisodeId);
-        if (nextEpisode) {
-          for (let i = targetParagraphIdx; i >= 0; i--) {
-            if (nextEpisode.paragraphs[i].type === 'background') {
-              nextBg = nextEpisode.paragraphs[i].url;
-              break;
-            }
-          }
-        }
-        
-        const isBackgroundChanging = currentBg !== nextBg;
-
-        if (currentParagraph?.type === 'text' && isBackgroundChanging) {
+        if (currentParagraph?.type === 'text') {
           // Если у текущего параграфа установлен slowFade, делаем растворение медленнее
-          const fadeDelay = currentParagraph.slowFade ? 1500 : 800;
+          const fadeDelay = currentParagraph.slowFade ? 1500 : 300;
           setIsFading(true);
           setTimeout(() => {
             onProfileUpdate(prev => ({
