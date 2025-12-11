@@ -100,14 +100,14 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
   // При смене параграфа обновляем состояния
   useEffect(() => {
     console.log('[NovelReader] Paragraph changed, type:', currentParagraph?.type, 'index:', currentParagraphIndex);
-    // Для текстовых параграфов запускаем эффект печатной машинки
-    if (currentParagraph?.type === 'text') {
-      console.log('[NovelReader] Setting isTyping=true, skipTyping=false for text paragraph');
+    // Для параграфов с печатным эффектом (text, dialogue, item)
+    if (currentParagraph?.type === 'text' || currentParagraph?.type === 'dialogue' || currentParagraph?.type === 'item') {
+      console.log('[NovelReader] Setting isTyping=true, skipTyping=false for typing paragraph');
       setIsTyping(true);
       setSkipTyping(false);
     } else {
       // Для картинок и фонов сразу ставим isTyping=false
-      console.log('[NovelReader] Setting isTyping=false for non-text paragraph');
+      console.log('[NovelReader] Setting isTyping=false for non-typing paragraph');
       setIsTyping(false);
       setSkipTyping(false);
     }
