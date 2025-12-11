@@ -46,6 +46,8 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
   
   // Фоновое изображение - находим последний background параграф до текущего
   const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
+  const [previousBackgroundImage, setPreviousBackgroundImage] = useState<string | null>(null);
+  const [backgroundTransitioning, setBackgroundTransitioning] = useState(false);
   
   useEffect(() => {
     if (!currentEpisode) return;
@@ -61,7 +63,15 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
     }
     
     if (bgUrl !== backgroundImage) {
+      setPreviousBackgroundImage(backgroundImage);
+      setBackgroundTransitioning(true);
       setBackgroundImage(bgUrl);
+      
+      // Завершаем transition через время анимации
+      setTimeout(() => {
+        setBackgroundTransitioning(false);
+        setPreviousBackgroundImage(null);
+      }, 1000);
     }
   }, [currentEpisodeId, currentParagraphIndex, currentEpisode, backgroundImage]);
   
@@ -289,10 +299,24 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
       {/* Фоновое изображение с контентом внутри (только если не приветствие) */}
       {!showGreeting && backgroundImage && (
         <div className="absolute top-20 left-4 right-4 bottom-4 md:left-8 md:right-32 rounded-2xl overflow-hidden">
-          {/* Само фоновое изображение */}
+          {/* Предыдущее фоновое изображение (для crossfade) */}
+          {previousBackgroundImage && (
+            <div 
+              className="absolute inset-0 bg-cover bg-center transition-opacity duration-1000"
+              style={{ 
+                backgroundImage: `url(${previousBackgroundImage})`,
+                opacity: backgroundTransitioning ? 1 : 0
+              }}
+            />
+          )}
+          
+          {/* Новое фоновое изображение */}
           <div 
-            className="absolute inset-0 bg-cover bg-center transition-opacity duration-500"
-            style={{ backgroundImage: `url(${backgroundImage})` }}
+            className="absolute inset-0 bg-cover bg-center transition-opacity duration-1000"
+            style={{ 
+              backgroundImage: `url(${backgroundImage})`,
+              opacity: backgroundTransitioning ? 0 : 1
+            }}
           />
           
           {/* Слой затемнения */}
