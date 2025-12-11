@@ -139,13 +139,31 @@ function OverviewConnections({
       })}
 
       {choicesStats.map((choice, idx) => {
-        const sourceEpisode = novel.episodes.find(ep => ep.id === choice.episodeId);
-        if (!sourceEpisode) return null;
-        const choiceX = sourceEpisode.position.x * scale + offset.x + 112;
-        const choiceY = sourceEpisode.position.y * scale + offset.y + 40;
+        const choicePos = getPosition('choice', choice.choiceId, 1800 + (idx % 3) * 250, 100 + Math.floor(idx / 3) * 220);
+        const choiceX = choicePos.x * scale + offset.x + 96;
+        const choiceY = choicePos.y * scale + offset.y + 40;
 
         return (
           <g key={`choice-${idx}`}>
+            {choice.relatedEpisodes.map((epId, i) => {
+              const episode = novel.episodes.find(ep => ep.id === epId);
+              if (!episode) return null;
+              const epX = episode.position.x * scale + offset.x + 112;
+              const epY = episode.position.y * scale + offset.y + 40;
+              return (
+                <line
+                  key={`choice-ep-${i}`}
+                  x1={choiceX}
+                  y1={choiceY}
+                  x2={epX}
+                  y2={epY}
+                  stroke="rgb(168, 85, 247)"
+                  strokeWidth="2"
+                  strokeOpacity="0.4"
+                  strokeDasharray="4,4"
+                />
+              );
+            })}
             {choice.relatedPaths.map((pathId, i) => {
               const pathStat = pathsStats.find(p => p.path.id === pathId);
               if (!pathStat) return null;
