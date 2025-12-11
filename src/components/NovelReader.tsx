@@ -306,7 +306,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
 
       {/* Фоновое изображение с контентом внутри (только если не приветствие) */}
       {!showGreeting && backgroundImage && (
-        <div className="absolute top-20 left-4 right-4 bottom-4 md:left-8 md:right-32 rounded-2xl overflow-hidden">
+        <div className="absolute top-16 left-4 right-4 bottom-4 md:top-20 md:left-8 md:right-32 rounded-2xl overflow-hidden">
           {/* Предыдущее фоновое изображение (исчезает) */}
           {previousBackgroundImage && (
             <div 
@@ -337,8 +337,8 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
           <div className="absolute inset-0 bg-black/20" />
           
           {/* Контент внутри фона */}
-          <div className="relative w-full h-full flex items-end justify-center pb-19 px-6 md:pb-8 md:px-4 md:pr-8">
-            <div className="w-full max-w-4xl min-h-[280px] md:min-h-0 relative z-10">
+          <div className="relative w-full h-full flex items-end justify-center pb-20 px-6 md:pb-8 md:px-4 md:pr-8">
+            <div className="w-full max-w-4xl min-h-[320px] md:min-h-0 relative z-10">
               {/* Отображаемый параграф (для плавного fade) */}
               {currentParagraph.type !== 'background' && (
                 <NovelReaderContent
@@ -402,7 +402,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
 
       {/* Навигация для мобильных (только если не приветствие) */}
       {!showGreeting && !isTyping && currentParagraph.type !== 'choice' && (
-        <div className="md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 flex gap-3 z-50">
+        <div className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 flex gap-3 z-50">
           <Button
             size="icon"
             variant="secondary"
