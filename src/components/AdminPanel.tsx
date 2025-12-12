@@ -1,19 +1,16 @@
 import { useState } from 'react';
 import { Novel } from '@/types/novel';
-import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
 import Icon from '@/components/ui/icon';
-import EpisodeEditor from './EpisodeEditor';
 import NovelVisualization from './NovelVisualization';
 import LibraryManager from './LibraryManager';
 import HomePageEditor from './HomePageEditor';
 import PathsManager from './PathsManager';
 import BulkImportDialog from './BulkImportDialog';
 import UsersManagement from './UsersManagement';
-import { migrateNovelToS3 } from '@/utils/migrateBase64ToS3';
+import AdminPanelHeader from './AdminPanel/AdminPanelHeader';
+import EpisodeEditorTab from './AdminPanel/EpisodeEditorTab';
+import SystemTab from './AdminPanel/SystemTab';
 
 interface AdminPanelProps {
   novel: Novel;
@@ -30,8 +27,6 @@ function AdminPanel({ novel, onUpdate, onLogout, authState }: AdminPanelProps) {
   const [activeTab, setActiveTab] = useState('home');
   const [bulkEditEpisodes, setBulkEditEpisodes] = useState(false);
   const [selectedEpisodes, setSelectedEpisodes] = useState<Set<string>>(new Set());
-  const [isMigrating, setIsMigrating] = useState(false);
-  const [migrationProgress, setMigrationProgress] = useState('');
   const selectedEpisode = novel.episodes.find(ep => ep.id === selectedEpisodeId);
 
   const handleEpisodeClickFromVisualization = (episodeId: string) => {
@@ -67,7 +62,6 @@ function AdminPanel({ novel, onUpdate, onLogout, authState }: AdminPanelProps) {
   };
 
   const handleDeleteEpisode = (episodeId: string) => {
-    // Если режим массового редактирования и эпизод выбран - удалить все выбранные
     if (bulkEditEpisodes && selectedEpisodes.has(episodeId)) {
       const remaining = novel.episodes.filter(ep => !selectedEpisodes.has(ep.id));
       if (remaining.length === 0) {
@@ -103,7 +97,6 @@ function AdminPanel({ novel, onUpdate, onLogout, authState }: AdminPanelProps) {
   const handleUpdateEpisode = (updatedEpisode: typeof selectedEpisode) => {
     if (!updatedEpisode) return;
 
-    // Если режим массового редактирования и эпизод выбран - применить timeframes и requiredPaths ко всем выбранным
     if (bulkEditEpisodes && selectedEpisodes.has(updatedEpisode.id)) {
       onUpdate({
         ...novel,
@@ -192,20 +185,14 @@ function AdminPanel({ novel, onUpdate, onLogout, authState }: AdminPanelProps) {
     setSelectedEpisodeId(remaining[0]?.id || null);
   };
 
+  const handleBulkEditChange = (checked: boolean) => {
+    setBulkEditEpisodes(checked);
+    if (!checked) setSelectedEpisodes(new Set());
+  };
+
   return (
     <div className="min-h-screen bg-background dark">
-      <header className="border-b border-border bg-card sticky top-0 z-10">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">Админ-панель</h1>
-            <p className="text-sm text-muted-foreground">{novel.title}</p>
-          </div>
-          <Button variant="outline" onClick={onLogout}>
-            <Icon name="LogOut" size={16} className="mr-2" />
-            Выйти
-          </Button>
-        </div>
-      </header>
+      <AdminPanelHeader novelTitle={novel.title} onLogout={onLogout} />
 
       <div className="container mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -248,177 +235,25 @@ function AdminPanel({ novel, onUpdate, onLogout, authState }: AdminPanelProps) {
           </TabsContent>
 
           <TabsContent value="editor" className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold text-foreground">Эпизоды</h2>
-              <div className="flex gap-2">
-                <Button onClick={() => setShowBulkImport(true)} variant="outline">
-                  <Icon name="Upload" size={16} className="mr-2" />
-                  Массовый импорт
-                </Button>
-                <Button onClick={handleAddEpisode}>
-                  <Icon name="Plus" size={16} className="mr-2" />
-                  Добавить эпизод
-                </Button>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between gap-4 p-3 bg-secondary/20 rounded-lg">
-              <div className="flex items-center gap-2">
-                <Switch
-                  id="bulk-edit-episodes"
-                  checked={bulkEditEpisodes}
-                  onCheckedChange={(checked) => {
-                    setBulkEditEpisodes(checked);
-                    if (!checked) setSelectedEpisodes(new Set());
-                  }}
-                />
-                <Label htmlFor="bulk-edit-episodes" className="cursor-pointer font-medium">
-                  Массовое редактирование эпизодов
-                </Label>
-                {bulkEditEpisodes && (
-                  <span className="text-xs text-muted-foreground">
-                    ({selectedEpisodes.size} выбрано)
-                  </span>
-                )}
-              </div>
-              {bulkEditEpisodes && selectedEpisodes.size > 0 && (
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-2 border-r pr-2">
-                    <Checkbox
-                      id="bulk-episodes-present"
-                      onCheckedChange={(checked) => handleBulkEpisodeTimeframeChange('present', checked as boolean)}
-                    />
-                    <Label htmlFor="bulk-episodes-present" className="cursor-pointer flex items-center gap-1">
-                      <Icon name="Clock" size={14} />
-                      <span className="text-xs">Настоящее</span>
-                    </Label>
-                  </div>
-                  <div className="flex items-center gap-2 border-r pr-2">
-                    <Checkbox
-                      id="bulk-episodes-retro"
-                      onCheckedChange={(checked) => handleBulkEpisodeTimeframeChange('retrospective', checked as boolean)}
-                    />
-                    <Label htmlFor="bulk-episodes-retro" className="cursor-pointer flex items-center gap-1">
-                      <Icon name="History" size={14} className="text-amber-600" />
-                      <span className="text-xs">Ретроспект.</span>
-                    </Label>
-                  </div>
-                  <Button
-                    size="sm"
-                    variant="destructive"
-                    onClick={handleBulkDeleteEpisodes}
-                  >
-                    <Icon name="Trash2" size={14} className="mr-1" />
-                    Удалить
-                  </Button>
-                </div>
-              )}
-              {bulkEditEpisodes && (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={handleSelectAllEpisodes}
-                >
-                  {selectedEpisodes.size === novel.episodes.length ? 'Снять всё' : 'Выбрать всё'}
-                </Button>
-              )}
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-              <div className="lg:col-span-1 space-y-2">
-                {novel.episodes.map((episode, index) => (
-                  <div
-                    key={episode.id}
-                    className={`p-3 rounded-lg border transition-all ${
-                      selectedEpisodeId === episode.id
-                        ? 'bg-primary text-primary-foreground border-primary'
-                        : 'bg-card border-border hover:border-primary/50'
-                    } ${!bulkEditEpisodes ? 'cursor-pointer' : ''}`}
-                    onClick={() => !bulkEditEpisodes && setSelectedEpisodeId(episode.id)}
-                  >
-                    <div className="flex items-center justify-between gap-2">
-                      {bulkEditEpisodes && (
-                        <Checkbox
-                          checked={selectedEpisodes.has(episode.id)}
-                          onCheckedChange={() => handleToggleEpisodeSelect(episode.id)}
-                          onClick={(e) => e.stopPropagation()}
-                        />
-                      )}
-                      <span className="font-medium truncate flex-1 text-slate-50">{episode.title}</span>
-                      <div className="flex gap-1 flex-shrink-0">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6"
-                          disabled={index === 0}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleMoveEpisode(episode.id, 'up');
-                          }}
-                        >
-                          <Icon name="ChevronUp" size={14} />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6"
-                          disabled={index === novel.episodes.length - 1}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleMoveEpisode(episode.id, 'down');
-                          }}
-                        >
-                          <Icon name="ChevronDown" size={14} />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6 relative"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeleteEpisode(episode.id);
-                          }}
-                          title={bulkEditEpisodes && selectedEpisodes.has(episode.id) && selectedEpisodes.size > 1 ? `Удалить ${selectedEpisodes.size} эпизодов` : 'Удалить эпизод'}
-                        >
-                          <Icon name="Trash2" size={14} />
-                          {bulkEditEpisodes && selectedEpisodes.has(episode.id) && selectedEpisodes.size > 1 && (
-                            <span className="absolute -top-1 -right-1 bg-destructive text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center">
-                              {selectedEpisodes.size}
-                            </span>
-                          )}
-                        </Button>
-                      </div>
-                    </div>
-                    <p className="text-xs opacity-70 mt-1 text-slate-50">
-                      {episode.paragraphs.length} параграфов
-                    </p>
-                  </div>
-                ))}
-              </div>
-
-              <div className="lg:col-span-3">
-                {selectedEpisode ? (
-                  <>
-                    {bulkEditEpisodes && selectedEpisodes.has(selectedEpisode.id) && selectedEpisodes.size > 1 && (
-                      <div className="mb-4 p-3 bg-primary/10 rounded-lg text-primary font-medium border-2 border-primary">
-                        <Icon name="Info" size={16} className="inline mr-2" />
-                        Изменения временных слоёв и путей применятся к {selectedEpisodes.size} выбранным эпизодам
-                      </div>
-                    )}
-                    <EpisodeEditor
-                      episode={selectedEpisode}
-                      novel={novel}
-                      onUpdate={handleUpdateEpisode}
-                      onNovelUpdate={onUpdate}
-                    />
-                  </>
-                ) : (
-                  <div className="text-center py-16 text-muted-foreground">
-                    Выберите эпизод для редактирования
-                  </div>
-                )}
-              </div>
-            </div>
+            <EpisodeEditorTab
+              novel={novel}
+              selectedEpisode={selectedEpisode}
+              selectedEpisodeId={selectedEpisodeId}
+              bulkEditEpisodes={bulkEditEpisodes}
+              selectedEpisodes={selectedEpisodes}
+              onUpdate={onUpdate}
+              onAddEpisode={handleAddEpisode}
+              onDeleteEpisode={handleDeleteEpisode}
+              onUpdateEpisode={handleUpdateEpisode}
+              onMoveEpisode={handleMoveEpisode}
+              onSelectEpisode={setSelectedEpisodeId}
+              onToggleEpisodeSelect={handleToggleEpisodeSelect}
+              onSelectAllEpisodes={handleSelectAllEpisodes}
+              onBulkEpisodeTimeframeChange={handleBulkEpisodeTimeframeChange}
+              onBulkDeleteEpisodes={handleBulkDeleteEpisodes}
+              onShowBulkImport={() => setShowBulkImport(true)}
+              onBulkEditChange={handleBulkEditChange}
+            />
           </TabsContent>
 
           <TabsContent value="paths">
@@ -441,82 +276,7 @@ function AdminPanel({ novel, onUpdate, onLogout, authState }: AdminPanelProps) {
           </TabsContent>
 
           <TabsContent value="system">
-            <div className="max-w-2xl mx-auto space-y-6">
-              <div className="bg-card border border-border rounded-lg p-6">
-                <h3 className="text-lg font-bold text-foreground mb-4">Оптимизация хранилища</h3>
-                <div className="space-y-4">
-                  <Button
-                    variant="default"
-                    className="w-full justify-start"
-                    onClick={async () => {
-                      if (isMigrating) return;
-                      
-                      const confirmed = confirm('Мигрировать все base64 изображения в S3 хранилище? Это может занять несколько минут.');
-                      if (!confirmed) return;
-                      
-                      setIsMigrating(true);
-                      setMigrationProgress('Начинаю миграцию...');
-                      
-                      try {
-                        const migratedNovel = await migrateNovelToS3(novel, (msg) => {
-                          setMigrationProgress(msg);
-                        });
-                        
-                        onUpdate(migratedNovel);
-                        setMigrationProgress('✅ Миграция завершена! Обновите страницу.');
-                        
-                        setTimeout(() => {
-                          setIsMigrating(false);
-                          setMigrationProgress('');
-                        }, 3000);
-                      } catch (error) {
-                        setMigrationProgress(`❌ Ошибка: ${error}`);
-                        setTimeout(() => {
-                          setIsMigrating(false);
-                          setMigrationProgress('');
-                        }, 5000);
-                      }
-                    }}
-                    disabled={isMigrating}
-                  >
-                    <Icon name={isMigrating ? "Loader2" : "Database"} size={16} className={`mr-2 ${isMigrating ? 'animate-spin' : ''}`} />
-                    {isMigrating ? 'Миграция...' : 'Мигрировать base64 → S3'}
-                  </Button>
-                  {migrationProgress && (
-                    <p className="text-sm text-foreground bg-secondary/20 p-3 rounded">
-                      {migrationProgress}
-                    </p>
-                  )}
-                  <p className="text-xs text-muted-foreground">
-                    Переносит все base64-изображения в облачное хранилище S3. Уменьшает размер JSON данных и ускоряет загрузку.
-                  </p>
-                </div>
-              </div>
-              
-              <div className="bg-card border border-border rounded-lg p-6">
-                <h3 className="text-lg font-bold text-foreground mb-4">Системные действия</h3>
-                <div className="space-y-4">
-                  <Button
-                    variant="destructive"
-                    className="w-full justify-start"
-                    onClick={() => {
-                      if (confirm('Удалить все данные? Это действие нельзя отменить!')) {
-                        localStorage.removeItem('visualNovel');
-                        localStorage.removeItem('userSettings');
-                        localStorage.removeItem('userProfile');
-                        window.location.reload();
-                      }
-                    }}
-                  >
-                    <Icon name="Trash2" size={16} className="mr-2" />
-                    Очистить все данные приложения
-                  </Button>
-                  <p className="text-xs text-muted-foreground">
-                    Удаляет все данные новеллы, настройки и профиль игрока. Приложение вернется к начальному состоянию.
-                  </p>
-                </div>
-              </div>
-            </div>
+            <SystemTab novel={novel} onUpdate={onUpdate} />
           </TabsContent>
 
           <TabsContent value="users">
