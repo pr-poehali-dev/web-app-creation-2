@@ -23,13 +23,10 @@ function HomePage({ homePage, onStart }: HomePageProps) {
           <h1 className="text-5xl font-bold text-foreground animate-scale-in whitespace-pre-wrap leading-tight">
             {homePage.greeting || 'Добро пожаловать'}
           </h1>
-          <Button size="lg" onClick={onStart} className="mt-8">
-            Начать историю
-          </Button>
         </div>
 
         {homePage.news && homePage.news.length > 0 && (
-          <div className="space-y-4 mt-12">
+          <div className="space-y-4">
             <h2 className="text-2xl font-bold text-foreground text-center">Новости</h2>
             {homePage.news.map((item) => (
               <Card key={item.id} className="animate-fade-in">
@@ -51,6 +48,12 @@ function HomePage({ homePage, onStart }: HomePageProps) {
             ))}
           </div>
         )}
+
+        <div className="text-center">
+          <Button size="lg" onClick={onStart}>
+            Начать историю
+          </Button>
+        </div>
       </div>
     </div>
   );
