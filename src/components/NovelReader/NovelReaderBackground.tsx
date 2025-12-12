@@ -126,7 +126,7 @@ function NovelReaderBackground({
           )}
           
           {currentParagraph.type !== 'background' && !isBackgroundChanging && (
-            <div className={currentParagraph.mergedWith ? "space-y-2 md:space-y-3 max-h-[calc(100vh-10rem)] md:max-h-[calc(100vh-12rem)] overflow-y-auto pr-1 md:pr-2 scrollbar-thin scrollbar-thumb-primary/30 scrollbar-track-transparent" : ""}>
+            <div className={currentParagraph.mergedWith ? "grid grid-rows-[50%_auto] gap-2 md:gap-3 max-h-[calc(100vh-10rem)] md:max-h-[calc(100vh-12rem)] overflow-y-auto pr-1 md:pr-2 scrollbar-thin scrollbar-thumb-primary/30 scrollbar-track-transparent" : ""}>
               <NovelReaderContent
                 currentParagraph={currentParagraph}
                 currentEpisode={currentEpisode}
