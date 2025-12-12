@@ -57,10 +57,10 @@ function NovelReaderBackground({
   const isRetrospective = timeframes.includes('retrospective');
 
   const getFilterStyle = (baseFilter: string) => {
-    if (isRetrospective) {
-      return `${baseFilter} sepia(0.6) contrast(0.9) brightness(0.85)`;
-    }
-    return baseFilter;
+    const sepiaAmount = isRetrospective ? 0.6 : 0;
+    const contrastAmount = isRetrospective ? 0.9 : 1;
+    const brightnessAmount = isRetrospective ? 0.85 : 1;
+    return `${baseFilter} sepia(${sepiaAmount}) contrast(${contrastAmount}) brightness(${brightnessAmount})`;
   };
 
   return (
@@ -84,12 +84,12 @@ function NovelReaderBackground({
           backgroundImage: `url(${backgroundImage})`,
           opacity: previousBackgroundImage && !newImageReady ? 0 : 1,
           filter: getFilterStyle(previousBackgroundImage && !newImageReady ? 'blur(16px)' : 'blur(0px)'),
-          transition: previousBackgroundImage ? 'opacity 2.4s ease-in-out, filter 2.4s ease-in-out' : 'none',
+          transition: previousBackgroundImage ? 'opacity 2.4s ease-in-out, filter 2.4s ease-in-out' : 'filter 1.2s ease-in-out',
           zIndex: 0
         }}
       />
       
-      <div className={`absolute inset-0 ${isRetrospective ? 'bg-amber-950/30' : 'bg-black/20'}`} style={{ transition: 'background-color 2.4s ease-in-out' }} />
+      <div className={`absolute inset-0 ${isRetrospective ? 'bg-amber-950/30' : 'bg-black/20'}`} style={{ transition: 'background-color 1.2s ease-in-out' }} />
       
       <div className="relative w-full h-full flex items-end justify-center pb-20 px-4 md:pb-8 md:px-6 md:pr-8">
         <div className="w-full max-w-4xl md:min-h-0 relative z-10">

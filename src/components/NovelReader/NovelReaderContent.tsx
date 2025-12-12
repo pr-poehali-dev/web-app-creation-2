@@ -55,15 +55,14 @@ function NovelReaderContent({
         <div className={`bg-card/90 backdrop-blur-sm rounded-xl md:rounded-2xl shadow-xl border border-border flex items-start relative ${
           isTopMerged ? 'p-3 md:p-4 lg:p-5 min-h-[8rem]' : 'p-4 md:p-6 lg:p-8 min-h-[10rem] md:min-h-[12rem]'
         }`}>
-          {isRetrospective && (
-            <div 
-              className="absolute inset-0 pointer-events-none rounded-xl md:rounded-2xl"
-              style={{
-                boxShadow: 'inset 0 0 60px 20px rgba(0, 0, 0, 0.4)',
-                background: 'radial-gradient(ellipse at center, transparent 30%, rgba(0, 0, 0, 0.3) 100%)'
-              }}
-            />
-          )}
+          <div 
+            className="absolute inset-0 pointer-events-none rounded-xl md:rounded-2xl transition-all duration-1000 ease-in-out"
+            style={{
+              opacity: isRetrospective ? 1 : 0,
+              boxShadow: 'inset 0 0 60px 20px rgba(0, 0, 0, 0.4)',
+              background: 'radial-gradient(ellipse at center, transparent 30%, rgba(0, 0, 0, 0.3) 100%)'
+            }}
+          />
           <div className={`leading-relaxed text-left text-foreground w-full pt-1 md:pt-2 ${
             isTopMerged 
               ? (settings.textSize === 'small' ? 'text-sm md:text-base lg:text-lg' :
