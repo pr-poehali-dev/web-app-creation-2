@@ -41,7 +41,7 @@ function NovelReaderEffects({
   goToNextParagraph,
   goToPreviousParagraph
 }: NovelReaderEffectsProps) {
-  const previousEpisodeIdRef = useRef<string>(currentEpisodeId);
+  const previousEpisodeIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!currentEpisode) return;
@@ -90,9 +90,9 @@ function NovelReaderEffects({
           setPreviousBackgroundImage(null);
         }, 2800);
       }
-      
-      previousEpisodeIdRef.current = currentEpisodeId;
     }
+    
+    previousEpisodeIdRef.current = currentEpisodeId;
   }, [currentEpisodeId, currentParagraphIndex, currentEpisode]);
 
   useEffect(() => {
