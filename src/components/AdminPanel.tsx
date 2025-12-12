@@ -2,6 +2,9 @@ import { useState } from 'react';
 import { Novel } from '@/types/novel';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import Icon from '@/components/ui/icon';
 import EpisodeEditor from './EpisodeEditor';
 import NovelVisualization from './NovelVisualization';
@@ -24,6 +27,8 @@ function AdminPanel({ novel, onUpdate, onLogout, authState }: AdminPanelProps) {
   );
   const [showBulkImport, setShowBulkImport] = useState(false);
   const [activeTab, setActiveTab] = useState('home');
+  const [bulkEditEpisodes, setBulkEditEpisodes] = useState(false);
+  const [selectedEpisodes, setSelectedEpisodes] = useState<Set<string>>(new Set());
   const selectedEpisode = novel.episodes.find(ep => ep.id === selectedEpisodeId);
 
   const handleEpisodeClickFromVisualization = (episodeId: string) => {
@@ -104,6 +109,53 @@ function AdminPanel({ novel, onUpdate, onLogout, authState }: AdminPanelProps) {
     });
   };
 
+  const handleToggleEpisodeSelect = (episodeId: string) => {
+    const newSelected = new Set(selectedEpisodes);
+    if (newSelected.has(episodeId)) {
+      newSelected.delete(episodeId);
+    } else {
+      newSelected.add(episodeId);
+    }
+    setSelectedEpisodes(newSelected);
+  };
+
+  const handleSelectAllEpisodes = () => {
+    if (selectedEpisodes.size === novel.episodes.length) {
+      setSelectedEpisodes(new Set());
+    } else {
+      setSelectedEpisodes(new Set(novel.episodes.map(ep => ep.id)));
+    }
+  };
+
+  const handleBulkEpisodeTimeframeChange = (timeframe: 'present' | 'retrospective', checked: boolean) => {
+    const updatedEpisodes = novel.episodes.map(ep => {
+      if (!selectedEpisodes.has(ep.id)) return ep;
+      
+      const current = ep.timeframes || [];
+      const updated = checked
+        ? [...current.filter(t => t !== timeframe), timeframe]
+        : current.filter(t => t !== timeframe);
+      
+      return { ...ep, timeframes: updated.length > 0 ? updated : undefined };
+    });
+    
+    onUpdate({ ...novel, episodes: updatedEpisodes });
+  };
+
+  const handleBulkDeleteEpisodes = () => {
+    const remaining = novel.episodes.filter(ep => !selectedEpisodes.has(ep.id));
+    if (remaining.length === 0) {
+      alert('Нельзя удалить все эпизоды');
+      return;
+    }
+    const confirmed = confirm(`Удалить ${selectedEpisodes.size} эпизод(ов)?`);
+    if (!confirmed) return;
+    
+    onUpdate({ ...novel, episodes: remaining });
+    setSelectedEpisodes(new Set());
+    setSelectedEpisodeId(remaining[0]?.id || null);
+  };
+
   return (
     <div className="min-h-screen bg-background dark">
       <header className="border-b border-border bg-card sticky top-0 z-10">
@@ -174,19 +226,88 @@ function AdminPanel({ novel, onUpdate, onLogout, authState }: AdminPanelProps) {
               </div>
             </div>
 
+            <div className="flex items-center justify-between gap-4 p-3 bg-secondary/20 rounded-lg">
+              <div className="flex items-center gap-2">
+                <Switch
+                  id="bulk-edit-episodes"
+                  checked={bulkEditEpisodes}
+                  onCheckedChange={(checked) => {
+                    setBulkEditEpisodes(checked);
+                    if (!checked) setSelectedEpisodes(new Set());
+                  }}
+                />
+                <Label htmlFor="bulk-edit-episodes" className="cursor-pointer font-medium">
+                  Массовое редактирование эпизодов
+                </Label>
+                {bulkEditEpisodes && (
+                  <span className="text-xs text-muted-foreground">
+                    ({selectedEpisodes.size} выбрано)
+                  </span>
+                )}
+              </div>
+              {bulkEditEpisodes && selectedEpisodes.size > 0 && (
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 border-r pr-2">
+                    <Checkbox
+                      id="bulk-episodes-present"
+                      onCheckedChange={(checked) => handleBulkEpisodeTimeframeChange('present', checked as boolean)}
+                    />
+                    <Label htmlFor="bulk-episodes-present" className="cursor-pointer flex items-center gap-1">
+                      <Icon name="Clock" size={14} />
+                      <span className="text-xs">Настоящее</span>
+                    </Label>
+                  </div>
+                  <div className="flex items-center gap-2 border-r pr-2">
+                    <Checkbox
+                      id="bulk-episodes-retro"
+                      onCheckedChange={(checked) => handleBulkEpisodeTimeframeChange('retrospective', checked as boolean)}
+                    />
+                    <Label htmlFor="bulk-episodes-retro" className="cursor-pointer flex items-center gap-1">
+                      <Icon name="History" size={14} className="text-amber-600" />
+                      <span className="text-xs">Ретроспект.</span>
+                    </Label>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    onClick={handleBulkDeleteEpisodes}
+                  >
+                    <Icon name="Trash2" size={14} className="mr-1" />
+                    Удалить
+                  </Button>
+                </div>
+              )}
+              {bulkEditEpisodes && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={handleSelectAllEpisodes}
+                >
+                  {selectedEpisodes.size === novel.episodes.length ? 'Снять всё' : 'Выбрать всё'}
+                </Button>
+              )}
+            </div>
+
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
               <div className="lg:col-span-1 space-y-2">
                 {novel.episodes.map((episode, index) => (
                   <div
                     key={episode.id}
-                    className={`p-3 rounded-lg border cursor-pointer transition-all ${
+                    className={`p-3 rounded-lg border transition-all ${
                       selectedEpisodeId === episode.id
                         ? 'bg-primary text-primary-foreground border-primary'
                         : 'bg-card border-border hover:border-primary/50'
-                    }`}
-                    onClick={() => setSelectedEpisodeId(episode.id)}
+                    } ${!bulkEditEpisodes ? 'cursor-pointer' : ''}`}
+                    onClick={() => !bulkEditEpisodes && setSelectedEpisodeId(episode.id)}
                   >
                     <div className="flex items-center justify-between gap-2">
+                      {bulkEditEpisodes && (
+                        <Checkbox
+                          checked={selectedEpisodes.has(episode.id)}
+                          onCheckedChange={() => handleToggleEpisodeSelect(episode.id)}
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                      )}
                       <span className="font-medium truncate flex-1 text-slate-50">{episode.title}</span>
                       <div className="flex gap-1 flex-shrink-0">
                         <Button

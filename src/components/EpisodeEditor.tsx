@@ -4,6 +4,9 @@ import EpisodeHeader from '@/components/EpisodeEditor/EpisodeHeader';
 import ParagraphTypeButtons from '@/components/EpisodeEditor/ParagraphTypeButtons';
 import ParagraphEditor from '@/components/EpisodeEditor/ParagraphEditor';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import Icon from '@/components/ui/icon';
 
 interface EpisodeEditorProps {
@@ -15,6 +18,8 @@ interface EpisodeEditorProps {
 
 function EpisodeEditor({ episode, novel, onUpdate, onNovelUpdate }: EpisodeEditorProps) {
   const [insertingAt, setInsertingAt] = useState<number | null>(null);
+  const [selectedParagraphs, setSelectedParagraphs] = useState<Set<number>>(new Set());
+  const [bulkEditMode, setBulkEditMode] = useState(false);
 
   const handleAddParagraph = (type: ParagraphType, insertIndex?: number) => {
     let newParagraph: Paragraph;
@@ -92,27 +97,141 @@ function EpisodeEditor({ episode, novel, onUpdate, onNovelUpdate }: EpisodeEdito
     setInsertingAt(insertingAt === index ? null : index);
   };
 
+  const handleToggleSelect = (index: number) => {
+    const newSelected = new Set(selectedParagraphs);
+    if (newSelected.has(index)) {
+      newSelected.delete(index);
+    } else {
+      newSelected.add(index);
+    }
+    setSelectedParagraphs(newSelected);
+  };
+
+  const handleSelectAll = () => {
+    if (selectedParagraphs.size === episode.paragraphs.length) {
+      setSelectedParagraphs(new Set());
+    } else {
+      setSelectedParagraphs(new Set(episode.paragraphs.map((_, i) => i)));
+    }
+  };
+
+  const handleBulkTimeframeChange = (timeframe: 'present' | 'retrospective', checked: boolean) => {
+    const newParagraphs = episode.paragraphs.map((para, index) => {
+      if (!selectedParagraphs.has(index)) return para;
+      
+      const current = para.timeframes || [];
+      const updated = checked
+        ? [...current.filter(t => t !== timeframe), timeframe]
+        : current.filter(t => t !== timeframe);
+      
+      return { ...para, timeframes: updated.length > 0 ? updated : undefined };
+    });
+    
+    onUpdate({ ...episode, paragraphs: newParagraphs });
+  };
+
+  const handleBulkDelete = () => {
+    onUpdate({
+      ...episode,
+      paragraphs: episode.paragraphs.filter((_, i) => !selectedParagraphs.has(i))
+    });
+    setSelectedParagraphs(new Set());
+  };
+
   return (
     <div className="space-y-4">
       <EpisodeHeader episode={episode} novel={novel} onUpdate={onUpdate} onNovelUpdate={onNovelUpdate} />
+
+      <div className="flex items-center justify-between gap-4 p-3 bg-secondary/20 rounded-lg">
+        <div className="flex items-center gap-2">
+          <Switch
+            id="bulk-edit-mode"
+            checked={bulkEditMode}
+            onCheckedChange={(checked) => {
+              setBulkEditMode(checked);
+              if (!checked) setSelectedParagraphs(new Set());
+            }}
+          />
+          <Label htmlFor="bulk-edit-mode" className="cursor-pointer font-medium">
+            Массовое редактирование
+          </Label>
+          {bulkEditMode && (
+            <span className="text-xs text-muted-foreground">
+              ({selectedParagraphs.size} выбрано)
+            </span>
+          )}
+        </div>
+        {bulkEditMode && selectedParagraphs.size > 0 && (
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 border-r pr-2">
+              <Checkbox
+                id="bulk-present"
+                onCheckedChange={(checked) => handleBulkTimeframeChange('present', checked as boolean)}
+              />
+              <Label htmlFor="bulk-present" className="cursor-pointer flex items-center gap-1">
+                <Icon name="Clock" size={14} />
+                <span className="text-xs">Настоящее</span>
+              </Label>
+            </div>
+            <div className="flex items-center gap-2 border-r pr-2">
+              <Checkbox
+                id="bulk-retro"
+                onCheckedChange={(checked) => handleBulkTimeframeChange('retrospective', checked as boolean)}
+              />
+              <Label htmlFor="bulk-retro" className="cursor-pointer flex items-center gap-1">
+                <Icon name="History" size={14} className="text-amber-600" />
+                <span className="text-xs">Ретроспект.</span>
+              </Label>
+            </div>
+            <Button
+              size="sm"
+              variant="destructive"
+              onClick={handleBulkDelete}
+            >
+              <Icon name="Trash2" size={14} className="mr-1" />
+              Удалить
+            </Button>
+          </div>
+        )}
+        {bulkEditMode && (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={handleSelectAll}
+          >
+            {selectedParagraphs.size === episode.paragraphs.length ? 'Снять всё' : 'Выбрать всё'}
+          </Button>
+        )}
+      </div>
 
       <ParagraphTypeButtons onAddParagraph={(type) => handleAddParagraph(type)} />
 
       <div className="space-y-3">
         {episode.paragraphs.map((paragraph, index) => (
           <div key={paragraph.id}>
-            <ParagraphEditor
-              paragraph={paragraph}
-              index={index}
-              episodeId={episode.id}
-              novel={novel}
-              totalParagraphs={episode.paragraphs.length}
-              onUpdate={handleUpdateParagraph}
-              onDelete={handleDeleteParagraph}
-              onMove={handleMoveParagraph}
-              onToggleInsert={handleToggleInsert}
-              onNovelUpdate={onNovelUpdate}
-            />
+            <div className="flex items-start gap-2">
+              {bulkEditMode && (
+                <Checkbox
+                  checked={selectedParagraphs.has(index)}
+                  onCheckedChange={() => handleToggleSelect(index)}
+                  className="mt-4"
+                />
+              )}
+              <div className="flex-1">
+                <ParagraphEditor
+                  paragraph={paragraph}
+                  index={index}
+                  episodeId={episode.id}
+                  novel={novel}
+                  totalParagraphs={episode.paragraphs.length}
+                  onUpdate={handleUpdateParagraph}
+                  onDelete={handleDeleteParagraph}
+                  onMove={handleMoveParagraph}
+                  onToggleInsert={handleToggleInsert}
+                  onNovelUpdate={onNovelUpdate}
+                />
+              </div>
+            </div>
             
             {insertingAt === index && (
               <div className="flex gap-2 justify-center my-2 p-2 bg-secondary/20 rounded-lg">
