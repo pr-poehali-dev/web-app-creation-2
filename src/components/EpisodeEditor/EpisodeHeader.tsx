@@ -254,31 +254,45 @@ function EpisodeHeader({ episode, novel, onUpdate, onNovelUpdate }: EpisodeHeade
         </div>
 
         <div>
-          <Label className="text-foreground">Временной слой</Label>
-          <Select
-            value={episode.timeframe || 'present'}
-            onValueChange={(value: 'present' | 'retrospective') => onUpdate({ ...episode, timeframe: value })}
-          >
-            <SelectTrigger className="text-foreground mt-1">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="present">
-                <div className="flex items-center gap-2">
-                  <Icon name="Clock" size={14} />
-                  Настоящее
-                </div>
-              </SelectItem>
-              <SelectItem value="retrospective">
-                <div className="flex items-center gap-2">
-                  <Icon name="History" size={14} className="text-amber-600" />
-                  Ретроспектива
-                </div>
-              </SelectItem>
-            </SelectContent>
-          </Select>
-          <p className="text-xs text-muted-foreground mt-1">
-            Ретроспектива отображается с сепия-эффектом. Можно переопределить для отдельных параграфов.
+          <Label className="text-foreground">Временные слои</Label>
+          <div className="space-y-2 mt-2">
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="timeframe-present"
+                checked={episode.timeframes?.includes('present') ?? true}
+                onCheckedChange={(checked) => {
+                  const current = episode.timeframes || ['present'];
+                  const updated = checked 
+                    ? [...current.filter(t => t !== 'present'), 'present']
+                    : current.filter(t => t !== 'present');
+                  onUpdate({ ...episode, timeframes: updated.length > 0 ? updated : ['present'] });
+                }}
+              />
+              <Label htmlFor="timeframe-present" className="flex items-center gap-2 cursor-pointer">
+                <Icon name="Clock" size={14} />
+                Настоящее
+              </Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="timeframe-retrospective"
+                checked={episode.timeframes?.includes('retrospective') ?? false}
+                onCheckedChange={(checked) => {
+                  const current = episode.timeframes || ['present'];
+                  const updated = checked 
+                    ? [...current.filter(t => t !== 'retrospective'), 'retrospective']
+                    : current.filter(t => t !== 'retrospective');
+                  onUpdate({ ...episode, timeframes: updated.length > 0 ? updated : ['present'] });
+                }}
+              />
+              <Label htmlFor="timeframe-retrospective" className="flex items-center gap-2 cursor-pointer">
+                <Icon name="History" size={14} className="text-amber-600" />
+                Ретроспектива
+              </Label>
+            </div>
+          </div>
+          <p className="text-xs text-muted-foreground mt-2">
+            Можно выбрать несколько. Ретроспектива отображается с сепия-эффектом и виньеткой.
           </p>
         </div>
 

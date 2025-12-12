@@ -122,7 +122,7 @@ function EpisodesSidebar({ novel, currentEpisodeId, profile, onEpisodeSelect, on
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2 flex-1">
                       {isLocked && <Icon name="Lock" size={14} className="flex-shrink-0" />}
-                      {episode.timeframe === 'retrospective' && <Icon name="History" size={14} className="flex-shrink-0 text-amber-600" />}
+                      {episode.timeframes?.includes('retrospective') && <Icon name="History" size={14} className="flex-shrink-0 text-amber-600" />}
                       <span className="font-bold text-sm">{index + 1}.</span>
                       <span className="text-sm font-medium">{episode.title}</span>
                     </div>

@@ -308,36 +308,38 @@ function ParagraphEditor({
                     {paragraph.type}
                   </button>
                 )}
-                <Select
-                  value={paragraph.timeframe || 'default'}
-                  onValueChange={(value: 'default' | 'present' | 'retrospective') => 
-                    onUpdate(index, { ...paragraph, timeframe: value === 'default' ? undefined : value })
-                  }
-                >
-                  <SelectTrigger className="h-7 w-32 text-xs">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="default">
-                      <div className="flex items-center gap-1">
-                        <Icon name="Clock" size={12} />
-                        <span className="text-xs">По умолч.</span>
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="present">
-                      <div className="flex items-center gap-1">
-                        <Icon name="Clock" size={12} />
-                        <span className="text-xs">Настоящее</span>
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="retrospective">
-                      <div className="flex items-center gap-1">
-                        <Icon name="History" size={12} className="text-amber-600" />
-                        <span className="text-xs">Ретроспект.</span>
-                      </div>
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
+                <div className="flex items-center gap-1">
+                  <Checkbox
+                    id={`timeframe-present-${index}`}
+                    checked={paragraph.timeframes?.includes('present') ?? true}
+                    onCheckedChange={(checked) => {
+                      const current = paragraph.timeframes || [];
+                      const updated = checked 
+                        ? [...current.filter(t => t !== 'present'), 'present']
+                        : current.filter(t => t !== 'present');
+                      onUpdate(index, { ...paragraph, timeframes: updated.length > 0 ? updated : undefined });
+                    }}
+                    className="h-4 w-4"
+                  />
+                  <Label htmlFor={`timeframe-present-${index}`} className="cursor-pointer">
+                    <Icon name="Clock" size={12} />
+                  </Label>
+                  <Checkbox
+                    id={`timeframe-retro-${index}`}
+                    checked={paragraph.timeframes?.includes('retrospective') ?? false}
+                    onCheckedChange={(checked) => {
+                      const current = paragraph.timeframes || [];
+                      const updated = checked 
+                        ? [...current.filter(t => t !== 'retrospective'), 'retrospective']
+                        : current.filter(t => t !== 'retrospective');
+                      onUpdate(index, { ...paragraph, timeframes: updated.length > 0 ? updated : undefined });
+                    }}
+                    className="h-4 w-4"
+                  />
+                  <Label htmlFor={`timeframe-retro-${index}`} className="cursor-pointer">
+                    <Icon name="History" size={12} className="text-amber-600" />
+                  </Label>
+                </div>
               </div>
               <div className="flex gap-1">
                 <Button

@@ -53,8 +53,8 @@ function NovelReaderBackground({
 }: NovelReaderBackgroundProps) {
   if (!backgroundImage) return null;
 
-  const timeframe = currentParagraph.timeframe || currentEpisode.timeframe || 'present';
-  const isRetrospective = timeframe === 'retrospective';
+  const timeframes = currentParagraph.timeframes || currentEpisode.timeframes || ['present'];
+  const isRetrospective = timeframes.includes('retrospective');
 
   const getFilterStyle = (baseFilter: string) => {
     if (isRetrospective) {
