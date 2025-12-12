@@ -41,6 +41,7 @@ function NovelReaderEffects({
   goToNextParagraph,
   goToPreviousParagraph
 }: NovelReaderEffectsProps) {
+  const previousEpisodeIdRef = useRef<string>(currentEpisodeId);
 
   useEffect(() => {
     if (!currentEpisode) return;
@@ -55,19 +56,40 @@ function NovelReaderEffects({
     }
     
     if (bgUrl !== backgroundImage) {
-      setPreviousBackgroundImage(backgroundImage);
-      setBackgroundImage(bgUrl);
-      setIsBackgroundChanging(true);
-      setNewImageReady(false);
+      const episodeChanged = previousEpisodeIdRef.current !== currentEpisodeId;
+      const isFirstParagraph = currentParagraphIndex === 0;
+      const isLastParagraph = currentParagraphIndex === currentEpisode.paragraphs.length - 1;
       
-      setTimeout(() => {
-        setNewImageReady(true);
-      }, 400);
+      // Проверяем, это переход между последним/первым параграфами соседних эпизодов
+      const isSeamlessTransition = episodeChanged && (
+        (isFirstParagraph && previousEpisodeIdRef.current) || // Пришли в начало нового эпизода
+        isLastParagraph // Находимся на последнем параграфе перед переходом
+      );
       
-      setTimeout(() => {
-        setIsBackgroundChanging(false);
+      // Если сменился эпизод И это не плавный переход, то без анимации
+      if (episodeChanged && !isSeamlessTransition) {
+        setBackgroundImage(bgUrl);
         setPreviousBackgroundImage(null);
-      }, 2800);
+        setIsBackgroundChanging(false);
+        setNewImageReady(true);
+      } else {
+        // Обычная анимация смены фона внутри эпизода или при плавном переходе
+        setPreviousBackgroundImage(backgroundImage);
+        setBackgroundImage(bgUrl);
+        setIsBackgroundChanging(true);
+        setNewImageReady(false);
+        
+        setTimeout(() => {
+          setNewImageReady(true);
+        }, 400);
+        
+        setTimeout(() => {
+          setIsBackgroundChanging(false);
+          setPreviousBackgroundImage(null);
+        }, 2800);
+      }
+      
+      previousEpisodeIdRef.current = currentEpisodeId;
     }
   }, [currentEpisodeId, currentParagraphIndex, currentEpisode]);
 
