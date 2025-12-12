@@ -90,17 +90,27 @@ function NovelReaderEffects({
       const episodeChanged = previousEpisodeIdRef.current !== null && previousEpisodeIdRef.current !== currentEpisodeId;
       const isFirstParagraph = currentParagraphIndex === 0;
       
+      console.log('[Background] Will update:', {
+        episodeChanged,
+        isFirstParagraph,
+        previousEpisodeId: previousEpisodeIdRef.current,
+        currentEpisodeId,
+        willUseInstant: episodeChanged && !isFirstParagraph
+      });
+      
       // Если сменился эпизод И мы на первом параграфе, значит это переход между эпизодами
       // В этом случае используем плавную анимацию для бесшовного перехода
       // Во всех остальных случаях (первая загрузка или переходы внутри эпизода) - используем анимацию
       if (episodeChanged && !isFirstParagraph) {
         // Прыжок на середину эпизода - мгновенная смена
+        console.log('[Background] Instant change to:', bgUrl?.substring(0, 80));
         setBackgroundImage(bgUrl);
         setPreviousBackgroundImage(null);
         setIsBackgroundChanging(false);
         setNewImageReady(true);
       } else {
         // Обычная анимация (первая загрузка, смена внутри эпизода, или плавный переход между эпизодами)
+        console.log('[Background] Animated change to:', bgUrl?.substring(0, 80));
         setPreviousBackgroundImage(backgroundImage);
         setBackgroundImage(bgUrl);
         setIsBackgroundChanging(true);
