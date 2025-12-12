@@ -21,6 +21,11 @@ function ImageBox({ url, mobileUrl, alt, isTopMerged = false, isRetrospective = 
   }, []);
 
   const imageUrl = isMobile && mobileUrl ? mobileUrl : url;
+  
+  useEffect(() => {
+    console.log('[ImageBox] isMobile:', isMobile, 'url:', url, 'mobileUrl:', mobileUrl, 'selected:', imageUrl);
+  }, [isMobile, url, mobileUrl, imageUrl]);
+  
   return (
     <div className="animate-fade-in flex justify-center">
       <ZoomableImage
