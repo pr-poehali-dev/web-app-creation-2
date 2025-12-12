@@ -85,7 +85,9 @@ function NovelReaderContent({
       )}
 
       {currentParagraph.type === 'dialogue' && (
-        <DialogueBox
+        <>
+          {console.log('[NovelReaderContent] Dialogue paragraph:', currentParagraph)}
+          <DialogueBox
             key={paragraphKey}
             characterName={currentParagraph.characterName}
             characterImage={currentParagraph.characterImage}
@@ -116,6 +118,7 @@ function NovelReaderContent({
               }
             }}
           />
+        </>
       )}
 
       {currentParagraph.type === 'choice' && (
