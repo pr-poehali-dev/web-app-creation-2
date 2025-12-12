@@ -18,7 +18,7 @@ interface NovelReaderBackgroundProps {
   profile: UserProfile;
   skipTyping: boolean;
   handleTypingComplete: () => void;
-  handleChoice: (optionIndex: number) => void;
+  handleChoice: (choiceId: string, pathId: string | undefined, oneTime: boolean | undefined, nextEpisodeId?: string, nextParagraphIndex?: number) => void;
   onProfileUpdate: (profile: UserProfile | ((prev: UserProfile) => UserProfile)) => void;
   paragraphKey: string;
   goToPreviousParagraph: () => void;
@@ -100,6 +100,7 @@ function NovelReaderBackground({
                 size="sm"
                 onClick={(e) => {
                   e.stopPropagation();
+                  console.log('[NavButton] Previous clicked');
                   goToPreviousParagraph();
                 }}
                 disabled={currentParagraphIndex === 0}
@@ -112,6 +113,7 @@ function NovelReaderBackground({
                 size="sm"
                 onClick={(e) => {
                   e.stopPropagation();
+                  console.log('[NavButton] Next clicked, currentIndex:', currentParagraphIndex, 'total:', currentEpisode.paragraphs.length);
                   goToNextParagraph();
                 }}
                 disabled={currentParagraphIndex === currentEpisode.paragraphs.length - 1}

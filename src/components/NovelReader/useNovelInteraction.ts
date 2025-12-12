@@ -24,11 +24,12 @@ export function useNovelInteraction({
     // Игнорируем клики по кнопкам и интерактивным элементам
     const target = e.target as HTMLElement;
     if (target.closest('button') || target.closest('a') || target.closest('[role="button"]')) {
+      console.log('[Click] Ignored - clicked on button or link');
       return;
     }
 
     const currentIsTyping = isTypingRef.current;
-    console.log('[Click] isTyping:', currentIsTyping, 'canNavigate:', canNavigate);
+    console.log('[Click] isTyping:', currentIsTyping, 'canNavigate:', canNavigate, 'paragraphType:', currentParagraph?.type);
     if (currentIsTyping) {
       console.log('[Click] Skip typing - setting skipTyping=true');
       setSkipTyping(true);
@@ -36,7 +37,11 @@ export function useNovelInteraction({
       console.log('[Click] Go to next paragraph');
       if (currentParagraph?.type !== 'choice') {
         goToNextParagraph();
+      } else {
+        console.log('[Click] Blocked - paragraph is choice type');
       }
+    } else {
+      console.log('[Click] Blocked - canNavigate is false');
     }
   }, [isTypingRef, canNavigate, currentParagraph, goToNextParagraph, setSkipTyping]);
 
