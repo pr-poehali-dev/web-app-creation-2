@@ -28,13 +28,6 @@ export const parseMarkdownToEpisode = (markdown: string, episodeId: string): Epi
     
     if (!line) {
       consecutiveEmptyLines++;
-      // Одна пустая строка - добавляем fade параграф
-      if (consecutiveEmptyLines === 1) {
-        paragraphs.push({
-          id: `p${Date.now()}_${paragraphs.length}`,
-          type: 'fade'
-        });
-      }
       i++;
       continue;
     }
@@ -59,13 +52,7 @@ export const parseMarkdownToEpisode = (markdown: string, episodeId: string): Epi
       while (i < lines.length && !lines[i].trim().startsWith('[')) {
         const currentLine = lines[i].trim();
         
-        if (!currentLine) {
-          // Пустая строка в блоке [TEXT] = fade
-          paragraphs.push({
-            id: `p${Date.now()}_${paragraphs.length}`,
-            type: 'fade'
-          });
-        } else {
+        if (currentLine) {
           // Каждая непустая строка = текстовый параграф
           paragraphs.push({
             id: `p${Date.now()}_${paragraphs.length}`,
