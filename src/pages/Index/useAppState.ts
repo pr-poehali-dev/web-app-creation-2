@@ -34,9 +34,10 @@ export function useAppState() {
     if (savedProfile) {
       try {
         const parsedProfile = JSON.parse(savedProfile);
-        // Миграция старых профилей: добавляем отсутствующие поля
+        // Миграция старых профилей: добавляем отсутствующие поля и удаляем устаревшие
+        const { achievements, totalReadTime, ...rest } = parsedProfile;
         const migratedProfile = {
-          ...parsedProfile,
+          ...rest,
           readParagraphs: parsedProfile.readParagraphs || [],
           usedChoices: parsedProfile.usedChoices || [],
           activePaths: parsedProfile.activePaths || [],
