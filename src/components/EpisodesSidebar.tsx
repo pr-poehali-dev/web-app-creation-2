@@ -79,7 +79,7 @@ function EpisodesSidebar({ novel, currentEpisodeId, profile, onEpisodeSelect, on
     });
   }, [novel.episodes, readParagraphsSet]);
   return (
-    <div className="w-80 min-h-screen bg-card border-r border-border overflow-y-auto flex-shrink-0 relative">
+    <div className="w-80 h-screen bg-card border-r border-border overflow-y-auto flex-shrink-0 relative">
       <div className="p-4">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-bold text-foreground">Эпизоды</h2>
