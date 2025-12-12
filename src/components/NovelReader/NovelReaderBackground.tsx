@@ -64,7 +64,7 @@ function NovelReaderBackground({
   };
 
   return (
-    <div className="absolute rounded-2xl overflow-hidden" style={{ top: '50px', left: '50px', right: '50px', bottom: '50px' }}>
+    <div className="absolute top-20 left-4 right-4 bottom-4 md:top-20 md:left-8 md:right-32 rounded-2xl overflow-hidden">
       {previousBackgroundImage && (
         <div 
           className="absolute inset-0 bg-cover bg-center"
@@ -127,19 +127,21 @@ function NovelReaderBackground({
           
           {currentParagraph.type !== 'background' && !isBackgroundChanging && (
             <div className={currentParagraph.mergedWith ? "grid grid-rows-[50%_auto] gap-2 md:gap-3 max-h-[calc(100vh-10rem)] md:max-h-[calc(100vh-12rem)] overflow-y-auto pr-1 md:pr-2 scrollbar-thin scrollbar-thumb-primary/30 scrollbar-track-transparent" : ""}>
-              <NovelReaderContent
-                currentParagraph={currentParagraph}
-                currentEpisode={currentEpisode}
-                novel={novel}
-                settings={settings}
-                profile={profile}
-                skipTyping={skipTyping}
-                handleTypingComplete={handleTypingComplete}
-                handleChoice={handleChoice}
-                onProfileUpdate={onProfileUpdate}
-                paragraphKey={paragraphKey}
-                isTopMerged={!!currentParagraph.mergedWith}
-              />
+              <div className={currentParagraph.mergedWith ? "pt-[50px]" : ""}>
+                <NovelReaderContent
+                  currentParagraph={currentParagraph}
+                  currentEpisode={currentEpisode}
+                  novel={novel}
+                  settings={settings}
+                  profile={profile}
+                  skipTyping={skipTyping}
+                  handleTypingComplete={handleTypingComplete}
+                  handleChoice={handleChoice}
+                  onProfileUpdate={onProfileUpdate}
+                  paragraphKey={paragraphKey}
+                  isTopMerged={!!currentParagraph.mergedWith}
+                />
+              </div>
               {currentParagraph.mergedWith && currentEpisode.paragraphs[currentParagraphIndex + 1] && (
                 <NovelReaderContent
                   currentParagraph={currentEpisode.paragraphs[currentParagraphIndex + 1]}
