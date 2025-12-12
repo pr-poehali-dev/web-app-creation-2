@@ -6,7 +6,7 @@ interface NovelReaderGreetingProps {
 
 function NovelReaderGreeting({ novel }: NovelReaderGreetingProps) {
   return (
-    <div className="w-full max-w-4xl relative z-10 space-y-6 overflow-y-auto h-screen scrollbar-hide py-8">
+    <div className="w-full max-w-4xl relative z-10 space-y-6 overflow-y-auto h-screen scrollbar-hide pt-20 pb-8">
       <div className="text-center animate-fade-in">
         <div className="bg-card rounded-2xl p-8 shadow-xl border border-border">
           {novel.homePage?.greetingImage && (
