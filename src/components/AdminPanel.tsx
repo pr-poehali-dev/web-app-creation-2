@@ -13,6 +13,7 @@ import HomePageEditor from './HomePageEditor';
 import PathsManager from './PathsManager';
 import BulkImportDialog from './BulkImportDialog';
 import UsersManagement from './UsersManagement';
+import { migrateNovelToS3 } from '@/utils/migrateBase64ToS3';
 
 interface AdminPanelProps {
   novel: Novel;
@@ -29,6 +30,8 @@ function AdminPanel({ novel, onUpdate, onLogout, authState }: AdminPanelProps) {
   const [activeTab, setActiveTab] = useState('home');
   const [bulkEditEpisodes, setBulkEditEpisodes] = useState(false);
   const [selectedEpisodes, setSelectedEpisodes] = useState<Set<string>>(new Set());
+  const [isMigrating, setIsMigrating] = useState(false);
+  const [migrationProgress, setMigrationProgress] = useState('');
   const selectedEpisode = novel.episodes.find(ep => ep.id === selectedEpisodeId);
 
   const handleEpisodeClickFromVisualization = (episodeId: string) => {
@@ -439,6 +442,57 @@ function AdminPanel({ novel, onUpdate, onLogout, authState }: AdminPanelProps) {
 
           <TabsContent value="system">
             <div className="max-w-2xl mx-auto space-y-6">
+              <div className="bg-card border border-border rounded-lg p-6">
+                <h3 className="text-lg font-bold text-foreground mb-4">Оптимизация хранилища</h3>
+                <div className="space-y-4">
+                  <Button
+                    variant="default"
+                    className="w-full justify-start"
+                    onClick={async () => {
+                      if (isMigrating) return;
+                      
+                      const confirmed = confirm('Мигрировать все base64 изображения в S3 хранилище? Это может занять несколько минут.');
+                      if (!confirmed) return;
+                      
+                      setIsMigrating(true);
+                      setMigrationProgress('Начинаю миграцию...');
+                      
+                      try {
+                        const migratedNovel = await migrateNovelToS3(novel, (msg) => {
+                          setMigrationProgress(msg);
+                        });
+                        
+                        onUpdate(migratedNovel);
+                        setMigrationProgress('✅ Миграция завершена! Обновите страницу.');
+                        
+                        setTimeout(() => {
+                          setIsMigrating(false);
+                          setMigrationProgress('');
+                        }, 3000);
+                      } catch (error) {
+                        setMigrationProgress(`❌ Ошибка: ${error}`);
+                        setTimeout(() => {
+                          setIsMigrating(false);
+                          setMigrationProgress('');
+                        }, 5000);
+                      }
+                    }}
+                    disabled={isMigrating}
+                  >
+                    <Icon name={isMigrating ? "Loader2" : "Database"} size={16} className={`mr-2 ${isMigrating ? 'animate-spin' : ''}`} />
+                    {isMigrating ? 'Миграция...' : 'Мигрировать base64 → S3'}
+                  </Button>
+                  {migrationProgress && (
+                    <p className="text-sm text-foreground bg-secondary/20 p-3 rounded">
+                      {migrationProgress}
+                    </p>
+                  )}
+                  <p className="text-xs text-muted-foreground">
+                    Переносит все base64-изображения в облачное хранилище S3. Уменьшает размер JSON данных и ускоряет загрузку.
+                  </p>
+                </div>
+              </div>
+              
               <div className="bg-card border border-border rounded-lg p-6">
                 <h3 className="text-lg font-bold text-foreground mb-4">Системные действия</h3>
                 <div className="space-y-4">
