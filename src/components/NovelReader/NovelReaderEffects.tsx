@@ -60,13 +60,20 @@ function NovelReaderEffects({
           hasMobileUrl: !!p.mobileUrl,
           isMobile,
           willUseMobile: isMobile && !!p.mobileUrl,
-          selectedUrlLength: selectedUrl?.length || 0
+          selectedUrlLength: selectedUrl?.length || 0,
+          selectedUrlValue: selectedUrl
         });
         console.log('[Background] URLs:', {
           desktop: p.url?.substring(0, 100),
           mobile: p.mobileUrl?.substring(0, 100)
         });
-        bgUrl = selectedUrl;
+        console.log('[Background] Assignment:', {
+          beforeAssignment: bgUrl,
+          selectedUrl: selectedUrl,
+          afterWillBe: selectedUrl
+        });
+        bgUrl = selectedUrl || null;
+        console.log('[Background] After assignment:', bgUrl);
         break;
       }
     }
