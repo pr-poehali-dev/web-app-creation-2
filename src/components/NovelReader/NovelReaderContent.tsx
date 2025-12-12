@@ -52,8 +52,8 @@ function NovelReaderContent({
   return (
     <>
       {currentParagraph.type === 'text' && (
-        <div className={`bg-card/90 backdrop-blur-sm rounded-xl md:rounded-2xl shadow-xl border border-border flex items-center justify-center relative ${
-          isTopMerged ? 'p-12 md:p-16 lg:p-24 h-full w-full' : 'p-4 md:p-6 lg:p-8 min-h-[10rem] md:min-h-[12rem]'
+        <div className={`bg-card/90 backdrop-blur-sm rounded-xl md:rounded-2xl shadow-xl border border-border flex items-start relative ${
+          isTopMerged ? 'p-12 md:p-16 lg:p-24 h-full w-full justify-center' : 'p-4 md:p-6 lg:p-8 min-h-[10rem] md:min-h-[12rem]'
         }`}>
           <div 
             className="absolute inset-0 pointer-events-none rounded-xl md:rounded-2xl transition-all duration-1000 ease-in-out"
@@ -65,12 +65,12 @@ function NovelReaderContent({
           />
           <div className={`leading-relaxed w-full ${
             isTopMerged 
-              ? (settings.textSize === 'small' ? 'text-2xl md:text-3xl lg:text-4xl text-center pt-0' :
-                 settings.textSize === 'large' ? 'text-3xl md:text-4xl lg:text-5xl text-center pt-0' :
-                 'text-2xl md:text-3xl lg:text-4xl text-center pt-0')
-              : (settings.textSize === 'small' ? 'text-sm md:text-base lg:text-lg text-left pt-1 md:pt-2' :
-                 settings.textSize === 'large' ? 'text-lg md:text-xl lg:text-2xl text-left pt-1 md:pt-2' :
-                 'text-base md:text-lg lg:text-xl text-left pt-1 md:pt-2')
+              ? (settings.textSize === 'small' ? 'text-2xl md:text-3xl lg:text-4xl text-center' :
+                 settings.textSize === 'large' ? 'text-3xl md:text-4xl lg:text-5xl text-center' :
+                 'text-2xl md:text-3xl lg:text-4xl text-center')
+              : (settings.textSize === 'small' ? 'text-sm md:text-base lg:text-lg text-left' :
+                 settings.textSize === 'large' ? 'text-lg md:text-xl lg:text-2xl text-left' :
+                 'text-base md:text-lg lg:text-xl text-left')
           } text-foreground`} style={novelFontStyle}>
             {console.log('[NovelReaderContent] Rendering TypewriterText with key:', paragraphKey, 'skipTyping:', skipTyping)}
             <TypewriterText
