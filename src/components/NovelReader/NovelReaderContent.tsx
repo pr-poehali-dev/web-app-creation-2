@@ -53,7 +53,7 @@ function NovelReaderContent({
     <>
       {currentParagraph.type === 'text' && (
         <div className={`bg-card/90 backdrop-blur-sm rounded-xl md:rounded-2xl shadow-xl border border-border flex items-center justify-center relative ${
-          isTopMerged ? 'p-10 md:p-14 lg:p-20 min-h-[40vh] md:min-h-[45vh] lg:min-h-[50vh]' : 'p-4 md:p-6 lg:p-8 min-h-[10rem] md:min-h-[12rem]'
+          isTopMerged ? 'p-12 md:p-16 lg:p-24 h-full w-full' : 'p-4 md:p-6 lg:p-8 min-h-[10rem] md:min-h-[12rem]'
         }`}>
           <div 
             className="absolute inset-0 pointer-events-none rounded-xl md:rounded-2xl transition-all duration-1000 ease-in-out"
