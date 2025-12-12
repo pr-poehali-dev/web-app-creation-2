@@ -257,7 +257,7 @@ function Index() {
         />
       )}
 
-      <div className={`fixed md:relative inset-y-0 left-0 z-[65] transform transition-transform duration-300 ${showSidebar ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
+      <div className={`fixed md:relative inset-y-0 md:inset-y-auto left-0 z-[65] transform transition-transform duration-300 ${showSidebar ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
         <EpisodesSidebar
           novel={novel}
           currentEpisodeId={profile.currentEpisodeId}
