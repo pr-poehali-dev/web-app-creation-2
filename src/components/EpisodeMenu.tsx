@@ -45,6 +45,19 @@ function EpisodeMenu({ novel, profile, onEpisodeSelect, onBack }: EpisodeMenuPro
     return isEpisodeFullyRead(prevEpisode.id);
   };
 
+  const getLastReadParagraph = (episodeId: string) => {
+    const episode = novel.episodes.find(ep => ep.id === episodeId);
+    if (!episode) return 0;
+    
+    for (let i = episode.paragraphs.length - 1; i >= 0; i--) {
+      const paragraphId = `${episodeId}-${i}`;
+      if (profile.readParagraphs?.includes(paragraphId)) {
+        return i;
+      }
+    }
+    return 0;
+  };
+
   return (
     <div className="min-h-screen bg-background p-4 dark">
       <div className="container mx-auto max-w-4xl">
@@ -73,7 +86,7 @@ function EpisodeMenu({ novel, profile, onEpisodeSelect, onBack }: EpisodeMenuPro
                     : 'hover:shadow-lg hover:scale-102'
                 } ${!isLocked ? 'cursor-pointer' : 'cursor-not-allowed'} animate-fade-in`}
                 style={{ animationDelay: `${index * 50}ms` }}
-                onClick={() => !isLocked && onEpisodeSelect(episode.id)}
+                onClick={() => !isLocked && onEpisodeSelect(episode.id, getLastReadParagraph(episode.id))}
               >
                 <CardContent className="p-6">
                   <div className="flex items-start gap-4">

@@ -120,7 +120,7 @@ function EpisodesSidebar({ novel, currentEpisodeId, profile, onEpisodeSelect, on
                   }`}
                   onClick={() => {
                     if (isLocked) return;
-                    onEpisodeSelect(episode.id, 0);
+                    onEpisodeSelect(episode.id, status.lastReadIndex);
                   }}
                 >
                   <div className="flex items-center justify-between">
