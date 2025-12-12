@@ -159,7 +159,12 @@ function NovelReaderEffects({
 
   useEffect(() => {
     if (currentParagraph?.type === 'item') {
+      const paragraphId = `${currentEpisodeId}-${currentParagraphIndex}`;
+      
       onProfileUpdate(prev => {
+        // Проверяем, был ли этот параграф уже обработан
+        const wasProcessed = prev.readParagraphs?.includes(paragraphId);
+        
         const itemType = currentParagraph.itemType || 'collectible';
         const action = currentParagraph.action || 'gain';
         
@@ -182,13 +187,16 @@ function NovelReaderEffects({
             };
           }
         } else {
+          // Для сюжетных предметов
           const storyItemExists = prev.storyItems?.includes(currentParagraph.id);
           
           if (action === 'gain' && !storyItemExists) {
+            // Добавляем предмет, если его нет
+            const itemInCollection = prev.collectedItems?.some(i => i.id === currentParagraph.id);
             return {
               ...prev,
               storyItems: [...(prev.storyItems || []), currentParagraph.id],
-              collectedItems: [
+              collectedItems: itemInCollection ? prev.collectedItems : [
                 ...(prev.collectedItems || []),
                 {
                   id: currentParagraph.id,
@@ -201,10 +209,10 @@ function NovelReaderEffects({
               ]
             };
           } else if (action === 'lose' && storyItemExists) {
+            // Удаляем из storyItems (но оставляем в collectedItems для истории)
             return {
               ...prev,
-              storyItems: prev.storyItems.filter(id => id !== currentParagraph.id),
-              collectedItems: prev.collectedItems.filter(i => i.id !== currentParagraph.id)
+              storyItems: prev.storyItems?.filter(id => id !== currentParagraph.id) || []
             };
           }
         }
@@ -212,7 +220,7 @@ function NovelReaderEffects({
         return prev;
       });
     }
-  }, [currentParagraph?.type, currentParagraph?.id, currentEpisodeId, onProfileUpdate]);
+  }, [currentParagraph?.type, currentParagraph?.id, currentEpisodeId, currentParagraphIndex, onProfileUpdate]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {

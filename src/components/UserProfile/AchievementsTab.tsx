@@ -99,44 +99,65 @@ function AchievementsTab({ profile, novel, achievements, onDeleteBookmark, onNav
       </TabsContent>
 
       <TabsContent value="items" className="mt-6">
-        {profile.collectedItems.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {profile.collectedItems.map((item) => {
-              const episode = novel.episodes.find(ep => ep.id === item.episodeId);
-              const libraryItem = novel.library.items.find(i => i.id === item.id);
-              const itemName = libraryItem?.name || item.name;
-              const itemDescription = libraryItem?.description || item.description;
-              const itemImage = libraryItem?.imageUrl || item.imageUrl;
-              const itemType = libraryItem?.itemType || item.itemType || 'collectible';
-              
-              return (
-                <Card key={item.id}>
-                  <CardContent className="p-4">
-                    <div className="flex items-start gap-3">
-                      <div className="w-12 h-12 flex items-center justify-center bg-secondary/30 rounded-lg">
-                        {itemImage ? (
-                          <img src={itemImage} alt={itemName} className="w-full h-full object-cover rounded-lg" />
-                        ) : (
-                          <Icon name="Package" size={24} className="text-secondary" />
-                        )}
+        {(() => {
+          // Фильтруем только активные предметы (для сюжетных проверяем storyItems)
+          const activeItems = profile.collectedItems.filter(item => {
+            const libraryItem = novel.library.items.find(i => i.id === item.id);
+            const itemType = libraryItem?.itemType || item.itemType || 'collectible';
+            
+            // Коллекционные предметы всегда отображаются
+            if (itemType === 'collectible') return true;
+            
+            // Сюжетные предметы отображаются только если они в storyItems
+            return profile.storyItems?.includes(item.id);
+          });
+          
+          return activeItems.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {activeItems.map((item) => {
+                const episode = novel.episodes.find(ep => ep.id === item.episodeId);
+                const libraryItem = novel.library.items.find(i => i.id === item.id);
+                const itemName = libraryItem?.name || item.name;
+                const itemDescription = libraryItem?.description || item.description;
+                const itemImage = libraryItem?.imageUrl || item.imageUrl;
+                const itemType = libraryItem?.itemType || item.itemType || 'collectible';
+                
+                return (
+                  <Card key={item.id}>
+                    <CardContent className="p-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-12 h-12 flex items-center justify-center bg-secondary/30 rounded-lg">
+                          {itemImage ? (
+                            <img src={itemImage} alt={itemName} className="w-full h-full object-cover rounded-lg" />
+                          ) : (
+                            <Icon name="Package" size={24} className="text-secondary" />
+                          )}
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <h4 className="font-semibold text-foreground">{itemName}</h4>
+                            {itemType === 'story' && (
+                              <span className="text-[10px] px-1.5 py-0.5 bg-purple-500/20 text-purple-400 rounded">
+                                Сюжетный
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-sm text-muted-foreground">{itemDescription}</p>
+                          <p className="text-xs text-muted-foreground mt-2">
+                            <Icon name="MapPin" size={12} className="inline mr-1" />
+                            {episode?.title || 'Неизвестный эпизод'}
+                          </p>
+                        </div>
                       </div>
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-foreground mb-1">{itemName}</h4>
-                        <p className="text-sm text-muted-foreground">{itemDescription}</p>
-                        <p className="text-xs text-muted-foreground mt-2">
-                          <Icon name="MapPin" size={12} className="inline mr-1" />
-                          {episode?.title || 'Неизвестный эпизод'}
-                        </p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-        ) : (
-          <p className="text-center py-8 text-muted-foreground">Вы ещё не собрали предметов</p>
-        )}
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          ) : (
+            <p className="text-center py-8 text-muted-foreground">Вы ещё не собрали предметов</p>
+          );
+        })()}
       </TabsContent>
     </>
   );
