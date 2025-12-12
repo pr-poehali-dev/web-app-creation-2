@@ -150,16 +150,45 @@ export function useNovelNavigation({
       });
     }
 
-    // Активируем путь если указан
+    // Добавляем выбор к пути и проверяем активацию (нужно 90% выборов)
     if (pathId) {
       onProfileUpdate(prev => {
-        const activePaths = prev.activePaths || [];
-        if (!activePaths.includes(pathId)) {
+        const pathChoices = prev.pathChoices || {};
+        const currentChoices = pathChoices[pathId] || [];
+        
+        // Добавляем выбор если его ещё нет
+        if (!currentChoices.includes(choiceId)) {
+          const updatedChoices = [...currentChoices, choiceId];
+          const updatedPathChoices = { ...pathChoices, [pathId]: updatedChoices };
+          
+          // Подсчитываем общее количество выборов активирующих этот путь
+          let totalPathChoices = 0;
+          novel.episodes.forEach(ep => {
+            ep.paragraphs.forEach(para => {
+              if (para.type === 'choice') {
+                para.options.forEach(opt => {
+                  if (opt.activatesPath === pathId) {
+                    totalPathChoices++;
+                  }
+                });
+              }
+            });
+          });
+          
+          // Проверяем достигнут ли порог в 90%
+          const threshold = Math.ceil(totalPathChoices * 0.9);
+          const activePaths = prev.activePaths || [];
+          const shouldActivate = updatedChoices.length >= threshold && !activePaths.includes(pathId);
+          
+          console.log(`[Path ${pathId}] Choices: ${updatedChoices.length}/${totalPathChoices}, Threshold: ${threshold}, Should activate: ${shouldActivate}`);
+          
           return {
             ...prev,
-            activePaths: [...activePaths, pathId]
+            pathChoices: updatedPathChoices,
+            activePaths: shouldActivate ? [...activePaths, pathId] : activePaths
           };
         }
+        
         return prev;
       });
     }

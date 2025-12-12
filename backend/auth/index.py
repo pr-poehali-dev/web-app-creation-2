@@ -63,7 +63,8 @@ def handler(event, context):
                 'currentParagraphIndex': 0,
                 'readParagraphs': [],
                 'usedChoices': [],
-                'activePaths': []
+                'activePaths': [],
+                'pathChoices': {}
             }
             cur.execute(
                 "INSERT INTO users (username, password_hash, is_admin, profile_data) VALUES (%s, %s, TRUE, %s)",
@@ -130,7 +131,8 @@ def handler(event, context):
                     'currentParagraphIndex': 0,
                     'readParagraphs': [],
                     'usedChoices': [],
-                    'activePaths': []
+                    'activePaths': [],
+                    'pathChoices': {}
                 }
                 
                 # Сохраняем пользователя

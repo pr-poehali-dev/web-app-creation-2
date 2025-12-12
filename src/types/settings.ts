@@ -51,6 +51,7 @@ export interface UserProfile {
   readParagraphs: string[];
   usedChoices: string[];
   activePaths: string[];
+  pathChoices: { [pathId: string]: string[] };
 }
 
 export interface ReadProgress {
@@ -85,5 +86,6 @@ export const defaultProfile: UserProfile = {
   currentParagraphIndex: 0,
   readParagraphs: [],
   usedChoices: [],
-  activePaths: []
+  activePaths: [],
+  pathChoices: {}
 };

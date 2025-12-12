@@ -236,8 +236,11 @@ function PathsManager({ novel, onUpdate }: PathsManagerProps) {
 
                         {pathUsage.activatingChoices.length > 0 && (
                           <div>
-                            <p className="text-xs font-medium text-muted-foreground mb-1">
+                            <p className="text-xs font-medium text-muted-foreground mb-1 flex items-center gap-2">
                               Варианты, активирующие путь ({pathUsage.activatingChoices.length})
+                              <Badge variant="secondary" className="text-xs">
+                                Нужно 90% для активации
+                              </Badge>
                             </p>
                             <div className="space-y-1">
                               {pathUsage.activatingChoices.map((choice, idx) => (

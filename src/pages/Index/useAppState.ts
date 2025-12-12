@@ -39,7 +39,8 @@ export function useAppState() {
           ...parsedProfile,
           readParagraphs: parsedProfile.readParagraphs || [],
           usedChoices: parsedProfile.usedChoices || [],
-          activePaths: parsedProfile.activePaths || []
+          activePaths: parsedProfile.activePaths || [],
+          pathChoices: parsedProfile.pathChoices || {}
         };
         setProfile(migratedProfile);
       } catch (e) {
