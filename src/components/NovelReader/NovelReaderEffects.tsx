@@ -53,22 +53,29 @@ function NovelReaderEffects({
     for (let i = currentParagraphIndex; i >= 0; i--) {
       const p = currentEpisode.paragraphs[i];
       if (p.type === 'background') {
-        console.log('[Background] Found:', {
-          i,
-          url: p.url ? 'exists' : 'none',
-          mobileUrl: p.mobileUrl ? 'exists' : 'none',
+        const selectedUrl = (isMobile && p.mobileUrl) ? p.mobileUrl : p.url;
+        console.log('[Background] Found paragraph:', {
+          index: i,
+          hasUrl: !!p.url,
+          hasMobileUrl: !!p.mobileUrl,
           isMobile,
-          selected: (isMobile && p.mobileUrl) ? 'mobile' : 'desktop'
+          willUseMobile: isMobile && !!p.mobileUrl,
+          selectedUrlLength: selectedUrl?.length || 0
         });
-        bgUrl = (isMobile && p.mobileUrl) ? p.mobileUrl : p.url;
+        console.log('[Background] URLs:', {
+          desktop: p.url?.substring(0, 100),
+          mobile: p.mobileUrl?.substring(0, 100)
+        });
+        bgUrl = selectedUrl;
         break;
       }
     }
     
-    console.log('[Background] Result:', { 
-      bgUrl: bgUrl ? 'exists' : 'null', 
-      current: backgroundImage ? 'exists' : 'null',
-      different: bgUrl !== backgroundImage
+    console.log('[Background] Final:', { 
+      hasUrl: !!bgUrl,
+      hasCurrent: !!backgroundImage,
+      willUpdate: bgUrl !== backgroundImage,
+      urlSample: bgUrl?.substring(0, 80)
     });
     
     if (bgUrl !== backgroundImage) {
