@@ -15,6 +15,7 @@ interface ParagraphEditorProps {
   onDelete: (index: number) => void;
   onMove: (index: number, direction: 'up' | 'down') => void;
   onToggleInsert: (index: number) => void;
+  onToggleMerge: (index: number) => void;
   onNovelUpdate: (novel: Novel) => void;
   isBulkEditMode?: boolean;
   isSelected?: boolean;
@@ -31,6 +32,7 @@ function ParagraphEditor({
   onDelete,
   onMove,
   onToggleInsert,
+  onToggleMerge,
   onNovelUpdate,
   isBulkEditMode = false,
   isSelected = false,
@@ -72,6 +74,7 @@ function ParagraphEditor({
           onDelete={onDelete}
           onMove={onMove}
           onToggleInsert={onToggleInsert}
+          onToggleMerge={onToggleMerge}
         />
 
         <div className="space-y-3">

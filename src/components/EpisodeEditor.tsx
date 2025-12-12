@@ -124,6 +124,22 @@ function EpisodeEditor({ episode, novel, onUpdate, onNovelUpdate }: EpisodeEdito
     setInsertingAt(insertingAt === index ? null : index);
   };
 
+  const handleToggleMerge = (index: number) => {
+    const paragraph = episode.paragraphs[index];
+    const nextParagraph = episode.paragraphs[index + 1];
+    
+    if (!nextParagraph) return;
+    
+    const newParagraphs = [...episode.paragraphs];
+    if (paragraph.mergedWith) {
+      newParagraphs[index] = { ...paragraph, mergedWith: undefined };
+    } else {
+      newParagraphs[index] = { ...paragraph, mergedWith: nextParagraph.id };
+    }
+    
+    onUpdate({ ...episode, paragraphs: newParagraphs });
+  };
+
   const handleToggleSelect = (index: number) => {
     const newSelected = new Set(selectedParagraphs);
     if (newSelected.has(index)) {
@@ -255,6 +271,7 @@ function EpisodeEditor({ episode, novel, onUpdate, onNovelUpdate }: EpisodeEdito
                   onDelete={handleDeleteParagraph}
                   onMove={handleMoveParagraph}
                   onToggleInsert={handleToggleInsert}
+                  onToggleMerge={handleToggleMerge}
                   onNovelUpdate={onNovelUpdate}
                   isBulkEditMode={bulkEditMode}
                   isSelected={selectedParagraphs.has(index)}

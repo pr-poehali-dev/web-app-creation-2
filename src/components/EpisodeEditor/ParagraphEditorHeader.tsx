@@ -22,6 +22,7 @@ interface ParagraphEditorHeaderProps {
   onDelete: (index: number) => void;
   onMove: (index: number, direction: 'up' | 'down') => void;
   onToggleInsert: (index: number) => void;
+  onToggleMerge: (index: number) => void;
 }
 
 function ParagraphEditorHeader({
@@ -39,7 +40,8 @@ function ParagraphEditorHeader({
   onUpdate,
   onDelete,
   onMove,
-  onToggleInsert
+  onToggleInsert,
+  onToggleMerge
 }: ParagraphEditorHeaderProps) {
   return (
     <>
@@ -140,9 +142,10 @@ function ParagraphEditorHeader({
             variant="ghost"
             size="icon"
             className="h-8 w-8"
-            onClick={() => onToggleInsert(index)}
+            onClick={() => onToggleMerge(index)}
+            title={paragraph.mergedWith ? "Отменить объединение" : "Объединить со следующим"}
           >
-            <Icon name="Link" size={14} />
+            <Icon name="Link" size={14} className={paragraph.mergedWith ? "text-primary" : ""} />
           </Button>
           <Button
             variant="ghost"
