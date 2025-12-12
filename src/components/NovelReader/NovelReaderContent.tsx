@@ -52,8 +52,8 @@ function NovelReaderContent({
   return (
     <>
       {currentParagraph.type === 'text' && (
-        <div className={`bg-card/90 backdrop-blur-sm rounded-xl md:rounded-2xl shadow-xl border border-border flex items-start relative ${
-          isTopMerged ? 'p-8 md:p-10 lg:p-12 min-h-[28rem] md:min-h-[32rem] lg:min-h-[36rem]' : 'p-4 md:p-6 lg:p-8 min-h-[10rem] md:min-h-[12rem]'
+        <div className={`bg-card/90 backdrop-blur-sm rounded-xl md:rounded-2xl shadow-xl border border-border flex items-center justify-center relative ${
+          isTopMerged ? 'p-10 md:p-14 lg:p-20 min-h-[40vh] md:min-h-[45vh] lg:min-h-[50vh]' : 'p-4 md:p-6 lg:p-8 min-h-[10rem] md:min-h-[12rem]'
         }`}>
           <div 
             className="absolute inset-0 pointer-events-none rounded-xl md:rounded-2xl transition-all duration-1000 ease-in-out"
@@ -63,15 +63,15 @@ function NovelReaderContent({
               background: 'radial-gradient(ellipse at center, transparent 30%, rgba(0, 0, 0, 0.3) 100%)'
             }}
           />
-          <div className={`leading-relaxed text-left text-foreground w-full pt-1 md:pt-2 ${
+          <div className={`leading-relaxed w-full ${
             isTopMerged 
-              ? (settings.textSize === 'small' ? 'text-lg md:text-xl lg:text-2xl' :
-                 settings.textSize === 'large' ? 'text-xl md:text-2xl lg:text-3xl' :
-                 'text-lg md:text-xl lg:text-2xl')
-              : (settings.textSize === 'small' ? 'text-sm md:text-base lg:text-lg' :
-                 settings.textSize === 'large' ? 'text-lg md:text-xl lg:text-2xl' :
-                 'text-base md:text-lg lg:text-xl')
-          }`} style={novelFontStyle}>
+              ? (settings.textSize === 'small' ? 'text-2xl md:text-3xl lg:text-4xl text-center pt-0' :
+                 settings.textSize === 'large' ? 'text-3xl md:text-4xl lg:text-5xl text-center pt-0' :
+                 'text-2xl md:text-3xl lg:text-4xl text-center pt-0')
+              : (settings.textSize === 'small' ? 'text-sm md:text-base lg:text-lg text-left pt-1 md:pt-2' :
+                 settings.textSize === 'large' ? 'text-lg md:text-xl lg:text-2xl text-left pt-1 md:pt-2' :
+                 'text-base md:text-lg lg:text-xl text-left pt-1 md:pt-2')
+          } text-foreground`} style={novelFontStyle}>
             {console.log('[NovelReaderContent] Rendering TypewriterText with key:', paragraphKey, 'skipTyping:', skipTyping)}
             <TypewriterText
               text={currentParagraph.content}
