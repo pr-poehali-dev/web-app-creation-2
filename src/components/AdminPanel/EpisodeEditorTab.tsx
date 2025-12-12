@@ -145,8 +145,7 @@ function EpisodeEditorTab({
                   {bulkEditEpisodes && (
                     <Checkbox
                       checked={selectedEpisodes.has(episode.id)}
-                      onCheckedChange={(e) => {
-                        e.stopPropagation();
+                      onCheckedChange={() => {
                         onToggleEpisodeSelect(episode.id);
                       }}
                       onClick={(e) => e.stopPropagation()}
