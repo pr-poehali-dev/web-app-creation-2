@@ -51,7 +51,7 @@ function ParagraphEditorHeader({
       <div className="flex justify-between items-start mb-3">
         <div className="flex items-center gap-2">
           <span className="text-xs font-medium text-muted-foreground">
-            {getParagraphNumber(episodeId, index)}
+            {getParagraphNumber(novel, episodeId, index)}
           </span>
           {isChangingType ? (
             <Select
