@@ -95,6 +95,7 @@ function NovelReaderContent({
             textSpeed={settings.textSpeed}
             fontFamily={novelFontStyle.fontFamily}
             isTopMerged={isTopMerged}
+            isRetrospective={isRetrospective}
             existingComment={profile.metCharacters?.find(
               c => c.name === currentParagraph.characterName
             )?.comment}
@@ -145,6 +146,7 @@ function NovelReaderContent({
           isTopMerged={isTopMerged}
           itemType={currentParagraph.itemType}
           action={currentParagraph.action}
+          isRetrospective={isRetrospective}
         />
       )}
 
@@ -153,6 +155,7 @@ function NovelReaderContent({
           url={currentParagraph.url}
           alt={currentParagraph.alt}
           isTopMerged={isTopMerged}
+          isRetrospective={isRetrospective}
         />
       )}
     </>

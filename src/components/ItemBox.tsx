@@ -13,9 +13,10 @@ interface ItemBoxProps {
   isTopMerged?: boolean;
   itemType?: 'collectible' | 'story';
   action?: 'gain' | 'lose';
+  isRetrospective?: boolean;
 }
 
-function ItemBox({ name, description, imageUrl, skipTyping, onComplete, textSpeed = 50, isTopMerged = false, itemType = 'collectible', action = 'gain' }: ItemBoxProps) {
+function ItemBox({ name, description, imageUrl, skipTyping, onComplete, textSpeed = 50, isTopMerged = false, itemType = 'collectible', action = 'gain', isRetrospective = false }: ItemBoxProps) {
   const getBadgeText = () => {
     if (action === 'lose') return 'Потерян предмет';
     return 'Получен предмет';
@@ -27,7 +28,15 @@ function ItemBox({ name, description, imageUrl, skipTyping, onComplete, textSpee
   };
 
   return (
-    <Card className="bg-gradient-to-br from-card via-secondary/10 to-accent/20 backdrop-blur-sm border-0 shadow-2xl animate-scale-in max-w-md mx-auto rounded-xl md:rounded-2xl">
+    <Card className="bg-gradient-to-br from-card via-secondary/10 to-accent/20 backdrop-blur-sm border-0 shadow-2xl animate-scale-in max-w-md mx-auto rounded-xl md:rounded-2xl relative">
+      <div 
+        className="absolute inset-0 pointer-events-none rounded-xl md:rounded-2xl transition-all duration-1000 ease-in-out"
+        style={{
+          opacity: isRetrospective ? 1 : 0,
+          boxShadow: 'inset 0 0 60px 20px rgba(0, 0, 0, 0.4)',
+          background: 'radial-gradient(ellipse at center, transparent 30%, rgba(0, 0, 0, 0.3) 100%)'
+        }}
+      />
       <CardContent className={isTopMerged ? "p-3 md:p-4 lg:p-6 text-center" : "p-3 md:p-4 lg:p-8 text-center"}>
         <Badge variant="default" className={`${isTopMerged 
           ? "mb-2 md:mb-3 lg:mb-4 text-xs md:text-xs border-0 shadow-lg px-2 md:px-3 py-0.5 md:py-1 rounded-full font-semibold"
@@ -47,6 +56,10 @@ function ItemBox({ name, description, imageUrl, skipTyping, onComplete, textSpee
                 ? "max-w-[100px] md:max-w-[140px] lg:max-w-[200px] max-h-20 md:max-h-28 lg:max-h-36 object-contain rounded-lg md:rounded-xl drop-shadow-2xl"
                 : "max-w-[140px] md:max-w-[200px] lg:max-w-xs max-h-32 md:max-h-48 lg:max-h-64 object-contain rounded-xl md:rounded-2xl drop-shadow-2xl"
               }
+              style={{
+                filter: isRetrospective ? 'sepia(0.6) contrast(0.9) brightness(0.85)' : 'none',
+                transition: 'filter 1.2s ease-in-out'
+              }}
             />
           ) : imageUrl ? (
             <div className={isTopMerged ? "text-4xl md:text-5xl lg:text-7xl drop-shadow-2xl" : "text-5xl md:text-6xl lg:text-9xl drop-shadow-2xl"}>{imageUrl}</div>

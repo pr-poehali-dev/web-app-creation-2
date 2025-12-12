@@ -17,6 +17,7 @@ interface DialogueBoxProps {
   existingComment?: string;
   fontFamily?: string;
   isTopMerged?: boolean;
+  isRetrospective?: boolean;
 }
 
 function DialogueBox({ 
@@ -29,7 +30,8 @@ function DialogueBox({
   onCommentSave,
   existingComment,
   fontFamily,
-  isTopMerged = false
+  isTopMerged = false,
+  isRetrospective = false
 }: DialogueBoxProps) {
   const [showCommentDialog, setShowCommentDialog] = useState(false);
   const [comment, setComment] = useState(existingComment || '');
@@ -44,16 +46,22 @@ function DialogueBox({
       <div className="relative flex flex-col md:flex-row items-center gap-4 md:gap-6">
         {characterImage && (
           <div className="flex flex-col items-center gap-3 animate-scale-in">
-            <div className="flex items-center justify-center">
+            <div className="flex items-center justify-center relative">
               {characterImage.startsWith('data:') || characterImage.startsWith('http') ? (
-                <ZoomableImage
-                  src={characterImage}
-                  alt={characterName}
-                  className={isTopMerged 
-                    ? "w-20 h-20 md:w-28 md:h-28 lg:w-40 lg:h-40 object-contain rounded-xl md:rounded-2xl"
-                    : "w-24 h-24 md:w-32 md:h-32 lg:w-48 lg:h-48 object-contain rounded-2xl md:rounded-3xl"
-                  }
-                />
+                <div className="relative">
+                  <ZoomableImage
+                    src={characterImage}
+                    alt={characterName}
+                    className={isTopMerged 
+                      ? "w-20 h-20 md:w-28 md:h-28 lg:w-40 lg:h-40 object-contain rounded-xl md:rounded-2xl"
+                      : "w-24 h-24 md:w-32 md:h-32 lg:w-48 lg:h-48 object-contain rounded-2xl md:rounded-3xl"
+                    }
+                    style={{
+                      filter: isRetrospective ? 'sepia(0.6) contrast(0.9) brightness(0.85)' : 'none',
+                      transition: 'filter 1.2s ease-in-out'
+                    }}
+                  />
+                </div>
               ) : (
                 <div className={isTopMerged ? "text-4xl md:text-5xl lg:text-7xl" : "text-5xl md:text-6xl lg:text-9xl"}>{characterImage}</div>
               )}
@@ -71,7 +79,15 @@ function DialogueBox({
           </div>
         )}
         
-        <Card className="flex-1 w-full bg-card/95 backdrop-blur-sm border-0 shadow-xl animate-scale-in rounded-xl md:rounded-2xl">
+        <Card className="flex-1 w-full bg-card/95 backdrop-blur-sm border-0 shadow-xl animate-scale-in rounded-xl md:rounded-2xl relative">
+          <div 
+            className="absolute inset-0 pointer-events-none rounded-xl md:rounded-2xl transition-all duration-1000 ease-in-out"
+            style={{
+              opacity: isRetrospective ? 1 : 0,
+              boxShadow: 'inset 0 0 60px 20px rgba(0, 0, 0, 0.4)',
+              background: 'radial-gradient(ellipse at center, transparent 30%, rgba(0, 0, 0, 0.3) 100%)'
+            }}
+          />
           <CardContent className={isTopMerged ? "p-3 md:p-4 lg:p-6" : "p-3 md:p-4 lg:p-8"}>
             {!characterImage && (
               <h3 className={isTopMerged 
