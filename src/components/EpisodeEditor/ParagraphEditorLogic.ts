@@ -78,7 +78,7 @@ export function createParagraphEditorHandlers(
         newParagraph = { 
           id, 
           type: 'image', 
-          url: paragraph.type === 'image' ? paragraph.url : 'https://via.placeholder.com/800x600',
+          url: paragraph.type === 'image' ? paragraph.url : 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="800" height="600"%3E%3Crect fill="%23ddd" width="800" height="600"/%3E%3Ctext fill="%23999" font-family="sans-serif" font-size="24" dy="10.5" font-weight="bold" x="50%25" y="50%25" text-anchor="middle"%3E800×600%3C/text%3E%3C/svg%3E',
           alt: paragraph.type === 'image' ? paragraph.alt : undefined
         };
         break;
@@ -86,7 +86,7 @@ export function createParagraphEditorHandlers(
         newParagraph = { 
           id, 
           type: 'background', 
-          url: paragraph.type === 'background' ? paragraph.url : 'https://via.placeholder.com/1920x1080',
+          url: paragraph.type === 'background' ? paragraph.url : 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080"%3E%3Crect fill="%23333" width="1920" height="1080"/%3E%3Ctext fill="%23666" font-family="sans-serif" font-size="48" dy="10.5" font-weight="bold" x="50%25" y="50%25" text-anchor="middle"%3E1920×1080%3C/text%3E%3C/svg%3E',
           alt: paragraph.type === 'background' ? paragraph.alt : undefined
         };
         break;
