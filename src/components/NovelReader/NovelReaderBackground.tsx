@@ -51,7 +51,18 @@ function NovelReaderBackground({
   handleAddBookmark,
   handleRemoveBookmark
 }: NovelReaderBackgroundProps) {
-  if (!backgroundImage) return null;
+  console.log('[NovelReaderBackground] Rendering with:', {
+    hasBackgroundImage: !!backgroundImage,
+    backgroundImageUrl: backgroundImage?.substring(0, 80),
+    hasPreviousBackgroundImage: !!previousBackgroundImage,
+    newImageReady,
+    isBackgroundChanging
+  });
+  
+  if (!backgroundImage) {
+    console.log('[NovelReaderBackground] No background image, returning null');
+    return null;
+  }
 
   const timeframes = currentParagraph.timeframes || currentEpisode.timeframes || ['present'];
   const isRetrospective = timeframes.includes('retrospective');
