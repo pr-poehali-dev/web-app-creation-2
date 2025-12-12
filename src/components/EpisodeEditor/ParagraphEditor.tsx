@@ -308,6 +308,36 @@ function ParagraphEditor({
                     {paragraph.type}
                   </button>
                 )}
+                <Select
+                  value={paragraph.timeframe || 'default'}
+                  onValueChange={(value: 'default' | 'present' | 'retrospective') => 
+                    onUpdate(index, { ...paragraph, timeframe: value === 'default' ? undefined : value })
+                  }
+                >
+                  <SelectTrigger className="h-7 w-32 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="default">
+                      <div className="flex items-center gap-1">
+                        <Icon name="Clock" size={12} />
+                        <span className="text-xs">По умолч.</span>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="present">
+                      <div className="flex items-center gap-1">
+                        <Icon name="Clock" size={12} />
+                        <span className="text-xs">Настоящее</span>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="retrospective">
+                      <div className="flex items-center gap-1">
+                        <Icon name="History" size={12} className="text-amber-600" />
+                        <span className="text-xs">Ретроспект.</span>
+                      </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <div className="flex gap-1">
                 <Button

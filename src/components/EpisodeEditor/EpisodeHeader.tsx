@@ -254,6 +254,35 @@ function EpisodeHeader({ episode, novel, onUpdate, onNovelUpdate }: EpisodeHeade
         </div>
 
         <div>
+          <Label className="text-foreground">Временной слой</Label>
+          <Select
+            value={episode.timeframe || 'present'}
+            onValueChange={(value: 'present' | 'retrospective') => onUpdate({ ...episode, timeframe: value })}
+          >
+            <SelectTrigger className="text-foreground mt-1">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="present">
+                <div className="flex items-center gap-2">
+                  <Icon name="Clock" size={14} />
+                  Настоящее
+                </div>
+              </SelectItem>
+              <SelectItem value="retrospective">
+                <div className="flex items-center gap-2">
+                  <Icon name="History" size={14} className="text-amber-600" />
+                  Ретроспектива
+                </div>
+              </SelectItem>
+            </SelectContent>
+          </Select>
+          <p className="text-xs text-muted-foreground mt-1">
+            Ретроспектива отображается с сепия-эффектом. Можно переопределить для отдельных параграфов.
+          </p>
+        </div>
+
+        <div>
           <Label className="text-foreground">Фоновая музыка</Label>
           <div className="flex gap-2 mt-2">
             <Dialog open={showMusicDialog} onOpenChange={setShowMusicDialog}>

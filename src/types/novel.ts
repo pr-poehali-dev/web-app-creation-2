@@ -5,6 +5,7 @@ export interface BaseParagraph {
   type: ParagraphType;
   order?: number;
   mergedWith?: string; // ID следующего параграфа для объединения
+  timeframe?: 'present' | 'retrospective';
 }
 
 export interface TextParagraph extends BaseParagraph {
@@ -72,6 +73,7 @@ export interface Episode {
   nextParagraphIndex?: number;
   requiredPath?: string;
   unlockedForAll?: boolean;
+  timeframe?: 'present' | 'retrospective';
 }
 
 export interface LibraryItem {

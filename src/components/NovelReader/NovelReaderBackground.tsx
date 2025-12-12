@@ -53,6 +53,16 @@ function NovelReaderBackground({
 }: NovelReaderBackgroundProps) {
   if (!backgroundImage) return null;
 
+  const timeframe = currentParagraph.timeframe || currentEpisode.timeframe || 'present';
+  const isRetrospective = timeframe === 'retrospective';
+
+  const getFilterStyle = (baseFilter: string) => {
+    if (isRetrospective) {
+      return `${baseFilter} sepia(0.6) contrast(0.9) brightness(0.85)`;
+    }
+    return baseFilter;
+  };
+
   return (
     <div className="absolute top-20 left-4 right-4 bottom-4 md:top-20 md:left-8 md:right-32 rounded-2xl overflow-hidden">
       {previousBackgroundImage && (
@@ -61,7 +71,7 @@ function NovelReaderBackground({
           style={{ 
             backgroundImage: `url(${previousBackgroundImage})`,
             opacity: newImageReady ? 0 : 1,
-            filter: newImageReady ? 'blur(16px)' : 'blur(0px)',
+            filter: getFilterStyle(newImageReady ? 'blur(16px)' : 'blur(0px)'),
             transition: 'opacity 2.4s ease-in-out, filter 2.4s ease-in-out',
             zIndex: 1
           }}
@@ -73,13 +83,13 @@ function NovelReaderBackground({
         style={{ 
           backgroundImage: `url(${backgroundImage})`,
           opacity: previousBackgroundImage && !newImageReady ? 0 : 1,
-          filter: previousBackgroundImage && !newImageReady ? 'blur(16px)' : 'blur(0px)',
+          filter: getFilterStyle(previousBackgroundImage && !newImageReady ? 'blur(16px)' : 'blur(0px)'),
           transition: previousBackgroundImage ? 'opacity 2.4s ease-in-out, filter 2.4s ease-in-out' : 'none',
           zIndex: 0
         }}
       />
       
-      <div className="absolute inset-0 bg-black/20" />
+      <div className={`absolute inset-0 ${isRetrospective ? 'bg-amber-950/30' : 'bg-black/20'}`} style={{ transition: 'background-color 2.4s ease-in-out' }} />
       
       <div className="relative w-full h-full flex items-end justify-center pb-20 px-4 md:pb-8 md:px-6 md:pr-8">
         <div className="w-full max-w-4xl md:min-h-0 relative z-10">
