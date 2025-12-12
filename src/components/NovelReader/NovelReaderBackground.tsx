@@ -96,8 +96,8 @@ function NovelReaderBackground({
         currentParagraph.mergedWith ? (
           <>
             {/* Первый параграф - занимает пространство от top-[50px] до второго параграфа */}
-            <div className="absolute top-[50px] left-4 right-4 bottom-[calc(20rem+5rem)] md:left-6 md:right-32 md:bottom-[calc(12rem+2rem)] z-10 overflow-y-auto scrollbar-thin scrollbar-thumb-primary/30 scrollbar-track-transparent">
-              <div className="w-full max-w-4xl mx-auto h-full flex items-start">
+            <div className="absolute top-[50px] left-0 right-0 bottom-[calc(20rem+5rem)] md:bottom-[calc(12rem+2rem)] z-10 overflow-y-auto scrollbar-thin scrollbar-thumb-primary/30 scrollbar-track-transparent flex justify-center px-4 md:px-6 md:pr-8">
+              <div className="w-full max-w-4xl h-full flex items-start">
                 <NovelReaderContent
                   currentParagraph={currentParagraph}
                   currentEpisode={currentEpisode}
@@ -116,8 +116,8 @@ function NovelReaderBackground({
             
             {/* Второй параграф на стандартной позиции */}
             {currentEpisode.paragraphs[currentParagraphIndex + 1] && (
-              <div className="absolute bottom-20 md:bottom-8 left-4 right-4 md:left-6 md:right-32 z-10">
-                <div className="w-full max-w-4xl mx-auto">
+              <div className="absolute bottom-20 md:bottom-8 left-0 right-0 z-10 flex justify-center px-4 md:px-6 md:pr-8">
+                <div className="w-full max-w-4xl">
                   <NovelReaderContent
                     currentParagraph={currentEpisode.paragraphs[currentParagraphIndex + 1]}
                     currentEpisode={currentEpisode}
@@ -137,8 +137,8 @@ function NovelReaderBackground({
           </>
         ) : (
           /* Стандартный одиночный параграф */
-          <div className="absolute bottom-20 md:bottom-8 left-4 right-4 md:left-6 md:right-32 z-10">
-            <div className="w-full max-w-4xl mx-auto">
+          <div className="absolute bottom-20 md:bottom-8 left-0 right-0 z-10 flex justify-center px-4 md:px-6 md:pr-8">
+            <div className="w-full max-w-4xl">
               {!isTyping && currentParagraph.type !== 'choice' && (
                 <div className="md:hidden flex justify-between items-center mb-2 gap-2">
                   <Button
