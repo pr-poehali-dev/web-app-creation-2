@@ -9,6 +9,7 @@ interface OverviewEpisodeCardsProps {
   offset: { x: number; y: number };
   handleItemDragStart: (type: 'episode' | 'path' | 'item' | 'choice', id: string, e: React.MouseEvent) => void;
   getConnectionsForEpisode: (episodeId: string) => { from: Episode; to: Episode }[];
+  onEpisodeClick?: (episodeId: string) => void;
 }
 
 function OverviewEpisodeCards({
@@ -16,7 +17,8 @@ function OverviewEpisodeCards({
   scale,
   offset,
   handleItemDragStart,
-  getConnectionsForEpisode
+  getConnectionsForEpisode,
+  onEpisodeClick
 }: OverviewEpisodeCardsProps) {
   return (
     <>
@@ -47,6 +49,11 @@ function OverviewEpisodeCards({
               zIndex: 10
             }}
             onMouseDown={(e) => handleItemDragStart('episode', episode.id, e)}
+            onClick={(e) => {
+              if (onEpisodeClick && !(e.target as HTMLElement).closest('button')) {
+                onEpisodeClick(episode.id);
+              }
+            }}
           >
             <Card 
               className={`w-56 p-4 shadow-lg transition-all ${

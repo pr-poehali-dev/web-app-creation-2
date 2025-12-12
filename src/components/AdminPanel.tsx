@@ -23,7 +23,13 @@ function AdminPanel({ novel, onUpdate, onLogout, authState }: AdminPanelProps) {
     novel.episodes[0]?.id || null
   );
   const [showBulkImport, setShowBulkImport] = useState(false);
+  const [activeTab, setActiveTab] = useState('home');
   const selectedEpisode = novel.episodes.find(ep => ep.id === selectedEpisodeId);
+
+  const handleEpisodeClickFromVisualization = (episodeId: string) => {
+    setSelectedEpisodeId(episodeId);
+    setActiveTab('editor');
+  };
 
   const handleAddEpisode = () => {
     const timestamp = Date.now();
@@ -114,7 +120,7 @@ function AdminPanel({ novel, onUpdate, onLogout, authState }: AdminPanelProps) {
       </header>
 
       <div className="container mx-auto px-4 py-8">
-        <Tabs defaultValue="home" className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full max-w-5xl grid-cols-7 mb-8">
             <TabsTrigger value="home">
               <Icon name="Home" size={16} className="mr-2" />
@@ -256,7 +262,11 @@ function AdminPanel({ novel, onUpdate, onLogout, authState }: AdminPanelProps) {
           </TabsContent>
 
           <TabsContent value="visualization">
-            <NovelVisualization novel={novel} onUpdate={onUpdate} />
+            <NovelVisualization 
+              novel={novel} 
+              onUpdate={onUpdate}
+              onEpisodeClick={handleEpisodeClickFromVisualization}
+            />
           </TabsContent>
 
           <TabsContent value="system">

@@ -56,6 +56,7 @@ interface OverviewVisualizationProps {
     relatedItems: string[];
     position?: { x: number; y: number };
   }>;
+  onEpisodeClick?: (episodeId: string) => void;
 }
 
 function OverviewVisualization({
@@ -73,7 +74,8 @@ function OverviewVisualization({
   getConnectionsForEpisode,
   pathsStats,
   itemsStats,
-  choicesStats
+  choicesStats,
+  onEpisodeClick
 }: OverviewVisualizationProps) {
   
   const getPosition = (type: string, id: string, defaultX: number, defaultY: number) => {
@@ -133,6 +135,7 @@ function OverviewVisualization({
             offset={offset}
             handleItemDragStart={handleItemDragStart}
             getConnectionsForEpisode={getConnectionsForEpisode}
+            onEpisodeClick={onEpisodeClick}
           />
 
           <OverviewPathItemCards

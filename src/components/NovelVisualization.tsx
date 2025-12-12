@@ -11,9 +11,10 @@ import ChoicesVisualization from './NovelVisualization/ChoicesVisualization';
 interface NovelVisualizationProps {
   novel: Novel;
   onUpdate: (novel: Novel) => void;
+  onEpisodeClick?: (episodeId: string) => void;
 }
 
-function NovelVisualization({ novel, onUpdate }: NovelVisualizationProps) {
+function NovelVisualization({ novel, onUpdate, onEpisodeClick }: NovelVisualizationProps) {
   const [draggedItem, setDraggedItem] = useState<{ type: 'episode' | 'path' | 'item' | 'choice'; id: string } | null>(null);
   const [scale, setScale] = useState(1);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
@@ -356,6 +357,7 @@ function NovelVisualization({ novel, onUpdate }: NovelVisualizationProps) {
             pathsStats={pathsStats}
             itemsStats={itemsStats}
             choicesStats={choicesStats}
+            onEpisodeClick={onEpisodeClick}
           />
         </TabsContent>
 
