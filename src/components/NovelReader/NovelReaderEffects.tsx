@@ -52,14 +52,6 @@ function NovelReaderEffects({
     for (let i = currentParagraphIndex; i >= 0; i--) {
       const p = currentEpisode.paragraphs[i];
       if (p.type === 'background') {
-        console.log('[Background] Found paragraph data:', {
-          hasUrl: !!p.url,
-          hasMobileUrl: !!p.mobileUrl,
-          urlIsBase64: p.url?.startsWith('data:'),
-          mobileUrlIsBase64: p.mobileUrl?.startsWith('data:'),
-          urlPrefix: p.url?.substring(0, 50),
-          mobileUrlPrefix: p.mobileUrl?.substring(0, 50)
-        });
         const selectedUrl = (isMobile && p.mobileUrl) ? p.mobileUrl : p.url;
         bgUrl = selectedUrl || null;
         break;

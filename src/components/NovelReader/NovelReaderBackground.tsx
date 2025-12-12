@@ -51,18 +51,7 @@ function NovelReaderBackground({
   handleAddBookmark,
   handleRemoveBookmark
 }: NovelReaderBackgroundProps) {
-  console.log('[NovelReaderBackground] Rendering with:', {
-    hasBackgroundImage: !!backgroundImage,
-    backgroundImageUrlFull: backgroundImage,
-    hasPreviousBackgroundImage: !!previousBackgroundImage,
-    newImageReady,
-    isBackgroundChanging
-  });
-  
-  if (!backgroundImage) {
-    console.log('[NovelReaderBackground] No background image, returning null');
-    return null;
-  }
+  if (!backgroundImage) return null;
 
   const timeframes = currentParagraph.timeframes || currentEpisode.timeframes || ['present'];
   const isRetrospective = timeframes.includes('retrospective');
@@ -99,14 +88,7 @@ function NovelReaderBackground({
           zIndex: 0
         }}
       />
-      
-      <img 
-        src={backgroundImage} 
-        alt="Background test" 
-        style={{ position: 'absolute', width: '1px', height: '1px', opacity: 0.01 }}
-        onLoad={() => console.log('[Background] Image loaded successfully:', backgroundImage)}
-        onError={(e) => console.error('[Background] Image failed to load:', backgroundImage, e)}
-      />
+
       
       <div className={`absolute inset-0 ${isRetrospective ? 'bg-amber-950/30' : 'bg-black/20'}`} style={{ transition: 'background-color 1.2s ease-in-out' }} />
       
