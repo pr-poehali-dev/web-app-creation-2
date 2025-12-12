@@ -123,4 +123,13 @@
   .animate-fade-out {
     animation: fade-out 1.5s ease-in-out forwards;
   }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
 }
