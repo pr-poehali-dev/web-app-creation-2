@@ -116,7 +116,7 @@ function ParagraphEditorHeader({
         <div className="flex gap-1">
           {novel.paths && novel.paths.length > 0 && (
             <div className="flex items-center gap-1 mr-2 border-l pl-2">
-              {novel.paths.slice(0, 4).map((path) => (
+              {novel.paths.map((path) => (
                 <Checkbox
                   key={path.id}
                   id={`para-path-${index}-${path.id}`}
