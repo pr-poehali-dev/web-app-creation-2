@@ -92,12 +92,20 @@ function NovelReaderBackground({
       <div 
         className="absolute inset-0 bg-cover bg-center"
         style={{ 
-          backgroundImage: `url(${backgroundImage})`,
+          backgroundImage: `url("${backgroundImage}")`,
           opacity: previousBackgroundImage && !newImageReady ? 0 : 1,
           filter: getFilterStyle(previousBackgroundImage && !newImageReady ? 'blur(16px)' : 'blur(0px)'),
           transition: previousBackgroundImage ? 'opacity 2.4s ease-in-out, filter 2.4s ease-in-out' : 'filter 1.2s ease-in-out',
           zIndex: 0
         }}
+      />
+      
+      <img 
+        src={backgroundImage} 
+        alt="Background test" 
+        style={{ position: 'absolute', width: '1px', height: '1px', opacity: 0.01 }}
+        onLoad={() => console.log('[Background] Image loaded successfully:', backgroundImage)}
+        onError={(e) => console.error('[Background] Image failed to load:', backgroundImage, e)}
       />
       
       <div className={`absolute inset-0 ${isRetrospective ? 'bg-amber-950/30' : 'bg-black/20'}`} style={{ transition: 'background-color 1.2s ease-in-out' }} />
