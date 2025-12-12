@@ -46,16 +46,30 @@ function NovelReaderEffects({
   useEffect(() => {
     if (!currentEpisode) return;
     
-    const isMobile = window.innerWidth < 768;
+    const isMobile = window.matchMedia('(max-width: 767px)').matches;
+    console.log('[Background] Window:', window.innerWidth, 'matchMedia:', isMobile);
     
     let bgUrl: string | null = null;
     for (let i = currentParagraphIndex; i >= 0; i--) {
       const p = currentEpisode.paragraphs[i];
       if (p.type === 'background') {
+        console.log('[Background] Found:', {
+          i,
+          url: p.url ? 'exists' : 'none',
+          mobileUrl: p.mobileUrl ? 'exists' : 'none',
+          isMobile,
+          selected: (isMobile && p.mobileUrl) ? 'mobile' : 'desktop'
+        });
         bgUrl = (isMobile && p.mobileUrl) ? p.mobileUrl : p.url;
         break;
       }
     }
+    
+    console.log('[Background] Result:', { 
+      bgUrl: bgUrl ? 'exists' : 'null', 
+      current: backgroundImage ? 'exists' : 'null',
+      different: bgUrl !== backgroundImage
+    });
     
     if (bgUrl !== backgroundImage) {
       const episodeChanged = previousEpisodeIdRef.current !== null && previousEpisodeIdRef.current !== currentEpisodeId;
