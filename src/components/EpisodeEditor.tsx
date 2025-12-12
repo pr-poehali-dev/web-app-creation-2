@@ -263,7 +263,7 @@ function EpisodeEditor({ episode, novel, onUpdate, onNovelUpdate }: EpisodeEdito
               </div>
             </div>
             
-            {insertingAt === index && (
+            {insertingAt === index ? (
               <div className="flex gap-2 justify-center my-2 p-2 bg-secondary/20 rounded-lg">
                 <Button size="sm" variant="secondary" onClick={() => handleAddParagraph('text', index)}>
                   <Icon name="FileText" size={14} className="mr-1" />
@@ -290,6 +290,16 @@ function EpisodeEditor({ episode, novel, onUpdate, onNovelUpdate }: EpisodeEdito
                   Фон
                 </Button>
               </div>
+            ) : (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="w-full my-2"
+                onClick={() => handleToggleInsert(index)}
+              >
+                <Icon name="Plus" size={14} className="mr-2" />
+                Вставить параграф
+              </Button>
             )}
           </div>
         ))}
