@@ -92,7 +92,7 @@ function NovelReaderBackground({
       
       <div className={`absolute inset-0 ${isRetrospective ? 'bg-amber-950/30' : 'bg-black/20'}`} style={{ transition: 'background-color 1.2s ease-in-out' }} />
       
-      <div className="relative w-full h-full flex items-end justify-center pb-20 px-4 md:pb-8 md:px-6 md:pr-8">
+      <div className={`relative w-full h-full flex justify-center ${currentParagraph.mergedWith ? 'items-start pt-[50px]' : 'items-end pb-20 md:pb-8'} px-4 md:px-6 md:pr-8`}>
         <div className="w-full max-w-4xl md:min-h-0 relative z-10">
           {!isTyping && currentParagraph.type !== 'choice' && (
             <div className="md:hidden flex justify-between items-center mb-2 gap-2">
@@ -126,8 +126,8 @@ function NovelReaderBackground({
           )}
           
           {currentParagraph.type !== 'background' && !isBackgroundChanging && (
-            <div className={currentParagraph.mergedWith ? "grid grid-rows-[50%_auto] gap-2 md:gap-3 max-h-[calc(100vh-10rem)] md:max-h-[calc(100vh-12rem)] overflow-y-auto pr-1 md:pr-2 scrollbar-thin scrollbar-thumb-primary/30 scrollbar-track-transparent" : ""}>
-              <div className={currentParagraph.mergedWith ? "pt-[50px]" : ""}>
+            <div className={currentParagraph.mergedWith ? "flex flex-col gap-4 md:gap-6 h-full max-h-[calc(100vh-150px)]" : ""}>
+              <div className={currentParagraph.mergedWith ? "flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-primary/30 scrollbar-track-transparent" : ""}>
                 <NovelReaderContent
                   currentParagraph={currentParagraph}
                   currentEpisode={currentEpisode}
@@ -143,19 +143,21 @@ function NovelReaderBackground({
                 />
               </div>
               {currentParagraph.mergedWith && currentEpisode.paragraphs[currentParagraphIndex + 1] && (
-                <NovelReaderContent
-                  currentParagraph={currentEpisode.paragraphs[currentParagraphIndex + 1]}
-                  currentEpisode={currentEpisode}
-                  novel={novel}
-                  settings={settings}
-                  profile={profile}
-                  skipTyping={skipTyping}
-                  handleTypingComplete={() => {}}
-                  handleChoice={handleChoice}
-                  onProfileUpdate={onProfileUpdate}
-                  paragraphKey={`${paragraphKey}-merged`}
-                  isTopMerged={false}
-                />
+                <div className="flex-shrink-0">
+                  <NovelReaderContent
+                    currentParagraph={currentEpisode.paragraphs[currentParagraphIndex + 1]}
+                    currentEpisode={currentEpisode}
+                    novel={novel}
+                    settings={settings}
+                    profile={profile}
+                    skipTyping={skipTyping}
+                    handleTypingComplete={() => {}}
+                    handleChoice={handleChoice}
+                    onProfileUpdate={onProfileUpdate}
+                    paragraphKey={`${paragraphKey}-merged`}
+                    isTopMerged={false}
+                  />
+                </div>
               )}
             </div>
           )}

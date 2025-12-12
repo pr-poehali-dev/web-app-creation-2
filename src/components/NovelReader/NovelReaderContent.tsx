@@ -53,7 +53,7 @@ function NovelReaderContent({
     <>
       {currentParagraph.type === 'text' && (
         <div className={`bg-card/90 backdrop-blur-sm rounded-xl md:rounded-2xl shadow-xl border border-border flex items-start relative ${
-          isTopMerged ? 'p-3 md:p-4 lg:p-5 min-h-[8rem]' : 'p-4 md:p-6 lg:p-8 min-h-[10rem] md:min-h-[12rem]'
+          isTopMerged ? 'p-6 md:p-8 lg:p-10 min-h-[20rem] md:min-h-[24rem]' : 'p-4 md:p-6 lg:p-8 min-h-[10rem] md:min-h-[12rem]'
         }`}>
           <div 
             className="absolute inset-0 pointer-events-none rounded-xl md:rounded-2xl transition-all duration-1000 ease-in-out"
@@ -65,9 +65,9 @@ function NovelReaderContent({
           />
           <div className={`leading-relaxed text-left text-foreground w-full pt-1 md:pt-2 ${
             isTopMerged 
-              ? (settings.textSize === 'small' ? 'text-sm md:text-base lg:text-lg' :
-                 settings.textSize === 'large' ? 'text-base md:text-lg lg:text-xl' :
-                 'text-sm md:text-base lg:text-lg')
+              ? (settings.textSize === 'small' ? 'text-base md:text-lg lg:text-xl' :
+                 settings.textSize === 'large' ? 'text-lg md:text-xl lg:text-2xl' :
+                 'text-base md:text-lg lg:text-xl')
               : (settings.textSize === 'small' ? 'text-sm md:text-base lg:text-lg' :
                  settings.textSize === 'large' ? 'text-lg md:text-xl lg:text-2xl' :
                  'text-base md:text-lg lg:text-xl')
