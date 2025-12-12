@@ -52,6 +52,9 @@ function EpisodeEditor({ episode, novel, onUpdate, onNovelUpdate }: EpisodeEdito
       case 'background':
         newParagraph = { id, type: 'background', url: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080"%3E%3Crect fill="%23333" width="1920" height="1080"/%3E%3Ctext fill="%23666" font-family="sans-serif" font-size="48" dy="10.5" font-weight="bold" x="50%25" y="50%25" text-anchor="middle"%3E1920×1080%3C/text%3E%3C/svg%3E' };
         break;
+      case 'pause':
+        newParagraph = { id, type: 'pause', duration: 500 };
+        break;
       default:
         return;
     }
@@ -305,6 +308,10 @@ function EpisodeEditor({ episode, novel, onUpdate, onNovelUpdate }: EpisodeEdito
                 <Button size="sm" variant="secondary" onClick={() => handleAddParagraph('background', index)}>
                   <Icon name="Wallpaper" size={14} className="mr-1" />
                   Фон
+                </Button>
+                <Button size="sm" variant="secondary" onClick={() => handleAddParagraph('pause', index)}>
+                  <Icon name="Timer" size={14} className="mr-1" />
+                  Пауза
                 </Button>
               </div>
             ) : (

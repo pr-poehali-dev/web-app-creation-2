@@ -188,7 +188,7 @@ function DialogueEditor({
           className="text-foreground"
         />
         <p className="text-xs text-muted-foreground">
-          💡 Подсказка: используйте <code className="bg-secondary px-1 rounded">[слово|подсказка]</code> для интерактивных подсказок
+          💡 Подсказка: <code className="bg-secondary px-1 rounded">[слово|подсказка]</code> для интерактивных подсказок, <code className="bg-secondary px-1 rounded">{"{ pause:500}"}</code> для паузы в печати
         </p>
       </div>
     </div>
