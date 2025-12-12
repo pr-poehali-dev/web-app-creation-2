@@ -127,13 +127,13 @@ function EpisodesSidebar({ novel, currentEpisodeId, profile, onEpisodeSelect, on
                     </div>
                     {!isLocked && (
                       <button
-                        className="h-6 w-6 flex-shrink-0 hover:opacity-80 transition-opacity flex items-center justify-center"
+                        className="h-7 w-7 flex-shrink-0 rounded-md bg-primary/10 hover:bg-primary/20 transition-all flex items-center justify-center"
                         onClick={(e) => {
                           e.stopPropagation();
                           onShowParagraphs(episode.id);
                         }}
                       >
-                        <Icon name="List" size={14} />
+                        <Icon name="List" size={16} />
                       </button>
                     )}
                   </div>
