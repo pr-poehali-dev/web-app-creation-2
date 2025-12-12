@@ -96,8 +96,8 @@ function NovelReaderBackground({
         currentParagraph.mergedWith ? (
           <>
             {/* Первый параграф - занимает пространство от top-[50px] до второго параграфа */}
-            <div className="absolute top-[50px] left-0 right-0 bottom-[calc(20rem+5rem)] md:bottom-[calc(12rem+2rem)] z-10 overflow-y-auto scrollbar-thin scrollbar-thumb-primary/30 scrollbar-track-transparent flex justify-center items-center px-4 md:px-6 md:pr-8">
-              <div className="w-full max-w-4xl">
+            <div className="absolute top-[50px] left-0 right-0 bottom-[16rem] md:bottom-[14rem] z-10 overflow-y-auto scrollbar-thin scrollbar-thumb-primary/30 scrollbar-track-transparent flex justify-center items-center px-4 md:px-6 md:pr-8">
+              <div className="w-full max-w-4xl h-full flex items-center">
                 <NovelReaderContent
                   currentParagraph={currentParagraph}
                   currentEpisode={currentEpisode}
