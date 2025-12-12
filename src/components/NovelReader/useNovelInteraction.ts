@@ -6,7 +6,6 @@ interface UseNovelInteractionProps {
   goToNextParagraph: () => void;
   goToPreviousParagraph: () => void;
   isTyping: boolean;
-  isTypingRef: React.MutableRefObject<boolean>;
   canNavigate: boolean;
   setIsTyping: (value: boolean) => void;
   setSkipTyping: (value: boolean) => void;
@@ -15,7 +14,7 @@ interface UseNovelInteractionProps {
 export function useNovelInteraction({
   currentParagraph,
   goToNextParagraph,
-  isTypingRef,
+  isTyping,
   canNavigate,
   setIsTyping,
   setSkipTyping
@@ -28,9 +27,8 @@ export function useNovelInteraction({
       return;
     }
 
-    const currentIsTyping = isTypingRef.current;
-    console.log('[Click] isTyping:', currentIsTyping, 'canNavigate:', canNavigate, 'paragraphType:', currentParagraph?.type);
-    if (currentIsTyping) {
+    console.log('[Click] isTyping:', isTyping, 'canNavigate:', canNavigate, 'paragraphType:', currentParagraph?.type);
+    if (isTyping) {
       console.log('[Click] Skip typing - setting skipTyping=true');
       setSkipTyping(true);
     } else if (canNavigate) {
@@ -43,7 +41,7 @@ export function useNovelInteraction({
     } else {
       console.log('[Click] Blocked - canNavigate is false');
     }
-  }, [isTypingRef, canNavigate, currentParagraph, goToNextParagraph, setSkipTyping]);
+  }, [isTyping, canNavigate, currentParagraph, goToNextParagraph, setSkipTyping]);
 
   const handleTypingComplete = useCallback(() => {
     console.log('[Interaction] Typing complete, setting isTyping to false');

@@ -41,12 +41,6 @@ function NovelReaderEffects({
   goToNextParagraph,
   goToPreviousParagraph
 }: NovelReaderEffectsProps) {
-  
-  const isTypingRef = useRef(isTyping);
-
-  useEffect(() => {
-    isTypingRef.current = isTyping;
-  }, [isTyping]);
 
   useEffect(() => {
     if (!currentEpisode) return;

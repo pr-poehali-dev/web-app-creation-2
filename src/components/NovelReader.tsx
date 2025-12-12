@@ -43,7 +43,6 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
   const [newImageReady, setNewImageReady] = useState(false);
   
   const previousParagraphIndexRef = useRef<number>(currentParagraphIndex);
-  const isTypingRef = useRef(isTyping);
 
   const {
     isParagraphAccessible,
@@ -72,7 +71,6 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
     goToNextParagraph,
     goToPreviousParagraph,
     isTyping,
-    isTypingRef,
     canNavigate,
     setIsTyping,
     setSkipTyping
