@@ -38,10 +38,10 @@ export function useAppState() {
         const { achievements, totalReadTime, ...rest } = parsedProfile;
         const migratedProfile = {
           ...rest,
-          readParagraphs: parsedProfile.readParagraphs || [],
-          usedChoices: parsedProfile.usedChoices || [],
-          activePaths: parsedProfile.activePaths || [],
-          pathChoices: parsedProfile.pathChoices || {}
+          readParagraphs: rest.readParagraphs || [],
+          usedChoices: rest.usedChoices || [],
+          activePaths: rest.activePaths || [],
+          pathChoices: rest.pathChoices || {}
         };
         setProfile(migratedProfile);
       } catch (e) {
