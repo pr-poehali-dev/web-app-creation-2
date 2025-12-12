@@ -25,8 +25,20 @@ function UserProfilePanel({ profile, novel, onUpdate, onBack, onNavigateTo, user
   };
 
   const totalEpisodes = novel.episodes.length;
-  const completedEpisodes = profile.completedEpisodes.length;
-  const progressPercentage = totalEpisodes > 0 ? Math.round((completedEpisodes / totalEpisodes) * 100) : 0;
+  
+  // Вычисляем прочитанные эпизоды на основе readParagraphs
+  const readParagraphsSet = new Set(profile.readParagraphs || []);
+  const completedEpisodesCount = novel.episodes.filter(episode => {
+    for (let i = 0; i < episode.paragraphs.length; i++) {
+      const paragraphId = `${episode.id}-${i}`;
+      if (!readParagraphsSet.has(paragraphId)) {
+        return false;
+      }
+    }
+    return true;
+  }).length;
+  
+  const progressPercentage = totalEpisodes > 0 ? Math.round((completedEpisodesCount / totalEpisodes) * 100) : 0;
 
   const formatReadTime = (minutes: number) => {
     const hours = Math.floor(minutes / 60);
@@ -38,7 +50,7 @@ function UserProfilePanel({ profile, novel, onUpdate, onBack, onNavigateTo, user
   };
 
   const achievements = [
-    { id: 'first_step', name: 'Первый шаг', description: 'Начать чтение', completed: completedEpisodes > 0 || novel.currentParagraphIndex > 0 },
+    { id: 'first_step', name: 'Первый шаг', description: 'Начать чтение', completed: completedEpisodesCount > 0 || novel.currentParagraphIndex > 0 },
     { id: 'half_way', name: 'На полпути', description: 'Пройти 50% эпизодов', completed: progressPercentage >= 50 },
     { id: 'completionist', name: 'Перфекционист', description: 'Завершить все эпизоды', completed: progressPercentage === 100 },
     { id: 'night_owl', name: 'Ночной читатель', description: 'Читать более 60 минут', completed: profile.totalReadTime >= 60 },
@@ -57,7 +69,7 @@ function UserProfilePanel({ profile, novel, onUpdate, onBack, onNavigateTo, user
 
         <ProfileHeader
           profile={profile}
-          completedEpisodes={completedEpisodes}
+          completedEpisodes={completedEpisodesCount}
           totalEpisodes={totalEpisodes}
           formatReadTime={formatReadTime}
           onUpdate={onUpdate}
@@ -66,7 +78,7 @@ function UserProfilePanel({ profile, novel, onUpdate, onBack, onNavigateTo, user
         <ProfileProgress
           profile={profile}
           novel={novel}
-          completedEpisodes={completedEpisodes}
+          completedEpisodes={completedEpisodesCount}
           totalEpisodes={totalEpisodes}
           progressPercentage={progressPercentage}
         />

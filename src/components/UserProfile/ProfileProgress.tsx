@@ -31,21 +31,32 @@ function ProfileProgress({ profile, novel, completedEpisodes, totalEpisodes, pro
 
         <div className="mt-6 space-y-2">
           <h3 className="text-sm font-semibold text-foreground mb-3">Пройденные эпизоды</h3>
-          {profile.completedEpisodes.length > 0 ? (
-            <div className="space-y-2">
-              {profile.completedEpisodes.map((episodeId) => {
-                const episode = novel.episodes.find(ep => ep.id === episodeId);
-                return episode ? (
-                  <div key={episodeId} className="flex items-center gap-2 text-sm">
+          {(() => {
+            // Вычисляем прочитанные эпизоды на основе readParagraphs
+            const readParagraphsSet = new Set(profile.readParagraphs || []);
+            const fullyReadEpisodes = novel.episodes.filter(episode => {
+              for (let i = 0; i < episode.paragraphs.length; i++) {
+                const paragraphId = `${episode.id}-${i}`;
+                if (!readParagraphsSet.has(paragraphId)) {
+                  return false;
+                }
+              }
+              return true;
+            });
+            
+            return fullyReadEpisodes.length > 0 ? (
+              <div className="space-y-2">
+                {fullyReadEpisodes.map((episode) => (
+                  <div key={episode.id} className="flex items-center gap-2 text-sm">
                     <Icon name="CheckCircle" size={16} className="text-green-500" />
                     <span className="text-foreground">{episode.title}</span>
                   </div>
-                ) : null;
-              })}
-            </div>
-          ) : (
-            <p className="text-sm text-muted-foreground">Вы ещё не завершили ни одного эпизода</p>
-          )}
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">Вы ещё не завершили ни одного эпизода</p>
+            );
+          })()}
         </div>
       </CardContent>
     </Card>
