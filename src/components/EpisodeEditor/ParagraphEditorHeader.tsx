@@ -70,7 +70,6 @@ function ParagraphEditorHeader({
                 <SelectItem value="item">item</SelectItem>
                 <SelectItem value="image">image</SelectItem>
                 <SelectItem value="background">background</SelectItem>
-                <SelectItem value="pause">pause</SelectItem>
               </SelectContent>
             </Select>
           ) : (

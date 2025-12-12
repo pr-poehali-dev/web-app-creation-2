@@ -33,10 +33,6 @@ function ParagraphTypeButtons({ onAddParagraph }: ParagraphTypeButtonsProps) {
         <Icon name="Wallpaper" size={14} className="mr-1" />
         Фон
       </Button>
-      <Button size="sm" onClick={() => onAddParagraph('pause')}>
-        <Icon name="Timer" size={14} className="mr-1" />
-        Пауза
-      </Button>
     </div>
   );
 }

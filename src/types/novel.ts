@@ -1,4 +1,4 @@
-export type ParagraphType = 'text' | 'image' | 'choice' | 'item' | 'dialogue' | 'background' | 'pause';
+export type ParagraphType = 'text' | 'image' | 'choice' | 'item' | 'dialogue' | 'background';
 
 export interface BaseParagraph {
   id: string;
@@ -58,19 +58,13 @@ export interface BackgroundParagraph extends BaseParagraph {
   alt?: string;
 }
 
-export interface PauseParagraph extends BaseParagraph {
-  type: 'pause';
-  duration?: number;
-}
-
 export type Paragraph = 
   | TextParagraph 
   | ImageParagraph 
   | ChoiceParagraph 
   | ItemParagraph 
   | DialogueParagraph
-  | BackgroundParagraph
-  | PauseParagraph;
+  | BackgroundParagraph;
 
 export interface Episode {
   id: string;

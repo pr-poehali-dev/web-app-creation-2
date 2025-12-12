@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import InteractiveText from './InteractiveText';
 
 interface TypewriterTextProps {
@@ -6,13 +6,12 @@ interface TypewriterTextProps {
   speed?: number;
   skipTyping?: boolean;
   onComplete?: () => void;
-  resetKey?: string;
+  resetKey?: string; // Добавляем явный ключ для сброса
 }
 
 // Функция для получения текста без форматирования для подсчета длины
 const getCleanText = (text: string): string => {
   return text
-    .replace(/\{pause:\d+\}/g, '') // Паузы в тексте {pause:500}
     .replace(/\[([^\|]+)\|([^\]]+)\]/g, '$1') // Интерактивные подсказки
     .replace(/\*\*([^*]+)\*\*/g, '$1') // Жирный
     .replace(/\*([^*]+)\*/g, '$1') // Курсив
@@ -27,15 +26,6 @@ const getDisplayText = (text: string, targetLength: number): string => {
   let i = 0;
   
   while (i < text.length && cleanPos < targetLength) {
-    // Пауза {pause:500} - пропускаем, не добавляем в отображение
-    if (text.substring(i).startsWith('{pause:')) {
-      const closeIdx = text.indexOf('}', i);
-      if (closeIdx !== -1) {
-        i = closeIdx + 1;
-        continue;
-      }
-    }
-    
     // Интерактивная подсказка [слово|подсказка]
     if (text[i] === '[' && text.indexOf('|', i) !== -1 && text.indexOf(']', i) !== -1) {
       const pipeIdx = text.indexOf('|', i);
@@ -142,67 +132,35 @@ const getDisplayText = (text: string, targetLength: number): string => {
   return result;
 };
 
-// Находит все позиции пауз в тексте (по позициям cleanText)
-const findPausePositions = (text: string): Map<number, number> => {
-  const pauses = new Map<number, number>();
-  const cleanTextBefore: string[] = [];
-  let i = 0;
-  
-  while (i < text.length) {
-    if (text.substring(i).startsWith('{pause:')) {
-      const closeIdx = text.indexOf('}', i);
-      if (closeIdx !== -1) {
-        const pauseMatch = text.substring(i, closeIdx + 1).match(/\{pause:(\d+)\}/);
-        if (pauseMatch) {
-          const duration = parseInt(pauseMatch[1]);
-          const cleanPosition = getCleanText(cleanTextBefore.join('')).length;
-          pauses.set(cleanPosition, duration);
-        }
-        i = closeIdx + 1;
-        continue;
-      }
-    }
-    cleanTextBefore.push(text[i]);
-    i++;
-  }
-  
-  return pauses;
-};
-
 function TypewriterText({ text, speed = 50, skipTyping = false, onComplete, resetKey }: TypewriterTextProps) {
   const [displayedText, setDisplayedText] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [hasCompleted, setHasCompleted] = useState(false);
   
-  const cleanText = useMemo(() => getCleanText(text), [text]);
+  const cleanText = getCleanText(text);
   const targetLength = cleanText.length;
-  const pausePositions = useMemo(() => findPausePositions(text), [text]);
 
   useEffect(() => {
     if (skipTyping) {
       console.log('[TypewriterText] Skip typing activated');
-      const textWithoutPauses = text.replace(/\{pause:\d+\}/g, '');
-      setDisplayedText(textWithoutPauses);
+      setDisplayedText(text);
       setCurrentIndex(targetLength);
       setHasCompleted(true);
       return;
     }
 
     if (currentIndex < targetLength) {
-      // Проверяем, есть ли пауза на текущей позиции
-      const pauseDuration = pausePositions.get(currentIndex);
-      
       const timeout = setTimeout(() => {
         setDisplayedText(getDisplayText(text, currentIndex + 1));
         setCurrentIndex(currentIndex + 1);
-      }, pauseDuration !== undefined ? pauseDuration : speed);
+      }, speed);
 
       return () => clearTimeout(timeout);
     } else if (currentIndex === targetLength && currentIndex > 0 && !hasCompleted) {
       console.log('[TypewriterText] Typing completed naturally');
       setHasCompleted(true);
     }
-  }, [currentIndex, text, targetLength, speed, skipTyping, hasCompleted, pausePositions]);
+  }, [currentIndex, text, targetLength, speed, skipTyping, hasCompleted]);
 
   useEffect(() => {
     console.log('[TypewriterText] ResetKey changed:', resetKey, 'Text:', text.substring(0, 50));

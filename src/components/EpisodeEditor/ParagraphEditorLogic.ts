@@ -90,13 +90,6 @@ export function createParagraphEditorHandlers(
           alt: paragraph.type === 'background' ? paragraph.alt : undefined
         };
         break;
-      case 'pause':
-        newParagraph = {
-          id,
-          type: 'pause',
-          duration: paragraph.type === 'pause' ? paragraph.duration : 500
-        };
-        break;
       default:
         return;
     }

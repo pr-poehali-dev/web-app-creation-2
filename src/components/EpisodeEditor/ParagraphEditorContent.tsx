@@ -4,7 +4,6 @@ import DialogueEditor from './Editors/DialogueEditor';
 import ChoiceEditor from './Editors/ChoiceEditor';
 import ItemEditor from './Editors/ItemEditor';
 import ImageEditor from './Editors/ImageEditor';
-import PauseEditor from './Editors/PauseEditor';
 import { ParagraphEditorHandlers } from './ParagraphEditorLogic';
 
 interface ParagraphEditorContentProps {
@@ -110,14 +109,6 @@ function ParagraphEditorContent({
           handleMobileImageUrl={() => handlers.handleMobileImageUrl('background')}
           handleMobileImageUpload={() => handlers.handleMobileImageUpload('background')}
           label="Фоновое изображение"
-        />
-      )}
-
-      {paragraph.type === 'pause' && (
-        <PauseEditor
-          paragraph={paragraph}
-          index={index}
-          onUpdate={onUpdate}
         />
       )}
     </div>
