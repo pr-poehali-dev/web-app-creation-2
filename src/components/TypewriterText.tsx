@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import InteractiveText from './InteractiveText';
 
 interface TypewriterTextProps {
@@ -173,11 +173,10 @@ function TypewriterText({ text, speed = 50, skipTyping = false, onComplete, rese
   const [displayedText, setDisplayedText] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [hasCompleted, setHasCompleted] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
   
-  const cleanText = getCleanText(text);
+  const cleanText = useMemo(() => getCleanText(text), [text]);
   const targetLength = cleanText.length;
-  const pausePositions = findPausePositions(text);
+  const pausePositions = useMemo(() => findPausePositions(text), [text]);
 
   useEffect(() => {
     if (skipTyping) {
@@ -189,40 +188,27 @@ function TypewriterText({ text, speed = 50, skipTyping = false, onComplete, rese
       return;
     }
 
-    if (isPaused) return;
-
     if (currentIndex < targetLength) {
       // Проверяем, есть ли пауза на текущей позиции
       const pauseDuration = pausePositions.get(currentIndex);
       
-      if (pauseDuration !== undefined) {
-        setIsPaused(true);
-        const pauseTimeout = setTimeout(() => {
-          setIsPaused(false);
-          setDisplayedText(getDisplayText(text, currentIndex + 1));
-          setCurrentIndex(currentIndex + 1);
-        }, pauseDuration);
-        return () => clearTimeout(pauseTimeout);
-      }
-
       const timeout = setTimeout(() => {
         setDisplayedText(getDisplayText(text, currentIndex + 1));
         setCurrentIndex(currentIndex + 1);
-      }, speed);
+      }, pauseDuration !== undefined ? pauseDuration : speed);
 
       return () => clearTimeout(timeout);
     } else if (currentIndex === targetLength && currentIndex > 0 && !hasCompleted) {
       console.log('[TypewriterText] Typing completed naturally');
       setHasCompleted(true);
     }
-  }, [currentIndex, text, targetLength, speed, skipTyping, hasCompleted, isPaused, pausePositions]);
+  }, [currentIndex, text, targetLength, speed, skipTyping, hasCompleted, pausePositions]);
 
   useEffect(() => {
     console.log('[TypewriterText] ResetKey changed:', resetKey, 'Text:', text.substring(0, 50));
     setDisplayedText('');
     setCurrentIndex(0);
     setHasCompleted(false);
-    setIsPaused(false);
   }, [resetKey]);
 
   useEffect(() => {
