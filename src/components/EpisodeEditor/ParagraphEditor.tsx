@@ -1,18 +1,9 @@
 import { useState } from 'react';
-import { Paragraph, Novel, ParagraphType } from '@/types/novel';
+import { Paragraph, Novel } from '@/types/novel';
 import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
-import Icon from '@/components/ui/icon';
-import { selectAndConvertImage } from '@/utils/fileHelpers';
-import { getParagraphNumber } from '@/utils/paragraphNumbers';
-import TextEditor from './Editors/TextEditor';
-import DialogueEditor from './Editors/DialogueEditor';
-import ChoiceEditor from './Editors/ChoiceEditor';
-import ItemEditor from './Editors/ItemEditor';
-import ImageEditor from './Editors/ImageEditor';
+import { createParagraphEditorHandlers } from './ParagraphEditorLogic';
+import ParagraphEditorHeader from './ParagraphEditorHeader';
+import ParagraphEditorContent from './ParagraphEditorContent';
 
 interface ParagraphEditorProps {
   paragraph: Paragraph;
@@ -49,464 +40,52 @@ function ParagraphEditor({
   const [imageUrl, setImageUrl] = useState('');
   const [mobileImageUrl, setMobileImageUrl] = useState('');
 
-  const handleTypeChange = (newType: ParagraphType) => {
-    let newParagraph: Paragraph;
-    const id = paragraph.id;
-
-    // Извлекаем текст из текущего параграфа
-    let preservedText = '';
-    if (paragraph.type === 'text') {
-      preservedText = paragraph.content;
-    } else if (paragraph.type === 'dialogue') {
-      preservedText = paragraph.text;
-    } else if (paragraph.type === 'item') {
-      preservedText = paragraph.description;
-    } else if (paragraph.type === 'choice') {
-      preservedText = paragraph.question;
-    }
-
-    switch (newType) {
-      case 'text':
-        newParagraph = { id, type: 'text', content: preservedText || 'Новый текст' };
-        break;
-      case 'dialogue':
-        newParagraph = { 
-          id, 
-          type: 'dialogue', 
-          characterName: paragraph.type === 'dialogue' ? paragraph.characterName : 'Персонаж',
-          characterImage: paragraph.type === 'dialogue' ? paragraph.characterImage : undefined,
-          text: preservedText || 'Текст диалога' 
-        };
-        break;
-      case 'choice':
-        newParagraph = { 
-          id, 
-          type: 'choice', 
-          question: preservedText || 'Ваш выбор?',
-          options: paragraph.type === 'choice' ? paragraph.options : [
-            { id: `opt${Date.now()}1`, text: 'Вариант 1' },
-            { id: `opt${Date.now()}2`, text: 'Вариант 2' }
-          ]
-        };
-        break;
-      case 'item':
-        newParagraph = { 
-          id, 
-          type: 'item', 
-          name: paragraph.type === 'item' ? paragraph.name : 'Предмет',
-          description: preservedText || 'Описание предмета',
-          imageUrl: paragraph.type === 'item' ? paragraph.imageUrl : undefined
-        };
-        break;
-      case 'image':
-        newParagraph = { 
-          id, 
-          type: 'image', 
-          url: paragraph.type === 'image' ? paragraph.url : 'https://via.placeholder.com/800x600',
-          alt: paragraph.type === 'image' ? paragraph.alt : undefined
-        };
-        break;
-      case 'background':
-        newParagraph = { 
-          id, 
-          type: 'background', 
-          url: paragraph.type === 'background' ? paragraph.url : 'https://via.placeholder.com/1920x1080',
-          alt: paragraph.type === 'background' ? paragraph.alt : undefined
-        };
-        break;
-      default:
-        return;
-    }
-
-    onUpdate(index, newParagraph);
-    setIsChangingType(false);
-  };
-
-  const handleImageUpload = async (target: 'dialogue' | 'item' | 'image' | 'background') => {
-    const imageBase64 = await selectAndConvertImage();
-    if (imageBase64) {
-      if (target === 'dialogue' && paragraph.type === 'dialogue') {
-        onUpdate(index, { ...paragraph, characterImage: imageBase64 });
-      } else if (target === 'item' && paragraph.type === 'item') {
-        onUpdate(index, { ...paragraph, imageUrl: imageBase64 });
-      } else if (target === 'image' && paragraph.type === 'image') {
-        onUpdate(index, { ...paragraph, url: imageBase64 });
-      } else if (target === 'background' && paragraph.type === 'background') {
-        onUpdate(index, { ...paragraph, url: imageBase64 });
-      }
-    }
-    setImageUrl('');
-  };
-
-  const handleMobileImageUpload = async (target: 'image' | 'background') => {
-    const imageBase64 = await selectAndConvertImage();
-    if (imageBase64) {
-      if (target === 'image' && paragraph.type === 'image') {
-        onUpdate(index, { ...paragraph, mobileUrl: imageBase64 });
-      } else if (target === 'background' && paragraph.type === 'background') {
-        onUpdate(index, { ...paragraph, mobileUrl: imageBase64 });
-      }
-    }
-    setMobileImageUrl('');
-  };
-
-  const handleImageUrl = (target: 'dialogue' | 'item' | 'image' | 'background') => {
-    if (!imageUrl) return;
-    
-    if (target === 'dialogue' && paragraph.type === 'dialogue') {
-      onUpdate(index, { ...paragraph, characterImage: imageUrl });
-    } else if (target === 'item' && paragraph.type === 'item') {
-      onUpdate(index, { ...paragraph, imageUrl });
-    } else if (target === 'image' && paragraph.type === 'image') {
-      onUpdate(index, { ...paragraph, url: imageUrl });
-    } else if (target === 'background' && paragraph.type === 'background') {
-      onUpdate(index, { ...paragraph, url: imageUrl });
-    }
-    setImageUrl('');
-  };
-
-  const handleMobileImageUrl = (target: 'image' | 'background') => {
-    if (!mobileImageUrl) return;
-    
-    if (target === 'image' && paragraph.type === 'image') {
-      onUpdate(index, { ...paragraph, mobileUrl: mobileImageUrl });
-    } else if (target === 'background' && paragraph.type === 'background') {
-      onUpdate(index, { ...paragraph, mobileUrl: mobileImageUrl });
-    }
-    setMobileImageUrl('');
-  };
-
-  const handleSelectCharacter = (characterId: string) => {
-    if (paragraph.type !== 'dialogue') return;
-    const character = novel.library.characters.find(c => c.id === characterId);
-    if (character) {
-      onUpdate(index, { 
-        ...paragraph, 
-        characterName: character.name,
-        characterImage: character.defaultImage || character.images?.[0]?.url
-      });
-    }
-  };
-
-  const handleSelectItem = (itemId: string) => {
-    if (paragraph.type !== 'item') return;
-    const item = novel.library.items.find(i => i.id === itemId);
-    if (item) {
-      onUpdate(index, { 
-        ...paragraph, 
-        name: item.name,
-        description: item.description,
-        imageUrl: item.imageUrl
-      });
-      
-      const exists = novel.library.items.some(i => i.id === itemId);
-      if (!exists) {
-        onNovelUpdate({
-          ...novel,
-          library: {
-            ...novel.library,
-            items: [...novel.library.items, { id: itemId, name: item.name, description: item.description, imageUrl: item.imageUrl }]
-          }
-        });
-      }
-    }
-  };
-
-  const handleSelectChoice = (optIndex: number, choiceId: string) => {
-    if (paragraph.type !== 'choice') return;
-    const choice = novel.library.choices.find(c => c.id === choiceId);
-    if (choice) {
-      onUpdate(index, { 
-        ...paragraph, 
-        question: choice.question,
-        options: choice.options.map(opt => ({
-          ...opt,
-          id: `opt${Date.now()}_${Math.random()}`
-        }))
-      });
-    }
-  };
-
-  const addItemToLibrary = () => {
-    if (paragraph.type !== 'item') return;
-    const newItem = {
-      id: `item${Date.now()}`,
-      name: paragraph.name,
-      description: paragraph.description,
-      imageUrl: paragraph.imageUrl
-    };
-    
-    onNovelUpdate({
-      ...novel,
-      library: {
-        ...novel.library,
-        items: [...novel.library.items, newItem]
-      }
-    });
-  };
-
-  const addChoiceToLibrary = (optIndex: number) => {
-    if (paragraph.type !== 'choice') return;
-    const newChoice = {
-      id: `choice${Date.now()}`,
-      question: paragraph.question,
-      options: paragraph.options.map(opt => ({
-        id: opt.id,
-        text: opt.text,
-        nextEpisodeId: opt.nextEpisodeId,
-        nextParagraphIndex: opt.nextParagraphIndex
-      }))
-    };
-    
-    onNovelUpdate({
-      ...novel,
-      library: {
-        ...novel.library,
-        choices: [...novel.library.choices, newChoice]
-      }
-    });
-  };
+  const handlers = createParagraphEditorHandlers(
+    paragraph,
+    index,
+    novel,
+    imageUrl,
+    setImageUrl,
+    mobileImageUrl,
+    setMobileImageUrl,
+    setIsChangingType,
+    onUpdate,
+    onNovelUpdate
+  );
 
   return (
     <Card className={`animate-fade-in ${isBulkEditMode && isSelected ? 'ring-2 ring-primary' : ''}`}>
       <CardContent className="p-4">
-        {isBulkEditMode && isSelected && selectedCount > 1 && (
-          <div className="mb-2 px-2 py-1 bg-primary/10 rounded text-xs text-primary font-medium">
-            Изменения временных слоёв и путей применятся к {selectedCount} параграфам
-          </div>
-        )}
-        <div className="flex items-start gap-3">
-          <div className="flex flex-col gap-1">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8"
-              onClick={() => onMove(index, 'up')}
-              disabled={index === 0}
-            >
-              <Icon name="ChevronUp" size={16} />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8"
-              onClick={() => onMove(index, 'down')}
-              disabled={index === totalParagraphs - 1}
-            >
-              <Icon name="ChevronDown" size={16} />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8"
-              onClick={() => {
-                const nextParagraph = totalParagraphs > index + 1 ? novel.episodes.find(e => e.id === episodeId)?.paragraphs[index + 1] : null;
-                if (paragraph.mergedWith) {
-                  onUpdate(index, { ...paragraph, mergedWith: undefined });
-                } else if (nextParagraph) {
-                  onUpdate(index, { ...paragraph, mergedWith: nextParagraph.id });
-                }
-              }}
-              disabled={index === totalParagraphs - 1}
-              title={paragraph.mergedWith ? 'Разъединить' : 'Объединить со следующим'}
-            >
-              <Icon name={paragraph.mergedWith ? "Unlink" : "Link"} size={16} />
-            </Button>
-          </div>
+        <ParagraphEditorHeader
+          paragraph={paragraph}
+          index={index}
+          episodeId={episodeId}
+          novel={novel}
+          totalParagraphs={totalParagraphs}
+          isChangingType={isChangingType}
+          isBulkEditMode={isBulkEditMode}
+          isSelected={isSelected}
+          selectedCount={selectedCount}
+          setIsChangingType={setIsChangingType}
+          handleTypeChange={handlers.handleTypeChange}
+          onUpdate={onUpdate}
+          onDelete={onDelete}
+          onMove={onMove}
+          onToggleInsert={onToggleInsert}
+        />
 
-          <div className="flex-1 space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-bold text-primary">
-                  {getParagraphNumber(novel, episodeId, index)}
-                  {paragraph.mergedWith && <span className="ml-2 text-xs text-primary">(объединён со следующим)</span>}
-                </span>
-                {isChangingType ? (
-                  <Select value={paragraph.type} onValueChange={handleTypeChange}>
-                    <SelectTrigger className="h-7 w-32 text-xs">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="text">TEXT</SelectItem>
-                      <SelectItem value="dialogue">DIALOGUE</SelectItem>
-                      <SelectItem value="choice">CHOICE</SelectItem>
-                      <SelectItem value="item">ITEM</SelectItem>
-                      <SelectItem value="image">IMAGE</SelectItem>
-                      <SelectItem value="background">BACKGROUND</SelectItem>
-                    </SelectContent>
-                  </Select>
-                ) : (
-                  <button
-                    onClick={() => setIsChangingType(true)}
-                    className="text-xs font-medium text-muted-foreground uppercase hover:text-primary transition-colors cursor-pointer"
-                  >
-                    {paragraph.type}
-                  </button>
-                )}
-                <div className="flex items-center gap-1">
-                  <Checkbox
-                    id={`timeframe-present-${index}`}
-                    checked={paragraph.timeframes?.includes('present') ?? true}
-                    onCheckedChange={(checked) => {
-                      const current = paragraph.timeframes || [];
-                      const updated = checked 
-                        ? [...current.filter(t => t !== 'present'), 'present']
-                        : current.filter(t => t !== 'present');
-                      onUpdate(index, { ...paragraph, timeframes: updated.length > 0 ? updated : undefined });
-                    }}
-                    className="h-4 w-4"
-                  />
-                  <Label htmlFor={`timeframe-present-${index}`} className="cursor-pointer">
-                    <Icon name="Clock" size={12} />
-                  </Label>
-                  <Checkbox
-                    id={`timeframe-retro-${index}`}
-                    checked={paragraph.timeframes?.includes('retrospective') ?? false}
-                    onCheckedChange={(checked) => {
-                      const current = paragraph.timeframes || [];
-                      const updated = checked 
-                        ? [...current.filter(t => t !== 'retrospective'), 'retrospective']
-                        : current.filter(t => t !== 'retrospective');
-                      onUpdate(index, { ...paragraph, timeframes: updated.length > 0 ? updated : undefined });
-                    }}
-                    className="h-4 w-4"
-                  />
-                  <Label htmlFor={`timeframe-retro-${index}`} className="cursor-pointer">
-                    <Icon name="History" size={12} className="text-amber-600" />
-                  </Label>
-                </div>
-              </div>
-              <div className="flex gap-1">
-                {novel.paths && novel.paths.length > 0 && (
-                  <div className="flex items-center gap-1 mr-2 border-l pl-2">
-                    {novel.paths.slice(0, 3).map((path) => (
-                      <Checkbox
-                        key={path.id}
-                        id={`para-path-${index}-${path.id}`}
-                        checked={paragraph.requiredPaths?.includes(path.id) ?? false}
-                        onCheckedChange={(checked) => {
-                          const current = paragraph.requiredPaths || [];
-                          const updated = checked
-                            ? [...current, path.id]
-                            : current.filter(p => p !== path.id);
-                          onUpdate(index, { ...paragraph, requiredPaths: updated.length > 0 ? updated : undefined });
-                        }}
-                        className="h-4 w-4"
-                        style={{ 
-                          borderColor: path.color,
-                          backgroundColor: paragraph.requiredPaths?.includes(path.id) ? path.color : undefined
-                        }}
-                        title={path.name}
-                      />
-                    ))}
-                  </div>
-                )}
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
-                  onClick={() => onToggleInsert(index)}
-                >
-                  <Icon name="Plus" size={16} />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 text-destructive"
-                  onClick={() => onDelete(index)}
-                  title={isBulkEditMode && isSelected && selectedCount > 1 ? `Удалить ${selectedCount} параграфов` : 'Удалить параграф'}
-                >
-                  <Icon name="Trash2" size={16} />
-                  {isBulkEditMode && isSelected && selectedCount > 1 && (
-                    <span className="absolute -top-1 -right-1 bg-destructive text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center">
-                      {selectedCount}
-                    </span>
-                  )}
-                </Button>
-              </div>
-            </div>
-
-            {paragraph.type === 'text' && (
-              <TextEditor
-                paragraph={paragraph}
-                index={index}
-                onUpdate={onUpdate}
-              />
-            )}
-
-            {paragraph.type === 'dialogue' && (
-              <DialogueEditor
-                paragraph={paragraph}
-                index={index}
-                novel={novel}
-                imageUrl={imageUrl}
-                setImageUrl={setImageUrl}
-                onUpdate={onUpdate}
-                handleImageUrl={handleImageUrl}
-                handleImageUpload={handleImageUpload}
-                handleSelectCharacter={handleSelectCharacter}
-              />
-            )}
-
-            {paragraph.type === 'choice' && (
-              <ChoiceEditor
-                paragraph={paragraph}
-                index={index}
-                novel={novel}
-                onUpdate={onUpdate}
-                handleSelectChoice={handleSelectChoice}
-                addChoiceToLibrary={addChoiceToLibrary}
-              />
-            )}
-
-            {paragraph.type === 'item' && (
-              <ItemEditor
-                paragraph={paragraph}
-                index={index}
-                novel={novel}
-                imageUrl={imageUrl}
-                setImageUrl={setImageUrl}
-                onUpdate={onUpdate}
-                handleImageUrl={handleImageUrl}
-                handleImageUpload={handleImageUpload}
-                handleSelectItem={handleSelectItem}
-                addItemToLibrary={addItemToLibrary}
-              />
-            )}
-
-            {paragraph.type === 'image' && (
-              <ImageEditor
-                paragraph={paragraph}
-                index={index}
-                imageUrl={imageUrl}
-                setImageUrl={setImageUrl}
-                mobileImageUrl={mobileImageUrl}
-                setMobileImageUrl={setMobileImageUrl}
-                onUpdate={onUpdate}
-                handleImageUrl={() => handleImageUrl('image')}
-                handleImageUpload={() => handleImageUpload('image')}
-                handleMobileImageUrl={() => handleMobileImageUrl('image')}
-                handleMobileImageUpload={() => handleMobileImageUpload('image')}
-              />
-            )}
-
-            {paragraph.type === 'background' && (
-              <ImageEditor
-                paragraph={paragraph}
-                index={index}
-                imageUrl={imageUrl}
-                setImageUrl={setImageUrl}
-                mobileImageUrl={mobileImageUrl}
-                setMobileImageUrl={setMobileImageUrl}
-                onUpdate={onUpdate}
-                handleImageUrl={() => handleImageUrl('background')}
-                handleImageUpload={() => handleImageUpload('background')}
-                handleMobileImageUrl={() => handleMobileImageUrl('background')}
-                handleMobileImageUpload={() => handleMobileImageUpload('background')}
-                label="Фоновое изображение"
-              />
-            )}
-          </div>
+        <div className="space-y-3">
+          <ParagraphEditorContent
+            paragraph={paragraph}
+            index={index}
+            novel={novel}
+            imageUrl={imageUrl}
+            setImageUrl={setImageUrl}
+            mobileImageUrl={mobileImageUrl}
+            setMobileImageUrl={setMobileImageUrl}
+            handlers={handlers}
+            onUpdate={onUpdate}
+          />
         </div>
       </CardContent>
     </Card>
