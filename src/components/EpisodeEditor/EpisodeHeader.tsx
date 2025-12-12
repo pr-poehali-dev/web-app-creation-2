@@ -212,31 +212,37 @@ function EpisodeHeader({ episode, novel, onUpdate, onNovelUpdate }: EpisodeHeade
         </div>
 
         <div>
-          <Label className="text-foreground">Требуемый путь (опционально)</Label>
-          <Select
-            value={episode.requiredPath || 'none'}
-            onValueChange={(value) => onUpdate({ ...episode, requiredPath: value === 'none' ? undefined : value })}
-          >
-            <SelectTrigger className="text-foreground mt-1">
-              <SelectValue placeholder="Доступен всем" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="none">Доступен всем</SelectItem>
-              {novel.paths?.map((path) => (
-                <SelectItem key={path.id} value={path.id}>
-                  <div className="flex items-center gap-2">
+          <Label className="text-foreground">Требуемые пути (опционально)</Label>
+          <div className="space-y-2 mt-2">
+            {novel.paths && novel.paths.length > 0 ? (
+              novel.paths.map((path) => (
+                <div key={path.id} className="flex items-center space-x-2">
+                  <Switch
+                    id={`path-${path.id}`}
+                    checked={episode.requiredPaths?.includes(path.id) ?? false}
+                    onCheckedChange={(checked) => {
+                      const current = episode.requiredPaths || [];
+                      const updated = checked
+                        ? [...current, path.id]
+                        : current.filter(p => p !== path.id);
+                      onUpdate({ ...episode, requiredPaths: updated.length > 0 ? updated : undefined });
+                    }}
+                  />
+                  <Label htmlFor={`path-${path.id}`} className="flex items-center gap-2 cursor-pointer">
                     <div 
                       className="w-3 h-3 rounded-full" 
                       style={{ backgroundColor: path.color }}
                     />
                     {path.name}
-                  </div>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <p className="text-xs text-muted-foreground mt-1">
-            Если указан, эпизод доступен только игрокам с активным путём
+                  </Label>
+                </div>
+              ))
+            ) : (
+              <p className="text-xs text-muted-foreground">Создайте пути во вкладке "Пути"</p>
+            )}
+          </div>
+          <p className="text-xs text-muted-foreground mt-2">
+            Если выбраны пути, эпизод доступен только игрокам с хотя бы одним активным путём
           </p>
         </div>
 

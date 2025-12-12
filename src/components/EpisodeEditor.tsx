@@ -78,7 +78,11 @@ function EpisodeEditor({ episode, novel, onUpdate, onNovelUpdate }: EpisodeEdito
     if (bulkEditMode && selectedParagraphs.has(index)) {
       newParagraphs.forEach((para, i) => {
         if (selectedParagraphs.has(i)) {
-          newParagraphs[i] = { ...para, timeframes: updatedParagraph.timeframes };
+          newParagraphs[i] = { 
+            ...para, 
+            timeframes: updatedParagraph.timeframes,
+            requiredPaths: updatedParagraph.requiredPaths
+          };
         }
       });
     } else {

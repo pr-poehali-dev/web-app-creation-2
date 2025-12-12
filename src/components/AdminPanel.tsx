@@ -100,13 +100,17 @@ function AdminPanel({ novel, onUpdate, onLogout, authState }: AdminPanelProps) {
   const handleUpdateEpisode = (updatedEpisode: typeof selectedEpisode) => {
     if (!updatedEpisode) return;
 
-    // Если режим массового редактирования и эпизод выбран - применить timeframes ко всем выбранным
+    // Если режим массового редактирования и эпизод выбран - применить timeframes и requiredPaths ко всем выбранным
     if (bulkEditEpisodes && selectedEpisodes.has(updatedEpisode.id)) {
       onUpdate({
         ...novel,
         episodes: novel.episodes.map(ep => {
           if (selectedEpisodes.has(ep.id)) {
-            return { ...ep, timeframes: updatedEpisode.timeframes };
+            return { 
+              ...ep, 
+              timeframes: updatedEpisode.timeframes,
+              requiredPaths: updatedEpisode.requiredPaths
+            };
           }
           return ep;
         })
@@ -395,7 +399,7 @@ function AdminPanel({ novel, onUpdate, onLogout, authState }: AdminPanelProps) {
                     {bulkEditEpisodes && selectedEpisodes.has(selectedEpisode.id) && selectedEpisodes.size > 1 && (
                       <div className="mb-4 p-3 bg-primary/10 rounded-lg text-primary font-medium border-2 border-primary">
                         <Icon name="Info" size={16} className="inline mr-2" />
-                        Изменения временных слоев применятся к {selectedEpisodes.size} выбранным эпизодам
+                        Изменения временных слоёв и путей применятся к {selectedEpisodes.size} выбранным эпизодам
                       </div>
                     )}
                     <EpisodeEditor

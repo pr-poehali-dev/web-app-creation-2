@@ -102,6 +102,10 @@ function EpisodesSidebar({ novel, currentEpisodeId, profile, onEpisodeSelect, on
             const isLocked = !isAccessible;
             const isFullyRead = status.isFullyRead;
             
+            // Проверяем наличие ретроспективы
+            const isFullRetro = episode.timeframes?.includes('retrospective');
+            const hasPartialRetro = !isFullRetro && episode.paragraphs.some(p => p.timeframes?.includes('retrospective'));
+            
             return (
               <div key={episode.id} className="space-y-1">
                 <div
@@ -122,7 +126,8 @@ function EpisodesSidebar({ novel, currentEpisodeId, profile, onEpisodeSelect, on
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2 flex-1">
                       {isLocked && <Icon name="Lock" size={14} className="flex-shrink-0" />}
-                      {episode.timeframes?.includes('retrospective') && <Icon name="History" size={14} className="flex-shrink-0 text-amber-600" />}
+                      {isFullRetro && <Icon name="History" size={14} className="flex-shrink-0 text-amber-600" title="Полностью ретроспектива" />}
+                      {hasPartialRetro && <Icon name="Clock" size={14} className="flex-shrink-0 text-amber-600/60" title="Есть ретроспективные параграфы" />}
                       <span className="font-bold text-sm">{index + 1}.</span>
                       <span className="text-sm font-medium">{episode.title}</span>
                     </div>

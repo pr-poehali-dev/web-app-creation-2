@@ -248,7 +248,7 @@ function ParagraphEditor({
       <CardContent className="p-4">
         {isBulkEditMode && isSelected && selectedCount > 1 && (
           <div className="mb-2 px-2 py-1 bg-primary/10 rounded text-xs text-primary font-medium">
-            Изменения применятся к {selectedCount} параграфам
+            Изменения временных слоёв и путей применятся к {selectedCount} параграфам
           </div>
         )}
         <div className="flex items-start gap-3">
@@ -353,6 +353,30 @@ function ParagraphEditor({
                 </div>
               </div>
               <div className="flex gap-1">
+                {novel.paths && novel.paths.length > 0 && (
+                  <div className="flex items-center gap-1 mr-2 border-l pl-2">
+                    {novel.paths.slice(0, 3).map((path) => (
+                      <Checkbox
+                        key={path.id}
+                        id={`para-path-${index}-${path.id}`}
+                        checked={paragraph.requiredPaths?.includes(path.id) ?? false}
+                        onCheckedChange={(checked) => {
+                          const current = paragraph.requiredPaths || [];
+                          const updated = checked
+                            ? [...current, path.id]
+                            : current.filter(p => p !== path.id);
+                          onUpdate(index, { ...paragraph, requiredPaths: updated.length > 0 ? updated : undefined });
+                        }}
+                        className="h-4 w-4"
+                        style={{ 
+                          borderColor: path.color,
+                          backgroundColor: paragraph.requiredPaths?.includes(path.id) ? path.color : undefined
+                        }}
+                        title={path.name}
+                      />
+                    ))}
+                  </div>
+                )}
                 <Button
                   variant="ghost"
                   size="icon"
