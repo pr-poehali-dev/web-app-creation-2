@@ -64,6 +64,22 @@ function AdminPanel({ novel, onUpdate, onLogout, authState }: AdminPanelProps) {
   };
 
   const handleDeleteEpisode = (episodeId: string) => {
+    // Если режим массового редактирования и эпизод выбран - удалить все выбранные
+    if (bulkEditEpisodes && selectedEpisodes.has(episodeId)) {
+      const remaining = novel.episodes.filter(ep => !selectedEpisodes.has(ep.id));
+      if (remaining.length === 0) {
+        alert('Нельзя удалить все эпизоды');
+        return;
+      }
+      const confirmed = confirm(`Удалить ${selectedEpisodes.size} эпизод(ов)?`);
+      if (!confirmed) return;
+      
+      onUpdate({ ...novel, episodes: remaining });
+      setSelectedEpisodes(new Set());
+      setSelectedEpisodeId(remaining[0]?.id || null);
+      return;
+    }
+    
     if (novel.episodes.length <= 1) {
       alert('Нельзя удалить последний эпизод');
       return;
@@ -84,12 +100,25 @@ function AdminPanel({ novel, onUpdate, onLogout, authState }: AdminPanelProps) {
   const handleUpdateEpisode = (updatedEpisode: typeof selectedEpisode) => {
     if (!updatedEpisode) return;
 
-    onUpdate({
-      ...novel,
-      episodes: novel.episodes.map(ep => 
-        ep.id === updatedEpisode.id ? updatedEpisode : ep
-      )
-    });
+    // Если режим массового редактирования и эпизод выбран - применить timeframes ко всем выбранным
+    if (bulkEditEpisodes && selectedEpisodes.has(updatedEpisode.id)) {
+      onUpdate({
+        ...novel,
+        episodes: novel.episodes.map(ep => {
+          if (selectedEpisodes.has(ep.id)) {
+            return { ...ep, timeframes: updatedEpisode.timeframes };
+          }
+          return ep;
+        })
+      });
+    } else {
+      onUpdate({
+        ...novel,
+        episodes: novel.episodes.map(ep => 
+          ep.id === updatedEpisode.id ? updatedEpisode : ep
+        )
+      });
+    }
   };
 
   const handleMoveEpisode = (episodeId: string, direction: 'up' | 'down') => {
@@ -337,13 +366,19 @@ function AdminPanel({ novel, onUpdate, onLogout, authState }: AdminPanelProps) {
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-6 w-6"
+                          className="h-6 w-6 relative"
                           onClick={(e) => {
                             e.stopPropagation();
                             handleDeleteEpisode(episode.id);
                           }}
+                          title={bulkEditEpisodes && selectedEpisodes.has(episode.id) && selectedEpisodes.size > 1 ? `Удалить ${selectedEpisodes.size} эпизодов` : 'Удалить эпизод'}
                         >
                           <Icon name="Trash2" size={14} />
+                          {bulkEditEpisodes && selectedEpisodes.has(episode.id) && selectedEpisodes.size > 1 && (
+                            <span className="absolute -top-1 -right-1 bg-destructive text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center">
+                              {selectedEpisodes.size}
+                            </span>
+                          )}
                         </Button>
                       </div>
                     </div>
@@ -356,12 +391,20 @@ function AdminPanel({ novel, onUpdate, onLogout, authState }: AdminPanelProps) {
 
               <div className="lg:col-span-3">
                 {selectedEpisode ? (
-                  <EpisodeEditor
-                    episode={selectedEpisode}
-                    novel={novel}
-                    onUpdate={handleUpdateEpisode}
-                    onNovelUpdate={onUpdate}
-                  />
+                  <>
+                    {bulkEditEpisodes && selectedEpisodes.has(selectedEpisode.id) && selectedEpisodes.size > 1 && (
+                      <div className="mb-4 p-3 bg-primary/10 rounded-lg text-primary font-medium border-2 border-primary">
+                        <Icon name="Info" size={16} className="inline mr-2" />
+                        Изменения временных слоев применятся к {selectedEpisodes.size} выбранным эпизодам
+                      </div>
+                    )}
+                    <EpisodeEditor
+                      episode={selectedEpisode}
+                      novel={novel}
+                      onUpdate={handleUpdateEpisode}
+                      onNovelUpdate={onUpdate}
+                    />
+                  </>
                 ) : (
                   <div className="text-center py-16 text-muted-foreground">
                     Выберите эпизод для редактирования

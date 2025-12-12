@@ -25,6 +25,9 @@ interface ParagraphEditorProps {
   onMove: (index: number, direction: 'up' | 'down') => void;
   onToggleInsert: (index: number) => void;
   onNovelUpdate: (novel: Novel) => void;
+  isBulkEditMode?: boolean;
+  isSelected?: boolean;
+  selectedCount?: number;
 }
 
 function ParagraphEditor({
@@ -37,7 +40,10 @@ function ParagraphEditor({
   onDelete,
   onMove,
   onToggleInsert,
-  onNovelUpdate
+  onNovelUpdate,
+  isBulkEditMode = false,
+  isSelected = false,
+  selectedCount = 0
 }: ParagraphEditorProps) {
   const [isChangingType, setIsChangingType] = useState(false);
   const [imageUrl, setImageUrl] = useState('');
@@ -238,8 +244,13 @@ function ParagraphEditor({
   };
 
   return (
-    <Card className="animate-fade-in">
+    <Card className={`animate-fade-in ${isBulkEditMode && isSelected ? 'ring-2 ring-primary' : ''}`}>
       <CardContent className="p-4">
+        {isBulkEditMode && isSelected && selectedCount > 1 && (
+          <div className="mb-2 px-2 py-1 bg-primary/10 rounded text-xs text-primary font-medium">
+            Изменения применятся к {selectedCount} параграфам
+          </div>
+        )}
         <div className="flex items-start gap-3">
           <div className="flex flex-col gap-1">
             <Button
@@ -355,8 +366,14 @@ function ParagraphEditor({
                   size="icon"
                   className="h-8 w-8 text-destructive"
                   onClick={() => onDelete(index)}
+                  title={isBulkEditMode && isSelected && selectedCount > 1 ? `Удалить ${selectedCount} параграфов` : 'Удалить параграф'}
                 >
                   <Icon name="Trash2" size={16} />
+                  {isBulkEditMode && isSelected && selectedCount > 1 && (
+                    <span className="absolute -top-1 -right-1 bg-destructive text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center">
+                      {selectedCount}
+                    </span>
+                  )}
                 </Button>
               </div>
             </div>

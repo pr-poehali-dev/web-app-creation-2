@@ -73,15 +73,38 @@ function EpisodeEditor({ episode, novel, onUpdate, onNovelUpdate }: EpisodeEdito
 
   const handleUpdateParagraph = (index: number, updatedParagraph: Paragraph) => {
     const newParagraphs = [...episode.paragraphs];
-    newParagraphs[index] = updatedParagraph;
+    
+    // Если режим массового редактирования и параграф выбран - применить к всем выбранным
+    if (bulkEditMode && selectedParagraphs.has(index)) {
+      newParagraphs.forEach((para, i) => {
+        if (selectedParagraphs.has(i)) {
+          newParagraphs[i] = { ...para, timeframes: updatedParagraph.timeframes };
+        }
+      });
+    } else {
+      newParagraphs[index] = updatedParagraph;
+    }
+    
     onUpdate({ ...episode, paragraphs: newParagraphs });
   };
 
   const handleDeleteParagraph = (index: number) => {
-    onUpdate({
-      ...episode,
-      paragraphs: episode.paragraphs.filter((_, i) => i !== index)
-    });
+    // Если режим массового редактирования и параграф выбран - удалить все выбранные
+    if (bulkEditMode && selectedParagraphs.has(index)) {
+      const confirmed = confirm(`Удалить ${selectedParagraphs.size} параграф(ов)?`);
+      if (!confirmed) return;
+      
+      onUpdate({
+        ...episode,
+        paragraphs: episode.paragraphs.filter((_, i) => !selectedParagraphs.has(i))
+      });
+      setSelectedParagraphs(new Set());
+    } else {
+      onUpdate({
+        ...episode,
+        paragraphs: episode.paragraphs.filter((_, i) => i !== index)
+      });
+    }
   };
 
   const handleMoveParagraph = (index: number, direction: 'up' | 'down') => {
@@ -229,6 +252,9 @@ function EpisodeEditor({ episode, novel, onUpdate, onNovelUpdate }: EpisodeEdito
                   onMove={handleMoveParagraph}
                   onToggleInsert={handleToggleInsert}
                   onNovelUpdate={onNovelUpdate}
+                  isBulkEditMode={bulkEditMode}
+                  isSelected={selectedParagraphs.has(index)}
+                  selectedCount={selectedParagraphs.size}
                 />
               </div>
             </div>
