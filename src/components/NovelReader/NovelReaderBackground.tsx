@@ -64,7 +64,7 @@ function NovelReaderBackground({
   };
 
   return (
-    <div className="absolute top-20 left-4 right-4 bottom-4 md:top-20 md:left-8 md:right-32 rounded-2xl overflow-hidden">
+    <div className="absolute rounded-2xl overflow-hidden" style={{ top: '50px', left: '50px', right: '50px', bottom: '50px' }}>
       {previousBackgroundImage && (
         <div 
           className="absolute inset-0 bg-cover bg-center"
