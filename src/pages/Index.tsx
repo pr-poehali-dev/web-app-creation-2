@@ -3,7 +3,6 @@ import AdminPanel from '@/components/AdminPanel';
 import EpisodeMenu from '@/components/EpisodeMenu';
 import UserProfilePanel from '@/components/UserProfilePanel';
 import SettingsPanel from '@/components/SettingsPanel';
-import HomePage from '@/components/HomePage';
 import EpisodesSidebar from '@/components/EpisodesSidebar';
 import NavigationMenu from '@/components/NavigationMenu';
 import ParagraphsDialog from '@/components/ParagraphsDialog';
