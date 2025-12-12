@@ -155,16 +155,12 @@ export function createParagraphEditorHandlers(
   const handleSelectCharacter = (characterId: string) => {
     if (paragraph.type !== 'dialogue') return;
     const character = novel.library.characters.find(c => c.id === characterId);
-    console.log('[handleSelectCharacter] characterId:', characterId);
-    console.log('[handleSelectCharacter] found character:', character);
     if (character) {
-      const updatedParagraph = { 
+      onUpdate(index, { 
         ...paragraph, 
         characterName: character.name,
         characterImage: character.defaultImage || character.images?.[0]?.url
-      };
-      console.log('[handleSelectCharacter] updating paragraph to:', updatedParagraph);
-      onUpdate(index, updatedParagraph);
+      });
     }
   };
 

@@ -38,10 +38,6 @@ function DialogueEditor({
   ] : [];
 
   const selectedCharacterId = character?.id || "manual";
-  
-  console.log('[DialogueEditor] paragraph.characterName:', paragraph.characterName);
-  console.log('[DialogueEditor] found character:', character);
-  console.log('[DialogueEditor] selectedCharacterId:', selectedCharacterId);
 
   return (
     <div className="space-y-2">
