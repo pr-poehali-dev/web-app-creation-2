@@ -53,7 +53,7 @@ function NovelReaderBackground({
 }: NovelReaderBackgroundProps) {
   console.log('[NovelReaderBackground] Rendering with:', {
     hasBackgroundImage: !!backgroundImage,
-    backgroundImageUrl: backgroundImage?.substring(0, 80),
+    backgroundImageUrlFull: backgroundImage,
     hasPreviousBackgroundImage: !!previousBackgroundImage,
     newImageReady,
     isBackgroundChanging
