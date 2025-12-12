@@ -153,6 +153,7 @@ function NovelReaderContent({
       {currentParagraph.type === 'image' && (
         <ImageBox
           url={currentParagraph.url}
+          mobileUrl={currentParagraph.mobileUrl}
           alt={currentParagraph.alt}
           isTopMerged={isTopMerged}
           isRetrospective={isRetrospective}

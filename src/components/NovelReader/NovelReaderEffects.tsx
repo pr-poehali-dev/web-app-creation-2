@@ -46,11 +46,13 @@ function NovelReaderEffects({
   useEffect(() => {
     if (!currentEpisode) return;
     
+    const isMobile = window.innerWidth < 768;
+    
     let bgUrl: string | null = null;
     for (let i = currentParagraphIndex; i >= 0; i--) {
       const p = currentEpisode.paragraphs[i];
       if (p.type === 'background') {
-        bgUrl = p.url;
+        bgUrl = (isMobile && p.mobileUrl) ? p.mobileUrl : p.url;
         break;
       }
     }

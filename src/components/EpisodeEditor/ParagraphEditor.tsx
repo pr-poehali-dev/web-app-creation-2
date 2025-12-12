@@ -47,6 +47,7 @@ function ParagraphEditor({
 }: ParagraphEditorProps) {
   const [isChangingType, setIsChangingType] = useState(false);
   const [imageUrl, setImageUrl] = useState('');
+  const [mobileImageUrl, setMobileImageUrl] = useState('');
 
   const handleTypeChange = (newType: ParagraphType) => {
     let newParagraph: Paragraph;
@@ -137,6 +138,18 @@ function ParagraphEditor({
     setImageUrl('');
   };
 
+  const handleMobileImageUpload = async (target: 'image' | 'background') => {
+    const imageBase64 = await selectAndConvertImage();
+    if (imageBase64) {
+      if (target === 'image' && paragraph.type === 'image') {
+        onUpdate(index, { ...paragraph, mobileUrl: imageBase64 });
+      } else if (target === 'background' && paragraph.type === 'background') {
+        onUpdate(index, { ...paragraph, mobileUrl: imageBase64 });
+      }
+    }
+    setMobileImageUrl('');
+  };
+
   const handleImageUrl = (target: 'dialogue' | 'item' | 'image' | 'background') => {
     if (!imageUrl) return;
     
@@ -150,6 +163,17 @@ function ParagraphEditor({
       onUpdate(index, { ...paragraph, url: imageUrl });
     }
     setImageUrl('');
+  };
+
+  const handleMobileImageUrl = (target: 'image' | 'background') => {
+    if (!mobileImageUrl) return;
+    
+    if (target === 'image' && paragraph.type === 'image') {
+      onUpdate(index, { ...paragraph, mobileUrl: mobileImageUrl });
+    } else if (target === 'background' && paragraph.type === 'background') {
+      onUpdate(index, { ...paragraph, mobileUrl: mobileImageUrl });
+    }
+    setMobileImageUrl('');
   };
 
   const handleSelectCharacter = (characterId: string) => {
@@ -456,9 +480,13 @@ function ParagraphEditor({
                 index={index}
                 imageUrl={imageUrl}
                 setImageUrl={setImageUrl}
+                mobileImageUrl={mobileImageUrl}
+                setMobileImageUrl={setMobileImageUrl}
                 onUpdate={onUpdate}
                 handleImageUrl={() => handleImageUrl('image')}
                 handleImageUpload={() => handleImageUpload('image')}
+                handleMobileImageUrl={() => handleMobileImageUrl('image')}
+                handleMobileImageUpload={() => handleMobileImageUpload('image')}
               />
             )}
 
@@ -468,9 +496,13 @@ function ParagraphEditor({
                 index={index}
                 imageUrl={imageUrl}
                 setImageUrl={setImageUrl}
+                mobileImageUrl={mobileImageUrl}
+                setMobileImageUrl={setMobileImageUrl}
                 onUpdate={onUpdate}
                 handleImageUrl={() => handleImageUrl('background')}
                 handleImageUpload={() => handleImageUpload('background')}
+                handleMobileImageUrl={() => handleMobileImageUrl('background')}
+                handleMobileImageUpload={() => handleMobileImageUpload('background')}
                 label="Фоновое изображение"
               />
             )}

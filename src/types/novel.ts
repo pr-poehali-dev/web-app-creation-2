@@ -17,6 +17,7 @@ export interface TextParagraph extends BaseParagraph {
 export interface ImageParagraph extends BaseParagraph {
   type: 'image';
   url: string;
+  mobileUrl?: string;
   alt?: string;
 }
 
@@ -53,6 +54,7 @@ export interface DialogueParagraph extends BaseParagraph {
 export interface BackgroundParagraph extends BaseParagraph {
   type: 'background';
   url: string;
+  mobileUrl?: string;
   alt?: string;
 }
 
