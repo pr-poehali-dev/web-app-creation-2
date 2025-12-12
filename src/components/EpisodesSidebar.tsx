@@ -114,15 +114,13 @@ function EpisodesSidebar({ novel, currentEpisodeId, profile, onEpisodeSelect, on
                       ? 'bg-muted/50 text-muted-foreground border-border'
                       : 'bg-card hover:bg-card/80 text-foreground hover:shadow-md border-border'
                   }`}
+                  onClick={() => {
+                    if (isLocked) return;
+                    onEpisodeSelect(episode.id, 0);
+                  }}
                 >
                   <div className="flex items-center justify-between">
-                    <div 
-                      className="flex items-center gap-2 flex-1"
-                      onClick={() => {
-                        if (isLocked) return;
-                        onEpisodeSelect(episode.id, 0);
-                      }}
-                    >
+                    <div className="flex items-center gap-2 flex-1">
                       {isLocked && <Icon name="Lock" size={14} className="flex-shrink-0" />}
                       <span className="font-bold text-sm">{index + 1}.</span>
                       <span className="text-sm font-medium">{episode.title}</span>
