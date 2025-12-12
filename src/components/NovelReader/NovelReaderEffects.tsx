@@ -47,70 +47,28 @@ function NovelReaderEffects({
     if (!currentEpisode) return;
     
     const isMobile = window.matchMedia('(max-width: 767px)').matches;
-    console.log('[Background] Window:', window.innerWidth, 'matchMedia:', isMobile);
     
     let bgUrl: string | null = null;
     for (let i = currentParagraphIndex; i >= 0; i--) {
       const p = currentEpisode.paragraphs[i];
       if (p.type === 'background') {
         const selectedUrl = (isMobile && p.mobileUrl) ? p.mobileUrl : p.url;
-        console.log('[Background] Found paragraph:', {
-          index: i,
-          hasUrl: !!p.url,
-          hasMobileUrl: !!p.mobileUrl,
-          isMobile,
-          willUseMobile: isMobile && !!p.mobileUrl,
-          selectedUrlLength: selectedUrl?.length || 0,
-          selectedUrlValue: selectedUrl
-        });
-        console.log('[Background] URLs:', {
-          desktop: p.url?.substring(0, 100),
-          mobile: p.mobileUrl?.substring(0, 100)
-        });
-        console.log('[Background] Assignment:', {
-          beforeAssignment: bgUrl,
-          selectedUrl: selectedUrl,
-          afterWillBe: selectedUrl
-        });
         bgUrl = selectedUrl || null;
-        console.log('[Background] After assignment:', bgUrl);
         break;
       }
     }
     
-    console.log('[Background] Before Final check - bgUrl is:', bgUrl, 'type:', typeof bgUrl);
-    console.log('[Background] Final:', { 
-      hasUrl: !!bgUrl,
-      hasCurrent: !!backgroundImage,
-      willUpdate: bgUrl !== backgroundImage,
-      urlSample: bgUrl?.substring(0, 80)
-    });
     
     if (bgUrl !== backgroundImage) {
       const episodeChanged = previousEpisodeIdRef.current !== null && previousEpisodeIdRef.current !== currentEpisodeId;
       const isFirstParagraph = currentParagraphIndex === 0;
       
-      console.log('[Background] Will update:', {
-        episodeChanged,
-        isFirstParagraph,
-        previousEpisodeId: previousEpisodeIdRef.current,
-        currentEpisodeId,
-        willUseInstant: episodeChanged && !isFirstParagraph
-      });
-      
-      // Если сменился эпизод И мы на первом параграфе, значит это переход между эпизодами
-      // В этом случае используем плавную анимацию для бесшовного перехода
-      // Во всех остальных случаях (первая загрузка или переходы внутри эпизода) - используем анимацию
       if (episodeChanged && !isFirstParagraph) {
-        // Прыжок на середину эпизода - мгновенная смена
-        console.log('[Background] Instant change to:', bgUrl?.substring(0, 80));
         setBackgroundImage(bgUrl);
         setPreviousBackgroundImage(null);
         setIsBackgroundChanging(false);
         setNewImageReady(true);
       } else {
-        // Обычная анимация (первая загрузка, смена внутри эпизода, или плавный переход между эпизодами)
-        console.log('[Background] Animated change to:', bgUrl?.substring(0, 80));
         setPreviousBackgroundImage(backgroundImage);
         setBackgroundImage(bgUrl);
         setIsBackgroundChanging(true);
