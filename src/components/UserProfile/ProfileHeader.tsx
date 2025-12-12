@@ -77,7 +77,7 @@ function ProfileHeader({ profile, completedEpisodes, totalEpisodes, formatReadTi
               Читатель с {new Date(profile.createdAt).toLocaleDateString('ru-RU')}
             </p>
 
-            <div className="grid grid-cols-3 gap-4 text-center">
+            <div className="grid grid-cols-2 gap-4 text-center">
               <div>
                 <div className="text-2xl font-bold text-primary">{completedEpisodes}</div>
                 <div className="text-xs text-muted-foreground">Пройдено</div>
@@ -85,10 +85,6 @@ function ProfileHeader({ profile, completedEpisodes, totalEpisodes, formatReadTi
               <div>
                 <div className="text-2xl font-bold text-secondary">{totalEpisodes}</div>
                 <div className="text-xs text-muted-foreground">Всего</div>
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-accent-foreground">{formatReadTime(profile.totalReadTime)}</div>
-                <div className="text-xs text-muted-foreground">Время</div>
               </div>
             </div>
           </div>

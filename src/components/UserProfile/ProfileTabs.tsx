@@ -21,12 +21,8 @@ function ProfileTabs({ profile, novel, achievements, username, onDeleteBookmark,
   return (
     <Card className="animate-fade-in" style={{ animationDelay: '200ms' }}>
       <CardContent className="p-6">
-        <Tabs defaultValue="achievements" className="w-full">
-          <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="achievements" className="flex items-center gap-1">
-              <Icon name="Trophy" size={16} />
-              <span className="hidden md:inline">Достижения</span>
-            </TabsTrigger>
+        <Tabs defaultValue="bookmarks" className="w-full">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="bookmarks" className="flex items-center gap-1">
               <Icon name="Bookmark" size={16} />
               <span className="hidden md:inline">Закладки</span>
