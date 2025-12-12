@@ -78,6 +78,7 @@ function NovelReaderEffects({
       }
     }
     
+    console.log('[Background] Before Final check - bgUrl is:', bgUrl, 'type:', typeof bgUrl);
     console.log('[Background] Final:', { 
       hasUrl: !!bgUrl,
       hasCurrent: !!backgroundImage,
