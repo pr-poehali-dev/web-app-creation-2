@@ -159,22 +159,24 @@ export function useNovelDatabase(
     if (!isLoading && isAdmin && novelForSaving) {
       const saveNovel = async () => {
         try {
+          const jsonData = JSON.stringify(novelForSaving);
+          const sizeInMB = (new Blob([jsonData]).size / 1024 / 1024).toFixed(2);
+          console.log(`[useNovelDatabase] Saving novel, size: ${sizeInMB} MB`);
+          
           const response = await fetch(`${API_URL}?admin=true`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(novelForSaving)
+            body: jsonData
           });
           
           if (!response.ok) {
-            if (response.status === 413) {
-              console.error('Error saving novel: Data too large (HTTP 413). Consider reducing image sizes or removing unused data.');
-              alert('⚠️ Данные не сохранились: слишком большой размер проекта.\n\nРекомендации:\n- Используйте сжатие изображений\n- Удалите неиспользуемые данные из библиотеки\n- Уменьшите размер изображений');
-            } else {
-              console.error(`Error saving novel: HTTP ${response.status}`);
-            }
+            const errorText = await response.text();
+            console.error(`[useNovelDatabase] Save failed: HTTP ${response.status}`, errorText);
+          } else {
+            console.log('[useNovelDatabase] Novel saved successfully');
           }
         } catch (error) {
-          console.error('Error saving novel:', error);
+          console.error('[useNovelDatabase] Error saving novel:', error);
         }
       };
 
