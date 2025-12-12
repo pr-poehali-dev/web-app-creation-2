@@ -26,6 +26,7 @@ interface NovelReaderBackgroundProps {
   existingBookmark: any;
   handleAddBookmark: (comment: string) => void;
   handleRemoveBookmark: () => void;
+  previousParagraph?: Paragraph;
 }
 
 function NovelReaderBackground({
@@ -49,7 +50,8 @@ function NovelReaderBackground({
   goToNextParagraph,
   existingBookmark,
   handleAddBookmark,
-  handleRemoveBookmark
+  handleRemoveBookmark,
+  previousParagraph
 }: NovelReaderBackgroundProps) {
   if (!backgroundImage) return null;
 
@@ -110,6 +112,7 @@ function NovelReaderBackground({
                   onProfileUpdate={onProfileUpdate}
                   paragraphKey={paragraphKey}
                   isTopMerged={true}
+                  previousParagraph={previousParagraph}
                 />
               </div>
             </div>
@@ -182,6 +185,7 @@ function NovelReaderBackground({
                 onProfileUpdate={onProfileUpdate}
                 paragraphKey={paragraphKey}
                 isTopMerged={false}
+                previousParagraph={previousParagraph}
               />
             </div>
           </div>

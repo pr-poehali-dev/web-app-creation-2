@@ -18,6 +18,7 @@ interface NovelReaderContentProps {
   onProfileUpdate: (profile: UserProfile | ((prev: UserProfile) => UserProfile)) => void;
   paragraphKey: string;
   isTopMerged?: boolean;
+  previousParagraph?: Paragraph;
 }
 
 function NovelReaderContent({
@@ -31,7 +32,8 @@ function NovelReaderContent({
   handleChoice,
   onProfileUpdate,
   paragraphKey,
-  isTopMerged = false
+  isTopMerged = false,
+  previousParagraph
 }: NovelReaderContentProps) {
   const novelFontStyle = {
     fontFamily: settings.fontFamily === 'merriweather' ? '"Merriweather", serif' :
@@ -84,39 +86,50 @@ function NovelReaderContent({
         </div>
       )}
 
-      {currentParagraph.type === 'dialogue' && (
-        <DialogueBox
-          key={paragraphKey}
-          characterName={currentParagraph.characterName}
-          characterImage={currentParagraph.characterImage}
-          text={currentParagraph.text}
-          skipTyping={skipTyping}
-          onComplete={handleTypingComplete}
-          textSpeed={settings.textSpeed}
-          fontFamily={novelFontStyle.fontFamily}
-          isTopMerged={isTopMerged}
-          isRetrospective={isRetrospective}
-          existingComment={profile.metCharacters?.find(
-            c => c.name === currentParagraph.characterName
-          )?.comment}
-          onCommentSave={(comment) => {
-            const characterIndex = profile.metCharacters?.findIndex(
+      {currentParagraph.type === 'dialogue' && (() => {
+        const isSameCharacter = previousParagraph?.type === 'dialogue' && 
+          previousParagraph.characterName === currentParagraph.characterName &&
+          previousParagraph.characterImage === currentParagraph.characterImage;
+        
+        const dialogueKey = isSameCharacter 
+          ? `dialogue-${currentParagraph.characterName}`
+          : paragraphKey;
+        
+        return (
+          <DialogueBox
+            key={dialogueKey}
+            characterName={currentParagraph.characterName}
+            characterImage={currentParagraph.characterImage}
+            text={currentParagraph.text}
+            skipTyping={skipTyping}
+            onComplete={handleTypingComplete}
+            textSpeed={settings.textSpeed}
+            fontFamily={novelFontStyle.fontFamily}
+            isTopMerged={isTopMerged}
+            isRetrospective={isRetrospective}
+            shouldAnimate={!isSameCharacter}
+            existingComment={profile.metCharacters?.find(
               c => c.name === currentParagraph.characterName
-            );
-            if (characterIndex !== undefined && characterIndex >= 0) {
-              const updatedCharacters = [...(profile.metCharacters || [])];
-              updatedCharacters[characterIndex] = {
-                ...updatedCharacters[characterIndex],
-                comment
-              };
-              onProfileUpdate({
-                ...profile,
-                metCharacters: updatedCharacters
-              });
-            }
-          }}
-        />
-      )}
+            )?.comment}
+            onCommentSave={(comment) => {
+              const characterIndex = profile.metCharacters?.findIndex(
+                c => c.name === currentParagraph.characterName
+              );
+              if (characterIndex !== undefined && characterIndex >= 0) {
+                const updatedCharacters = [...(profile.metCharacters || [])];
+                updatedCharacters[characterIndex] = {
+                  ...updatedCharacters[characterIndex],
+                  comment
+                };
+                onProfileUpdate({
+                  ...profile,
+                  metCharacters: updatedCharacters
+                });
+              }
+            }}
+          />
+        );
+      })()}
 
       {currentParagraph.type === 'choice' && (
         <div className="w-full max-w-2xl ml-0 md:ml-16">

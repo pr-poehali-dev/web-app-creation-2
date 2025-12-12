@@ -18,6 +18,7 @@ interface DialogueBoxProps {
   fontFamily?: string;
   isTopMerged?: boolean;
   isRetrospective?: boolean;
+  shouldAnimate?: boolean;
 }
 
 function DialogueBox({ 
@@ -31,7 +32,8 @@ function DialogueBox({
   existingComment,
   fontFamily,
   isTopMerged = false,
-  isRetrospective = false
+  isRetrospective = false,
+  shouldAnimate = true
 }: DialogueBoxProps) {
   const [showCommentDialog, setShowCommentDialog] = useState(false);
   const [comment, setComment] = useState(existingComment || '');
@@ -45,7 +47,7 @@ function DialogueBox({
     <>
       <div className="relative flex flex-col md:flex-row items-center gap-4 md:gap-6">
         {characterImage && (
-          <div className="flex flex-col items-center gap-3 animate-scale-in">
+          <div className={`flex flex-col items-center gap-3 ${shouldAnimate ? 'animate-scale-in' : ''}`}>
             <div className="flex items-center justify-center relative">
               {characterImage.startsWith('data:') || characterImage.startsWith('http') ? (
                 <div className="relative">
@@ -79,7 +81,7 @@ function DialogueBox({
           </div>
         )}
         
-        <Card className="flex-1 w-full bg-card/95 backdrop-blur-sm border-0 shadow-xl animate-scale-in rounded-xl md:rounded-2xl relative">
+        <Card className={`flex-1 w-full bg-card/95 backdrop-blur-sm border-0 shadow-xl ${shouldAnimate ? 'animate-scale-in' : ''} rounded-xl md:rounded-2xl relative`}>
           <div 
             className="absolute inset-0 pointer-events-none rounded-xl md:rounded-2xl transition-all duration-1000 ease-in-out"
             style={{

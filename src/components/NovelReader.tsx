@@ -26,6 +26,7 @@ interface NovelReaderProps {
 function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, currentEpisodeId, currentParagraphIndex, showGreetingScreen = false, isGuest = false, onGuestLimitReached, isMusicPlaying, onToggleMusic }: NovelReaderProps) {
   const currentEpisode = novel.episodes.find(ep => ep.id === currentEpisodeId);
   const currentParagraph = currentEpisode?.paragraphs[currentParagraphIndex];
+  const previousParagraph = currentParagraphIndex > 0 ? currentEpisode?.paragraphs[currentParagraphIndex - 1] : undefined;
 
   const existingBookmark = profile?.bookmarks?.find(
     b => b.episodeId === currentEpisodeId && b.paragraphIndex === currentParagraphIndex
@@ -178,6 +179,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
           existingBookmark={existingBookmark}
           handleAddBookmark={handleAddBookmark}
           handleRemoveBookmark={handleRemoveBookmark}
+          previousParagraph={previousParagraph}
         />
       )}
 
