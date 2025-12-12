@@ -92,42 +92,12 @@ function NovelReaderBackground({
       
       <div className={`absolute inset-0 ${isRetrospective ? 'bg-amber-950/30' : 'bg-black/20'}`} style={{ transition: 'background-color 1.2s ease-in-out' }} />
       
-      <div className={`relative w-full h-full flex justify-center ${currentParagraph.mergedWith ? 'items-start pt-[50px]' : 'items-end pb-20 md:pb-8'} px-4 md:px-6 md:pr-8`}>
-        <div className="w-full max-w-4xl md:min-h-0 relative z-10">
-          {!isTyping && currentParagraph.type !== 'choice' && (
-            <div className="md:hidden flex justify-between items-center mb-2 gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  console.log('[NavButton] Previous clicked');
-                  goToPreviousParagraph();
-                }}
-                disabled={currentParagraphIndex === 0}
-                className="h-8 px-3 bg-card/80 backdrop-blur-sm hover:bg-card/90 border border-border/50"
-              >
-                <Icon name="ChevronLeft" size={16} />
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  console.log('[NavButton] Next clicked, currentIndex:', currentParagraphIndex, 'total:', currentEpisode.paragraphs.length);
-                  goToNextParagraph();
-                }}
-                disabled={currentParagraphIndex === currentEpisode.paragraphs.length - 1}
-                className="h-8 px-3 bg-card/80 backdrop-blur-sm hover:bg-card/90 border border-border/50"
-              >
-                <Icon name="ChevronRight" size={16} />
-              </Button>
-            </div>
-          )}
-          
-          {currentParagraph.type !== 'background' && !isBackgroundChanging && (
-            <div className={currentParagraph.mergedWith ? "flex flex-col justify-between h-full max-h-[calc(100vh-150px)]" : ""}>
-              <div className={currentParagraph.mergedWith ? "overflow-y-auto scrollbar-thin scrollbar-thumb-primary/30 scrollbar-track-transparent" : ""}>
+      {currentParagraph.type !== 'background' && !isBackgroundChanging && (
+        currentParagraph.mergedWith ? (
+          <>
+            {/* Первый параграф - занимает пространство от top-[50px] до второго параграфа */}
+            <div className="absolute top-[50px] left-4 right-4 bottom-[calc(20rem+5rem)] md:left-6 md:right-32 md:bottom-[calc(12rem+2rem)] z-10 overflow-y-auto scrollbar-thin scrollbar-thumb-primary/30 scrollbar-track-transparent">
+              <div className="w-full max-w-4xl mx-auto h-full flex items-start">
                 <NovelReaderContent
                   currentParagraph={currentParagraph}
                   currentEpisode={currentEpisode}
@@ -139,11 +109,15 @@ function NovelReaderBackground({
                   handleChoice={handleChoice}
                   onProfileUpdate={onProfileUpdate}
                   paragraphKey={paragraphKey}
-                  isTopMerged={!!currentParagraph.mergedWith}
+                  isTopMerged={true}
                 />
               </div>
-              {currentParagraph.mergedWith && currentEpisode.paragraphs[currentParagraphIndex + 1] && (
-                <div className="flex-shrink-0">
+            </div>
+            
+            {/* Второй параграф на стандартной позиции */}
+            {currentEpisode.paragraphs[currentParagraphIndex + 1] && (
+              <div className="absolute bottom-20 md:bottom-8 left-4 right-4 md:left-6 md:right-32 z-10">
+                <div className="w-full max-w-4xl mx-auto">
                   <NovelReaderContent
                     currentParagraph={currentEpisode.paragraphs[currentParagraphIndex + 1]}
                     currentEpisode={currentEpisode}
@@ -158,11 +132,61 @@ function NovelReaderBackground({
                     isTopMerged={false}
                   />
                 </div>
+              </div>
+            )}
+          </>
+        ) : (
+          /* Стандартный одиночный параграф */
+          <div className="absolute bottom-20 md:bottom-8 left-4 right-4 md:left-6 md:right-32 z-10">
+            <div className="w-full max-w-4xl mx-auto">
+              {!isTyping && currentParagraph.type !== 'choice' && (
+                <div className="md:hidden flex justify-between items-center mb-2 gap-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      console.log('[NavButton] Previous clicked');
+                      goToPreviousParagraph();
+                    }}
+                    disabled={currentParagraphIndex === 0}
+                    className="h-8 px-3 bg-card/80 backdrop-blur-sm hover:bg-card/90 border border-border/50"
+                  >
+                    <Icon name="ChevronLeft" size={16} />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      console.log('[NavButton] Next clicked, currentIndex:', currentParagraphIndex, 'total:', currentEpisode.paragraphs.length);
+                      goToNextParagraph();
+                    }}
+                    disabled={currentParagraphIndex === currentEpisode.paragraphs.length - 1}
+                    className="h-8 px-3 bg-card/80 backdrop-blur-sm hover:bg-card/90 border border-border/50"
+                  >
+                    <Icon name="ChevronRight" size={16} />
+                  </Button>
+                </div>
               )}
+              
+              <NovelReaderContent
+                currentParagraph={currentParagraph}
+                currentEpisode={currentEpisode}
+                novel={novel}
+                settings={settings}
+                profile={profile}
+                skipTyping={skipTyping}
+                handleTypingComplete={handleTypingComplete}
+                handleChoice={handleChoice}
+                onProfileUpdate={onProfileUpdate}
+                paragraphKey={paragraphKey}
+                isTopMerged={false}
+              />
             </div>
-          )}
-        </div>
-      </div>
+          </div>
+        )
+      )}
     </div>
   );
 }
