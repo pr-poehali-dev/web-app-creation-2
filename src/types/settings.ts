@@ -39,9 +39,7 @@ export interface UserProfile {
   name: string;
   avatar?: string;
   createdAt: string;
-  totalReadTime: number;
   completedEpisodes: string[];
-  achievements: string[];
   bookmarks: Bookmark[];
   collectedItems: CollectedItem[];
   storyItems: string[];
@@ -75,9 +73,7 @@ export const defaultSettings: UserSettings = {
 export const defaultProfile: UserProfile = {
   name: 'Читатель',
   createdAt: new Date().toISOString(),
-  totalReadTime: 0,
   completedEpisodes: [],
-  achievements: [],
   bookmarks: [],
   collectedItems: [],
   storyItems: [],

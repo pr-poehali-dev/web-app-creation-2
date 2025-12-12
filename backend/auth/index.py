@@ -53,9 +53,7 @@ def handler(event, context):
             default_profile = {
                 'name': 'Kotatsu',
                 'createdAt': '2025-01-01T00:00:00.000Z',
-                'totalReadTime': 0,
                 'completedEpisodes': [],
-                'achievements': [],
                 'bookmarks': [],
                 'collectedItems': [],
                 'metCharacters': [],
@@ -121,9 +119,7 @@ def handler(event, context):
                 default_profile = {
                     'name': username,
                     'createdAt': body_data.get('createdAt', ''),
-                    'totalReadTime': 0,
                     'completedEpisodes': [],
-                    'achievements': [],
                     'bookmarks': [],
                     'collectedItems': [],
                     'metCharacters': [],
