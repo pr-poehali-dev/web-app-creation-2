@@ -36,8 +36,6 @@ function DialogueBox({
   const [showCommentDialog, setShowCommentDialog] = useState(false);
   const [comment, setComment] = useState(existingComment || '');
 
-  console.log('[DialogueBox] characterName:', characterName, 'characterImage:', characterImage);
-
   const handleSaveComment = () => {
     onCommentSave?.(comment);
     setShowCommentDialog(false);

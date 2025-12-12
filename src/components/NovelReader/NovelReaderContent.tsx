@@ -85,40 +85,37 @@ function NovelReaderContent({
       )}
 
       {currentParagraph.type === 'dialogue' && (
-        <>
-          {console.log('[NovelReaderContent] Dialogue paragraph:', currentParagraph)}
-          <DialogueBox
-            key={paragraphKey}
-            characterName={currentParagraph.characterName}
-            characterImage={currentParagraph.characterImage}
-            text={currentParagraph.text}
-            skipTyping={skipTyping}
-            onComplete={handleTypingComplete}
-            textSpeed={settings.textSpeed}
-            fontFamily={novelFontStyle.fontFamily}
-            isTopMerged={isTopMerged}
-            isRetrospective={isRetrospective}
-            existingComment={profile.metCharacters?.find(
+        <DialogueBox
+          key={paragraphKey}
+          characterName={currentParagraph.characterName}
+          characterImage={currentParagraph.characterImage}
+          text={currentParagraph.text}
+          skipTyping={skipTyping}
+          onComplete={handleTypingComplete}
+          textSpeed={settings.textSpeed}
+          fontFamily={novelFontStyle.fontFamily}
+          isTopMerged={isTopMerged}
+          isRetrospective={isRetrospective}
+          existingComment={profile.metCharacters?.find(
+            c => c.name === currentParagraph.characterName
+          )?.comment}
+          onCommentSave={(comment) => {
+            const characterIndex = profile.metCharacters?.findIndex(
               c => c.name === currentParagraph.characterName
-            )?.comment}
-            onCommentSave={(comment) => {
-              const characterIndex = profile.metCharacters?.findIndex(
-                c => c.name === currentParagraph.characterName
-              );
-              if (characterIndex !== undefined && characterIndex >= 0) {
-                const updatedCharacters = [...(profile.metCharacters || [])];
-                updatedCharacters[characterIndex] = {
-                  ...updatedCharacters[characterIndex],
-                  comment
-                };
-                onProfileUpdate({
-                  ...profile,
-                  metCharacters: updatedCharacters
-                });
-              }
-            }}
-          />
-        </>
+            );
+            if (characterIndex !== undefined && characterIndex >= 0) {
+              const updatedCharacters = [...(profile.metCharacters || [])];
+              updatedCharacters[characterIndex] = {
+                ...updatedCharacters[characterIndex],
+                comment
+              };
+              onProfileUpdate({
+                ...profile,
+                metCharacters: updatedCharacters
+              });
+            }
+          }}
+        />
       )}
 
       {currentParagraph.type === 'choice' && (

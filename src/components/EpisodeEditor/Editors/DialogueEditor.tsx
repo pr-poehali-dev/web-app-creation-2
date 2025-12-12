@@ -37,13 +37,19 @@ function DialogueEditor({
     ...(character.images || [])
   ] : [];
 
+  const selectedCharacterId = character?.id || "manual";
+
   return (
     <div className="space-y-2">
       <div className="flex gap-2">
         <Select
-          value="manual"
+          value={selectedCharacterId}
           onValueChange={(value) => {
-            if (value !== 'manual') handleSelectCharacter(value);
+            if (value === 'manual') {
+              onUpdate(index, { ...paragraph, characterName: 'Персонаж', characterImage: undefined });
+            } else {
+              handleSelectCharacter(value);
+            }
           }}
         >
           <SelectTrigger className="text-foreground">
