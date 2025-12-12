@@ -198,6 +198,19 @@ export const parseMarkdownToEpisode = (markdown: string, episodeId: string): Epi
       continue;
     }
     
+    if (line.startsWith('[PAUSE')) {
+      const durationMatch = line.match(/\[PAUSE:(\d+)\]/);
+      const duration = durationMatch ? parseInt(durationMatch[1]) : 500;
+      
+      paragraphs.push({
+        id: `p${Date.now()}_${paragraphs.length}`,
+        type: 'pause',
+        duration
+      });
+      i++;
+      continue;
+    }
+    
     i++;
   }
   
@@ -250,5 +263,9 @@ export const getMarkdownTemplate = (): string => {
 Продолжение текста после выбора
 
 💡 Две пустые строки после [DIALOGUE], [ITEM], [CHOICE] возвращают к обычному тексту
-💡 Интерактивные подсказки: [слово|текст подсказки]`;
+💡 Интерактивные подсказки: [слово|текст подсказки]
+
+[PAUSE:500]
+
+💡 [PAUSE:длительность_в_мс] - создает паузу перед следующим параграфом`;
 };

@@ -104,6 +104,10 @@ function NovelReaderEffects({
       setIsTyping(true);
       setSkipTyping(false);
       setCanNavigate(false);
+    } else if (currentParagraph?.type === 'pause') {
+      setIsTyping(false);
+      setSkipTyping(false);
+      setCanNavigate(false);
     } else {
       console.log('[NovelReader] Setting isTyping=false, canNavigate=true for non-typing paragraph');
       setIsTyping(false);
@@ -117,6 +121,14 @@ function NovelReaderEffects({
       const timer = setTimeout(() => {
         goToNextParagraph();
       }, 500);
+      return () => clearTimeout(timer);
+    }
+    
+    if (currentParagraph?.type === 'pause') {
+      const duration = currentParagraph.duration || 500;
+      const timer = setTimeout(() => {
+        goToNextParagraph();
+      }, duration);
       return () => clearTimeout(timer);
     }
   }, [currentParagraph, goToNextParagraph]);
