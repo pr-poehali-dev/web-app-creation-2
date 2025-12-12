@@ -1,5 +1,5 @@
 import { Paragraph, Novel, ParagraphType } from '@/types/novel';
-import { selectAndConvertImage } from '@/utils/fileHelpers';
+import { selectAndUploadImage } from '@/utils/imageUpload';
 
 export interface ParagraphEditorHandlers {
   handleTypeChange: (newType: ParagraphType) => void;
@@ -99,28 +99,28 @@ export function createParagraphEditorHandlers(
   };
 
   const handleImageUpload = async (target: 'dialogue' | 'item' | 'image' | 'background') => {
-    const imageBase64 = await selectAndConvertImage();
-    if (imageBase64) {
+    const imageUrl = await selectAndUploadImage();
+    if (imageUrl) {
       if (target === 'dialogue' && paragraph.type === 'dialogue') {
-        onUpdate(index, { ...paragraph, characterImage: imageBase64 });
+        onUpdate(index, { ...paragraph, characterImage: imageUrl });
       } else if (target === 'item' && paragraph.type === 'item') {
-        onUpdate(index, { ...paragraph, imageUrl: imageBase64 });
+        onUpdate(index, { ...paragraph, imageUrl });
       } else if (target === 'image' && paragraph.type === 'image') {
-        onUpdate(index, { ...paragraph, url: imageBase64 });
+        onUpdate(index, { ...paragraph, url: imageUrl });
       } else if (target === 'background' && paragraph.type === 'background') {
-        onUpdate(index, { ...paragraph, url: imageBase64 });
+        onUpdate(index, { ...paragraph, url: imageUrl });
       }
     }
     setImageUrl('');
   };
 
   const handleMobileImageUpload = async (target: 'image' | 'background') => {
-    const imageBase64 = await selectAndConvertImage();
-    if (imageBase64) {
+    const imageUrl = await selectAndUploadImage();
+    if (imageUrl) {
       if (target === 'image' && paragraph.type === 'image') {
-        onUpdate(index, { ...paragraph, mobileUrl: imageBase64 });
+        onUpdate(index, { ...paragraph, mobileUrl: imageUrl });
       } else if (target === 'background' && paragraph.type === 'background') {
-        onUpdate(index, { ...paragraph, mobileUrl: imageBase64 });
+        onUpdate(index, { ...paragraph, mobileUrl: imageUrl });
       }
     }
     setMobileImageUrl('');
