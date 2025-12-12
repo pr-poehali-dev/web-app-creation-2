@@ -126,8 +126,8 @@ function NovelReaderBackground({
           )}
           
           {currentParagraph.type !== 'background' && !isBackgroundChanging && (
-            <div className={currentParagraph.mergedWith ? "flex flex-col gap-4 md:gap-6 h-full max-h-[calc(100vh-150px)]" : ""}>
-              <div className={currentParagraph.mergedWith ? "flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-primary/30 scrollbar-track-transparent" : ""}>
+            <div className={currentParagraph.mergedWith ? "flex flex-col justify-between h-full max-h-[calc(100vh-150px)]" : ""}>
+              <div className={currentParagraph.mergedWith ? "overflow-y-auto scrollbar-thin scrollbar-thumb-primary/30 scrollbar-track-transparent" : ""}>
                 <NovelReaderContent
                   currentParagraph={currentParagraph}
                   currentEpisode={currentEpisode}
