@@ -92,7 +92,7 @@ function DialogueBox({
           </div>
         )}
         
-        <CardContent className={isTopMerged ? "p-3 md:p-4 lg:p-6" : "p-4 md:p-6 lg:p-8"}>
+        <CardContent className="p-4 md:p-6 lg:p-8 flex items-start">
           <div className={characterImage ? (isTopMerged ? "pl-28 md:pl-36 lg:pl-44" : "pl-32 md:pl-40 lg:pl-52") : ""}>
             {!characterImage && (
               <h3 className={isTopMerged 
@@ -102,7 +102,7 @@ function DialogueBox({
                 {characterName}
               </h3>
             )}
-            <p className={`novel-text leading-snug md:leading-relaxed text-foreground ${
+            <div className={`novel-text leading-relaxed text-foreground ${
               isTopMerged 
                 ? "text-sm md:text-base lg:text-lg" 
                 : "text-sm md:text-base lg:text-lg"
@@ -114,7 +114,7 @@ function DialogueBox({
                 onComplete={onComplete}
                 resetKey={resetKey}
               />
-            </p>
+            </div>
           </div>
         </CardContent>
       </Card>
