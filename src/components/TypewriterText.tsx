@@ -20,9 +20,15 @@ const getCleanText = (text: string): string => {
 };
 
 // Функция для отображения текста с форматированием до определенной позиции
+// Теперь работает строго посимвольно - каждый вызов добавляет ровно 1 символ
 const getDisplayText = (text: string, targetLength: number): string => {
-  let visibleChars = 0; // Счетчик видимых символов
-  let result = '';
+  if (targetLength <= 0) return '';
+  
+  const cleanText = getCleanText(text);
+  if (targetLength >= cleanText.length) return text;
+  
+  // Создаем массив видимых символов с их позициями в оригинальном тексте
+  const visibleChars: { char: string; originalStart: number; originalEnd: number; wrapper?: string }[] = [];
   let i = 0;
   
   while (i < text.length) {
@@ -35,17 +41,13 @@ const getDisplayText = (text: string, targetLength: number): string => {
         const word = text.substring(i + 1, pipeIdx);
         const hint = text.substring(pipeIdx + 1, closeIdx);
         
-        // Посимвольно добавляем слово из подсказки
         for (let j = 0; j < word.length; j++) {
-          if (visibleChars >= targetLength) return result;
-          if (visibleChars === 0 || visibleChars < targetLength) {
-            if (j === 0) result += '[';
-            result += word[j];
-            visibleChars++;
-            if (j === word.length - 1 && visibleChars <= targetLength) {
-              result += `|${hint}]`;
-            }
-          }
+          visibleChars.push({ 
+            char: word[j], 
+            originalStart: i, 
+            originalEnd: closeIdx + 1,
+            wrapper: `[|${hint}]`
+          });
         }
         i = closeIdx + 1;
         continue;
@@ -57,16 +59,13 @@ const getDisplayText = (text: string, targetLength: number): string => {
       const endIdx = text.indexOf('**', i + 2);
       if (endIdx !== -1) {
         const content = text.substring(i + 2, endIdx);
-        
-        // Посимвольно добавляем жирный текст
         for (let j = 0; j < content.length; j++) {
-          if (visibleChars >= targetLength) return result;
-          if (j === 0) result += '**';
-          result += content[j];
-          visibleChars++;
-          if (j === content.length - 1 && visibleChars <= targetLength) {
-            result += '**';
-          }
+          visibleChars.push({ 
+            char: content[j], 
+            originalStart: i, 
+            originalEnd: endIdx + 2,
+            wrapper: '****'
+          });
         }
         i = endIdx + 2;
         continue;
@@ -78,15 +77,13 @@ const getDisplayText = (text: string, targetLength: number): string => {
       const endIdx = text.indexOf('*', i + 1);
       if (endIdx !== -1) {
         const content = text.substring(i + 1, endIdx);
-        
         for (let j = 0; j < content.length; j++) {
-          if (visibleChars >= targetLength) return result;
-          if (j === 0) result += '*';
-          result += content[j];
-          visibleChars++;
-          if (j === content.length - 1 && visibleChars <= targetLength) {
-            result += '*';
-          }
+          visibleChars.push({ 
+            char: content[j], 
+            originalStart: i, 
+            originalEnd: endIdx + 1,
+            wrapper: '**'
+          });
         }
         i = endIdx + 1;
         continue;
@@ -98,15 +95,13 @@ const getDisplayText = (text: string, targetLength: number): string => {
       const endIdx = text.indexOf('__', i + 2);
       if (endIdx !== -1) {
         const content = text.substring(i + 2, endIdx);
-        
         for (let j = 0; j < content.length; j++) {
-          if (visibleChars >= targetLength) return result;
-          if (j === 0) result += '__';
-          result += content[j];
-          visibleChars++;
-          if (j === content.length - 1 && visibleChars <= targetLength) {
-            result += '__';
-          }
+          visibleChars.push({ 
+            char: content[j], 
+            originalStart: i, 
+            originalEnd: endIdx + 2,
+            wrapper: '____'
+          });
         }
         i = endIdx + 2;
         continue;
@@ -118,15 +113,13 @@ const getDisplayText = (text: string, targetLength: number): string => {
       const endIdx = text.indexOf('~~', i + 2);
       if (endIdx !== -1) {
         const content = text.substring(i + 2, endIdx);
-        
         for (let j = 0; j < content.length; j++) {
-          if (visibleChars >= targetLength) return result;
-          if (j === 0) result += '~~';
-          result += content[j];
-          visibleChars++;
-          if (j === content.length - 1 && visibleChars <= targetLength) {
-            result += '~~';
-          }
+          visibleChars.push({ 
+            char: content[j], 
+            originalStart: i, 
+            originalEnd: endIdx + 2,
+            wrapper: '~~~~'
+          });
         }
         i = endIdx + 2;
         continue;
@@ -134,10 +127,63 @@ const getDisplayText = (text: string, targetLength: number): string => {
     }
     
     // Обычный символ
-    if (visibleChars >= targetLength) return result;
-    result += text[i];
-    visibleChars++;
+    visibleChars.push({ char: text[i], originalStart: i, originalEnd: i + 1 });
     i++;
+  }
+  
+  // Теперь собираем результат из первых targetLength видимых символов
+  let result = '';
+  let lastWrapperType = '';
+  let isInsideWrapper = false;
+  
+  for (let idx = 0; idx < targetLength && idx < visibleChars.length; idx++) {
+    const item = visibleChars[idx];
+    
+    if (item.wrapper) {
+      const wrapperType = item.wrapper;
+      
+      if (wrapperType !== lastWrapperType) {
+        // Закрываем предыдущий wrapper
+        if (isInsideWrapper && lastWrapperType) {
+          if (lastWrapperType === '****') result += '**';
+          else if (lastWrapperType === '**') result += '*';
+          else if (lastWrapperType === '____') result += '__';
+          else if (lastWrapperType === '~~~~') result += '~~';
+          else if (lastWrapperType.startsWith('[|')) result += lastWrapperType.substring(1);
+        }
+        
+        // Открываем новый wrapper
+        if (wrapperType === '****') result += '**';
+        else if (wrapperType === '**') result += '*';
+        else if (wrapperType === '____') result += '__';
+        else if (wrapperType === '~~~~') result += '~~';
+        else if (wrapperType.startsWith('[|')) result += '[';
+        
+        lastWrapperType = wrapperType;
+        isInsideWrapper = true;
+      }
+    } else if (isInsideWrapper) {
+      // Закрываем wrapper перед обычным символом
+      if (lastWrapperType === '****') result += '**';
+      else if (lastWrapperType === '**') result += '*';
+      else if (lastWrapperType === '____') result += '__';
+      else if (lastWrapperType === '~~~~') result += '~~';
+      else if (lastWrapperType.startsWith('[|')) result += lastWrapperType.substring(1);
+      
+      isInsideWrapper = false;
+      lastWrapperType = '';
+    }
+    
+    result += item.char;
+  }
+  
+  // Закрываем последний wrapper если нужно
+  if (isInsideWrapper && lastWrapperType) {
+    if (lastWrapperType === '****') result += '**';
+    else if (lastWrapperType === '**') result += '*';
+    else if (lastWrapperType === '____') result += '__';
+    else if (lastWrapperType === '~~~~') result += '~~';
+    else if (lastWrapperType.startsWith('[|')) result += lastWrapperType.substring(1);
   }
   
   return result;
