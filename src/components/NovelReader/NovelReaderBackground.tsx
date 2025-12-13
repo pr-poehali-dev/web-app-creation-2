@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Novel, Episode, Paragraph } from '@/types/novel';
 import { UserSettings, UserProfile } from '@/types/settings';
 import { Button } from '@/components/ui/button';
@@ -53,6 +54,8 @@ function NovelReaderBackground({
   handleRemoveBookmark,
   previousParagraph
 }: NovelReaderBackgroundProps) {
+  const [isContentHidden, setIsContentHidden] = useState(false);
+  
   if (!backgroundImage) return null;
 
   const timeframes = currentParagraph.timeframes || currentEpisode.timeframes || ['present'];
@@ -94,7 +97,21 @@ function NovelReaderBackground({
       
       <div className={`absolute inset-0 ${isRetrospective ? 'bg-amber-950/30' : 'bg-black/20'}`} style={{ transition: 'background-color 1.2s ease-in-out' }} />
       
-      {currentParagraph.type !== 'background' && !isBackgroundChanging && (
+      {/* Кнопка скрытия контента */}
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={(e) => {
+          e.stopPropagation();
+          setIsContentHidden(!isContentHidden);
+        }}
+        className="absolute top-4 right-4 z-20 h-10 w-10 p-0 bg-card/80 backdrop-blur-sm hover:bg-card/90 border border-border/50 rounded-full"
+        title={isContentHidden ? 'Показать текст' : 'Скрыть текст'}
+      >
+        <Icon name={isContentHidden ? 'Eye' : 'EyeOff'} size={20} />
+      </Button>
+      
+      {!isContentHidden && currentParagraph.type !== 'background' && !isBackgroundChanging && (
         currentParagraph.mergedWith ? (
           <>
             {/* Первый параграф - занимает пространство от top-[50px] до второго параграфа */}
