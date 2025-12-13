@@ -58,7 +58,7 @@ function DialogueBox({
         />
         
         {characterImage && (
-          <div className={`absolute left-4 md:left-6 lg:left-8 bottom-4 md:bottom-6 lg:bottom-8 flex flex-col-reverse items-center gap-2 z-10 ${shouldAnimate ? 'animate-scale-in' : ''}`}>
+          <div className={`absolute left-4 md:left-6 lg:left-8 bottom-4 md:bottom-6 lg:bottom-8 flex flex-col items-center gap-3 z-10 ${shouldAnimate ? 'animate-scale-in' : ''}`}>
             <div className="flex items-center justify-center relative">
               {characterImage.startsWith('data:') || characterImage.startsWith('http') ? (
                 <div className="relative">
