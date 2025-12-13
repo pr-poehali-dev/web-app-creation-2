@@ -58,7 +58,7 @@ function DialogueBox({
         />
         
         {characterImage && (
-          <div className={`absolute left-4 md:left-6 lg:left-8 ${isTopMerged ? '-top-8 md:-top-10 lg:-top-14' : '-top-10 md:-top-12 lg:-top-16'} flex flex-col items-center gap-2 z-10 ${shouldAnimate ? 'animate-scale-in' : ''}`}>
+          <div className={`absolute left-4 md:left-6 lg:left-8 ${isTopMerged ? '-top-12 md:-top-16 lg:-top-20' : '-top-14 md:-top-18 lg:-top-24'} flex flex-col items-center gap-2 z-10 ${shouldAnimate ? 'animate-scale-in' : ''}`}>
             <div className="flex items-center justify-center relative">
               {characterImage.startsWith('data:') || characterImage.startsWith('http') ? (
                 <div className="relative">
@@ -66,8 +66,8 @@ function DialogueBox({
                     src={characterImage}
                     alt={characterName}
                     className={isTopMerged 
-                      ? "w-16 h-16 md:w-20 md:h-20 lg:w-28 lg:h-28 object-contain"
-                      : "w-20 h-20 md:w-24 md:h-24 lg:w-32 lg:h-32 object-contain"
+                      ? "w-24 h-24 md:w-32 md:h-32 lg:w-40 lg:h-40 object-contain"
+                      : "w-28 h-28 md:w-36 md:h-36 lg:w-48 lg:h-48 object-contain"
                     }
                     style={{
                       filter: isRetrospective ? 'sepia(0.6) contrast(0.9) brightness(0.85)' : 'none',
@@ -76,7 +76,7 @@ function DialogueBox({
                   />
                 </div>
               ) : (
-                <div className={isTopMerged ? "text-3xl md:text-4xl lg:text-6xl" : "text-4xl md:text-5xl lg:text-7xl"}>{characterImage}</div>
+                <div className={isTopMerged ? "text-5xl md:text-6xl lg:text-8xl" : "text-6xl md:text-7xl lg:text-9xl"}>{characterImage}</div>
               )}
             </div>
             
@@ -93,7 +93,7 @@ function DialogueBox({
         )}
         
         <CardContent className={isTopMerged ? "p-3 md:p-4 lg:p-6" : "p-4 md:p-6 lg:p-8"}>
-          <div className={characterImage ? (isTopMerged ? "pl-20 md:pl-24 lg:pl-32" : "pl-24 md:pl-28 lg:pl-36") : ""}>
+          <div className={characterImage ? (isTopMerged ? "pl-28 md:pl-36 lg:pl-44" : "pl-32 md:pl-40 lg:pl-52") : ""}>
             {!characterImage && (
               <h3 className={isTopMerged 
                 ? "text-sm md:text-base lg:text-lg font-bold text-primary mb-1.5 md:mb-2"
@@ -104,8 +104,8 @@ function DialogueBox({
             )}
             <p className={`novel-text leading-snug md:leading-relaxed text-foreground ${
               isTopMerged 
-                ? "text-sm md:text-base lg:text-lg min-h-[10rem] md:min-h-[12rem] flex items-start" 
-                : "text-sm md:text-base lg:text-lg min-h-[10rem] md:min-h-[12rem] flex items-start"
+                ? "text-sm md:text-base lg:text-lg" 
+                : "text-sm md:text-base lg:text-lg"
             }`} style={{ fontFamily }}>
               <TypewriterText 
                 text={text}
