@@ -47,7 +47,7 @@ function DialogueBox({
 
   return (
     <>
-      <Card className={`relative bg-card/95 backdrop-blur-sm border-0 shadow-xl ${shouldAnimate ? 'animate-scale-in' : ''} rounded-xl md:rounded-2xl w-full`}>
+      <Card className={`relative bg-card/95 backdrop-blur-sm border-0 shadow-xl ${shouldAnimate ? 'animate-scale-in' : ''} rounded-xl md:rounded-2xl w-full min-h-[10rem] md:min-h-[12rem]`}>
         <div 
           className="absolute inset-0 pointer-events-none rounded-xl md:rounded-2xl transition-all duration-1000 ease-in-out"
           style={{
@@ -58,7 +58,7 @@ function DialogueBox({
         />
         
         {characterImage && (
-          <div className={`absolute left-4 md:left-6 lg:left-8 ${isTopMerged ? '-top-12 md:-top-16 lg:-top-20' : '-top-14 md:-top-18 lg:-top-24'} flex flex-col items-center gap-2 z-10 ${shouldAnimate ? 'animate-scale-in' : ''}`}>
+          <div className={`absolute left-4 md:left-6 lg:left-8 ${isTopMerged ? '-top-12 md:-top-16 lg:-top-20' : '-top-14 md:-top-18 lg:-top-24'} flex flex-col items-center gap-3 z-10 ${shouldAnimate ? 'animate-scale-in' : ''}`}>
             <div className="flex items-center justify-center relative">
               {characterImage.startsWith('data:') || characterImage.startsWith('http') ? (
                 <div className="relative">
