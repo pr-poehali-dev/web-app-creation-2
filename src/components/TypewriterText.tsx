@@ -26,12 +26,14 @@ const getDisplayText = (text: string, targetLength: number): string => {
   let i = 0;
   
   while (i < text.length && cleanPos < targetLength) {
+    let matched = false;
+    
     // Интерактивная подсказка [слово|подсказка]
-    if (text[i] === '[' && text.indexOf('|', i) !== -1 && text.indexOf(']', i) !== -1) {
+    if (text[i] === '[') {
       const pipeIdx = text.indexOf('|', i);
       const closeIdx = text.indexOf(']', i);
       
-      if (pipeIdx < closeIdx) {
+      if (pipeIdx !== -1 && closeIdx !== -1 && pipeIdx < closeIdx) {
         const word = text.substring(i + 1, pipeIdx);
         const hint = text.substring(pipeIdx + 1, closeIdx);
         
@@ -39,17 +41,17 @@ const getDisplayText = (text: string, targetLength: number): string => {
           result += `[${word}|${hint}]`;
           cleanPos += word.length;
           i = closeIdx + 1;
+          matched = true;
         } else {
           const remaining = targetLength - cleanPos;
           result += word.substring(0, remaining);
-          cleanPos = targetLength;
+          break;
         }
-        continue;
       }
     }
     
     // Жирный текст **текст**
-    if (text[i] === '*' && text[i + 1] === '*') {
+    if (!matched && text[i] === '*' && text[i + 1] === '*') {
       const endIdx = text.indexOf('**', i + 2);
       if (endIdx !== -1) {
         const content = text.substring(i + 2, endIdx);
@@ -57,18 +59,17 @@ const getDisplayText = (text: string, targetLength: number): string => {
           result += `**${content}**`;
           cleanPos += content.length;
           i = endIdx + 2;
-          continue;
+          matched = true;
         } else {
           const remaining = targetLength - cleanPos;
           result += `**${content.substring(0, remaining)}**`;
-          cleanPos = targetLength;
-          continue;
+          break;
         }
       }
     }
     
     // Курсив *текст*
-    if (text[i] === '*' && text[i + 1] !== '*') {
+    if (!matched && text[i] === '*' && text[i + 1] !== '*') {
       const endIdx = text.indexOf('*', i + 1);
       if (endIdx !== -1) {
         const content = text.substring(i + 1, endIdx);
@@ -76,18 +77,17 @@ const getDisplayText = (text: string, targetLength: number): string => {
           result += `*${content}*`;
           cleanPos += content.length;
           i = endIdx + 1;
-          continue;
+          matched = true;
         } else {
           const remaining = targetLength - cleanPos;
           result += `*${content.substring(0, remaining)}*`;
-          cleanPos = targetLength;
-          continue;
+          break;
         }
       }
     }
     
     // Подчёркивание __текст__
-    if (text[i] === '_' && text[i + 1] === '_') {
+    if (!matched && text[i] === '_' && text[i + 1] === '_') {
       const endIdx = text.indexOf('__', i + 2);
       if (endIdx !== -1) {
         const content = text.substring(i + 2, endIdx);
@@ -95,18 +95,17 @@ const getDisplayText = (text: string, targetLength: number): string => {
           result += `__${content}__`;
           cleanPos += content.length;
           i = endIdx + 2;
-          continue;
+          matched = true;
         } else {
           const remaining = targetLength - cleanPos;
           result += `__${content.substring(0, remaining)}__`;
-          cleanPos = targetLength;
-          continue;
+          break;
         }
       }
     }
     
     // Зачёркивание ~~текст~~
-    if (text[i] === '~' && text[i + 1] === '~') {
+    if (!matched && text[i] === '~' && text[i + 1] === '~') {
       const endIdx = text.indexOf('~~', i + 2);
       if (endIdx !== -1) {
         const content = text.substring(i + 2, endIdx);
@@ -114,19 +113,21 @@ const getDisplayText = (text: string, targetLength: number): string => {
           result += `~~${content}~~`;
           cleanPos += content.length;
           i = endIdx + 2;
-          continue;
+          matched = true;
         } else {
           const remaining = targetLength - cleanPos;
           result += `~~${content.substring(0, remaining)}~~`;
-          cleanPos = targetLength;
-          continue;
+          break;
         }
       }
     }
     
-    result += text[i];
-    cleanPos++;
-    i++;
+    // Обычный символ
+    if (!matched) {
+      result += text[i];
+      cleanPos++;
+      i++;
+    }
   }
   
   return result;
