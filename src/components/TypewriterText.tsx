@@ -20,173 +20,96 @@ const getCleanText = (text: string): string => {
 };
 
 // Функция для отображения текста с форматированием до определенной позиции
-// Теперь работает строго посимвольно - каждый вызов добавляет ровно 1 символ
 const getDisplayText = (text: string, targetLength: number): string => {
   if (targetLength <= 0) return '';
   
+  // Простой подход: выводим cleanText без форматирования до targetLength,
+  // затем восстанавливаем форматирование только для уже показанных символов
   const cleanText = getCleanText(text);
   if (targetLength >= cleanText.length) return text;
   
-  // Создаем массив видимых символов с их позициями в оригинальном тексте
-  const visibleChars: { char: string; originalStart: number; originalEnd: number; wrapper?: string }[] = [];
+  // Считаем, какую часть оригинального текста нужно показать
+  let visibleCount = 0;
+  let cutPosition = 0;
   let i = 0;
   
-  while (i < text.length) {
-    // Интерактивная подсказка [слово|подсказка]
-    if (text[i] === '[') {
+  while (i < text.length && visibleCount < targetLength) {
+    // Пропускаем открывающие теги форматирования
+    if (text[i] === '[' && text.indexOf('|', i) > i && text.indexOf(']', i) > i) {
       const pipeIdx = text.indexOf('|', i);
       const closeIdx = text.indexOf(']', i);
-      
-      if (pipeIdx !== -1 && closeIdx !== -1 && pipeIdx < closeIdx) {
+      if (pipeIdx < closeIdx) {
         const word = text.substring(i + 1, pipeIdx);
-        const hint = text.substring(pipeIdx + 1, closeIdx);
-        
-        for (let j = 0; j < word.length; j++) {
-          visibleChars.push({ 
-            char: word[j], 
-            originalStart: i, 
-            originalEnd: closeIdx + 1,
-            wrapper: `[|${hint}]`
-          });
+        // Добавляем только буквы слова
+        for (let j = 0; j < word.length && visibleCount < targetLength; j++) {
+          visibleCount++;
         }
+        cutPosition = visibleCount < targetLength ? closeIdx + 1 : i + 1 + (targetLength - (visibleCount - word.length));
         i = closeIdx + 1;
         continue;
       }
     }
     
-    // Жирный текст **текст**
-    if (text[i] === '*' && text[i + 1] === '*') {
+    if (text.substring(i, i + 2) === '**') {
       const endIdx = text.indexOf('**', i + 2);
-      if (endIdx !== -1) {
+      if (endIdx > i + 2) {
         const content = text.substring(i + 2, endIdx);
-        for (let j = 0; j < content.length; j++) {
-          visibleChars.push({ 
-            char: content[j], 
-            originalStart: i, 
-            originalEnd: endIdx + 2,
-            wrapper: '****'
-          });
+        for (let j = 0; j < content.length && visibleCount < targetLength; j++) {
+          visibleCount++;
         }
+        cutPosition = visibleCount < targetLength ? endIdx + 2 : i + 2 + (targetLength - (visibleCount - content.length));
         i = endIdx + 2;
         continue;
       }
     }
     
-    // Курсив *текст*
-    if (text[i] === '*' && text[i + 1] !== '*') {
+    if (text[i] === '*') {
       const endIdx = text.indexOf('*', i + 1);
-      if (endIdx !== -1) {
+      if (endIdx > i + 1) {
         const content = text.substring(i + 1, endIdx);
-        for (let j = 0; j < content.length; j++) {
-          visibleChars.push({ 
-            char: content[j], 
-            originalStart: i, 
-            originalEnd: endIdx + 1,
-            wrapper: '**'
-          });
+        for (let j = 0; j < content.length && visibleCount < targetLength; j++) {
+          visibleCount++;
         }
+        cutPosition = visibleCount < targetLength ? endIdx + 1 : i + 1 + (targetLength - (visibleCount - content.length));
         i = endIdx + 1;
         continue;
       }
     }
     
-    // Подчёркивание __текст__
-    if (text[i] === '_' && text[i + 1] === '_') {
+    if (text.substring(i, i + 2) === '__') {
       const endIdx = text.indexOf('__', i + 2);
-      if (endIdx !== -1) {
+      if (endIdx > i + 2) {
         const content = text.substring(i + 2, endIdx);
-        for (let j = 0; j < content.length; j++) {
-          visibleChars.push({ 
-            char: content[j], 
-            originalStart: i, 
-            originalEnd: endIdx + 2,
-            wrapper: '____'
-          });
+        for (let j = 0; j < content.length && visibleCount < targetLength; j++) {
+          visibleCount++;
         }
+        cutPosition = visibleCount < targetLength ? endIdx + 2 : i + 2 + (targetLength - (visibleCount - content.length));
         i = endIdx + 2;
         continue;
       }
     }
     
-    // Зачёркивание ~~текст~~
-    if (text[i] === '~' && text[i + 1] === '~') {
+    if (text.substring(i, i + 2) === '~~') {
       const endIdx = text.indexOf('~~', i + 2);
-      if (endIdx !== -1) {
+      if (endIdx > i + 2) {
         const content = text.substring(i + 2, endIdx);
-        for (let j = 0; j < content.length; j++) {
-          visibleChars.push({ 
-            char: content[j], 
-            originalStart: i, 
-            originalEnd: endIdx + 2,
-            wrapper: '~~~~'
-          });
+        for (let j = 0; j < content.length && visibleCount < targetLength; j++) {
+          visibleCount++;
         }
+        cutPosition = visibleCount < targetLength ? endIdx + 2 : i + 2 + (targetLength - (visibleCount - content.length));
         i = endIdx + 2;
         continue;
       }
     }
     
     // Обычный символ
-    visibleChars.push({ char: text[i], originalStart: i, originalEnd: i + 1 });
+    visibleCount++;
+    cutPosition = i + 1;
     i++;
   }
   
-  // Теперь собираем результат из первых targetLength видимых символов
-  let result = '';
-  let lastWrapperType = '';
-  let isInsideWrapper = false;
-  
-  for (let idx = 0; idx < targetLength && idx < visibleChars.length; idx++) {
-    const item = visibleChars[idx];
-    
-    if (item.wrapper) {
-      const wrapperType = item.wrapper;
-      
-      if (wrapperType !== lastWrapperType) {
-        // Закрываем предыдущий wrapper
-        if (isInsideWrapper && lastWrapperType) {
-          if (lastWrapperType === '****') result += '**';
-          else if (lastWrapperType === '**') result += '*';
-          else if (lastWrapperType === '____') result += '__';
-          else if (lastWrapperType === '~~~~') result += '~~';
-          else if (lastWrapperType.startsWith('[|')) result += lastWrapperType.substring(1);
-        }
-        
-        // Открываем новый wrapper
-        if (wrapperType === '****') result += '**';
-        else if (wrapperType === '**') result += '*';
-        else if (wrapperType === '____') result += '__';
-        else if (wrapperType === '~~~~') result += '~~';
-        else if (wrapperType.startsWith('[|')) result += '[';
-        
-        lastWrapperType = wrapperType;
-        isInsideWrapper = true;
-      }
-    } else if (isInsideWrapper) {
-      // Закрываем wrapper перед обычным символом
-      if (lastWrapperType === '****') result += '**';
-      else if (lastWrapperType === '**') result += '*';
-      else if (lastWrapperType === '____') result += '__';
-      else if (lastWrapperType === '~~~~') result += '~~';
-      else if (lastWrapperType.startsWith('[|')) result += lastWrapperType.substring(1);
-      
-      isInsideWrapper = false;
-      lastWrapperType = '';
-    }
-    
-    result += item.char;
-  }
-  
-  // Закрываем последний wrapper если нужно
-  if (isInsideWrapper && lastWrapperType) {
-    if (lastWrapperType === '****') result += '**';
-    else if (lastWrapperType === '**') result += '*';
-    else if (lastWrapperType === '____') result += '__';
-    else if (lastWrapperType === '~~~~') result += '~~';
-    else if (lastWrapperType.startsWith('[|')) result += lastWrapperType.substring(1);
-  }
-  
-  return result;
+  // Возвращаем подстроку оригинального текста с частичным форматированием
+  return text.substring(0, cutPosition);
 };
 
 function TypewriterText({ text, speed = 50, skipTyping = false, onComplete, resetKey }: TypewriterTextProps) {
