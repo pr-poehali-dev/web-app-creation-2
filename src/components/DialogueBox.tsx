@@ -61,20 +61,18 @@ function DialogueBox({
           <div className={`absolute left-4 md:left-6 lg:left-8 bottom-4 md:bottom-6 lg:bottom-8 flex flex-col items-center gap-3 z-10 ${shouldAnimate ? 'animate-scale-in' : ''}`}>
             <div className="flex items-center justify-center relative">
               {characterImage.startsWith('data:') || characterImage.startsWith('http') ? (
-                <div className="relative">
-                  <ZoomableImage
-                    src={characterImage}
-                    alt={characterName}
-                    className={isTopMerged 
-                      ? "w-24 h-32 md:w-32 md:h-40 lg:w-40 lg:h-52 object-contain"
-                      : "w-28 h-36 md:w-36 md:h-48 lg:w-48 lg:h-64 object-contain"
-                    }
-                    style={{
-                      filter: isRetrospective ? 'sepia(0.6) contrast(0.9) brightness(0.85)' : 'none',
-                      transition: 'filter 1.2s ease-in-out'
-                    }}
-                  />
-                </div>
+                <ZoomableImage
+                  src={characterImage}
+                  alt={characterName}
+                  className={isTopMerged 
+                    ? "max-w-[6rem] max-h-[8rem] md:max-w-[8rem] md:max-h-[10rem] lg:max-w-[10rem] lg:max-h-[13rem] object-contain"
+                    : "max-w-[7rem] max-h-[9rem] md:max-w-[9rem] md:max-h-[12rem] lg:max-w-[12rem] lg:max-h-[16rem] object-contain"
+                  }
+                  style={{
+                    filter: isRetrospective ? 'sepia(0.6) contrast(0.9) brightness(0.85)' : 'none',
+                    transition: 'filter 1.2s ease-in-out'
+                  }}
+                />
               ) : (
                 <div className={isTopMerged ? "text-5xl md:text-6xl lg:text-8xl" : "text-6xl md:text-7xl lg:text-9xl"}>{characterImage}</div>
               )}
