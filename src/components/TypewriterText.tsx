@@ -180,51 +180,60 @@ function TypewriterText({ text, speed = 50, skipTyping = false, onComplete, rese
   const [hasCompleted, setHasCompleted] = useState(false);
   
   const cleanText = getCleanText(text);
-  const targetLength = cleanText.length;
+  const totalLength = cleanText.length;
 
   // Сброс при изменении resetKey
   useEffect(() => {
-    console.log('[TypewriterText] ResetKey changed:', resetKey, 'Text:', text.substring(0, 50));
+    console.log('[TypewriterText] ResetKey changed:', resetKey);
     if (skipTyping) {
-      // Если skipTyping активен, сразу показываем весь текст
       setDisplayedText(text);
-      setCurrentIndex(targetLength);
+      setCurrentIndex(totalLength);
       setHasCompleted(true);
     } else {
-      // Иначе начинаем печать с начала
       setDisplayedText('');
       setCurrentIndex(0);
       setHasCompleted(false);
     }
-  }, [resetKey, text, targetLength, skipTyping]);
+  }, [resetKey, text, totalLength, skipTyping]);
 
-  // Обработка skipTyping в реальном времени
+  // Эффект печати
   useEffect(() => {
-    if (skipTyping && displayedText !== text) {
+    // Пропускаем, если уже завершено
+    if (hasCompleted) return;
+    
+    // Если skipTyping, показываем весь текст
+    if (skipTyping) {
       console.log('[TypewriterText] Skip typing activated');
       setDisplayedText(text);
-      setCurrentIndex(targetLength);
+      setCurrentIndex(totalLength);
       setHasCompleted(true);
       return;
     }
 
-    if (!skipTyping && currentIndex < targetLength) {
+    // Если еще не напечатали всё
+    if (currentIndex < totalLength) {
       const timeout = setTimeout(() => {
-        setDisplayedText(getDisplayText(text, currentIndex + 1));
-        setCurrentIndex(currentIndex + 1);
+        const nextIndex = currentIndex + 1;
+        const newText = getDisplayText(text, nextIndex);
+        console.log(`[TypewriterText] Typing ${nextIndex}/${totalLength}, displayed length: ${newText.length}, visible: ${getCleanText(newText).length}`);
+        setDisplayedText(newText);
+        setCurrentIndex(nextIndex);
+        
+        // Проверяем завершение
+        if (nextIndex >= totalLength) {
+          setHasCompleted(true);
+        }
       }, speed);
 
       return () => clearTimeout(timeout);
-    } else if (currentIndex === targetLength && currentIndex > 0 && !hasCompleted) {
-      console.log('[TypewriterText] Typing completed naturally');
-      setHasCompleted(true);
     }
-  }, [currentIndex, text, targetLength, speed, skipTyping, hasCompleted, displayedText]);
+  }, [currentIndex, text, totalLength, speed, skipTyping, hasCompleted]);
 
+  // Вызов onComplete
   useEffect(() => {
-    if (hasCompleted) {
+    if (hasCompleted && onComplete) {
       console.log('[TypewriterText] Calling onComplete');
-      onComplete?.();
+      onComplete();
     }
   }, [hasCompleted, onComplete]);
 
