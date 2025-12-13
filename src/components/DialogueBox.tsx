@@ -19,6 +19,7 @@ interface DialogueBoxProps {
   isTopMerged?: boolean;
   isRetrospective?: boolean;
   shouldAnimate?: boolean;
+  resetKey?: string;
 }
 
 function DialogueBox({ 
@@ -33,7 +34,8 @@ function DialogueBox({
   fontFamily,
   isTopMerged = false,
   isRetrospective = false,
-  shouldAnimate = true
+  shouldAnimate = true,
+  resetKey
 }: DialogueBoxProps) {
   const [showCommentDialog, setShowCommentDialog] = useState(false);
   const [comment, setComment] = useState(existingComment || '');
@@ -105,6 +107,7 @@ function DialogueBox({
                 speed={textSpeed}
                 skipTyping={skipTyping}
                 onComplete={onComplete}
+                resetKey={resetKey}
               />
             </p>
           </CardContent>

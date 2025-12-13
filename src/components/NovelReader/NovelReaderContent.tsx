@@ -108,6 +108,7 @@ function NovelReaderContent({
             isTopMerged={isTopMerged}
             isRetrospective={isRetrospective}
             shouldAnimate={!isSameCharacter}
+            resetKey={paragraphKey}
             existingComment={profile.metCharacters?.find(
               c => c.name === currentParagraph.characterName
             )?.comment}

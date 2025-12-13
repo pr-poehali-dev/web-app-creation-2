@@ -128,11 +128,12 @@ function NovelReaderBackground({
                     settings={settings}
                     profile={profile}
                     skipTyping={skipTyping}
-                    handleTypingComplete={() => {}}
+                    handleTypingComplete={handleTypingComplete}
                     handleChoice={handleChoice}
                     onProfileUpdate={onProfileUpdate}
                     paragraphKey={`${paragraphKey}-merged`}
                     isTopMerged={false}
+                    previousParagraph={currentParagraph}
                   />
                 </div>
               </div>
