@@ -47,9 +47,18 @@ function DialogueBox({
 
   return (
     <>
-      <div className="relative flex flex-row items-start gap-3 md:gap-4">
+      <Card className={`relative bg-card/95 backdrop-blur-sm border-0 shadow-xl ${shouldAnimate ? 'animate-scale-in' : ''} rounded-xl md:rounded-2xl w-full`}>
+        <div 
+          className="absolute inset-0 pointer-events-none rounded-xl md:rounded-2xl transition-all duration-1000 ease-in-out"
+          style={{
+            opacity: isRetrospective ? 1 : 0,
+            boxShadow: 'inset 0 0 60px 20px rgba(0, 0, 0, 0.4)',
+            background: 'radial-gradient(ellipse at center, transparent 30%, rgba(0, 0, 0, 0.3) 100%)'
+          }}
+        />
+        
         {characterImage && (
-          <div className={`flex flex-col items-center gap-2 flex-shrink-0 ${shouldAnimate ? 'animate-scale-in' : ''}`}>
+          <div className={`absolute left-4 md:left-6 lg:left-8 ${isTopMerged ? '-top-8 md:-top-10 lg:-top-14' : '-top-10 md:-top-12 lg:-top-16'} flex flex-col items-center gap-2 z-10 ${shouldAnimate ? 'animate-scale-in' : ''}`}>
             <div className="flex items-center justify-center relative">
               {characterImage.startsWith('data:') || characterImage.startsWith('http') ? (
                 <div className="relative">
@@ -83,16 +92,8 @@ function DialogueBox({
           </div>
         )}
         
-        <Card className={`flex-1 bg-card/95 backdrop-blur-sm border-0 shadow-xl ${shouldAnimate ? 'animate-scale-in' : ''} rounded-xl md:rounded-2xl relative`}>
-          <div 
-            className="absolute inset-0 pointer-events-none rounded-xl md:rounded-2xl transition-all duration-1000 ease-in-out"
-            style={{
-              opacity: isRetrospective ? 1 : 0,
-              boxShadow: 'inset 0 0 60px 20px rgba(0, 0, 0, 0.4)',
-              background: 'radial-gradient(ellipse at center, transparent 30%, rgba(0, 0, 0, 0.3) 100%)'
-            }}
-          />
-          <CardContent className={isTopMerged ? "p-3 md:p-4 lg:p-5" : "p-3 md:p-4 lg:p-6"}>
+        <CardContent className={isTopMerged ? "p-3 md:p-4 lg:p-6" : "p-4 md:p-6 lg:p-8"}>
+          <div className={characterImage ? (isTopMerged ? "pl-20 md:pl-24 lg:pl-32" : "pl-24 md:pl-28 lg:pl-36") : ""}>
             {!characterImage && (
               <h3 className={isTopMerged 
                 ? "text-sm md:text-base lg:text-lg font-bold text-primary mb-1.5 md:mb-2"
@@ -101,7 +102,11 @@ function DialogueBox({
                 {characterName}
               </h3>
             )}
-            <p className={`novel-text leading-snug md:leading-relaxed text-foreground ${isTopMerged ? "text-sm md:text-base lg:text-lg" : "text-sm md:text-base lg:text-lg"}`} style={{ fontFamily }}>
+            <p className={`novel-text leading-snug md:leading-relaxed text-foreground ${
+              isTopMerged 
+                ? "text-sm md:text-base lg:text-lg min-h-[10rem] md:min-h-[12rem] flex items-start" 
+                : "text-sm md:text-base lg:text-lg min-h-[10rem] md:min-h-[12rem] flex items-start"
+            }`} style={{ fontFamily }}>
               <TypewriterText 
                 text={text}
                 speed={textSpeed}
@@ -110,9 +115,9 @@ function DialogueBox({
                 resetKey={resetKey}
               />
             </p>
-          </CardContent>
-        </Card>
-      </div>
+          </div>
+        </CardContent>
+      </Card>
 
       <Dialog open={showCommentDialog} onOpenChange={setShowCommentDialog}>
         <DialogContent onClick={(e) => e.stopPropagation()}>
