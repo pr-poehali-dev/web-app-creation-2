@@ -197,8 +197,25 @@ function TypewriterText({ text, speed = 50, skipTyping = false, onComplete, rese
   const cleanText = getCleanText(text);
   const targetLength = cleanText.length;
 
+  // Сброс при изменении resetKey
   useEffect(() => {
+    console.log('[TypewriterText] ResetKey changed:', resetKey, 'Text:', text.substring(0, 50));
     if (skipTyping) {
+      // Если skipTyping активен, сразу показываем весь текст
+      setDisplayedText(text);
+      setCurrentIndex(targetLength);
+      setHasCompleted(true);
+    } else {
+      // Иначе начинаем печать с начала
+      setDisplayedText('');
+      setCurrentIndex(0);
+      setHasCompleted(false);
+    }
+  }, [resetKey, text, targetLength, skipTyping]);
+
+  // Обработка skipTyping в реальном времени
+  useEffect(() => {
+    if (skipTyping && displayedText !== text) {
       console.log('[TypewriterText] Skip typing activated');
       setDisplayedText(text);
       setCurrentIndex(targetLength);
@@ -206,7 +223,7 @@ function TypewriterText({ text, speed = 50, skipTyping = false, onComplete, rese
       return;
     }
 
-    if (currentIndex < targetLength) {
+    if (!skipTyping && currentIndex < targetLength) {
       const timeout = setTimeout(() => {
         setDisplayedText(getDisplayText(text, currentIndex + 1));
         setCurrentIndex(currentIndex + 1);
@@ -217,14 +234,7 @@ function TypewriterText({ text, speed = 50, skipTyping = false, onComplete, rese
       console.log('[TypewriterText] Typing completed naturally');
       setHasCompleted(true);
     }
-  }, [currentIndex, text, targetLength, speed, skipTyping, hasCompleted]);
-
-  useEffect(() => {
-    console.log('[TypewriterText] ResetKey changed:', resetKey, 'Text:', text.substring(0, 50));
-    setDisplayedText('');
-    setCurrentIndex(0);
-    setHasCompleted(false);
-  }, [resetKey]);
+  }, [currentIndex, text, targetLength, speed, skipTyping, hasCompleted, displayedText]);
 
   useEffect(() => {
     if (hasCompleted) {
