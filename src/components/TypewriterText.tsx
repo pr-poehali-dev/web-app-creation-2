@@ -23,93 +23,155 @@ const getCleanText = (text: string): string => {
 const getDisplayText = (text: string, targetLength: number): string => {
   if (targetLength <= 0) return '';
   
-  // Простой подход: выводим cleanText без форматирования до targetLength,
-  // затем восстанавливаем форматирование только для уже показанных символов
   const cleanText = getCleanText(text);
   if (targetLength >= cleanText.length) return text;
   
-  // Считаем, какую часть оригинального текста нужно показать
+  let result = '';
   let visibleCount = 0;
-  let cutPosition = 0;
   let i = 0;
   
+  // Стек открытых форматов для правильного закрытия
+  const openFormats: string[] = [];
+  
   while (i < text.length && visibleCount < targetLength) {
-    // Пропускаем открывающие теги форматирования
-    if (text[i] === '[' && text.indexOf('|', i) > i && text.indexOf(']', i) > i) {
+    let consumed = false;
+    
+    // [слово|подсказка]
+    if (text[i] === '[') {
       const pipeIdx = text.indexOf('|', i);
       const closeIdx = text.indexOf(']', i);
-      if (pipeIdx < closeIdx) {
+      if (pipeIdx > i && closeIdx > pipeIdx) {
         const word = text.substring(i + 1, pipeIdx);
-        // Добавляем только буквы слова
+        const hint = text.substring(pipeIdx + 1, closeIdx);
+        
+        // Добавляем посимвольно
+        let addedChars = 0;
         for (let j = 0; j < word.length && visibleCount < targetLength; j++) {
+          if (addedChars === 0) result += '[';
+          result += word[j];
           visibleCount++;
+          addedChars++;
         }
-        cutPosition = visibleCount < targetLength ? closeIdx + 1 : i + 1 + (targetLength - (visibleCount - word.length));
+        
+        if (addedChars > 0 && addedChars === word.length) {
+          result += `|${hint}]`;
+        }
+        
         i = closeIdx + 1;
-        continue;
+        consumed = true;
       }
     }
     
-    if (text.substring(i, i + 2) === '**') {
+    // **жирный**
+    if (!consumed && text.substring(i, i + 2) === '**') {
       const endIdx = text.indexOf('**', i + 2);
       if (endIdx > i + 2) {
         const content = text.substring(i + 2, endIdx);
+        result += '**';
+        openFormats.push('**');
+        
         for (let j = 0; j < content.length && visibleCount < targetLength; j++) {
+          result += content[j];
           visibleCount++;
         }
-        cutPosition = visibleCount < targetLength ? endIdx + 2 : i + 2 + (targetLength - (visibleCount - content.length));
-        i = endIdx + 2;
-        continue;
+        
+        if (visibleCount < targetLength || visibleCount === targetLength) {
+          result += '**';
+          openFormats.pop();
+          i = endIdx + 2;
+        } else {
+          i = endIdx + 2;
+        }
+        consumed = true;
       }
     }
     
-    if (text[i] === '*') {
+    // *курсив*
+    if (!consumed && text[i] === '*') {
       const endIdx = text.indexOf('*', i + 1);
       if (endIdx > i + 1) {
         const content = text.substring(i + 1, endIdx);
+        result += '*';
+        openFormats.push('*');
+        
         for (let j = 0; j < content.length && visibleCount < targetLength; j++) {
+          result += content[j];
           visibleCount++;
         }
-        cutPosition = visibleCount < targetLength ? endIdx + 1 : i + 1 + (targetLength - (visibleCount - content.length));
-        i = endIdx + 1;
-        continue;
+        
+        if (visibleCount < targetLength || visibleCount === targetLength) {
+          result += '*';
+          openFormats.pop();
+          i = endIdx + 1;
+        } else {
+          i = endIdx + 1;
+        }
+        consumed = true;
       }
     }
     
-    if (text.substring(i, i + 2) === '__') {
+    // __подчёркнутый__
+    if (!consumed && text.substring(i, i + 2) === '__') {
       const endIdx = text.indexOf('__', i + 2);
       if (endIdx > i + 2) {
         const content = text.substring(i + 2, endIdx);
+        result += '__';
+        openFormats.push('__');
+        
         for (let j = 0; j < content.length && visibleCount < targetLength; j++) {
+          result += content[j];
           visibleCount++;
         }
-        cutPosition = visibleCount < targetLength ? endIdx + 2 : i + 2 + (targetLength - (visibleCount - content.length));
-        i = endIdx + 2;
-        continue;
+        
+        if (visibleCount < targetLength || visibleCount === targetLength) {
+          result += '__';
+          openFormats.pop();
+          i = endIdx + 2;
+        } else {
+          i = endIdx + 2;
+        }
+        consumed = true;
       }
     }
     
-    if (text.substring(i, i + 2) === '~~') {
+    // ~~зачёркнутый~~
+    if (!consumed && text.substring(i, i + 2) === '~~') {
       const endIdx = text.indexOf('~~', i + 2);
       if (endIdx > i + 2) {
         const content = text.substring(i + 2, endIdx);
+        result += '~~';
+        openFormats.push('~~');
+        
         for (let j = 0; j < content.length && visibleCount < targetLength; j++) {
+          result += content[j];
           visibleCount++;
         }
-        cutPosition = visibleCount < targetLength ? endIdx + 2 : i + 2 + (targetLength - (visibleCount - content.length));
-        i = endIdx + 2;
-        continue;
+        
+        if (visibleCount < targetLength || visibleCount === targetLength) {
+          result += '~~';
+          openFormats.pop();
+          i = endIdx + 2;
+        } else {
+          i = endIdx + 2;
+        }
+        consumed = true;
       }
     }
     
     // Обычный символ
-    visibleCount++;
-    cutPosition = i + 1;
-    i++;
+    if (!consumed) {
+      result += text[i];
+      visibleCount++;
+      i++;
+    }
   }
   
-  // Возвращаем подстроку оригинального текста с частичным форматированием
-  return text.substring(0, cutPosition);
+  // Закрываем все незакрытые форматы
+  while (openFormats.length > 0) {
+    result += openFormats.pop();
+  }
+  
+  return result;
 };
 
 function TypewriterText({ text, speed = 50, skipTyping = false, onComplete, resetKey }: TypewriterTextProps) {
