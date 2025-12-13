@@ -58,26 +58,28 @@ function DialogueBox({
         />
         
         {characterImage && (
-          <div className={`absolute left-4 md:left-6 lg:left-8 ${isTopMerged ? '-top-8 md:-top-12 lg:-top-16' : '-top-10 md:-top-14 lg:-top-20'} flex flex-col items-center gap-3 z-10 ${shouldAnimate ? 'animate-scale-in' : ''}`}>
-            <div className="flex items-center justify-center relative">
-              {characterImage.startsWith('data:') || characterImage.startsWith('http') ? (
-                <div className="relative">
-                  <ZoomableImage
-                    src={characterImage}
-                    alt={characterName}
-                    className={isTopMerged 
-                      ? "w-24 h-32 md:w-32 md:h-40 lg:w-40 lg:h-52 object-contain"
-                      : "w-28 h-36 md:w-36 md:h-48 lg:w-48 lg:h-64 object-contain"
-                    }
-                    style={{
-                      filter: isRetrospective ? 'sepia(0.6) contrast(0.9) brightness(0.85)' : 'none',
-                      transition: 'filter 1.2s ease-in-out'
-                    }}
-                  />
-                </div>
-              ) : (
-                <div className={isTopMerged ? "text-5xl md:text-6xl lg:text-8xl" : "text-6xl md:text-7xl lg:text-9xl"}>{characterImage}</div>
-              )}
+          <>
+            <div className={`absolute left-4 md:left-6 lg:left-8 ${isTopMerged ? '-top-8 md:-top-12 lg:-top-16' : '-top-10 md:-top-14 lg:-top-20'} z-10 ${shouldAnimate ? 'animate-scale-in' : ''}`}>
+              <div className="flex items-center justify-center relative">
+                {characterImage.startsWith('data:') || characterImage.startsWith('http') ? (
+                  <div className="relative">
+                    <ZoomableImage
+                      src={characterImage}
+                      alt={characterName}
+                      className={isTopMerged 
+                        ? "w-24 h-32 md:w-32 md:h-40 lg:w-40 lg:h-52 object-contain"
+                        : "w-28 h-36 md:w-36 md:h-48 lg:w-48 lg:h-64 object-contain"
+                      }
+                      style={{
+                        filter: isRetrospective ? 'sepia(0.6) contrast(0.9) brightness(0.85)' : 'none',
+                        transition: 'filter 1.2s ease-in-out'
+                      }}
+                    />
+                  </div>
+                ) : (
+                  <div className={isTopMerged ? "text-5xl md:text-6xl lg:text-8xl" : "text-6xl md:text-7xl lg:text-9xl"}>{characterImage}</div>
+                )}
+              </div>
             </div>
             
             <button
@@ -85,11 +87,11 @@ function DialogueBox({
                 e.stopPropagation();
                 setShowCommentDialog(true);
               }}
-              className="text-[10px] md:text-xs font-bold text-primary-foreground bg-primary/90 backdrop-blur-sm px-2 md:px-3 py-1 md:py-1.5 rounded-full border-0 hover:bg-primary transition-all shadow-lg cursor-pointer whitespace-nowrap"
+              className={`absolute left-4 md:left-6 lg:left-8 ${isTopMerged ? 'top-[88px] md:top-[120px] lg:top-[160px]' : 'top-[100px] md:top-[140px] lg:top-[192px]'} z-10 text-[10px] md:text-xs font-bold text-primary-foreground bg-primary/90 backdrop-blur-sm px-2 md:px-3 py-1 md:py-1.5 rounded-full border-0 hover:bg-primary transition-all shadow-lg cursor-pointer whitespace-nowrap ${shouldAnimate ? 'animate-scale-in' : ''}`}
             >
               {characterName}
             </button>
-          </div>
+          </>
         )}
         
         <CardContent className="p-4 md:p-6 lg:p-8 flex items-start">
