@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Novel, Episode, Paragraph } from '@/types/novel';
 import { UserSettings, UserProfile } from '@/types/settings';
 import { Button } from '@/components/ui/button';
@@ -55,6 +55,13 @@ function NovelReaderBackground({
   previousParagraph
 }: NovelReaderBackgroundProps) {
   const [isContentHidden, setIsContentHidden] = useState(false);
+  const [wasHidden, setWasHidden] = useState(false);
+  
+  // Сбрасываем wasHidden при смене параграфа
+  useEffect(() => {
+    setWasHidden(false);
+    setIsContentHidden(false);
+  }, [paragraphKey]);
   
   if (!backgroundImage) return null;
 
@@ -103,6 +110,9 @@ function NovelReaderBackground({
         size="sm"
         onClick={(e) => {
           e.stopPropagation();
+          if (!isContentHidden) {
+            setWasHidden(true);
+          }
           setIsContentHidden(!isContentHidden);
         }}
         className="absolute top-4 right-4 z-20 h-10 w-10 p-0 bg-card/80 backdrop-blur-sm hover:bg-card/90 border border-border/50 rounded-full"
@@ -123,7 +133,7 @@ function NovelReaderBackground({
                   novel={novel}
                   settings={settings}
                   profile={profile}
-                  skipTyping={skipTyping}
+                  skipTyping={skipTyping || wasHidden}
                   handleTypingComplete={handleTypingComplete}
                   handleChoice={handleChoice}
                   onProfileUpdate={onProfileUpdate}
@@ -144,7 +154,7 @@ function NovelReaderBackground({
                     novel={novel}
                     settings={settings}
                     profile={profile}
-                    skipTyping={skipTyping}
+                    skipTyping={skipTyping || wasHidden}
                     handleTypingComplete={handleTypingComplete}
                     handleChoice={handleChoice}
                     onProfileUpdate={onProfileUpdate}
@@ -197,7 +207,7 @@ function NovelReaderBackground({
                 novel={novel}
                 settings={settings}
                 profile={profile}
-                skipTyping={skipTyping}
+                skipTyping={skipTyping || wasHidden}
                 handleTypingComplete={handleTypingComplete}
                 handleChoice={handleChoice}
                 onProfileUpdate={onProfileUpdate}
