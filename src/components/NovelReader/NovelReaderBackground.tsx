@@ -183,7 +183,7 @@ function NovelReaderBackground({
                     disabled={currentParagraphIndex === 0}
                     className="h-8 px-3 bg-card/80 backdrop-blur-sm hover:bg-card/90 border border-border/50"
                   >
-                    <Icon name="ChevronLeft" size={16} />
+                    <Icon name="ChevronLeft" size={16} className="text-white" />
                   </Button>
                   <Button
                     variant="ghost"
@@ -196,7 +196,7 @@ function NovelReaderBackground({
                     disabled={currentParagraphIndex === currentEpisode.paragraphs.length - 1}
                     className="h-8 px-3 bg-card/80 backdrop-blur-sm hover:bg-card/90 border border-border/50"
                   >
-                    <Icon name="ChevronRight" size={16} />
+                    <Icon name="ChevronRight" size={16} className="text-white" />
                   </Button>
                 </div>
               )}
