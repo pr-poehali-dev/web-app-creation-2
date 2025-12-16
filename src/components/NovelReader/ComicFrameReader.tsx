@@ -60,7 +60,7 @@ export default function ComicFrameReader({ paragraph, currentText, layout }: Com
               src={frame.url} 
               alt={frame.alt || ''} 
               onLoad={(e) => handleImageLoad(frame.id, e)}
-              className="w-full h-full object-cover rounded-lg"
+              className="w-full h-full object-contain rounded-lg"
             />
           </div>
         ))}
