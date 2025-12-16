@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, memo } from 'react';
 import { Paragraph, Novel } from '@/types/novel';
 import { Card, CardContent } from '@/components/ui/card';
 import { createParagraphEditorHandlers } from './ParagraphEditorLogic';
