@@ -53,7 +53,7 @@ export default function ComicFrameReader({ paragraph, currentText, layout }: Com
         {activeFrames.map((frame) => (
           <div 
             key={frame.id} 
-            className="w-full h-full cursor-pointer hover:opacity-90 transition-opacity flex items-center justify-center"
+            className="w-full h-full cursor-pointer hover:opacity-90 transition-opacity"
             onClick={() => setSelectedImage(frame.url)}
           >
             <img 
