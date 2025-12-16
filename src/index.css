@@ -134,7 +134,7 @@
   }
 
   .animate-fade-in {
-    animation: fade-in 0.6s ease-out forwards;
+    animation: fade-in 1.2s ease-in-out forwards;
   }
 
   @keyframes slide-up {
@@ -149,7 +149,7 @@
   }
 
   .animate-slide-up {
-    animation: slide-up 0.6s ease-out forwards;
+    animation: slide-up 1.2s ease-in-out forwards;
   }
 
   @keyframes slide-down {
@@ -164,7 +164,7 @@
   }
 
   .animate-slide-down {
-    animation: slide-down 0.6s ease-out forwards;
+    animation: slide-down 1.2s ease-in-out forwards;
   }
 
   @keyframes slide-left {
@@ -179,7 +179,7 @@
   }
 
   .animate-slide-left {
-    animation: slide-left 0.6s ease-out forwards;
+    animation: slide-left 1.2s ease-in-out forwards;
   }
 
   @keyframes slide-right {
@@ -194,7 +194,7 @@
   }
 
   .animate-slide-right {
-    animation: slide-right 0.6s ease-out forwards;
+    animation: slide-right 1.2s ease-in-out forwards;
   }
 
   @keyframes zoom-in {
@@ -209,7 +209,7 @@
   }
 
   .animate-zoom-in {
-    animation: zoom-in 0.6s ease-out forwards;
+    animation: zoom-in 1.2s ease-in-out forwards;
   }
 
   @keyframes flip {
@@ -224,7 +224,7 @@
   }
 
   .animate-flip {
-    animation: flip 0.6s ease-out forwards;
+    animation: flip 1.2s ease-in-out forwards;
   }
 
   .scrollbar-hide {

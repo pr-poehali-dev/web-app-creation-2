@@ -130,7 +130,7 @@ export default function MergedParagraphsLayout({ layout, children, aspectRatios 
         return (
           <div 
             key={index} 
-            className={`${!isFlexLayout ? getItemClasses(index) : ''} bg-card/80 backdrop-blur-sm rounded-lg border border-border/50 overflow-hidden flex items-center justify-center`}
+            className={`${!isFlexLayout ? getItemClasses(index) : ''} overflow-hidden flex items-center justify-center`}
             style={isFlexLayout ? {
               aspectRatio: aspectRatio.toString(),
               flex: '1 1 0',
