@@ -115,14 +115,14 @@ export default function MergedParagraphsLayout({ layout, children, aspectRatios 
   };
 
   return (
-    <div className={`w-full h-full ${getLayoutClasses()} max-h-full items-center`}>
+    <div className={`w-full h-full ${getLayoutClasses()}`} style={{ alignItems: 'stretch', justifyItems: 'stretch' }}>
       {children.map((child, index) => {
         const aspectRatio = aspectRatios?.[index];
         return (
           <div 
             key={index} 
-            className={`${getItemClasses(index)} bg-card/80 backdrop-blur-sm rounded-lg border border-border/50 overflow-hidden flex items-center justify-center min-h-0 min-w-0`}
-            style={aspectRatio ? { aspectRatio: aspectRatio.toString(), maxHeight: '100%', maxWidth: '100%' } : undefined}
+            className={`${getItemClasses(index)} bg-card/80 backdrop-blur-sm rounded-lg border border-border/50 overflow-hidden flex items-center justify-center`}
+            style={aspectRatio ? { aspectRatio: aspectRatio.toString() } : { aspectRatio: '1' }}
           >
             {child}
           </div>
