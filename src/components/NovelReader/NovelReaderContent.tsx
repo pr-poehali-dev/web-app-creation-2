@@ -59,16 +59,16 @@ function NovelReaderContent({
         }`}>
           <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 800 400" preserveAspectRatio="none">
             <defs>
-              <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#d4c5b0" stopOpacity="0.95" />
-                <stop offset="50%" stopColor="#5c8fa3" stopOpacity="0.9" />
-                <stop offset="100%" stopColor="#2d2d2d" stopOpacity="0.95" />
+              <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#d4c5b0" stopOpacity="0.9" />
+                <stop offset="50%" stopColor="#5c8fa3" stopOpacity="0.85" />
+                <stop offset="100%" stopColor="#d4c5b0" stopOpacity="0.9" />
               </linearGradient>
               <filter id="textShadow">
-                <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
-                <feOffset dx="2" dy="2" result="offsetblur"/>
+                <feGaussianBlur in="SourceAlpha" stdDeviation="8"/>
+                <feOffset dx="0" dy="4" result="offsetblur"/>
                 <feComponentTransfer>
-                  <feFuncA type="linear" slope="0.3"/>
+                  <feFuncA type="linear" slope="0.2"/>
                 </feComponentTransfer>
                 <feMerge>
                   <feMergeNode/>
@@ -76,12 +76,13 @@ function NovelReaderContent({
                 </feMerge>
               </filter>
             </defs>
-            <path d="M 0,50 Q 150,20 300,60 T 600,80 L 800,90 L 800,280 Q 650,320 500,300 T 200,340 L 0,360 Z" 
-              fill="url(#textGrad)" filter="url(#textShadow)" opacity="0.95" />
-            <ellipse cx="120" cy="120" rx="35" ry="35" fill="#5c8fa3" opacity="0.4" />
-            <ellipse cx="680" cy="300" rx="45" ry="45" fill="#d4c5b0" opacity="0.3" />
-            <line x1="100" y1="50" x2="100" y2="120" stroke="#2d2d2d" strokeWidth="2" opacity="0.6" />
-            <line x1="700" y1="90" x2="750" y2="90" stroke="#2d2d2d" strokeWidth="1.5" opacity="0.5" />
+            <path d="M 0,100 C 80,60 150,80 250,90 C 350,100 450,85 550,95 C 650,105 720,90 800,110 L 800,290 C 720,310 650,295 550,305 C 450,315 350,300 250,310 C 150,320 80,340 0,300 Z" 
+              fill="url(#textGrad)" filter="url(#textShadow)" opacity="0.92" />
+            <ellipse cx="120" cy="150" rx="45" ry="45" fill="#5c8fa3" opacity="0.25" />
+            <ellipse cx="700" cy="120" rx="35" ry="55" fill="#2d2d2d" opacity="0.15" />
+            <ellipse cx="680" cy="280" rx="50" ry="35" fill="#d4c5b0" opacity="0.3" />
+            <path d="M 90,120 Q 95,140 100,160 Q 105,180 110,200" stroke="#2d2d2d" strokeWidth="1.5" fill="none" opacity="0.3" strokeLinecap="round" />
+            <path d="M 720,100 C 730,100 740,105 750,110" stroke="#2d2d2d" strokeWidth="1" fill="none" opacity="0.25" strokeLinecap="round" />
           </svg>
           
           <div 

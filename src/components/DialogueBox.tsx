@@ -51,15 +51,15 @@ function DialogueBox({
         <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 900 400" preserveAspectRatio="none">
           <defs>
             <linearGradient id="dialogGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#5c8fa3" stopOpacity="0.92" />
-              <stop offset="60%" stopColor="#d4c5b0" stopOpacity="0.88" />
-              <stop offset="100%" stopColor="#2d2d2d" stopOpacity="0.92" />
+              <stop offset="0%" stopColor="#5c8fa3" stopOpacity="0.88" />
+              <stop offset="50%" stopColor="#d4c5b0" stopOpacity="0.85" />
+              <stop offset="100%" stopColor="#5c8fa3" stopOpacity="0.88" />
             </linearGradient>
             <filter id="dialogShadow">
-              <feGaussianBlur in="SourceAlpha" stdDeviation="4"/>
-              <feOffset dx="3" dy="3" result="offsetblur"/>
+              <feGaussianBlur in="SourceAlpha" stdDeviation="10"/>
+              <feOffset dx="0" dy="5" result="offsetblur"/>
               <feComponentTransfer>
-                <feFuncA type="linear" slope="0.4"/>
+                <feFuncA type="linear" slope="0.2"/>
               </feComponentTransfer>
               <feMerge>
                 <feMergeNode/>
@@ -67,13 +67,14 @@ function DialogueBox({
               </feMerge>
             </filter>
           </defs>
-          <path d="M 0,80 Q 200,40 400,70 T 700,60 Q 850,55 900,80 L 900,320 Q 750,350 600,330 T 300,340 Q 150,350 0,320 Z" 
-            fill="url(#dialogGrad)" filter="url(#dialogShadow)" opacity="0.96" />
-          <circle cx="800" cy="100" r="40" fill="#2d2d2d" opacity="0.3" />
-          <circle cx="150" cy="320" r="50" fill="#5c8fa3" opacity="0.25" />
-          <rect x="80" y="70" width="2" height="60" fill="#2d2d2d" opacity="0.6" />
-          <rect x="820" y="280" width="50" height="2" fill="#d4c5b0" opacity="0.5" />
-          <path d="M 450,50 Q 460,40 470,50 T 490,50" stroke="#2d2d2d" strokeWidth="2" fill="none" opacity="0.4" />
+          <path d="M 0,120 C 100,70 200,90 350,100 C 500,110 650,95 750,105 C 820,112 870,100 900,115 L 900,280 C 870,300 820,288 750,295 C 650,305 500,290 350,300 C 200,310 100,330 0,280 Z" 
+            fill="url(#dialogGrad)" filter="url(#dialogShadow)" opacity="0.9" />
+          <ellipse cx="820" cy="130" rx="50" ry="50" fill="#2d2d2d" opacity="0.18" />
+          <ellipse cx="100" cy="100" rx="40" ry="60" fill="#d4c5b0" opacity="0.3" />
+          <ellipse cx="150" cy="300" rx="55" ry="40" fill="#5c8fa3" opacity="0.22" />
+          <path d="M 70,110 C 75,130 80,150 85,170 C 90,190 95,210 100,230" stroke="#2d2d2d" strokeWidth="1.5" fill="none" opacity="0.25" strokeLinecap="round" />
+          <path d="M 840,280 C 850,275 860,275 870,280" stroke="#2d2d2d" strokeWidth="1.2" fill="none" opacity="0.2" strokeLinecap="round" />
+          <circle cx="450" cy="80" r="15" fill="#2d2d2d" opacity="0.15" />
         </svg>
         
         <div 
