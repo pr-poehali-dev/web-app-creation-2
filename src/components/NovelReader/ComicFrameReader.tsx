@@ -44,7 +44,7 @@ export default function ComicFrameReader({ paragraph, currentText, layout }: Com
   };
 
   const getAnimationClass = (animation: FrameAnimationType | undefined, defaultAnimation: FrameAnimationType | undefined): string => {
-    const animType = animation || defaultAnimation || 'fade';
+    const animType = animation || defaultAnimation || 'none';
     
     switch (animType) {
       case 'fade':
@@ -64,7 +64,7 @@ export default function ComicFrameReader({ paragraph, currentText, layout }: Com
       case 'none':
         return '';
       default:
-        return 'animate-fade-in';
+        return '';
     }
   };
 

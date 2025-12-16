@@ -135,11 +135,12 @@ export default function ComicFrameEditor({ frames, layout, defaultAnimation, onF
           {onAnimationChange && (
             <div className="flex-1">
               <Label className="text-xs text-muted-foreground mb-1 block">Анимация по умолчанию</Label>
-              <Select value={defaultAnimation || 'fade'} onValueChange={(v) => onAnimationChange(v as FrameAnimationType)}>
+              <Select value={defaultAnimation || 'none'} onValueChange={(v) => onAnimationChange(v as FrameAnimationType)}>
                 <SelectTrigger className="w-full h-8 text-xs">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="none">Без анимации</SelectItem>
                   <SelectItem value="fade">Плавное появление</SelectItem>
                   <SelectItem value="slide-up">Снизу вверх</SelectItem>
                   <SelectItem value="slide-down">Сверху вниз</SelectItem>
@@ -147,7 +148,6 @@ export default function ComicFrameEditor({ frames, layout, defaultAnimation, onF
                   <SelectItem value="slide-right">Слева направо</SelectItem>
                   <SelectItem value="zoom">Увеличение</SelectItem>
                   <SelectItem value="flip">Переворот</SelectItem>
-                  <SelectItem value="none">Без анимации</SelectItem>
                 </SelectContent>
               </Select>
             </div>
