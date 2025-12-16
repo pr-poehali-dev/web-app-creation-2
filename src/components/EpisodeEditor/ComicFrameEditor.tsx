@@ -242,10 +242,13 @@ export default function ComicFrameEditor({ frames, layout, defaultAnimation, sub
                 {subParagraphs && subParagraphs.length > 0 ? (
                   <Select 
                     value={frame.subParagraphTrigger || 'none'} 
-                    onValueChange={(v) => updateFrame(index, { subParagraphTrigger: v === 'none' ? undefined : v })}
+                    onValueChange={(v) => {
+                      console.log('Trigger change:', v);
+                      updateFrame(index, { subParagraphTrigger: v === 'none' ? undefined : v });
+                    }}
                   >
                     <SelectTrigger className="h-8 text-xs">
-                      <SelectValue />
+                      <SelectValue placeholder="Выберите триггер" />
                     </SelectTrigger>
                     <SelectContent className="max-h-[300px]">
                       <SelectItem value="none">⚫ Показывать всегда</SelectItem>
