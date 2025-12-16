@@ -4,9 +4,10 @@ import { ReactNode } from 'react';
 interface MergedParagraphsLayoutProps {
   layout: MergeLayoutType;
   children: ReactNode[];
+  aspectRatios?: number[];
 }
 
-export default function MergedParagraphsLayout({ layout, children }: MergedParagraphsLayoutProps) {
+export default function MergedParagraphsLayout({ layout, children, aspectRatios }: MergedParagraphsLayoutProps) {
   const getLayoutClasses = () => {
     switch (layout) {
       case 'single':
@@ -115,11 +116,18 @@ export default function MergedParagraphsLayout({ layout, children }: MergedParag
 
   return (
     <div className={`w-full h-full ${getLayoutClasses()} max-h-full`}>
-      {children.map((child, index) => (
-        <div key={index} className={`${getItemClasses(index)} bg-card/80 backdrop-blur-sm rounded-lg border border-border/50 overflow-hidden flex items-center justify-center`}>
-          {child}
-        </div>
-      ))}
+      {children.map((child, index) => {
+        const aspectRatio = aspectRatios?.[index];
+        return (
+          <div 
+            key={index} 
+            className={`${getItemClasses(index)} bg-card/80 backdrop-blur-sm rounded-lg border border-border/50 overflow-hidden flex items-center justify-center`}
+            style={aspectRatio ? { aspectRatio: aspectRatio.toString() } : undefined}
+          >
+            {child}
+          </div>
+        );
+      })}
     </div>
   );
 }
