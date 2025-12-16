@@ -118,9 +118,6 @@ export default function MergedParagraphsLayout({ layout, children, aspectRatios 
     <div className={`w-full h-full ${getLayoutClasses()}`}>
       {children.map((child, index) => {
         const aspectRatio = aspectRatios?.[index] || 1;
-        const isWide = aspectRatio > 1; // горизонтальная
-        const isTall = aspectRatio < 1; // вертикальная
-        
         return (
           <div 
             key={index} 
@@ -128,10 +125,9 @@ export default function MergedParagraphsLayout({ layout, children, aspectRatios 
             style={{ 
               aspectRatio: aspectRatio.toString(),
               placeSelf: 'center',
-              width: isWide || (!isTall && !isWide) ? '100%' : 'auto',
-              height: isTall ? '100%' : 'auto',
-              maxWidth: '100%',
-              maxHeight: '100%'
+              width: '100%',
+              maxHeight: '100%',
+              height: 'auto'
             }}
           >
             {child}
