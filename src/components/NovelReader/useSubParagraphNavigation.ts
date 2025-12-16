@@ -30,7 +30,8 @@ export function useSubParagraphNavigation({
 
   // Индекс 0 = основной текст, индексы 1..N = подпараграфы 0..(N-1)
   // Последний индекс = subParagraphsCount (показываем подпараграф N-1)
-  const isLastSubParagraph = currentSubParagraphIndex >= subParagraphsCount;
+  // isLastSubParagraph должен быть true когда мы показываем последний подпараграф
+  const isLastSubParagraph = currentSubParagraphIndex === subParagraphsCount;
   const isFirstSubParagraph = currentSubParagraphIndex === 0;
 
   const goToNextSubParagraph = () => {
