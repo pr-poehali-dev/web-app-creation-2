@@ -39,16 +39,20 @@ export function useNovelInteraction({
       setSkipTyping(true);
     } else if (canNavigate) {
       if (currentParagraph?.type !== 'choice') {
-        // Если есть подпараграфы, сначала переключаем их
-        if (hasSubParagraphs && !isLastSubParagraph && goToNextSubParagraph) {
+        // Если есть подпараграфы, пытаемся перейти к следующему
+        if (hasSubParagraphs && goToNextSubParagraph) {
           const moved = goToNextSubParagraph();
           if (moved) {
             console.log('[Click] Go to next sub-paragraph');
             return;
           }
+          // Если moved = false, значит мы на последнем подпараграфе
+          // В этом случае НЕ переходим к следующему параграфу автоматически
+          console.log('[Click] Blocked - already on last sub-paragraph');
+          return;
         }
         
-        // Если подпараграфов нет или это последний, идем к следующему параграфу
+        // Если подпараграфов нет, идем к следующему параграфу
         console.log('[Click] Go to next paragraph');
         goToNextParagraph();
       } else {
