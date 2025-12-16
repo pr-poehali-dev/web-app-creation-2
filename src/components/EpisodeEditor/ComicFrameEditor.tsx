@@ -252,37 +252,23 @@ export default function ComicFrameEditor({ frames, layout, defaultAnimation, sub
               <div className="space-y-1">
                 <Label className="text-xs text-muted-foreground">Триггер (подпараграф для показа)</Label>
                 {subParagraphs && subParagraphs.length > 0 ? (
-                  <div>
-                    <div className="text-xs text-muted-foreground mb-1">
-                      Текущий: {frame.subParagraphTrigger || 'none'} | Доступно: {subParagraphs.length} подпараграфов
-                    </div>
-                    <Select 
-                      key={`trigger-${frame.id}-${frame.subParagraphTrigger || 'none'}`}
-                      value={frame.subParagraphTrigger || 'none'} 
-                      onValueChange={(v) => {
-                        console.log('Trigger change:', v, 'for frame:', frame.id, 'current:', frame.subParagraphTrigger);
-                        if (!v) {
-                          console.error('Value is undefined!');
-                          return;
-                        }
-                        const newTrigger = v === 'none' ? undefined : v;
-                        updateFrame(index, { subParagraphTrigger: newTrigger });
-                        console.log('Updated frame:', { ...frame, subParagraphTrigger: newTrigger });
-                      }}
-                    >
-                      <SelectTrigger className="h-8 text-xs">
-                        <SelectValue placeholder="Выберите триггер" />
-                      </SelectTrigger>
-                      <SelectContent className="max-h-[300px]" position="popper" sideOffset={4}>
-                        <SelectItem value="none">⚫ Показывать всегда</SelectItem>
-                        {subParagraphs.map((sp, idx) => (
-                          <SelectItem key={sp.id} value={sp.id}>
-                            {idx + 1}. {sp.text ? (sp.text.substring(0, 40) + (sp.text.length > 40 ? '...' : '')) : '(пустой)'}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                  <select
+                    value={frame.subParagraphTrigger || 'none'}
+                    onChange={(e) => {
+                      const v = e.target.value;
+                      console.log('Native select change:', v);
+                      const newTrigger = v === 'none' ? undefined : v;
+                      updateFrame(index, { subParagraphTrigger: newTrigger });
+                    }}
+                    className="h-8 w-full rounded-md border border-input bg-background px-3 py-1 text-xs ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  >
+                    <option value="none">⚫ Показывать всегда</option>
+                    {subParagraphs.map((sp, idx) => (
+                      <option key={sp.id} value={sp.id}>
+                        {idx + 1}. {sp.text ? (sp.text.substring(0, 40) + (sp.text.length > 40 ? '...' : '')) : '(пустой)'}
+                      </option>
+                    ))}
+                  </select>
                 ) : (
                   <div className="text-xs text-muted-foreground p-2 bg-muted/20 rounded border border-border/50">
                     Нет подпараграфов. Фрейм будет показан сразу.
