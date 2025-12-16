@@ -12,6 +12,7 @@ interface ComicFrameReaderProps {
 export default function ComicFrameReader({ paragraph, currentText, layout }: ComicFrameReaderProps) {
   const [activeFrames, setActiveFrames] = useState<ComicFrame[]>([]);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [imageAspectRatios, setImageAspectRatios] = useState<Map<string, number>>(new Map());
 
   useEffect(() => {
     if (!paragraph.comicFrames || paragraph.comicFrames.length === 0) {
@@ -36,24 +37,35 @@ export default function ComicFrameReader({ paragraph, currentText, layout }: Com
     }
   }, [currentText, paragraph.comicFrames]);
 
+  const handleImageLoad = (frameId: string, event: React.SyntheticEvent<HTMLImageElement>) => {
+    const img = event.currentTarget;
+    const aspectRatio = img.naturalWidth / img.naturalHeight;
+    setImageAspectRatios(prev => new Map(prev).set(frameId, aspectRatio));
+  };
+
   if (activeFrames.length === 0) return null;
 
   return (
     <>
       <MergedParagraphsLayout layout={layout}>
-        {activeFrames.map((frame) => (
-          <div 
-            key={frame.id} 
-            className="w-full h-full cursor-pointer hover:opacity-90 transition-opacity flex items-center justify-center"
-            onClick={() => setSelectedImage(frame.url)}
-          >
-            <img 
-              src={frame.url} 
-              alt={frame.alt || ''} 
-              className="max-w-full max-h-full object-contain rounded-lg"
-            />
-          </div>
-        ))}
+        {activeFrames.map((frame) => {
+          const aspectRatio = imageAspectRatios.get(frame.id);
+          return (
+            <div 
+              key={frame.id} 
+              className="w-full h-full cursor-pointer hover:opacity-90 transition-opacity flex items-center justify-center"
+              onClick={() => setSelectedImage(frame.url)}
+            >
+              <img 
+                src={frame.url} 
+                alt={frame.alt || ''} 
+                onLoad={(e) => handleImageLoad(frame.id, e)}
+                className="max-w-full max-h-full object-contain rounded-lg"
+                style={aspectRatio ? { aspectRatio: aspectRatio.toString() } : undefined}
+              />
+            </div>
+          );
+        })}
       </MergedParagraphsLayout>
 
       <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
