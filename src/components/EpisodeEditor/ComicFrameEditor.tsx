@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ComicFrame, MergeLayoutType, FrameAnimationType, SubParagraph } from '@/types/novel';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,6 +20,19 @@ interface ComicFrameEditorProps {
 
 export default function ComicFrameEditor({ frames, layout, defaultAnimation, subParagraphs, onFramesChange, onLayoutChange, onAnimationChange, onBothChange }: ComicFrameEditorProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+
+  // Очищаем старые поля textTrigger из фреймов при первом рендере
+  useEffect(() => {
+    const hasOldFields = frames.some((f: any) => 'textTrigger' in f);
+    if (hasOldFields) {
+      console.log('Cleaning old textTrigger fields from frames');
+      const cleanedFrames = frames.map((f: any) => {
+        const { textTrigger, ...rest } = f;
+        return rest as ComicFrame;
+      });
+      onFramesChange(cleanedFrames);
+    }
+  }, []); // Выполняется только один раз при монтировании
 
   const getRequiredFramesCount = (layoutType: MergeLayoutType): number => {
     switch (layoutType) {
@@ -248,6 +261,10 @@ export default function ComicFrameEditor({ frames, layout, defaultAnimation, sub
                       value={frame.subParagraphTrigger || 'none'} 
                       onValueChange={(v) => {
                         console.log('Trigger change:', v, 'for frame:', frame.id, 'current:', frame.subParagraphTrigger);
+                        if (!v) {
+                          console.error('Value is undefined!');
+                          return;
+                        }
                         const newTrigger = v === 'none' ? undefined : v;
                         updateFrame(index, { subParagraphTrigger: newTrigger });
                         console.log('Updated frame:', { ...frame, subParagraphTrigger: newTrigger });
@@ -256,7 +273,7 @@ export default function ComicFrameEditor({ frames, layout, defaultAnimation, sub
                       <SelectTrigger className="h-8 text-xs">
                         <SelectValue placeholder="Выберите триггер" />
                       </SelectTrigger>
-                      <SelectContent className="max-h-[300px]">
+                      <SelectContent className="max-h-[300px]" position="popper" sideOffset={4}>
                         <SelectItem value="none">⚫ Показывать всегда</SelectItem>
                         {subParagraphs.map((sp, idx) => (
                           <SelectItem key={sp.id} value={sp.id}>
