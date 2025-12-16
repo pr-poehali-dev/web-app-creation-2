@@ -76,24 +76,29 @@ export default function ComicFrameReader({ paragraph, currentText, layout }: Com
   return (
     <>
       <MergedParagraphsLayout layout={layout} aspectRatios={frameAspectRatios}>
-        {activeFrames.map((frame, index) => (
-          <div 
-            key={frame.id} 
-            className={`w-full h-full cursor-pointer hover:opacity-90 transition-opacity ${getAnimationClass(frame.animation, defaultAnimation)}`}
-            style={{ 
-              animationDelay: `${index * 0.2}s`,
-              opacity: 0
-            }}
-            onClick={() => setSelectedImage(frame.url)}
-          >
-            <img 
-              src={frame.url} 
-              alt={frame.alt || ''} 
-              onLoad={(e) => handleImageLoad(frame.id, e)}
-              className="w-full h-full object-cover rounded-lg"
-            />
-          </div>
-        ))}
+        {activeFrames.map((frame, index) => {
+          const animClass = getAnimationClass(frame.animation, defaultAnimation);
+          const hasAnimation = animClass !== '';
+          
+          return (
+            <div 
+              key={frame.id} 
+              className={`w-full h-full cursor-pointer hover:opacity-90 transition-opacity ${animClass}`}
+              style={{ 
+                animationDelay: hasAnimation ? `${index * 0.2}s` : undefined,
+                opacity: hasAnimation ? 0 : 1
+              }}
+              onClick={() => setSelectedImage(frame.url)}
+            >
+              <img 
+                src={frame.url} 
+                alt={frame.alt || ''} 
+                onLoad={(e) => handleImageLoad(frame.id, e)}
+                className="w-full h-full object-cover rounded-lg"
+              />
+            </div>
+          );
+        })}
       </MergedParagraphsLayout>
 
       <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
