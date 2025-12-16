@@ -125,9 +125,8 @@ export default function MergedParagraphsLayout({ layout, children, aspectRatios 
             style={{ 
               aspectRatio: aspectRatio.toString(),
               placeSelf: 'center',
-              width: '100%',
-              maxHeight: '100%',
-              height: 'auto'
+              maxWidth: '100%',
+              maxHeight: '100%'
             }}
           >
             {child}
