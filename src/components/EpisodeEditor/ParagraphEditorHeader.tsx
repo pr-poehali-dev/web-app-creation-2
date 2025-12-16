@@ -138,40 +138,7 @@ function ParagraphEditorHeader({
               ))}
             </div>
           )}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8"
-            onClick={() => onToggleMerge(index)}
-            title={paragraph.mergedWith ? "Отменить объединение" : "Объединить со следующим"}
-          >
-            <Icon name="Link" size={14} className={paragraph.mergedWith ? "text-primary" : ""} />
-          </Button>
-          {paragraph.mergedWith && (
-            <Select
-              value={paragraph.mergeLayout || 'horizontal-3'}
-              onValueChange={(value) => onUpdate(index, { ...paragraph, mergeLayout: value as MergeLayoutType })}
-            >
-              <SelectTrigger className="w-32 h-8 text-xs">
-                <SelectValue placeholder="Layout" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="horizontal-3">3 в ряд</SelectItem>
-                <SelectItem value="horizontal-2-1">2+1</SelectItem>
-                <SelectItem value="horizontal-1-2">1+2</SelectItem>
-                <SelectItem value="grid-2x2">Сетка 2×2</SelectItem>
-                <SelectItem value="mosaic-left">Мозаика ←</SelectItem>
-                <SelectItem value="mosaic-right">Мозаика →</SelectItem>
-                <SelectItem value="vertical-left-3">← + 3</SelectItem>
-                <SelectItem value="vertical-right-3">3 + →</SelectItem>
-                <SelectItem value="center-large">Центр большой</SelectItem>
-                <SelectItem value="grid-3x3">Сетка 3×3</SelectItem>
-                <SelectItem value="asymmetric-1">Асимметрия 1</SelectItem>
-                <SelectItem value="asymmetric-2">Асимметрия 2</SelectItem>
-                <SelectItem value="l-shape">L-форма</SelectItem>
-              </SelectContent>
-            </Select>
-          )}
+
           <Button
             variant="ghost"
             size="icon"

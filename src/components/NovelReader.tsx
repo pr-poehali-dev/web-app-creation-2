@@ -5,7 +5,7 @@ import MusicPlayer from './MusicPlayer';
 import { useNovelNavigation } from './NovelReader/useNovelNavigation';
 import { useNovelInteraction } from './NovelReader/useNovelInteraction';
 import NovelReaderEffects from './NovelReader/NovelReaderEffects';
-import NovelReaderBackground from './NovelReader/NovelReaderBackground';
+import NovelReaderBackgroundNew from './NovelReader/NovelReaderBackgroundNew';
 import NovelReaderGreeting from './NovelReader/NovelReaderGreeting';
 
 interface NovelReaderProps {
@@ -157,7 +157,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
       )}
 
       {!showGreeting && (
-        <NovelReaderBackground
+        <NovelReaderBackgroundNew
           backgroundImage={backgroundImage}
           previousBackgroundImage={previousBackgroundImage}
           newImageReady={newImageReady}

@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
-import { Novel, Episode, Paragraph } from '@/types/novel';
+import { Novel, Episode, Paragraph, TextParagraph, DialogueParagraph } from '@/types/novel';
 import { UserSettings, UserProfile } from '@/types/settings';
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
 import NovelReaderContent from './NovelReaderContent';
-import MergedParagraphsLayout from './MergedParagraphsLayout';
+import ComicFrameReader from './ComicFrameReader';
 
-interface NovelReaderBackgroundProps {
+interface NovelReaderBackgroundNewProps {
   backgroundImage: string | null;
   previousBackgroundImage: string | null;
   newImageReady: boolean;
@@ -31,7 +31,7 @@ interface NovelReaderBackgroundProps {
   previousParagraph?: Paragraph;
 }
 
-function NovelReaderBackground({
+function NovelReaderBackgroundNew({
   backgroundImage,
   previousBackgroundImage,
   newImageReady,
@@ -50,19 +50,22 @@ function NovelReaderBackground({
   paragraphKey,
   goToPreviousParagraph,
   goToNextParagraph,
-  existingBookmark,
-  handleAddBookmark,
-  handleRemoveBookmark,
   previousParagraph
-}: NovelReaderBackgroundProps) {
+}: NovelReaderBackgroundNewProps) {
   const [isContentHidden, setIsContentHidden] = useState(false);
   const [wasHidden, setWasHidden] = useState(false);
+  const [currentSubText, setCurrentSubText] = useState<string>('');
   
-  // Сбрасываем wasHidden при смене параграфа
   useEffect(() => {
     setWasHidden(false);
     setIsContentHidden(false);
-  }, [paragraphKey]);
+    
+    // Инициализация текущего подтекста
+    if (currentParagraph.type === 'text' || currentParagraph.type === 'dialogue') {
+      const text = currentParagraph.type === 'text' ? currentParagraph.content : currentParagraph.text;
+      setCurrentSubText(text);
+    }
+  }, [paragraphKey, currentParagraph]);
   
   if (!backgroundImage) return null;
 
@@ -75,6 +78,10 @@ function NovelReaderBackground({
     const brightnessAmount = isRetrospective ? 0.85 : 1;
     return `${baseFilter} sepia(${sepiaAmount}) contrast(${contrastAmount}) brightness(${brightnessAmount})`;
   };
+
+  const hasComicFrames = (currentParagraph.type === 'text' || currentParagraph.type === 'dialogue') && 
+                         currentParagraph.comicFrames && 
+                         currentParagraph.comicFrames.length > 0;
 
   return (
     <div className="absolute top-20 left-4 right-4 bottom-4 md:top-20 md:left-8 md:right-32 rounded-2xl overflow-hidden">
@@ -102,10 +109,8 @@ function NovelReaderBackground({
         }}
       />
 
-      
       <div className={`absolute inset-0 ${isRetrospective ? 'bg-amber-950/30' : 'bg-black/20'}`} style={{ transition: 'background-color 1.2s ease-in-out' }} />
       
-      {/* Кнопка скрытия контента */}
       <Button
         variant="ghost"
         size="sm"
@@ -123,43 +128,17 @@ function NovelReaderBackground({
       </Button>
       
       {!isContentHidden && currentParagraph.type !== 'background' && !isBackgroundChanging && (
-        currentParagraph.mergedWith ? (
-          <div className="absolute top-[50px] left-4 right-4 bottom-20 md:left-8 md:right-32 md:bottom-8 z-10 px-4 md:px-6">
-            <MergedParagraphsLayout layout={currentParagraph.mergeLayout || 'horizontal-3'}>
-              <NovelReaderContent
-                currentParagraph={currentParagraph}
-                currentEpisode={currentEpisode}
-                novel={novel}
-                settings={settings}
-                profile={profile}
-                skipTyping={skipTyping || wasHidden}
-                handleTypingComplete={handleTypingComplete}
-                handleChoice={handleChoice}
-                onProfileUpdate={onProfileUpdate}
-                paragraphKey={paragraphKey}
-                isTopMerged={true}
-                previousParagraph={previousParagraph}
+        <>
+          {hasComicFrames && (
+            <div className="absolute top-[60px] left-4 right-4 bottom-[calc(12rem+4rem)] md:top-[80px] md:left-8 md:right-32 md:bottom-[calc(12rem+4rem)] z-10">
+              <ComicFrameReader
+                paragraph={currentParagraph as TextParagraph | DialogueParagraph}
+                currentText={currentSubText}
+                layout={currentParagraph.frameLayout || 'horizontal-3'}
               />
-              {currentEpisode.paragraphs[currentParagraphIndex + 1] && (
-                <NovelReaderContent
-                  currentParagraph={currentEpisode.paragraphs[currentParagraphIndex + 1]}
-                  currentEpisode={currentEpisode}
-                  novel={novel}
-                  settings={settings}
-                  profile={profile}
-                  skipTyping={skipTyping || wasHidden}
-                  handleTypingComplete={handleTypingComplete}
-                  handleChoice={handleChoice}
-                  onProfileUpdate={onProfileUpdate}
-                  paragraphKey={`${paragraphKey}-merged`}
-                  isTopMerged={false}
-                  previousParagraph={currentParagraph}
-                />
-              )}
-            </MergedParagraphsLayout>
-          </div>
-        ) : (
-          /* Стандартный одиночный параграф */
+            </div>
+          )}
+          
           <div className="absolute bottom-20 md:bottom-8 left-0 right-0 z-10 flex justify-center px-4 md:px-6 md:pr-8">
             <div className="w-full max-w-4xl">
               {!isTyping && currentParagraph.type !== 'choice' && (
@@ -169,7 +148,6 @@ function NovelReaderBackground({
                     size="sm"
                     onClick={(e) => {
                       e.stopPropagation();
-                      console.log('[NavButton] Previous clicked');
                       goToPreviousParagraph();
                     }}
                     disabled={currentParagraphIndex === 0}
@@ -182,7 +160,6 @@ function NovelReaderBackground({
                     size="sm"
                     onClick={(e) => {
                       e.stopPropagation();
-                      console.log('[NavButton] Next clicked, currentIndex:', currentParagraphIndex, 'total:', currentEpisode.paragraphs.length);
                       goToNextParagraph();
                     }}
                     disabled={currentParagraphIndex === currentEpisode.paragraphs.length - 1}
@@ -193,26 +170,47 @@ function NovelReaderBackground({
                 </div>
               )}
               
-              <NovelReaderContent
-                currentParagraph={currentParagraph}
-                currentEpisode={currentEpisode}
-                novel={novel}
-                settings={settings}
-                profile={profile}
-                skipTyping={skipTyping || wasHidden}
-                handleTypingComplete={handleTypingComplete}
-                handleChoice={handleChoice}
-                onProfileUpdate={onProfileUpdate}
-                paragraphKey={paragraphKey}
-                isTopMerged={false}
-                previousParagraph={previousParagraph}
-              />
+              {(currentParagraph.type === 'text' || currentParagraph.type === 'dialogue') && 
+               currentParagraph.subParagraphs && 
+               currentParagraph.subParagraphs.length > 0 ? (
+                <div className="bg-card/90 backdrop-blur-sm rounded-xl md:rounded-2xl shadow-xl border border-border p-4 md:p-6 lg:p-8">
+                  <div className="leading-relaxed w-full text-base md:text-lg lg:text-xl text-foreground space-y-4">
+                    {currentParagraph.subParagraphs.map((subText, index) => (
+                      <div 
+                        key={index}
+                        onClick={() => setCurrentSubText(subText)}
+                        className={`cursor-pointer p-3 rounded transition-all ${
+                          currentSubText === subText 
+                            ? 'bg-primary/20 border-l-4 border-primary' 
+                            : 'hover:bg-primary/5'
+                        }`}
+                      >
+                        {subText}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <NovelReaderContent
+                  currentParagraph={currentParagraph}
+                  currentEpisode={currentEpisode}
+                  novel={novel}
+                  settings={settings}
+                  profile={profile}
+                  skipTyping={skipTyping || wasHidden}
+                  handleTypingComplete={handleTypingComplete}
+                  handleChoice={handleChoice}
+                  onProfileUpdate={onProfileUpdate}
+                  paragraphKey={paragraphKey}
+                  previousParagraph={previousParagraph}
+                />
+              )}
             </div>
           </div>
-        )
+        </>
       )}
     </div>
   );
 }
 
-export default NovelReaderBackground;
+export default NovelReaderBackgroundNew;

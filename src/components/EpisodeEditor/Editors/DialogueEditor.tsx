@@ -7,6 +7,8 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import Icon from '@/components/ui/icon';
+import SubParagraphsEditor from '../SubParagraphsEditor';
+import ComicFrameEditor from '../ComicFrameEditor';
 
 interface DialogueEditorProps {
   paragraph: DialogueParagraph;
@@ -177,7 +179,7 @@ function DialogueEditor({
           </Button>
         </div>
       )}
-      <div className="space-y-2">
+      <div className="space-y-3">
         <Textarea
           placeholder="Текст диалога"
           value={paragraph.text}
@@ -190,6 +192,24 @@ function DialogueEditor({
         <p className="text-xs text-muted-foreground">
           💡 Подсказка: используйте <code className="bg-secondary px-1 rounded">[слово|подсказка]</code> для интерактивных подсказок
         </p>
+
+        <SubParagraphsEditor
+          subParagraphs={paragraph.subParagraphs || []}
+          onSubParagraphsChange={(subParagraphs) =>
+            onUpdate(index, { ...paragraph, subParagraphs: subParagraphs.length > 0 ? subParagraphs : undefined })
+          }
+        />
+
+        <ComicFrameEditor
+          frames={paragraph.comicFrames || []}
+          layout={paragraph.frameLayout || 'horizontal-3'}
+          onFramesChange={(frames) =>
+            onUpdate(index, { ...paragraph, comicFrames: frames.length > 0 ? frames : undefined })
+          }
+          onLayoutChange={(layout) =>
+            onUpdate(index, { ...paragraph, frameLayout: layout })
+          }
+        />
       </div>
     </div>
   );

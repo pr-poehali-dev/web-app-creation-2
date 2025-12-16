@@ -15,12 +15,21 @@ export type MergeLayoutType =
   | 'asymmetric-2' // асимметричная раскладка 2
   | 'l-shape'; // L-образная раскладка
 
+export interface ComicFrame {
+  id: string;
+  type: 'image' | 'background';
+  url: string;
+  mobileUrl?: string;
+  alt?: string;
+  textTrigger?: string; // Текст, при котором показывается этот фрейм
+}
+
 export interface BaseParagraph {
   id: string;
   type: ParagraphType;
   order?: number;
-  mergedWith?: string; // ID следующего параграфа для объединения
-  mergeLayout?: MergeLayoutType; // Тип раскладки при объединении
+  comicFrames?: ComicFrame[]; // Фреймы комикса для текстового параграфа
+  frameLayout?: MergeLayoutType; // Раскладка фреймов
   timeframes?: ('present' | 'retrospective')[];
   requiredPaths?: string[];
 }
@@ -28,6 +37,7 @@ export interface BaseParagraph {
 export interface TextParagraph extends BaseParagraph {
   type: 'text';
   content: string;
+  subParagraphs?: string[]; // Подпараграфы внутри текста
 }
 
 export interface ImageParagraph extends BaseParagraph {
@@ -65,6 +75,7 @@ export interface DialogueParagraph extends BaseParagraph {
   characterName: string;
   characterImage?: string;
   text: string;
+  subParagraphs?: string[]; // Подпараграфы внутри диалога
 }
 
 export interface BackgroundParagraph extends BaseParagraph {
