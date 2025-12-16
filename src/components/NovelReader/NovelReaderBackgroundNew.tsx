@@ -169,19 +169,6 @@ function NovelReaderBackgroundNew({
                     <Icon name="ChevronLeft" size={16} className="text-white" />
                   </Button>
                   
-                  {(currentParagraph.type === 'text' || currentParagraph.type === 'dialogue') && 
-                   currentParagraph.subParagraphs && 
-                   currentParagraph.subParagraphs.length > 0 && (
-                    <div className="flex items-center gap-1 px-3 py-1 bg-card/80 backdrop-blur-sm rounded-md border border-border/50">
-                      <span className="text-xs font-mono text-white/70">
-                        #{currentParagraphIndex + 1}.{currentSubParagraphIndex}
-                      </span>
-                      <span className="text-[10px] text-white/50">
-                        / {currentParagraph.subParagraphs.length}
-                      </span>
-                    </div>
-                  )}
-                  
                   <Button
                     variant="ghost"
                     size="sm"

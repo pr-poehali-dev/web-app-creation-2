@@ -80,7 +80,6 @@ function ParagraphsDialog({
                       <div className="flex items-center gap-2 mb-1">
                         <span className="uppercase text-xs font-bold opacity-70">{para.type}</span>
                         {isLocked && <Icon name="Lock" size={12} />}
-                        {hasSubParagraphs && <span className="text-xs opacity-50">({para.subParagraphs!.length} подпараграфов)</span>}
                       </div>
                       {para.type === 'text' && para.content && (
                         <p className="text-sm opacity-80 line-clamp-2">{para.content}</p>
@@ -110,17 +109,23 @@ function ParagraphsDialog({
                         }
                       }}
                       disabled={isLocked}
-                      className={`w-full text-left p-2 ml-8 rounded-lg transition-all ${
+                      className={`w-full text-left p-3 rounded-lg transition-all ${
                         isCurrentSub
-                          ? 'bg-primary/80 text-primary-foreground font-semibold shadow-md'
+                          ? 'bg-primary text-primary-foreground font-semibold shadow-md'
                           : isLocked
-                          ? 'bg-muted/50 text-gray-300 cursor-not-allowed'
-                          : 'bg-muted/50 hover:bg-muted/70 text-gray-300 hover:shadow-md'
+                          ? 'bg-muted text-gray-200 cursor-not-allowed'
+                          : 'bg-muted hover:bg-muted/80 text-gray-200 hover:shadow-md'
                       }`}
                     >
-                      <div className="flex items-center gap-2">
-                        <span className="font-mono text-xs">#{pIndex + 1}.{subIndex + 1}</span>
-                        <p className="text-xs opacity-80 line-clamp-1">{sub.text}</p>
+                      <div className="flex items-center gap-3">
+                        <span className="font-mono text-sm font-bold">#{pIndex + 1}.{subIndex + 1}</span>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="uppercase text-xs font-bold opacity-70">text</span>
+                            {isLocked && <Icon name="Lock" size={12} />}
+                          </div>
+                          <p className="text-sm opacity-80 line-clamp-2">{sub.text}</p>
+                        </div>
                       </div>
                     </button>
                   );
