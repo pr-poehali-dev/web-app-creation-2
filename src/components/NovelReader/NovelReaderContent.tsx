@@ -54,46 +54,18 @@ function NovelReaderContent({
   return (
     <>
       {currentParagraph.type === 'text' && (
-        <div className={`relative flex items-start ${
+        <div className={`bg-card/90 backdrop-blur-sm rounded-xl md:rounded-2xl shadow-xl border border-border flex items-start relative ${
           isTopMerged ? 'p-12 md:p-16 lg:p-24 h-full w-full justify-center' : 'p-4 md:p-6 lg:p-8 min-h-[10rem] md:min-h-[12rem]'
         }`}>
-          <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 800 400" preserveAspectRatio="none">
-            <defs>
-              <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#d4c5b0" stopOpacity="0.9" />
-                <stop offset="50%" stopColor="#5c8fa3" stopOpacity="0.85" />
-                <stop offset="100%" stopColor="#d4c5b0" stopOpacity="0.9" />
-              </linearGradient>
-              <filter id="textShadow">
-                <feGaussianBlur in="SourceAlpha" stdDeviation="8"/>
-                <feOffset dx="0" dy="4" result="offsetblur"/>
-                <feComponentTransfer>
-                  <feFuncA type="linear" slope="0.2"/>
-                </feComponentTransfer>
-                <feMerge>
-                  <feMergeNode/>
-                  <feMergeNode in="SourceGraphic"/>
-                </feMerge>
-              </filter>
-            </defs>
-            <path d="M 0,100 C 80,60 150,80 250,90 C 350,100 450,85 550,95 C 650,105 720,90 800,110 L 800,290 C 720,310 650,295 550,305 C 450,315 350,300 250,310 C 150,320 80,340 0,300 Z" 
-              fill="url(#textGrad)" filter="url(#textShadow)" opacity="0.92" />
-            <ellipse cx="120" cy="150" rx="45" ry="45" fill="#5c8fa3" opacity="0.25" />
-            <ellipse cx="700" cy="120" rx="35" ry="55" fill="#2d2d2d" opacity="0.15" />
-            <ellipse cx="680" cy="280" rx="50" ry="35" fill="#d4c5b0" opacity="0.3" />
-            <path d="M 90,120 Q 95,140 100,160 Q 105,180 110,200" stroke="#2d2d2d" strokeWidth="1.5" fill="none" opacity="0.3" strokeLinecap="round" />
-            <path d="M 720,100 C 730,100 740,105 750,110" stroke="#2d2d2d" strokeWidth="1" fill="none" opacity="0.25" strokeLinecap="round" />
-          </svg>
-          
           <div 
-            className="absolute inset-0 pointer-events-none transition-all duration-1000 ease-in-out"
+            className="absolute inset-0 pointer-events-none rounded-xl md:rounded-2xl transition-all duration-1000 ease-in-out"
             style={{
               opacity: isRetrospective ? 1 : 0,
               boxShadow: 'inset 0 0 60px 20px rgba(0, 0, 0, 0.4)',
               background: 'radial-gradient(ellipse at center, transparent 30%, rgba(0, 0, 0, 0.3) 100%)'
             }}
           />
-          <div className={`leading-relaxed w-full relative z-10 ${
+          <div className={`leading-relaxed w-full ${
             isTopMerged 
               ? (settings.textSize === 'small' ? 'text-2xl md:text-3xl lg:text-4xl text-center' :
                  settings.textSize === 'large' ? 'text-3xl md:text-4xl lg:text-5xl text-center' :
@@ -101,7 +73,7 @@ function NovelReaderContent({
               : (settings.textSize === 'small' ? 'text-sm md:text-base lg:text-lg text-left' :
                  settings.textSize === 'large' ? 'text-lg md:text-xl lg:text-2xl text-left' :
                  'text-base md:text-lg lg:text-xl text-left')
-          } text-foreground drop-shadow-sm`} style={novelFontStyle}>
+          } text-foreground`} style={novelFontStyle}>
             {console.log('[NovelReaderContent] Rendering TypewriterText with key:', paragraphKey, 'skipTyping:', skipTyping)}
             <TypewriterText
               text={currentParagraph.content}
