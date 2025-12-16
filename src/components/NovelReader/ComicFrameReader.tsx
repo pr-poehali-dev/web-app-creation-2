@@ -87,19 +87,24 @@ export default function ComicFrameReader({ paragraph, currentText, layout }: Com
               src={frame.url} 
               alt={frame.alt || ''} 
               onLoad={(e) => handleImageLoad(frame.id, e)}
-              className="w-full h-full object-contain rounded-lg"
+              className="w-full h-full object-cover rounded-lg"
             />
           </div>
         ))}
       </MergedParagraphsLayout>
 
       <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
-        <DialogContent className="max-w-[95vw] max-h-[95vh] p-2 overflow-auto">
+        <DialogContent 
+          className="max-w-[95vw] max-h-[95vh] p-2 overflow-auto"
+          onClick={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
+        >
           {selectedImage && (
             <img 
               src={selectedImage} 
               alt="Full size" 
               className="w-full h-auto object-contain"
+              onClick={(e) => e.stopPropagation()}
             />
           )}
         </DialogContent>
