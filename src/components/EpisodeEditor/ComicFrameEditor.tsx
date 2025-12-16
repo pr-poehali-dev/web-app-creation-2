@@ -38,11 +38,13 @@ export default function ComicFrameEditor({ frames, layout, onFramesChange, onLay
   };
 
   const handleLayoutChange = (newLayout: MergeLayoutType) => {
-    onLayoutChange(newLayout);
-    
     const requiredCount = getRequiredFramesCount(newLayout);
     const currentCount = frames.length;
     
+    // Сначала обновляем макет
+    onLayoutChange(newLayout);
+    
+    // Затем добавляем недостающие фреймы, если нужно
     if (currentCount < requiredCount) {
       const newFrames = [...frames];
       for (let i = currentCount; i < requiredCount; i++) {
@@ -53,7 +55,10 @@ export default function ComicFrameEditor({ frames, layout, onFramesChange, onLay
           textTrigger: ''
         });
       }
-      onFramesChange(newFrames);
+      // Используем setTimeout чтобы дать время сохраниться макету
+      setTimeout(() => {
+        onFramesChange(newFrames);
+      }, 0);
     }
   };
 
