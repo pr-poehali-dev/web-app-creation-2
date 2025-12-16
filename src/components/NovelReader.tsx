@@ -4,6 +4,7 @@ import { UserSettings, UserProfile, Bookmark } from '@/types/settings';
 import MusicPlayer from './MusicPlayer';
 import { useNovelNavigation } from './NovelReader/useNovelNavigation';
 import { useNovelInteraction } from './NovelReader/useNovelInteraction';
+import { useSubParagraphNavigation } from './NovelReader/useSubParagraphNavigation';
 import NovelReaderEffects from './NovelReader/NovelReaderEffects';
 import NovelReaderBackgroundNew from './NovelReader/NovelReaderBackgroundNew';
 import NovelReaderGreeting from './NovelReader/NovelReaderGreeting';
@@ -65,6 +66,18 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
   });
 
   const {
+    currentSubParagraphIndex,
+    setCurrentSubParagraphIndex,
+    hasSubParagraphs,
+    isLastSubParagraph,
+    goToNextSubParagraph,
+    goToPreviousSubParagraph
+  } = useSubParagraphNavigation({
+    currentParagraph,
+    paragraphKey
+  });
+
+  const {
     handleClick,
     handleTypingComplete
   } = useNovelInteraction({
@@ -74,7 +87,10 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
     isTyping,
     canNavigate,
     setIsTyping,
-    setSkipTyping
+    setSkipTyping,
+    hasSubParagraphs,
+    isLastSubParagraph,
+    goToNextSubParagraph
   });
 
   const handleAddBookmark = (comment: string) => {
@@ -177,6 +193,10 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
           goToPreviousParagraph={goToPreviousParagraph}
           goToNextParagraph={goToNextParagraph}
           existingBookmark={existingBookmark}
+          currentSubParagraphIndex={currentSubParagraphIndex}
+          setCurrentSubParagraphIndex={setCurrentSubParagraphIndex}
+          goToNextSubParagraph={goToNextSubParagraph}
+          goToPreviousSubParagraph={goToPreviousSubParagraph}
           handleAddBookmark={handleAddBookmark}
           handleRemoveBookmark={handleRemoveBookmark}
           previousParagraph={previousParagraph}

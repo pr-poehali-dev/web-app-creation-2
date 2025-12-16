@@ -29,6 +29,10 @@ interface NovelReaderBackgroundNewProps {
   handleAddBookmark: (comment: string) => void;
   handleRemoveBookmark: () => void;
   previousParagraph?: Paragraph;
+  currentSubParagraphIndex: number;
+  setCurrentSubParagraphIndex: (index: number) => void;
+  goToNextSubParagraph: () => boolean;
+  goToPreviousSubParagraph: () => boolean;
 }
 
 function NovelReaderBackgroundNew({
@@ -50,22 +54,19 @@ function NovelReaderBackgroundNew({
   paragraphKey,
   goToPreviousParagraph,
   goToNextParagraph,
-  previousParagraph
+  previousParagraph,
+  currentSubParagraphIndex,
+  setCurrentSubParagraphIndex,
+  goToNextSubParagraph,
+  goToPreviousSubParagraph
 }: NovelReaderBackgroundNewProps) {
   const [isContentHidden, setIsContentHidden] = useState(false);
   const [wasHidden, setWasHidden] = useState(false);
-  const [currentSubText, setCurrentSubText] = useState<string>('');
   
   useEffect(() => {
     setWasHidden(false);
     setIsContentHidden(false);
-    
-    // Инициализация текущего подтекста
-    if (currentParagraph.type === 'text' || currentParagraph.type === 'dialogue') {
-      const text = currentParagraph.type === 'text' ? currentParagraph.content : currentParagraph.text;
-      setCurrentSubText(text);
-    }
-  }, [paragraphKey, currentParagraph]);
+  }, [paragraphKey]);
   
   if (!backgroundImage) return null;
 
@@ -134,7 +135,7 @@ function NovelReaderBackgroundNew({
               <div className="w-full h-full max-w-5xl mx-auto">
                 <ComicFrameReader
                   paragraph={currentParagraph as TextParagraph | DialogueParagraph}
-                  currentText={currentSubText}
+                  currentSubParagraphIndex={currentParagraph.subParagraphs && currentParagraph.subParagraphs.length > 0 ? currentSubParagraphIndex : undefined}
                   layout={currentParagraph.frameLayout || 'single'}
                 />
               </div>
@@ -176,20 +177,41 @@ function NovelReaderBackgroundNew({
                currentParagraph.subParagraphs && 
                currentParagraph.subParagraphs.length > 0 ? (
                 <div className="bg-card/90 backdrop-blur-sm rounded-xl md:rounded-2xl shadow-xl border border-border p-4 md:p-6 lg:p-8">
-                  <div className="leading-relaxed w-full text-base md:text-lg lg:text-xl text-foreground space-y-4">
-                    {currentParagraph.subParagraphs.map((subText, index) => (
-                      <div 
-                        key={index}
-                        onClick={() => setCurrentSubText(subText)}
-                        className={`cursor-pointer p-3 rounded transition-all ${
-                          currentSubText === subText 
-                            ? 'bg-primary/20 border-l-4 border-primary' 
-                            : 'hover:bg-primary/5'
-                        }`}
-                      >
-                        {subText}
-                      </div>
-                    ))}
+                  <div className="leading-relaxed w-full text-base md:text-lg lg:text-xl text-foreground">
+                    {currentParagraph.subParagraphs[currentSubParagraphIndex]}
+                  </div>
+                  <div className="flex justify-between items-center mt-4 gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (currentSubParagraphIndex > 0) {
+                          setCurrentSubParagraphIndex(currentSubParagraphIndex - 1);
+                        }
+                      }}
+                      disabled={currentSubParagraphIndex === 0}
+                      className="h-8 px-3 bg-card/80 backdrop-blur-sm hover:bg-card/90 border border-border/50"
+                    >
+                      <Icon name="ChevronLeft" size={16} className="text-white" />
+                    </Button>
+                    <span className="text-xs text-muted-foreground">
+                      {currentSubParagraphIndex + 1} / {currentParagraph.subParagraphs.length}
+                    </span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (currentSubParagraphIndex < currentParagraph.subParagraphs.length - 1) {
+                          setCurrentSubParagraphIndex(currentSubParagraphIndex + 1);
+                        }
+                      }}
+                      disabled={currentSubParagraphIndex === currentParagraph.subParagraphs.length - 1}
+                      className="h-8 px-3 bg-card/80 backdrop-blur-sm hover:bg-card/90 border border-border/50"
+                    >
+                      <Icon name="ChevronRight" size={16} className="text-white" />
+                    </Button>
                   </div>
                 </div>
               ) : (

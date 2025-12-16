@@ -5,11 +5,11 @@ import { Dialog, DialogContent } from '@/components/ui/dialog';
 
 interface ComicFrameReaderProps {
   paragraph: TextParagraph | DialogueParagraph;
-  currentText: string; // Текущий отображаемый текст (для определения фрейма)
+  currentSubParagraphIndex?: number; // Индекс текущего подпараграфа
   layout: MergeLayoutType;
 }
 
-export default function ComicFrameReader({ paragraph, currentText, layout }: ComicFrameReaderProps) {
+export default function ComicFrameReader({ paragraph, currentSubParagraphIndex, layout }: ComicFrameReaderProps) {
   const [activeFrames, setActiveFrames] = useState<ComicFrame[]>([]);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [imageAspectRatios, setImageAspectRatios] = useState<Map<string, number>>(new Map());
@@ -20,22 +20,22 @@ export default function ComicFrameReader({ paragraph, currentText, layout }: Com
       return;
     }
 
-    // Находим фреймы, которые должны показываться для текущего текста
-    const matchingFrames = paragraph.comicFrames.filter(frame => {
-      if (!frame.textTrigger) return true; // Без триггера - показываем всегда
+    // Если есть подпараграфы, фильтруем фреймы по индексу
+    if (paragraph.subParagraphs && paragraph.subParagraphs.length > 0 && currentSubParagraphIndex !== undefined) {
+      const currentSubText = paragraph.subParagraphs[currentSubParagraphIndex];
       
-      // Проверяем, содержится ли триггер в текущем тексте
-      return currentText.includes(frame.textTrigger);
-    });
-
-    // Если нет подходящих фреймов с триггерами, показываем все фреймы без триггеров
-    if (matchingFrames.length === 0) {
+      const matchingFrames = paragraph.comicFrames.filter(frame => {
+        if (!frame.textTrigger) return false; // Фреймы без триггера не показываются в подпараграфах
+        return currentSubText.includes(frame.textTrigger);
+      });
+      
+      setActiveFrames(matchingFrames);
+    } else {
+      // Если нет подпараграфов, показываем все фреймы без триггеров
       const defaultFrames = paragraph.comicFrames.filter(frame => !frame.textTrigger);
       setActiveFrames(defaultFrames);
-    } else {
-      setActiveFrames(matchingFrames);
     }
-  }, [currentText, paragraph.comicFrames]);
+  }, [currentSubParagraphIndex, paragraph.comicFrames, paragraph.subParagraphs]);
 
   const handleImageLoad = (frameId: string, event: React.SyntheticEvent<HTMLImageElement>) => {
     const img = event.currentTarget;

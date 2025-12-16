@@ -9,6 +9,9 @@ interface UseNovelInteractionProps {
   canNavigate: boolean;
   setIsTyping: (value: boolean) => void;
   setSkipTyping: (value: boolean) => void;
+  hasSubParagraphs?: boolean;
+  isLastSubParagraph?: boolean;
+  goToNextSubParagraph?: () => boolean;
 }
 
 export function useNovelInteraction({
@@ -17,7 +20,10 @@ export function useNovelInteraction({
   isTyping,
   canNavigate,
   setIsTyping,
-  setSkipTyping
+  setSkipTyping,
+  hasSubParagraphs,
+  isLastSubParagraph,
+  goToNextSubParagraph
 }: UseNovelInteractionProps) {
   const handleClick = useCallback((e: React.MouseEvent) => {
     // Игнорируем клики по кнопкам и интерактивным элементам
@@ -27,13 +33,23 @@ export function useNovelInteraction({
       return;
     }
 
-    console.log('[Click] isTyping:', isTyping, 'canNavigate:', canNavigate, 'paragraphType:', currentParagraph?.type);
+    console.log('[Click] isTyping:', isTyping, 'canNavigate:', canNavigate, 'paragraphType:', currentParagraph?.type, 'hasSubParagraphs:', hasSubParagraphs);
     if (isTyping) {
       console.log('[Click] Skip typing - setting skipTyping=true');
       setSkipTyping(true);
     } else if (canNavigate) {
-      console.log('[Click] Go to next paragraph');
       if (currentParagraph?.type !== 'choice') {
+        // Если есть подпараграфы, сначала переключаем их
+        if (hasSubParagraphs && !isLastSubParagraph && goToNextSubParagraph) {
+          const moved = goToNextSubParagraph();
+          if (moved) {
+            console.log('[Click] Go to next sub-paragraph');
+            return;
+          }
+        }
+        
+        // Если подпараграфов нет или это последний, идем к следующему параграфу
+        console.log('[Click] Go to next paragraph');
         goToNextParagraph();
       } else {
         console.log('[Click] Blocked - paragraph is choice type');
