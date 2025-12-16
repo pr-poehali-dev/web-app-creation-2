@@ -80,7 +80,10 @@ export default function ComicFrameReader({ paragraph, currentText, layout }: Com
           <div 
             key={frame.id} 
             className={`w-full h-full cursor-pointer hover:opacity-90 transition-opacity ${getAnimationClass(frame.animation, defaultAnimation)}`}
-            style={{ animationDelay: `${index * 0.2}s` }}
+            style={{ 
+              animationDelay: `${index * 0.2}s`,
+              opacity: 0
+            }}
             onClick={() => setSelectedImage(frame.url)}
           >
             <img 
