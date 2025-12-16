@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Icon from '@/components/ui/icon';
+import LayoutAnimationGuide from './LayoutAnimationGuide';
 
 interface ComicFrameEditorProps {
   frames: ComicFrame[];
@@ -24,20 +25,29 @@ export default function ComicFrameEditor({ frames, layout, defaultAnimation, onF
       case 'single': return 1;
       case 'horizontal-2': return 2;
       case 'horizontal-3': return 3;
+      case 'horizontal-4': return 4;
       case 'vertical-2': return 2;
       case 'vertical-3': return 3;
+      case 'vertical-4': return 4;
       case 'horizontal-2-1': return 3;
       case 'horizontal-1-2': return 3;
       case 'grid-2x2': return 4;
+      case 'grid-3x3': return 9;
+      case 'grid-2x3': return 6;
       case 'mosaic-left': return 3;
       case 'mosaic-right': return 3;
       case 'vertical-left-3': return 4;
       case 'vertical-right-3': return 4;
       case 'center-large': return 5;
-      case 'grid-3x3': return 9;
       case 'asymmetric-1': return 4;
       case 'asymmetric-2': return 4;
+      case 'asymmetric-3': return 5;
       case 'l-shape': return 6;
+      case 'pyramid': return 3;
+      case 'inverted-pyramid': return 3;
+      case 'sandwich': return 3;
+      case 'spotlight': return 5;
+      case 'filmstrip': return 5;
       default: return 3;
     }
   };
@@ -96,7 +106,10 @@ export default function ComicFrameEditor({ frames, layout, defaultAnimation, onF
     <div className="border border-border rounded-lg p-3 space-y-3">
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <Label className="text-sm font-medium">Комикс-фреймы ({frames.length})</Label>
+          <div className="flex items-center gap-2">
+            <Label className="text-sm font-medium">Комикс-фреймы ({frames.length})</Label>
+            <LayoutAnimationGuide />
+          </div>
           <Button
             variant="ghost"
             size="sm"
@@ -114,24 +127,40 @@ export default function ComicFrameEditor({ frames, layout, defaultAnimation, onF
               <SelectTrigger className="w-full h-8 text-xs">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="single">1 фрейм</SelectItem>
-                <SelectItem value="horizontal-2">2 в ряд</SelectItem>
-                <SelectItem value="horizontal-3">3 в ряд</SelectItem>
-                <SelectItem value="vertical-2">2 в столбец</SelectItem>
-                <SelectItem value="vertical-3">3 в столбец</SelectItem>
-                <SelectItem value="horizontal-2-1">2+1</SelectItem>
-                <SelectItem value="horizontal-1-2">1+2</SelectItem>
-                <SelectItem value="grid-2x2">Сетка 2×2</SelectItem>
-                <SelectItem value="mosaic-left">Мозаика ←</SelectItem>
-                <SelectItem value="mosaic-right">Мозаика →</SelectItem>
-                <SelectItem value="vertical-left-3">← + 3</SelectItem>
-                <SelectItem value="vertical-right-3">3 + →</SelectItem>
-                <SelectItem value="center-large">Центр</SelectItem>
-                <SelectItem value="grid-3x3">Сетка 3×3</SelectItem>
-                <SelectItem value="asymmetric-1">Асим. 1</SelectItem>
-                <SelectItem value="asymmetric-2">Асим. 2</SelectItem>
-                <SelectItem value="l-shape">L-форма</SelectItem>
+              <SelectContent className="max-h-[400px]">
+                <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">Простые</div>
+                <SelectItem value="single">◻️ 1 фрейм</SelectItem>
+                <SelectItem value="horizontal-2">◼️◼️ 2 в ряд</SelectItem>
+                <SelectItem value="horizontal-3">◼️◼️◼️ 3 в ряд</SelectItem>
+                <SelectItem value="horizontal-4">◼️◼️◼️◼️ 4 в ряд</SelectItem>
+                <SelectItem value="vertical-2">⬛⬛ 2 в столбец</SelectItem>
+                <SelectItem value="vertical-3">⬛⬛⬛ 3 в столбец</SelectItem>
+                <SelectItem value="vertical-4">⬛⬛⬛⬛ 4 в столбец</SelectItem>
+                
+                <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground mt-2">Сетки</div>
+                <SelectItem value="grid-2x2">▦ Сетка 2×2</SelectItem>
+                <SelectItem value="grid-3x3">▦ Сетка 3×3</SelectItem>
+                <SelectItem value="grid-2x3">▦ Сетка 2×3</SelectItem>
+                
+                <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground mt-2">Комбинации</div>
+                <SelectItem value="horizontal-2-1">◼️◼️◻️ 2+1</SelectItem>
+                <SelectItem value="horizontal-1-2">◻️◼️◼️ 1+2</SelectItem>
+                <SelectItem value="mosaic-left">⬛◻️◻️ Мозаика ←</SelectItem>
+                <SelectItem value="mosaic-right">◻️◻️⬛ Мозаика →</SelectItem>
+                <SelectItem value="vertical-left-3">⬛◻️◻️◻️ ← + 3</SelectItem>
+                <SelectItem value="vertical-right-3">◻️◻️◻️⬛ 3 + →</SelectItem>
+                
+                <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground mt-2">Креативные</div>
+                <SelectItem value="center-large">◻️⬛◻️ Центр</SelectItem>
+                <SelectItem value="pyramid">🔺 Пирамида</SelectItem>
+                <SelectItem value="inverted-pyramid">🔻 Обр. пирамида</SelectItem>
+                <SelectItem value="sandwich">◻️⬛◻️ Сэндвич</SelectItem>
+                <SelectItem value="spotlight">◻️⬛◻️ Прожектор</SelectItem>
+                <SelectItem value="l-shape">↪️ L-форма</SelectItem>
+                <SelectItem value="filmstrip">🎞️ Кинолента</SelectItem>
+                <SelectItem value="asymmetric-1">⬛◻️◻️ Асим. 1</SelectItem>
+                <SelectItem value="asymmetric-2">◻️⬛◻️ Асим. 2</SelectItem>
+                <SelectItem value="asymmetric-3">⬛⬛◻️ Асим. 3</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -143,15 +172,37 @@ export default function ComicFrameEditor({ frames, layout, defaultAnimation, onF
                 <SelectTrigger className="w-full h-8 text-xs">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">Без анимации</SelectItem>
-                  <SelectItem value="fade">Плавное появление</SelectItem>
-                  <SelectItem value="slide-up">Снизу вверх</SelectItem>
-                  <SelectItem value="slide-down">Сверху вниз</SelectItem>
-                  <SelectItem value="slide-left">Справа налево</SelectItem>
-                  <SelectItem value="slide-right">Слева направо</SelectItem>
-                  <SelectItem value="zoom">Увеличение</SelectItem>
-                  <SelectItem value="flip">Переворот</SelectItem>
+                <SelectContent className="max-h-[400px]">
+                  <SelectItem value="none">⚫ Без анимации</SelectItem>
+                  
+                  <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground mt-2">Плавные</div>
+                  <SelectItem value="fade">✨ Плавное появление</SelectItem>
+                  <SelectItem value="blur-in">🌫️ Из размытия</SelectItem>
+                  
+                  <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground mt-2">Движение</div>
+                  <SelectItem value="slide-up">⬆️ Снизу вверх</SelectItem>
+                  <SelectItem value="slide-down">⬇️ Сверху вниз</SelectItem>
+                  <SelectItem value="slide-left">⬅️ Справа налево</SelectItem>
+                  <SelectItem value="slide-right">➡️ Слева направо</SelectItem>
+                  
+                  <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground mt-2">Масштаб</div>
+                  <SelectItem value="zoom">🔍 Увеличение</SelectItem>
+                  <SelectItem value="zoom-out">🔎 Уменьшение</SelectItem>
+                  
+                  <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground mt-2">Вращение</div>
+                  <SelectItem value="flip">🔄 Переворот</SelectItem>
+                  <SelectItem value="flip-x">↕️ Переворот X</SelectItem>
+                  <SelectItem value="rotate-in">🌀 Вращение</SelectItem>
+                  
+                  <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground mt-2">Динамичные</div>
+                  <SelectItem value="bounce">🏀 Прыжок</SelectItem>
+                  <SelectItem value="shake">⚡ Тряска</SelectItem>
+                  <SelectItem value="wave">🌊 Волна</SelectItem>
+                  
+                  <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground mt-2">Эффекты</div>
+                  <SelectItem value="split-v">⬍⬌ Разделение ↕️</SelectItem>
+                  <SelectItem value="split-h">⬍⬌ Разделение ↔️</SelectItem>
+                  <SelectItem value="glitch">📺 Глитч</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -201,16 +252,26 @@ export default function ComicFrameEditor({ frames, layout, defaultAnimation, onF
                   <SelectTrigger className="h-8 text-xs">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="default">По умолчанию</SelectItem>
-                    <SelectItem value="fade">Плавное появление</SelectItem>
-                    <SelectItem value="slide-up">Снизу вверх</SelectItem>
-                    <SelectItem value="slide-down">Сверху вниз</SelectItem>
-                    <SelectItem value="slide-left">Справа налево</SelectItem>
-                    <SelectItem value="slide-right">Слева направо</SelectItem>
-                    <SelectItem value="zoom">Увеличение</SelectItem>
-                    <SelectItem value="flip">Переворот</SelectItem>
-                    <SelectItem value="none">Без анимации</SelectItem>
+                  <SelectContent className="max-h-[300px]">
+                    <SelectItem value="default">⚙️ По умолчанию</SelectItem>
+                    <SelectItem value="none">⚫ Без анимации</SelectItem>
+                    <SelectItem value="fade">✨ Плавное</SelectItem>
+                    <SelectItem value="blur-in">🌫️ Размытие</SelectItem>
+                    <SelectItem value="slide-up">⬆️ Вверх</SelectItem>
+                    <SelectItem value="slide-down">⬇️ Вниз</SelectItem>
+                    <SelectItem value="slide-left">⬅️ Влево</SelectItem>
+                    <SelectItem value="slide-right">➡️ Вправо</SelectItem>
+                    <SelectItem value="zoom">🔍 Увеличение</SelectItem>
+                    <SelectItem value="zoom-out">🔎 Уменьшение</SelectItem>
+                    <SelectItem value="flip">🔄 Переворот</SelectItem>
+                    <SelectItem value="flip-x">↕️ Переворот X</SelectItem>
+                    <SelectItem value="rotate-in">🌀 Вращение</SelectItem>
+                    <SelectItem value="bounce">🏀 Прыжок</SelectItem>
+                    <SelectItem value="shake">⚡ Тряска</SelectItem>
+                    <SelectItem value="wave">🌊 Волна</SelectItem>
+                    <SelectItem value="split-v">⬍⬌ Разд. ↕️</SelectItem>
+                    <SelectItem value="split-h">⬍⬌ Разд. ↔️</SelectItem>
+                    <SelectItem value="glitch">📺 Глитч</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

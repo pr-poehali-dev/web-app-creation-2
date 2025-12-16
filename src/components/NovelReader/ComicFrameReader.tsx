@@ -59,8 +59,28 @@ export default function ComicFrameReader({ paragraph, currentText, layout }: Com
         return 'animate-slide-right';
       case 'zoom':
         return 'animate-zoom-in';
+      case 'zoom-out':
+        return 'animate-zoom-out';
       case 'flip':
         return 'animate-flip';
+      case 'flip-x':
+        return 'animate-flip-x';
+      case 'rotate-in':
+        return 'animate-rotate-in';
+      case 'bounce':
+        return 'animate-bounce';
+      case 'shake':
+        return 'animate-shake';
+      case 'blur-in':
+        return 'animate-blur-in';
+      case 'split-v':
+        return 'animate-split-v';
+      case 'split-h':
+        return 'animate-split-h';
+      case 'glitch':
+        return 'animate-glitch';
+      case 'wave':
+        return 'animate-wave';
       case 'none':
         return '';
       default:

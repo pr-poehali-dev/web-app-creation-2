@@ -19,10 +19,16 @@ export default function MergedParagraphsLayout({ layout, children, aspectRatios 
       case 'horizontal-3':
         return 'flex flex-row items-center justify-center gap-4';
       
+      case 'horizontal-4':
+        return 'flex flex-row items-center justify-center gap-4';
+      
       case 'vertical-2':
         return 'flex flex-col items-center justify-center gap-4';
       
       case 'vertical-3':
+        return 'flex flex-col items-center justify-center gap-4';
+      
+      case 'vertical-4':
         return 'flex flex-col items-center justify-center gap-4';
       
       case 'horizontal-2-1':
@@ -33,6 +39,12 @@ export default function MergedParagraphsLayout({ layout, children, aspectRatios 
       
       case 'grid-2x2':
         return 'grid grid-cols-2 grid-rows-2 gap-4';
+      
+      case 'grid-3x3':
+        return 'grid grid-cols-3 grid-rows-3 gap-4';
+      
+      case 'grid-2x3':
+        return 'grid grid-cols-2 grid-rows-3 gap-4';
       
       case 'mosaic-left':
         return 'grid grid-cols-[2fr_1fr] grid-rows-2 gap-4';
@@ -49,17 +61,32 @@ export default function MergedParagraphsLayout({ layout, children, aspectRatios 
       case 'center-large':
         return 'grid grid-cols-3 grid-rows-3 gap-4';
       
-      case 'grid-3x3':
-        return 'grid grid-cols-3 grid-rows-3 gap-4';
-      
       case 'asymmetric-1':
         return 'grid grid-cols-4 grid-rows-3 gap-4';
       
       case 'asymmetric-2':
         return 'grid grid-cols-3 grid-rows-4 gap-4';
       
+      case 'asymmetric-3':
+        return 'grid grid-cols-5 grid-rows-2 gap-4';
+      
       case 'l-shape':
         return 'grid grid-cols-3 grid-rows-3 gap-4';
+      
+      case 'pyramid':
+        return 'grid grid-cols-2 grid-rows-2 gap-4';
+      
+      case 'inverted-pyramid':
+        return 'grid grid-cols-2 grid-rows-2 gap-4';
+      
+      case 'sandwich':
+        return 'flex flex-col items-center justify-center gap-4';
+      
+      case 'spotlight':
+        return 'grid grid-cols-3 grid-rows-3 gap-4';
+      
+      case 'filmstrip':
+        return 'flex flex-row items-center justify-center gap-2';
       
       default:
         return 'grid grid-cols-3 gap-4';
@@ -106,6 +133,11 @@ export default function MergedParagraphsLayout({ layout, children, aspectRatios 
         if (index === 3) return 'col-span-2';
         return '';
       
+      case 'asymmetric-3':
+        if (index === 0) return 'col-span-3 row-span-1';
+        if (index === 1) return 'col-span-2 row-span-1';
+        return '';
+      
       case 'l-shape':
         if (index === 0) return 'col-span-2 row-span-2';
         if (index === 1) return 'col-start-3 row-start-1';
@@ -115,12 +147,28 @@ export default function MergedParagraphsLayout({ layout, children, aspectRatios 
         if (index === 5) return 'col-start-3 row-start-3';
         return '';
       
+      case 'pyramid':
+        if (index === 0) return 'col-span-2';
+        return '';
+      
+      case 'inverted-pyramid':
+        if (index === 2) return 'col-span-2';
+        return '';
+      
+      case 'spotlight':
+        if (index === 0) return 'col-start-2 row-start-2';
+        if (index === 1) return 'col-start-1 row-start-1';
+        if (index === 2) return 'col-start-3 row-start-1';
+        if (index === 3) return 'col-start-1 row-start-3';
+        if (index === 4) return 'col-start-3 row-start-3';
+        return '';
+      
       default:
         return '';
     }
   };
 
-  const isFlexLayout = layout === 'single' || layout === 'horizontal-2' || layout === 'horizontal-3' || layout === 'vertical-2' || layout === 'vertical-3';
+  const isFlexLayout = ['single', 'horizontal-2', 'horizontal-3', 'horizontal-4', 'vertical-2', 'vertical-3', 'vertical-4', 'sandwich', 'filmstrip'].includes(layout);
 
   return (
     <div className={`w-full h-full ${getLayoutClasses()}`}>
