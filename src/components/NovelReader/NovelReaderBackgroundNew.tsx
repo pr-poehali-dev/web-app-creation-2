@@ -178,8 +178,12 @@ function NovelReaderBackgroundNew({
               {(currentParagraph.type === 'text' || currentParagraph.type === 'dialogue') && 
                currentParagraph.subParagraphs && 
                currentParagraph.subParagraphs.length > 0 ? (
-                <div className="bg-card/90 backdrop-blur-sm rounded-xl md:rounded-2xl shadow-xl border border-border p-4 md:p-6 lg:p-8">
-                  <div className="leading-relaxed w-full text-base md:text-lg lg:text-xl text-foreground">
+                <div className="bg-card/90 backdrop-blur-sm rounded-xl md:rounded-2xl shadow-xl border border-border p-4 md:p-6 lg:p-8 min-h-[10rem] md:min-h-[12rem]">
+                  <div className={`leading-relaxed w-full text-foreground ${
+                    settings.textSize === 'small' ? 'text-sm md:text-base lg:text-lg' :
+                    settings.textSize === 'large' ? 'text-lg md:text-xl lg:text-2xl' :
+                    'text-base md:text-lg lg:text-xl'
+                  }`}>
                     {/* Индекс 0 = основной текст параграфа, индекс 1+ = подпараграфы 0, 1, 2... */}
                     {currentSubParagraphIndex === 0 ? (
                       currentParagraph.type === 'text' ? currentParagraph.content : currentParagraph.text

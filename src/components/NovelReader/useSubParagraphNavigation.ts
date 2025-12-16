@@ -28,11 +28,14 @@ export function useSubParagraphNavigation({
         : 0)
     : 0;
 
-  const isLastSubParagraph = currentSubParagraphIndex >= subParagraphsCount - 1;
+  // Индекс 0 = основной текст, индексы 1..N = подпараграфы 0..(N-1)
+  // Последний индекс = subParagraphsCount (показываем подпараграф N-1)
+  const isLastSubParagraph = currentSubParagraphIndex >= subParagraphsCount;
   const isFirstSubParagraph = currentSubParagraphIndex === 0;
 
   const goToNextSubParagraph = () => {
-    if (!isLastSubParagraph) {
+    // Проверяем, что следующий индекс не выйдет за границы
+    if (currentSubParagraphIndex < subParagraphsCount) {
       setCurrentSubParagraphIndex(prev => prev + 1);
       return true;
     }
