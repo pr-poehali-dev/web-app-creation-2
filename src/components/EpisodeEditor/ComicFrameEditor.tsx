@@ -77,8 +77,7 @@ export default function ComicFrameEditor({ frames, layout, defaultAnimation, sub
         newFrames.push({
           id: `frame-${Date.now()}-${i}`,
           type: 'image',
-          url: '',
-          textTrigger: ''
+          url: ''
         });
       }
       
