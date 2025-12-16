@@ -7,8 +7,19 @@ interface NovelReaderGreetingProps {
 function NovelReaderGreeting({ novel }: NovelReaderGreetingProps) {
   return (
     <div className="w-full max-w-4xl relative z-10 space-y-6 overflow-y-auto h-screen scrollbar-hide pt-20 pb-8">
-      <div className="text-center animate-fade-in">
-        <div className="bg-card rounded-2xl p-8 shadow-xl border border-border">
+      {/* Фоновое изображение */}
+      <div 
+        className="fixed inset-0 z-0 opacity-30"
+        style={{
+          backgroundImage: 'url(https://cdn.poehali.dev/files/4c59d030-8954-4c43-bc6b-b094a4e6ac06_4.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
+      />
+      
+      <div className="text-center animate-fade-in relative z-10">
+        <div className="bg-card/90 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-border">
           {novel.homePage?.greetingImage && (
             <img 
               src={novel.homePage.greetingImage} 
