@@ -11,13 +11,13 @@ export default function MergedParagraphsLayout({ layout, children, aspectRatios 
   const getLayoutClasses = () => {
     switch (layout) {
       case 'single':
-        return 'grid grid-cols-1 gap-4';
+        return 'flex items-center justify-center gap-4';
       
       case 'horizontal-2':
-        return 'grid grid-cols-2 gap-4';
+        return 'flex flex-row items-center justify-center gap-4';
       
       case 'horizontal-3':
-        return 'grid grid-cols-3 gap-4';
+        return 'flex flex-row items-center justify-center gap-4';
       
       case 'horizontal-2-1':
         return 'grid grid-cols-[2fr_2fr_1fr] gap-4';
@@ -114,30 +114,32 @@ export default function MergedParagraphsLayout({ layout, children, aspectRatios 
     }
   };
 
+  const isFlexLayout = layout === 'single' || layout === 'horizontal-2' || layout === 'horizontal-3';
+
   return (
     <div className={`w-full h-full ${getLayoutClasses()}`}>
       {children.map((child, index) => {
         const aspectRatio = aspectRatios?.[index] || 1;
         
-        // Определяем, как фрейм должен масштабироваться
-        const shouldFillWidth = layout === 'horizontal-2' || layout === 'horizontal-3' || 
-                                layout === 'horizontal-2-1' || layout === 'horizontal-1-2' ||
-                                layout === 'single';
-        
         return (
           <div 
             key={index} 
-            className={`${getItemClasses(index)} bg-card/80 backdrop-blur-sm rounded-lg border border-border/50 overflow-hidden flex items-center justify-center`}
+            className={`${!isFlexLayout ? getItemClasses(index) : ''} bg-card/80 backdrop-blur-sm rounded-lg border border-border/50 overflow-hidden flex items-center justify-center`}
+            style={isFlexLayout ? {
+              aspectRatio: aspectRatio.toString(),
+              flex: '1 1 0',
+              minWidth: 0,
+              minHeight: 0,
+              maxHeight: '100%'
+            } : undefined}
           >
             <div 
-              className="flex items-center justify-center"
-              style={{ 
+              className="flex items-center justify-center w-full h-full"
+              style={!isFlexLayout ? { 
                 aspectRatio: aspectRatio.toString(),
-                width: shouldFillWidth ? '100%' : 'auto',
-                height: shouldFillWidth ? 'auto' : '100%',
                 maxWidth: '100%',
                 maxHeight: '100%'
-              }}
+              } : undefined}
             >
               {child}
             </div>
