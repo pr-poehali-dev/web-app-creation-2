@@ -48,6 +48,7 @@ export default function ComicFrameReader({ paragraph, currentSubParagraphIndex, 
         .map(sp => sp.id);
       
       console.log('[ComicFrameReader] SubParagraph IDs up to now:', subParagraphIdsUpToNow);
+      console.log('[ComicFrameReader] All subParagraphs:', paragraph.subParagraphs.map(sp => ({ id: sp.id, text: sp.text?.substring(0, 20) })));
       
       const matchingFrames = paragraph.comicFrames.filter(frame => {
         // Фреймы без триггера показываются всегда
@@ -58,7 +59,7 @@ export default function ComicFrameReader({ paragraph, currentSubParagraphIndex, 
         
         // Проверяем, есть ли ID триггера в списке просмотренных подпараграфов
         const matches = subParagraphIdsUpToNow.includes(frame.subParagraphTrigger);
-        console.log('[ComicFrameReader] Frame', frame.id, 'trigger:', frame.subParagraphTrigger, 'matches:', matches);
+        console.log('[ComicFrameReader] Frame', frame.id, 'trigger:', frame.subParagraphTrigger, 'matches:', matches, 'available IDs:', subParagraphIdsUpToNow);
         return matches;
       });
       
