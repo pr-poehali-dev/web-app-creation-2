@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { TextParagraph, DialogueParagraph, ComicFrame, MergeLayoutType } from '@/types/novel';
 import MergedParagraphsLayout from './MergedParagraphsLayout';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 
 interface ComicFrameReaderProps {
   paragraph: TextParagraph | DialogueParagraph;
@@ -10,6 +11,7 @@ interface ComicFrameReaderProps {
 
 export default function ComicFrameReader({ paragraph, currentText, layout }: ComicFrameReaderProps) {
   const [activeFrames, setActiveFrames] = useState<ComicFrame[]>([]);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   useEffect(() => {
     if (!paragraph.comicFrames || paragraph.comicFrames.length === 0) {
@@ -37,16 +39,34 @@ export default function ComicFrameReader({ paragraph, currentText, layout }: Com
   if (activeFrames.length === 0) return null;
 
   return (
-    <MergedParagraphsLayout layout={layout}>
-      {activeFrames.map((frame) => (
-        <div key={frame.id} className="w-full h-full">
-          <img 
-            src={frame.url} 
-            alt={frame.alt || ''} 
-            className="w-full h-full object-cover rounded-lg"
-          />
-        </div>
-      ))}
-    </MergedParagraphsLayout>
+    <>
+      <MergedParagraphsLayout layout={layout}>
+        {activeFrames.map((frame) => (
+          <div 
+            key={frame.id} 
+            className="w-full h-full cursor-pointer hover:opacity-90 transition-opacity"
+            onClick={() => setSelectedImage(frame.url)}
+          >
+            <img 
+              src={frame.url} 
+              alt={frame.alt || ''} 
+              className="w-full h-full object-cover rounded-lg"
+            />
+          </div>
+        ))}
+      </MergedParagraphsLayout>
+
+      <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
+        <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 overflow-hidden">
+          {selectedImage && (
+            <img 
+              src={selectedImage} 
+              alt="Full size" 
+              className="w-full h-full object-contain"
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
