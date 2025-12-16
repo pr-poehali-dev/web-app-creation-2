@@ -20,6 +20,11 @@ interface NovelReaderEffectsProps {
   setCanNavigate: (value: boolean) => void;
   goToNextParagraph: () => void;
   goToPreviousParagraph: () => void;
+  hasSubParagraphs?: boolean;
+  isLastSubParagraph?: boolean;
+  currentSubParagraphIndex?: number;
+  goToNextSubParagraph?: () => boolean;
+  goToPreviousSubParagraph?: () => boolean;
 }
 
 function NovelReaderEffects({
@@ -39,7 +44,12 @@ function NovelReaderEffects({
   setSkipTyping,
   setCanNavigate,
   goToNextParagraph,
-  goToPreviousParagraph
+  goToPreviousParagraph,
+  hasSubParagraphs,
+  isLastSubParagraph,
+  currentSubParagraphIndex,
+  goToNextSubParagraph,
+  goToPreviousSubParagraph
 }: NovelReaderEffectsProps) {
   const previousEpisodeIdRef = useRef<string | null>(null);
 
@@ -226,18 +236,29 @@ function NovelReaderEffects({
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'ArrowRight') {
         e.preventDefault();
-        if (!isTyping && currentParagraph?.type !== 'choice') {
+        if (currentParagraph?.type !== 'choice') {
+          // Если есть подпараграфы и мы не на последнем, переходим вперед по подпараграфам
+          if (hasSubParagraphs && !isLastSubParagraph && goToNextSubParagraph) {
+            const moved = goToNextSubParagraph();
+            if (moved) return;
+          }
+          // Иначе переходим к следующему параграфу
           goToNextParagraph();
         }
       } else if (e.key === 'ArrowLeft') {
         e.preventDefault();
-        goToPreviousParagraph();
+        // Если есть подпараграфы и мы не на первом, переходим назад по подпараграфам
+        if (hasSubParagraphs && currentSubParagraphIndex !== undefined && currentSubParagraphIndex > 0 && goToPreviousSubParagraph) {
+          goToPreviousSubParagraph();
+        } else {
+          goToPreviousParagraph();
+        }
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isTyping, currentParagraph, goToNextParagraph, goToPreviousParagraph]);
+  }, [isTyping, currentParagraph, goToNextParagraph, goToPreviousParagraph, hasSubParagraphs, isLastSubParagraph, currentSubParagraphIndex, goToNextSubParagraph, goToPreviousSubParagraph]);
 
   return null;
 }

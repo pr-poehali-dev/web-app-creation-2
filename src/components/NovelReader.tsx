@@ -163,6 +163,11 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
         setCanNavigate={setCanNavigate}
         goToNextParagraph={goToNextParagraph}
         goToPreviousParagraph={goToPreviousParagraph}
+        hasSubParagraphs={hasSubParagraphs}
+        isLastSubParagraph={isLastSubParagraph}
+        currentSubParagraphIndex={currentSubParagraphIndex}
+        goToNextSubParagraph={goToNextSubParagraph}
+        goToPreviousSubParagraph={goToPreviousSubParagraph}
       />
 
       {!showGreeting && currentEpisode.backgroundMusic && (
