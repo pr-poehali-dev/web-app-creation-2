@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ComicFrame, MergeLayoutType } from '@/types/novel';
+import { ComicFrame, MergeLayoutType, FrameAnimationType } from '@/types/novel';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -9,12 +9,14 @@ import Icon from '@/components/ui/icon';
 interface ComicFrameEditorProps {
   frames: ComicFrame[];
   layout: MergeLayoutType;
+  defaultAnimation?: FrameAnimationType;
   onFramesChange: (frames: ComicFrame[]) => void;
   onLayoutChange: (layout: MergeLayoutType) => void;
+  onAnimationChange?: (animation: FrameAnimationType) => void;
   onBothChange?: (layout: MergeLayoutType, frames: ComicFrame[]) => void;
 }
 
-export default function ComicFrameEditor({ frames, layout, onFramesChange, onLayoutChange, onBothChange }: ComicFrameEditorProps) {
+export default function ComicFrameEditor({ frames, layout, defaultAnimation, onFramesChange, onLayoutChange, onAnimationChange, onBothChange }: ComicFrameEditorProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const getRequiredFramesCount = (layoutType: MergeLayoutType): number => {
@@ -90,31 +92,9 @@ export default function ComicFrameEditor({ frames, layout, onFramesChange, onLay
 
   return (
     <div className="border border-border rounded-lg p-3 space-y-3">
-      <div className="flex items-center justify-between">
-        <Label className="text-sm font-medium">Комикс-фреймы ({frames.length})</Label>
-        <div className="flex gap-2">
-          <Select value={layout} onValueChange={(v) => handleLayoutChange(v as MergeLayoutType)}>
-            <SelectTrigger className="w-32 h-8 text-xs">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="single">1 фрейм</SelectItem>
-              <SelectItem value="horizontal-2">2 в ряд</SelectItem>
-              <SelectItem value="horizontal-3">3 в ряд</SelectItem>
-              <SelectItem value="horizontal-2-1">2+1</SelectItem>
-              <SelectItem value="horizontal-1-2">1+2</SelectItem>
-              <SelectItem value="grid-2x2">Сетка 2×2</SelectItem>
-              <SelectItem value="mosaic-left">Мозаика ←</SelectItem>
-              <SelectItem value="mosaic-right">Мозаика →</SelectItem>
-              <SelectItem value="vertical-left-3">← + 3</SelectItem>
-              <SelectItem value="vertical-right-3">3 + →</SelectItem>
-              <SelectItem value="center-large">Центр</SelectItem>
-              <SelectItem value="grid-3x3">Сетка 3×3</SelectItem>
-              <SelectItem value="asymmetric-1">Асим. 1</SelectItem>
-              <SelectItem value="asymmetric-2">Асим. 2</SelectItem>
-              <SelectItem value="l-shape">L-форма</SelectItem>
-            </SelectContent>
-          </Select>
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <Label className="text-sm font-medium">Комикс-фреймы ({frames.length})</Label>
           <Button
             variant="ghost"
             size="sm"
@@ -123,6 +103,55 @@ export default function ComicFrameEditor({ frames, layout, onFramesChange, onLay
           >
             <Icon name={isExpanded ? 'ChevronUp' : 'ChevronDown'} size={16} />
           </Button>
+        </div>
+        
+        <div className="flex gap-2">
+          <div className="flex-1">
+            <Label className="text-xs text-muted-foreground mb-1 block">Макет</Label>
+            <Select value={layout} onValueChange={(v) => handleLayoutChange(v as MergeLayoutType)}>
+              <SelectTrigger className="w-full h-8 text-xs">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="single">1 фрейм</SelectItem>
+                <SelectItem value="horizontal-2">2 в ряд</SelectItem>
+                <SelectItem value="horizontal-3">3 в ряд</SelectItem>
+                <SelectItem value="horizontal-2-1">2+1</SelectItem>
+                <SelectItem value="horizontal-1-2">1+2</SelectItem>
+                <SelectItem value="grid-2x2">Сетка 2×2</SelectItem>
+                <SelectItem value="mosaic-left">Мозаика ←</SelectItem>
+                <SelectItem value="mosaic-right">Мозаика →</SelectItem>
+                <SelectItem value="vertical-left-3">← + 3</SelectItem>
+                <SelectItem value="vertical-right-3">3 + →</SelectItem>
+                <SelectItem value="center-large">Центр</SelectItem>
+                <SelectItem value="grid-3x3">Сетка 3×3</SelectItem>
+                <SelectItem value="asymmetric-1">Асим. 1</SelectItem>
+                <SelectItem value="asymmetric-2">Асим. 2</SelectItem>
+                <SelectItem value="l-shape">L-форма</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          
+          {onAnimationChange && (
+            <div className="flex-1">
+              <Label className="text-xs text-muted-foreground mb-1 block">Анимация по умолчанию</Label>
+              <Select value={defaultAnimation || 'fade'} onValueChange={(v) => onAnimationChange(v as FrameAnimationType)}>
+                <SelectTrigger className="w-full h-8 text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="fade">Плавное появление</SelectItem>
+                  <SelectItem value="slide-up">Снизу вверх</SelectItem>
+                  <SelectItem value="slide-down">Сверху вниз</SelectItem>
+                  <SelectItem value="slide-left">Справа налево</SelectItem>
+                  <SelectItem value="slide-right">Слева направо</SelectItem>
+                  <SelectItem value="zoom">Увеличение</SelectItem>
+                  <SelectItem value="flip">Переворот</SelectItem>
+                  <SelectItem value="none">Без анимации</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
         </div>
       </div>
 
@@ -160,6 +189,26 @@ export default function ComicFrameEditor({ frames, layout, onFramesChange, onLay
                   placeholder="Оставьте пустым для показа всегда"
                   className="h-8 text-xs"
                 />
+              </div>
+              
+              <div className="space-y-1">
+                <Label className="text-xs text-muted-foreground">Анимация (своя для фрейма)</Label>
+                <Select value={frame.animation || 'default'} onValueChange={(v) => updateFrame(index, { animation: v === 'default' ? undefined : v as FrameAnimationType })}>
+                  <SelectTrigger className="h-8 text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="default">По умолчанию</SelectItem>
+                    <SelectItem value="fade">Плавное появление</SelectItem>
+                    <SelectItem value="slide-up">Снизу вверх</SelectItem>
+                    <SelectItem value="slide-down">Сверху вниз</SelectItem>
+                    <SelectItem value="slide-left">Справа налево</SelectItem>
+                    <SelectItem value="slide-right">Слева направо</SelectItem>
+                    <SelectItem value="zoom">Увеличение</SelectItem>
+                    <SelectItem value="flip">Переворот</SelectItem>
+                    <SelectItem value="none">Без анимации</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           ))}

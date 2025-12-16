@@ -17,6 +17,16 @@ export type MergeLayoutType =
   | 'asymmetric-2' // асимметричная раскладка 2
   | 'l-shape'; // L-образная раскладка
 
+export type FrameAnimationType = 
+  | 'fade' // Плавное появление
+  | 'slide-up' // Снизу вверх
+  | 'slide-down' // Сверху вниз
+  | 'slide-left' // Справа налево
+  | 'slide-right' // Слева направо
+  | 'zoom' // Увеличение
+  | 'flip' // Переворот
+  | 'none'; // Без анимации
+
 export interface ComicFrame {
   id: string;
   type: 'image' | 'background';
@@ -24,6 +34,7 @@ export interface ComicFrame {
   mobileUrl?: string;
   alt?: string;
   textTrigger?: string; // Текст, при котором показывается этот фрейм
+  animation?: FrameAnimationType; // Тип анимации появления
 }
 
 export interface BaseParagraph {
@@ -32,6 +43,7 @@ export interface BaseParagraph {
   order?: number;
   comicFrames?: ComicFrame[]; // Фреймы комикса для текстового параграфа
   frameLayout?: MergeLayoutType; // Раскладка фреймов
+  frameAnimation?: FrameAnimationType; // Общая анимация для всех фреймов
   timeframes?: ('present' | 'retrospective')[];
   requiredPaths?: string[];
 }

@@ -35,11 +35,15 @@ function TextEditor({ paragraph, index, onUpdate }: TextEditorProps) {
       <ComicFrameEditor
         frames={paragraph.comicFrames || []}
         layout={paragraph.frameLayout || 'horizontal-3'}
+        defaultAnimation={paragraph.frameAnimation}
         onFramesChange={(frames) =>
           onUpdate(index, { ...paragraph, comicFrames: frames.length > 0 ? frames : undefined })
         }
         onLayoutChange={(layout) =>
           onUpdate(index, { ...paragraph, frameLayout: layout })
+        }
+        onAnimationChange={(animation) =>
+          onUpdate(index, { ...paragraph, frameAnimation: animation })
         }
         onBothChange={(layout, frames) =>
           onUpdate(index, { 

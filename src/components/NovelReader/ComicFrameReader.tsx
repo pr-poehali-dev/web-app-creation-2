@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { TextParagraph, DialogueParagraph, ComicFrame, MergeLayoutType } from '@/types/novel';
+import { TextParagraph, DialogueParagraph, ComicFrame, MergeLayoutType, FrameAnimationType } from '@/types/novel';
 import MergedParagraphsLayout from './MergedParagraphsLayout';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 
@@ -43,17 +43,44 @@ export default function ComicFrameReader({ paragraph, currentText, layout }: Com
     setImageAspectRatios(prev => new Map(prev).set(frameId, aspectRatio));
   };
 
+  const getAnimationClass = (animation: FrameAnimationType | undefined, defaultAnimation: FrameAnimationType | undefined): string => {
+    const animType = animation || defaultAnimation || 'fade';
+    
+    switch (animType) {
+      case 'fade':
+        return 'animate-fade-in';
+      case 'slide-up':
+        return 'animate-slide-up';
+      case 'slide-down':
+        return 'animate-slide-down';
+      case 'slide-left':
+        return 'animate-slide-left';
+      case 'slide-right':
+        return 'animate-slide-right';
+      case 'zoom':
+        return 'animate-zoom-in';
+      case 'flip':
+        return 'animate-flip';
+      case 'none':
+        return '';
+      default:
+        return 'animate-fade-in';
+    }
+  };
+
   if (activeFrames.length === 0) return null;
 
   const frameAspectRatios = activeFrames.map(frame => imageAspectRatios.get(frame.id) || 1);
+  const defaultAnimation = paragraph.frameAnimation;
 
   return (
     <>
       <MergedParagraphsLayout layout={layout} aspectRatios={frameAspectRatios}>
-        {activeFrames.map((frame) => (
+        {activeFrames.map((frame, index) => (
           <div 
             key={frame.id} 
-            className="w-full h-full cursor-pointer hover:opacity-90 transition-opacity"
+            className={`w-full h-full cursor-pointer hover:opacity-90 transition-opacity ${getAnimationClass(frame.animation, defaultAnimation)}`}
+            style={{ animationDelay: `${index * 0.1}s` }}
             onClick={() => setSelectedImage(frame.url)}
           >
             <img 
