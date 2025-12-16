@@ -87,8 +87,7 @@ export default function ComicFrameEditor({ frames, layout, defaultAnimation, sub
     const newFrame: ComicFrame = {
       id: `frame-${Date.now()}`,
       type: 'image',
-      url: '',
-      textTrigger: ''
+      url: ''
     };
     onFramesChange([...frames, newFrame]);
   };
@@ -241,10 +240,13 @@ export default function ComicFrameEditor({ frames, layout, defaultAnimation, sub
                 <Label className="text-xs text-muted-foreground">Триггер (подпараграф для показа)</Label>
                 {subParagraphs && subParagraphs.length > 0 ? (
                   <Select 
+                    key={`trigger-${frame.id}`}
                     value={frame.subParagraphTrigger || 'none'} 
                     onValueChange={(v) => {
-                      console.log('Trigger change:', v);
-                      updateFrame(index, { subParagraphTrigger: v === 'none' ? undefined : v });
+                      console.log('Trigger change:', v, 'for frame:', frame.id);
+                      const newTrigger = v === 'none' ? undefined : v;
+                      updateFrame(index, { subParagraphTrigger: newTrigger });
+                      console.log('Updated frame:', { ...frame, subParagraphTrigger: newTrigger });
                     }}
                   >
                     <SelectTrigger className="h-8 text-xs">
