@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback, memo } from 'react';
 import { Episode, Paragraph, ParagraphType, Novel } from '@/types/novel';
 import EpisodeHeader from '@/components/EpisodeEditor/EpisodeHeader';
 import ParagraphTypeButtons from '@/components/EpisodeEditor/ParagraphTypeButtons';
@@ -21,7 +21,7 @@ function EpisodeEditor({ episode, novel, onUpdate, onNovelUpdate }: EpisodeEdito
   const [selectedParagraphs, setSelectedParagraphs] = useState<Set<number>>(new Set());
   const [bulkEditMode, setBulkEditMode] = useState(false);
 
-  const handleAddParagraph = (type: ParagraphType, insertIndex?: number) => {
+  const handleAddParagraph = useCallback((type: ParagraphType, insertIndex?: number) => {
     let newParagraph: Paragraph;
     const id = `p${Date.now()}`;
 
@@ -69,9 +69,9 @@ function EpisodeEditor({ episode, novel, onUpdate, onNovelUpdate }: EpisodeEdito
     });
     
     setInsertingAt(null);
-  };
+  }, [episode, onUpdate]);
 
-  const handleUpdateParagraph = (index: number, updatedParagraph: Paragraph) => {
+  const handleUpdateParagraph = useCallback((index: number, updatedParagraph: Paragraph) => {
     const newParagraphs = [...episode.paragraphs];
     
     // Если режим массового редактирования и параграф выбран - применить к всем выбранным
@@ -90,9 +90,9 @@ function EpisodeEditor({ episode, novel, onUpdate, onNovelUpdate }: EpisodeEdito
     }
     
     onUpdate({ ...episode, paragraphs: newParagraphs });
-  };
+  }, [episode, onUpdate, bulkEditMode, selectedParagraphs]);
 
-  const handleDeleteParagraph = (index: number) => {
+  const handleDeleteParagraph = useCallback((index: number) => {
     // Если режим массового редактирования и параграф выбран - удалить все выбранные
     if (bulkEditMode && selectedParagraphs.has(index)) {
       const confirmed = confirm(`Удалить ${selectedParagraphs.size} параграф(ов)?`);
@@ -109,22 +109,22 @@ function EpisodeEditor({ episode, novel, onUpdate, onNovelUpdate }: EpisodeEdito
         paragraphs: episode.paragraphs.filter((_, i) => i !== index)
       });
     }
-  };
+  }, [episode, onUpdate, bulkEditMode, selectedParagraphs]);
 
-  const handleMoveParagraph = (index: number, direction: 'up' | 'down') => {
+  const handleMoveParagraph = useCallback((index: number, direction: 'up' | 'down') => {
     const newIndex = direction === 'up' ? index - 1 : index + 1;
     if (newIndex < 0 || newIndex >= episode.paragraphs.length) return;
 
     const newParagraphs = [...episode.paragraphs];
     [newParagraphs[index], newParagraphs[newIndex]] = [newParagraphs[newIndex], newParagraphs[index]];
     onUpdate({ ...episode, paragraphs: newParagraphs });
-  };
+  }, [episode, onUpdate]);
 
-  const handleToggleInsert = (index: number) => {
-    setInsertingAt(insertingAt === index ? null : index);
-  };
+  const handleToggleInsert = useCallback((index: number) => {
+    setInsertingAt(prev => prev === index ? null : index);
+  }, []);
 
-  const handleToggleMerge = (index: number) => {
+  const handleToggleMerge = useCallback((index: number) => {
     const paragraph = episode.paragraphs[index];
     const nextParagraph = episode.paragraphs[index + 1];
     
@@ -138,9 +138,9 @@ function EpisodeEditor({ episode, novel, onUpdate, onNovelUpdate }: EpisodeEdito
     }
     
     onUpdate({ ...episode, paragraphs: newParagraphs });
-  };
+  }, [episode, onUpdate]);
 
-  const handleToggleSelect = (index: number) => {
+  const handleToggleSelect = useCallback((index: number) => {
     const newSelected = new Set(selectedParagraphs);
     if (newSelected.has(index)) {
       newSelected.delete(index);
@@ -148,17 +148,17 @@ function EpisodeEditor({ episode, novel, onUpdate, onNovelUpdate }: EpisodeEdito
       newSelected.add(index);
     }
     setSelectedParagraphs(newSelected);
-  };
+  }, [selectedParagraphs]);
 
-  const handleSelectAll = () => {
+  const handleSelectAll = useCallback(() => {
     if (selectedParagraphs.size === episode.paragraphs.length) {
       setSelectedParagraphs(new Set());
     } else {
       setSelectedParagraphs(new Set(episode.paragraphs.map((_, i) => i)));
     }
-  };
+  }, [episode.paragraphs.length, selectedParagraphs.size]);
 
-  const handleBulkTimeframeChange = (timeframe: 'present' | 'retrospective', checked: boolean) => {
+  const handleBulkTimeframeChange = useCallback((timeframe: 'present' | 'retrospective', checked: boolean) => {
     const newParagraphs = episode.paragraphs.map((para, index) => {
       if (!selectedParagraphs.has(index)) return para;
       
@@ -171,15 +171,15 @@ function EpisodeEditor({ episode, novel, onUpdate, onNovelUpdate }: EpisodeEdito
     });
     
     onUpdate({ ...episode, paragraphs: newParagraphs });
-  };
+  }, [episode, onUpdate, selectedParagraphs]);
 
-  const handleBulkDelete = () => {
+  const handleBulkDelete = useCallback(() => {
     onUpdate({
       ...episode,
       paragraphs: episode.paragraphs.filter((_, i) => !selectedParagraphs.has(i))
     });
     setSelectedParagraphs(new Set());
-  };
+  }, [episode, onUpdate, selectedParagraphs]);
 
   return (
     <div className="space-y-4">

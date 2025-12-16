@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { Paragraph, Novel } from '@/types/novel';
 import { Card, CardContent } from '@/components/ui/card';
 import { createParagraphEditorHandlers } from './ParagraphEditorLogic';
@@ -42,17 +42,20 @@ function ParagraphEditor({
   const [imageUrl, setImageUrl] = useState('');
   const [mobileImageUrl, setMobileImageUrl] = useState('');
 
-  const handlers = createParagraphEditorHandlers(
-    paragraph,
-    index,
-    novel,
-    imageUrl,
-    setImageUrl,
-    mobileImageUrl,
-    setMobileImageUrl,
-    setIsChangingType,
-    onUpdate,
-    onNovelUpdate
+  const handlers = useMemo(
+    () => createParagraphEditorHandlers(
+      paragraph,
+      index,
+      novel,
+      imageUrl,
+      setImageUrl,
+      mobileImageUrl,
+      setMobileImageUrl,
+      setIsChangingType,
+      onUpdate,
+      onNovelUpdate
+    ),
+    [paragraph, index, novel, imageUrl, mobileImageUrl, onUpdate, onNovelUpdate]
   );
 
   return (
@@ -95,4 +98,13 @@ function ParagraphEditor({
   );
 }
 
-export default ParagraphEditor;
+export default memo(ParagraphEditor, (prevProps, nextProps) => {
+  return (
+    prevProps.paragraph === nextProps.paragraph &&
+    prevProps.index === nextProps.index &&
+    prevProps.totalParagraphs === nextProps.totalParagraphs &&
+    prevProps.isBulkEditMode === nextProps.isBulkEditMode &&
+    prevProps.isSelected === nextProps.isSelected &&
+    prevProps.selectedCount === nextProps.selectedCount
+  );
+});
