@@ -19,6 +19,12 @@ export default function MergedParagraphsLayout({ layout, children, aspectRatios 
       case 'horizontal-3':
         return 'flex flex-row items-center justify-center gap-4';
       
+      case 'vertical-2':
+        return 'flex flex-col items-center justify-center gap-4';
+      
+      case 'vertical-3':
+        return 'flex flex-col items-center justify-center gap-4';
+      
       case 'horizontal-2-1':
         return 'grid grid-cols-[2fr_2fr_1fr] gap-4';
       
@@ -114,7 +120,7 @@ export default function MergedParagraphsLayout({ layout, children, aspectRatios 
     }
   };
 
-  const isFlexLayout = layout === 'single' || layout === 'horizontal-2' || layout === 'horizontal-3';
+  const isFlexLayout = layout === 'single' || layout === 'horizontal-2' || layout === 'horizontal-3' || layout === 'vertical-2' || layout === 'vertical-3';
 
   return (
     <div className={`w-full h-full ${getLayoutClasses()}`}>

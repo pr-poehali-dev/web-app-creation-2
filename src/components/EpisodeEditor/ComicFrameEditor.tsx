@@ -24,6 +24,8 @@ export default function ComicFrameEditor({ frames, layout, defaultAnimation, onF
       case 'single': return 1;
       case 'horizontal-2': return 2;
       case 'horizontal-3': return 3;
+      case 'vertical-2': return 2;
+      case 'vertical-3': return 3;
       case 'horizontal-2-1': return 3;
       case 'horizontal-1-2': return 3;
       case 'grid-2x2': return 4;
@@ -116,6 +118,8 @@ export default function ComicFrameEditor({ frames, layout, defaultAnimation, onF
                 <SelectItem value="single">1 фрейм</SelectItem>
                 <SelectItem value="horizontal-2">2 в ряд</SelectItem>
                 <SelectItem value="horizontal-3">3 в ряд</SelectItem>
+                <SelectItem value="vertical-2">2 в столбец</SelectItem>
+                <SelectItem value="vertical-3">3 в столбец</SelectItem>
                 <SelectItem value="horizontal-2-1">2+1</SelectItem>
                 <SelectItem value="horizontal-1-2">1+2</SelectItem>
                 <SelectItem value="grid-2x2">Сетка 2×2</SelectItem>
