@@ -1,10 +1,26 @@
 export type ParagraphType = 'text' | 'image' | 'choice' | 'item' | 'dialogue' | 'background';
 
+export type MergeLayoutType = 
+  | 'horizontal-3' // 3 блока в ряд
+  | 'horizontal-2-1' // 2 больших + 1 маленький справа
+  | 'horizontal-1-2' // 1 маленький слева + 2 больших
+  | 'grid-2x2' // сетка 2x2
+  | 'mosaic-left' // мозаика с акцентом слева
+  | 'mosaic-right' // мозаика с акцентом справа
+  | 'vertical-left-3' // 1 большой слева + 3 справа вертикально
+  | 'vertical-right-3' // 3 слева вертикально + 1 большой справа
+  | 'center-large' // 1 большой в центре + 4 по углам
+  | 'grid-3x3' // сетка 3x3
+  | 'asymmetric-1' // асимметричная раскладка 1
+  | 'asymmetric-2' // асимметричная раскладка 2
+  | 'l-shape'; // L-образная раскладка
+
 export interface BaseParagraph {
   id: string;
   type: ParagraphType;
   order?: number;
   mergedWith?: string; // ID следующего параграфа для объединения
+  mergeLayout?: MergeLayoutType; // Тип раскладки при объединении
   timeframes?: ('present' | 'retrospective')[];
   requiredPaths?: string[];
 }
