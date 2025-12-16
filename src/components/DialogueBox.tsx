@@ -47,9 +47,37 @@ function DialogueBox({
 
   return (
     <>
-      <Card className={`relative bg-card/95 backdrop-blur-sm border-0 shadow-xl ${shouldAnimate ? 'animate-scale-in' : ''} rounded-xl md:rounded-2xl w-full min-h-[10rem] md:min-h-[12rem]`}>
+      <div className={`relative ${shouldAnimate ? 'animate-scale-in' : ''} w-full min-h-[10rem] md:min-h-[12rem]`}>
+        <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 900 400" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="dialogGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#5c8fa3" stopOpacity="0.92" />
+              <stop offset="60%" stopColor="#d4c5b0" stopOpacity="0.88" />
+              <stop offset="100%" stopColor="#2d2d2d" stopOpacity="0.92" />
+            </linearGradient>
+            <filter id="dialogShadow">
+              <feGaussianBlur in="SourceAlpha" stdDeviation="4"/>
+              <feOffset dx="3" dy="3" result="offsetblur"/>
+              <feComponentTransfer>
+                <feFuncA type="linear" slope="0.4"/>
+              </feComponentTransfer>
+              <feMerge>
+                <feMergeNode/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+          </defs>
+          <path d="M 0,80 Q 200,40 400,70 T 700,60 Q 850,55 900,80 L 900,320 Q 750,350 600,330 T 300,340 Q 150,350 0,320 Z" 
+            fill="url(#dialogGrad)" filter="url(#dialogShadow)" opacity="0.96" />
+          <circle cx="800" cy="100" r="40" fill="#2d2d2d" opacity="0.3" />
+          <circle cx="150" cy="320" r="50" fill="#5c8fa3" opacity="0.25" />
+          <rect x="80" y="70" width="2" height="60" fill="#2d2d2d" opacity="0.6" />
+          <rect x="820" y="280" width="50" height="2" fill="#d4c5b0" opacity="0.5" />
+          <path d="M 450,50 Q 460,40 470,50 T 490,50" stroke="#2d2d2d" strokeWidth="2" fill="none" opacity="0.4" />
+        </svg>
+        
         <div 
-          className="absolute inset-0 pointer-events-none rounded-xl md:rounded-2xl transition-all duration-1000 ease-in-out"
+          className="absolute inset-0 pointer-events-none transition-all duration-1000 ease-in-out"
           style={{
             opacity: isRetrospective ? 1 : 0,
             boxShadow: 'inset 0 0 60px 20px rgba(0, 0, 0, 0.4)',
@@ -58,7 +86,7 @@ function DialogueBox({
         />
         
         {characterImage && (
-          <div className={`absolute left-4 md:left-6 lg:left-8 bottom-4 md:bottom-6 lg:bottom-8 flex flex-col items-center gap-3 z-10 ${shouldAnimate ? 'animate-scale-in' : ''}`}>
+          <div className={`absolute left-4 md:left-6 lg:left-8 bottom-4 md:bottom-6 lg:bottom-8 flex flex-col items-center gap-3 z-20 ${shouldAnimate ? 'animate-scale-in' : ''}`}>
             <div className="flex items-center justify-center relative">
               {characterImage.startsWith('data:') || characterImage.startsWith('http') ? (
                 <ZoomableImage
@@ -90,17 +118,17 @@ function DialogueBox({
           </div>
         )}
         
-        <CardContent className="p-4 md:p-6 lg:p-8 flex items-start">
+        <div className="p-4 md:p-6 lg:p-8 flex items-start relative z-10">
           <div className={characterImage ? (isTopMerged ? "pl-28 md:pl-36 lg:pl-44" : "pl-32 md:pl-40 lg:pl-52") : ""}>
             {!characterImage && (
               <h3 className={isTopMerged 
-                ? "text-sm md:text-base lg:text-lg font-bold text-primary mb-1.5 md:mb-2"
-                : "text-sm md:text-base lg:text-lg font-bold text-primary mb-2 md:mb-3"
-              }>
+                ? "text-sm md:text-base lg:text-lg font-bold mb-1.5 md:mb-2 drop-shadow-sm" 
+                : "text-sm md:text-base lg:text-lg font-bold mb-2 md:mb-3 drop-shadow-sm"
+              } style={{ color: '#2d2d2d' }}>
                 {characterName}
               </h3>
             )}
-            <div className={`novel-text leading-relaxed text-foreground ${
+            <div className={`novel-text leading-relaxed text-foreground drop-shadow-sm ${
               isTopMerged 
                 ? "text-sm md:text-base lg:text-lg" 
                 : "text-sm md:text-base lg:text-lg"
@@ -114,8 +142,8 @@ function DialogueBox({
               />
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       <Dialog open={showCommentDialog} onOpenChange={setShowCommentDialog}>
         <DialogContent onClick={(e) => e.stopPropagation()}>
