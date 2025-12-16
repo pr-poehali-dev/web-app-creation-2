@@ -20,13 +20,17 @@ export default function ComicFrameReader({ paragraph, currentSubParagraphIndex, 
       return;
     }
 
-    // Если есть подпараграфы, фильтруем фреймы по индексу
+    // Если есть подпараграфы, показываем все фреймы до текущего индекса включительно
     if (paragraph.subParagraphs && paragraph.subParagraphs.length > 0 && currentSubParagraphIndex !== undefined) {
-      const currentSubText = paragraph.subParagraphs[currentSubParagraphIndex];
+      // Собираем все тексты от начала до текущего подпараграфа
+      const textsUpToNow = paragraph.subParagraphs.slice(0, currentSubParagraphIndex + 1);
       
       const matchingFrames = paragraph.comicFrames.filter(frame => {
-        if (!frame.textTrigger) return false; // Фреймы без триггера не показываются в подпараграфах
-        return currentSubText.includes(frame.textTrigger);
+        // Фреймы без триггера показываются всегда
+        if (!frame.textTrigger) return true;
+        
+        // Проверяем, есть ли триггер в любом из просмотренных подпараграфов
+        return textsUpToNow.some(text => text.includes(frame.textTrigger!));
       });
       
       setActiveFrames(matchingFrames);

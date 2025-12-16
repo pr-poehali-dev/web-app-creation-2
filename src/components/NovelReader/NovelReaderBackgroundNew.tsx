@@ -180,39 +180,6 @@ function NovelReaderBackgroundNew({
                   <div className="leading-relaxed w-full text-base md:text-lg lg:text-xl text-foreground">
                     {currentParagraph.subParagraphs[currentSubParagraphIndex]}
                   </div>
-                  <div className="flex justify-between items-center mt-4 gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if (currentSubParagraphIndex > 0) {
-                          setCurrentSubParagraphIndex(currentSubParagraphIndex - 1);
-                        }
-                      }}
-                      disabled={currentSubParagraphIndex === 0}
-                      className="h-8 px-3 bg-card/80 backdrop-blur-sm hover:bg-card/90 border border-border/50"
-                    >
-                      <Icon name="ChevronLeft" size={16} className="text-white" />
-                    </Button>
-                    <span className="text-xs text-muted-foreground">
-                      {currentSubParagraphIndex + 1} / {currentParagraph.subParagraphs.length}
-                    </span>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if (currentSubParagraphIndex < currentParagraph.subParagraphs.length - 1) {
-                          setCurrentSubParagraphIndex(currentSubParagraphIndex + 1);
-                        }
-                      }}
-                      disabled={currentSubParagraphIndex === currentParagraph.subParagraphs.length - 1}
-                      className="h-8 px-3 bg-card/80 backdrop-blur-sm hover:bg-card/90 border border-border/50"
-                    >
-                      <Icon name="ChevronRight" size={16} className="text-white" />
-                    </Button>
-                  </div>
                 </div>
               ) : (
                 <NovelReaderContent
