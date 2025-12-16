@@ -59,7 +59,7 @@ export function useNovelInteraction({
     } else {
       console.log('[Click] Blocked - canNavigate is false');
     }
-  }, [isTyping, canNavigate, currentParagraph, goToNextParagraph, setSkipTyping]);
+  }, [isTyping, canNavigate, currentParagraph, goToNextParagraph, setSkipTyping, hasSubParagraphs, isLastSubParagraph, goToNextSubParagraph]);
 
   const handleTypingComplete = useCallback(() => {
     console.log('[Interaction] Typing complete, setting isTyping to false');
