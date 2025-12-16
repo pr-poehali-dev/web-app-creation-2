@@ -39,21 +39,60 @@ function CharactersTab({ profile, novel, onProfileUpdate }: CharactersTabProps) 
                   className="cursor-pointer group relative"
                   onClick={() => setSelectedCharacter(character.id)}
                 >
-                  <div className="relative aspect-[3/4] overflow-hidden rounded-lg border-2 border-border bg-card/50 backdrop-blur-sm transition-all group-hover:border-primary/50 group-hover:shadow-lg group-hover:shadow-primary/20">
-                    {currentImage ? (
-                      currentImage.startsWith('data:') || currentImage.startsWith('http') ? (
-                        <img src={currentImage} alt={character.name} className="w-full h-full object-cover" />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-6xl md:text-8xl">{currentImage}</div>
-                      )
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-muted/30">
-                        <Icon name="User" size={48} className="text-muted-foreground" />
+                  <div className="relative aspect-[3/4] overflow-hidden transition-all">
+                    <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 300 400" preserveAspectRatio="none">
+                      <defs>
+                        <linearGradient id={`cardGrad-${character.id}`} x1="0%" y1="0%" x2="0%" y2="100%">
+                          <stop offset="0%" stopColor="#f5f0e8" stopOpacity="0.95" />
+                          <stop offset="100%" stopColor="#e8dcc8" stopOpacity="0.95" />
+                        </linearGradient>
+                        <filter id="vintageShadow">
+                          <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+                          <feOffset dx="0" dy="2" result="offsetblur"/>
+                          <feComponentTransfer>
+                            <feFuncA type="linear" slope="0.3"/>
+                          </feComponentTransfer>
+                          <feMerge>
+                            <feMergeNode/>
+                            <feMergeNode in="SourceGraphic"/>
+                          </feMerge>
+                        </filter>
+                      </defs>
+                      <path d="M 20,15 L 280,15 L 280,385 L 20,385 Z" fill={`url(#cardGrad-${character.id})`} filter="url(#vintageShadow)" />
+                      <path d="M 10,20 Q 15,15 20,15 L 280,15 Q 285,15 290,20 L 290,380 Q 285,385 280,385 L 20,385 Q 15,385 10,380 Z" 
+                        fill="none" stroke="#a89779" strokeWidth="1.5" opacity="0.6" />
+                      <path d="M 30,30 C 35,28 40,28 45,30" stroke="#8b7355" strokeWidth="1" fill="none" opacity="0.5" />
+                      <path d="M 255,30 C 260,28 265,28 270,30" stroke="#8b7355" strokeWidth="1" fill="none" opacity="0.5" />
+                      <circle cx="40" cy="35" r="3" fill="#8b7355" opacity="0.4" />
+                      <circle cx="260" cy="35" r="3" fill="#8b7355" opacity="0.4" />
+                      <path d="M 30,370 Q 40,375 50,370" stroke="#a89779" strokeWidth="1.2" fill="none" opacity="0.4" />
+                      <path d="M 250,370 Q 260,375 270,370" stroke="#a89779" strokeWidth="1.2" fill="none" opacity="0.4" />
+                      <ellipse cx="35" cy="200" rx="8" ry="12" fill="#9db5a0" opacity="0.25" />
+                      <ellipse cx="265" cy="220" rx="10" ry="15" fill="#9db5a0" opacity="0.25" />
+                    </svg>
+                    
+                    <div className="absolute inset-0 flex flex-col p-4">
+                      <div className="flex-1 flex items-center justify-center">
+                        {currentImage ? (
+                          currentImage.startsWith('data:') || currentImage.startsWith('http') ? (
+                            <img src={currentImage} alt={character.name} className="max-w-[80%] max-h-[70%] object-contain rounded-lg" style={{ filter: 'sepia(0.1)' }} />
+                          ) : (
+                            <div className="text-6xl md:text-8xl" style={{ filter: 'sepia(0.1)' }}>{currentImage}</div>
+                          )
+                        ) : (
+                          <div className="flex items-center justify-center">
+                            <Icon name="User" size={48} style={{ color: '#a89779' }} />
+                          </div>
+                        )}
                       </div>
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                    <div className="absolute bottom-0 left-0 right-0 p-3">
-                      <h4 className="font-bold text-white text-sm md:text-base drop-shadow-lg">{character.name}</h4>
+                      
+                      <div className="text-center py-3 border-t border-[#a89779]/30">
+                        <h4 className="font-bold text-sm md:text-base" style={{ 
+                          color: '#5a4a3a',
+                          fontFamily: '"Playfair Display", serif',
+                          letterSpacing: '0.5px'
+                        }}>{character.name}</h4>
+                      </div>
                     </div>
                   </div>
                 </div>
