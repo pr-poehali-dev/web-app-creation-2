@@ -40,31 +40,42 @@ export default function ComicFrameReader({ paragraph, currentSubParagraphIndex, 
       showFrames
     });
 
-    // Если есть подпараграфы, показываем все фреймы до текущего индекса включительно
+    // Если есть подпараграфы, показываем фреймы по индексу
     if (paragraph.subParagraphs && paragraph.subParagraphs.length > 0 && currentSubParagraphIndex !== undefined) {
-      // Собираем все ID подпараграфов от начала до текущего
-      const subParagraphIdsUpToNow = paragraph.subParagraphs
-        .slice(0, currentSubParagraphIndex + 1)
-        .map(sp => sp.id);
+      // Индекс 0 = основной текст (показываем только фреймы без триггера)
+      // Индекс 1+ = подпараграфы с индексом 0, 1, 2... (показываем фреймы с триггерами)
       
-      console.log('[ComicFrameReader] SubParagraph IDs up to now:', subParagraphIdsUpToNow);
-      console.log('[ComicFrameReader] All subParagraphs:', paragraph.subParagraphs.map(sp => ({ id: sp.id, text: sp.text?.substring(0, 20) })));
-      
-      const matchingFrames = paragraph.comicFrames.filter(frame => {
-        // Фреймы без триггера показываются всегда
-        if (!frame.subParagraphTrigger) {
-          console.log('[ComicFrameReader] Frame without trigger:', frame.id);
-          return true;
-        }
+      if (currentSubParagraphIndex === 0) {
+        // Показываем основной текст - только фреймы без триггера
+        const defaultFrames = paragraph.comicFrames.filter(frame => !frame.subParagraphTrigger);
+        console.log('[ComicFrameReader] Main paragraph (index 0), showing frames without triggers:', defaultFrames.length);
+        setActiveFrames(defaultFrames);
+      } else {
+        // Показываем подпараграфы - собираем ID всех подпараграфов до текущего
+        const subParagraphIdsUpToNow = paragraph.subParagraphs
+          .slice(0, currentSubParagraphIndex) // currentSubParagraphIndex - 1 + 1 = currentSubParagraphIndex
+          .map(sp => sp.id);
         
-        // Проверяем, есть ли ID триггера в списке просмотренных подпараграфов
-        const matches = subParagraphIdsUpToNow.includes(frame.subParagraphTrigger);
-        console.log('[ComicFrameReader] Frame', frame.id, 'trigger:', frame.subParagraphTrigger, 'matches:', matches, 'available IDs:', subParagraphIdsUpToNow);
-        return matches;
-      });
-      
-      console.log('[ComicFrameReader] Matching frames:', matchingFrames.length);
-      setActiveFrames(matchingFrames);
+        console.log('[ComicFrameReader] SubParagraph index:', currentSubParagraphIndex);
+        console.log('[ComicFrameReader] SubParagraph IDs up to now:', subParagraphIdsUpToNow);
+        console.log('[ComicFrameReader] All subParagraphs:', paragraph.subParagraphs.map((sp, idx) => ({ idx, id: sp.id, text: sp.text?.substring(0, 20) })));
+        
+        const matchingFrames = paragraph.comicFrames.filter(frame => {
+          // Фреймы без триггера показываются всегда
+          if (!frame.subParagraphTrigger) {
+            console.log('[ComicFrameReader] Frame without trigger:', frame.id);
+            return true;
+          }
+          
+          // Проверяем, есть ли ID триггера в списке просмотренных подпараграфов
+          const matches = subParagraphIdsUpToNow.includes(frame.subParagraphTrigger);
+          console.log('[ComicFrameReader] Frame', frame.id, 'trigger:', frame.subParagraphTrigger, 'matches:', matches, 'available IDs:', subParagraphIdsUpToNow);
+          return matches;
+        });
+        
+        console.log('[ComicFrameReader] Matching frames:', matchingFrames.length);
+        setActiveFrames(matchingFrames);
+      }
     } else {
       // Если нет подпараграфов, показываем все фреймы без триггеров
       const defaultFrames = paragraph.comicFrames.filter(frame => !frame.subParagraphTrigger);

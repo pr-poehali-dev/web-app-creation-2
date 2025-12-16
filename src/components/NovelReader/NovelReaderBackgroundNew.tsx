@@ -180,12 +180,12 @@ function NovelReaderBackgroundNew({
                currentParagraph.subParagraphs.length > 0 ? (
                 <div className="bg-card/90 backdrop-blur-sm rounded-xl md:rounded-2xl shadow-xl border border-border p-4 md:p-6 lg:p-8">
                   <div className="leading-relaxed w-full text-base md:text-lg lg:text-xl text-foreground">
-                    {/* Если это первый подпараграф (индекс 0), показываем основной текст параграфа */}
+                    {/* Индекс 0 = основной текст параграфа, индекс 1+ = подпараграфы 0, 1, 2... */}
                     {currentSubParagraphIndex === 0 ? (
                       currentParagraph.type === 'text' ? currentParagraph.content : currentParagraph.text
                     ) : (
-                      /* Иначе показываем текущий подпараграф */
-                      currentParagraph.subParagraphs[currentSubParagraphIndex]?.text || ''
+                      /* Показываем подпараграф с индексом (currentSubParagraphIndex - 1) */
+                      currentParagraph.subParagraphs[currentSubParagraphIndex - 1]?.text || ''
                     )}
                   </div>
                 </div>
