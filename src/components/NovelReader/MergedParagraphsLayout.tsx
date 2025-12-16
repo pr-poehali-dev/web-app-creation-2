@@ -112,11 +112,11 @@ export default function MergedParagraphsLayout({ layout, children, aspectRatios 
         return '';
       
       case 'center-large':
-        if (index === 0) return 'col-start-2 row-start-2 col-span-1 row-span-1';
-        if (index === 1) return 'col-start-1 row-start-1';
-        if (index === 2) return 'col-start-3 row-start-1';
-        if (index === 3) return 'col-start-1 row-start-3';
-        if (index === 4) return 'col-start-3 row-start-3';
+        if (index === 0) return 'col-start-2 row-start-2 col-span-1 row-span-1 z-10';
+        if (index === 1) return 'col-start-1 row-start-1 col-span-1 row-span-1';
+        if (index === 2) return 'col-start-3 row-start-1 col-span-1 row-span-1';
+        if (index === 3) return 'col-start-1 row-start-3 col-span-1 row-span-1';
+        if (index === 4) return 'col-start-3 row-start-3 col-span-1 row-span-1';
         return '';
       
       case 'asymmetric-1':

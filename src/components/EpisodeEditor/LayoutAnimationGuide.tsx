@@ -44,7 +44,7 @@ export default function LayoutAnimationGuide() {
       id: 'creative',
       name: 'Креативные',
       items: [
-        { name: 'Центр', emoji: '▫️⬛▫️', grid: 'grid-cols-3 grid-rows-3', cells: [1, 1, 1, 1, 2, 1, 1, 1, 1], spans: ['', '', '', '', 'col-span-1 row-span-1', '', '', '', ''] },
+        { name: 'Центр', emoji: '▫️⬛▫️', grid: 'grid-cols-3 grid-rows-3 relative', cells: [2, 1, 1, 1, 1, 1, 1, 1, 1], spans: ['col-start-1 row-start-1', 'col-start-3 row-start-1', 'col-start-2 row-start-2 z-10', 'col-start-1 row-start-3', 'col-start-3 row-start-3', '', '', '', ''] },
         { name: 'Пирамида', emoji: '🔺', grid: 'grid-cols-2 grid-rows-2', cells: [2, 1, 1], spans: ['col-span-2', '', ''] },
         { name: 'Обр. пирамида', emoji: '🔻', grid: 'grid-cols-2 grid-rows-2', cells: [1, 1, 2], spans: ['', '', 'col-span-2'] },
         { name: 'L-форма', emoji: '↪️', grid: 'grid-cols-3 grid-rows-3', cells: [2, 1, 1, 1, 1, 1], spans: ['col-span-2 row-span-2', 'col-start-3', 'col-start-3', '', '', ''] },
