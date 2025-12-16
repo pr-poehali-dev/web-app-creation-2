@@ -3,17 +3,22 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import Icon from '@/components/ui/icon';
+import { SubParagraph } from '@/types/novel';
 
 interface SubParagraphsEditorProps {
-  subParagraphs: string[];
-  onSubParagraphsChange: (subParagraphs: string[]) => void;
+  subParagraphs: SubParagraph[];
+  onSubParagraphsChange: (subParagraphs: SubParagraph[]) => void;
 }
 
 export default function SubParagraphsEditor({ subParagraphs, onSubParagraphsChange }: SubParagraphsEditorProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const addSubParagraph = () => {
-    onSubParagraphsChange([...subParagraphs, '']);
+    const newSubParagraph: SubParagraph = {
+      id: `sub-${Date.now()}`,
+      text: ''
+    };
+    onSubParagraphsChange([...subParagraphs, newSubParagraph]);
   };
 
   const removeSubParagraph = (index: number) => {
@@ -22,7 +27,7 @@ export default function SubParagraphsEditor({ subParagraphs, onSubParagraphsChan
 
   const updateSubParagraph = (index: number, value: string) => {
     const updated = [...subParagraphs];
-    updated[index] = value;
+    updated[index] = { ...updated[index], text: value };
     onSubParagraphsChange(updated);
   };
 
@@ -42,8 +47,8 @@ export default function SubParagraphsEditor({ subParagraphs, onSubParagraphsChan
 
       {isExpanded && (
         <div className="space-y-2">
-          {subParagraphs.map((subText, index) => (
-            <div key={index} className="border border-border/50 rounded p-2 space-y-2">
+          {subParagraphs.map((sub, index) => (
+            <div key={sub.id} className="border border-border/50 rounded p-2 space-y-2">
               <div className="flex items-center justify-between">
                 <Label className="text-xs">#{index + 1}</Label>
                 <Button
@@ -57,7 +62,7 @@ export default function SubParagraphsEditor({ subParagraphs, onSubParagraphsChan
               </div>
               
               <Textarea
-                value={subText}
+                value={sub.text}
                 onChange={(e) => updateSubParagraph(index, e.target.value)}
                 placeholder="Текст подпараграфа..."
                 className="text-xs min-h-[60px]"

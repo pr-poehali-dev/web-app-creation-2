@@ -22,21 +22,23 @@ export default function ComicFrameReader({ paragraph, currentSubParagraphIndex, 
 
     // Если есть подпараграфы, показываем все фреймы до текущего индекса включительно
     if (paragraph.subParagraphs && paragraph.subParagraphs.length > 0 && currentSubParagraphIndex !== undefined) {
-      // Собираем все тексты от начала до текущего подпараграфа
-      const textsUpToNow = paragraph.subParagraphs.slice(0, currentSubParagraphIndex + 1);
+      // Собираем все ID подпараграфов от начала до текущего
+      const subParagraphIdsUpToNow = paragraph.subParagraphs
+        .slice(0, currentSubParagraphIndex + 1)
+        .map(sp => sp.id);
       
       const matchingFrames = paragraph.comicFrames.filter(frame => {
         // Фреймы без триггера показываются всегда
-        if (!frame.textTrigger) return true;
+        if (!frame.subParagraphTrigger) return true;
         
-        // Проверяем, есть ли триггер в любом из просмотренных подпараграфов
-        return textsUpToNow.some(text => text.includes(frame.textTrigger!));
+        // Проверяем, есть ли ID триггера в списке просмотренных подпараграфов
+        return subParagraphIdsUpToNow.includes(frame.subParagraphTrigger);
       });
       
       setActiveFrames(matchingFrames);
     } else {
       // Если нет подпараграфов, показываем все фреймы без триггеров
-      const defaultFrames = paragraph.comicFrames.filter(frame => !frame.textTrigger);
+      const defaultFrames = paragraph.comicFrames.filter(frame => !frame.subParagraphTrigger);
       setActiveFrames(defaultFrames);
     }
   }, [currentSubParagraphIndex, paragraph.comicFrames, paragraph.subParagraphs]);

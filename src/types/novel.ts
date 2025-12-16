@@ -48,13 +48,18 @@ export type FrameAnimationType =
   | 'wave' // Волна
   | 'none'; // Без анимации
 
+export interface SubParagraph {
+  id: string;
+  text: string;
+}
+
 export interface ComicFrame {
   id: string;
   type: 'image' | 'background';
   url: string;
   mobileUrl?: string;
   alt?: string;
-  textTrigger?: string; // Текст, при котором показывается этот фрейм
+  subParagraphTrigger?: string; // ID подпараграфа, при котором показывается этот фрейм
   animation?: FrameAnimationType; // Тип анимации появления
 }
 
@@ -72,7 +77,7 @@ export interface BaseParagraph {
 export interface TextParagraph extends BaseParagraph {
   type: 'text';
   content: string;
-  subParagraphs?: string[]; // Подпараграфы внутри текста
+  subParagraphs?: SubParagraph[]; // Подпараграфы внутри текста
 }
 
 export interface ImageParagraph extends BaseParagraph {
@@ -110,7 +115,7 @@ export interface DialogueParagraph extends BaseParagraph {
   characterName: string;
   characterImage?: string;
   text: string;
-  subParagraphs?: string[]; // Подпараграфы внутри диалога
+  subParagraphs?: SubParagraph[]; // Подпараграфы внутри диалога
 }
 
 export interface BackgroundParagraph extends BaseParagraph {

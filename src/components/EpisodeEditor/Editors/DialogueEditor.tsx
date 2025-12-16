@@ -204,6 +204,7 @@ function DialogueEditor({
           frames={paragraph.comicFrames || []}
           layout={paragraph.frameLayout || 'horizontal-3'}
           defaultAnimation={paragraph.frameAnimation}
+          subParagraphs={paragraph.subParagraphs}
           onFramesChange={(frames) =>
             onUpdate(index, { ...paragraph, comicFrames: frames.length > 0 ? frames : undefined })
           }

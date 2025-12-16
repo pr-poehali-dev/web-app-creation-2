@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ComicFrame, MergeLayoutType, FrameAnimationType } from '@/types/novel';
+import { ComicFrame, MergeLayoutType, FrameAnimationType, SubParagraph } from '@/types/novel';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -11,13 +11,14 @@ interface ComicFrameEditorProps {
   frames: ComicFrame[];
   layout: MergeLayoutType;
   defaultAnimation?: FrameAnimationType;
+  subParagraphs?: SubParagraph[]; // Список подпараграфов для выбора триггера
   onFramesChange: (frames: ComicFrame[]) => void;
   onLayoutChange: (layout: MergeLayoutType) => void;
   onAnimationChange?: (animation: FrameAnimationType) => void;
   onBothChange?: (layout: MergeLayoutType, frames: ComicFrame[]) => void;
 }
 
-export default function ComicFrameEditor({ frames, layout, defaultAnimation, onFramesChange, onLayoutChange, onAnimationChange, onBothChange }: ComicFrameEditorProps) {
+export default function ComicFrameEditor({ frames, layout, defaultAnimation, subParagraphs, onFramesChange, onLayoutChange, onAnimationChange, onBothChange }: ComicFrameEditorProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const getRequiredFramesCount = (layoutType: MergeLayoutType): number => {
@@ -237,13 +238,29 @@ export default function ComicFrameEditor({ frames, layout, defaultAnimation, onF
               </div>
 
               <div className="space-y-1">
-                <Label className="text-xs text-muted-foreground">Триггер (текст для показа)</Label>
-                <Input
-                  value={frame.textTrigger || ''}
-                  onChange={(e) => updateFrame(index, { textTrigger: e.target.value })}
-                  placeholder="Оставьте пустым для показа всегда"
-                  className="h-8 text-xs"
-                />
+                <Label className="text-xs text-muted-foreground">Триггер (подпараграф для показа)</Label>
+                {subParagraphs && subParagraphs.length > 0 ? (
+                  <Select 
+                    value={frame.subParagraphTrigger || 'none'} 
+                    onValueChange={(v) => updateFrame(index, { subParagraphTrigger: v === 'none' ? undefined : v })}
+                  >
+                    <SelectTrigger className="h-8 text-xs">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-[300px]">
+                      <SelectItem value="none">⚫ Показывать всегда</SelectItem>
+                      {subParagraphs.map((sp, idx) => (
+                        <SelectItem key={sp.id} value={sp.id}>
+                          {idx + 1}. {sp.text.substring(0, 40)}{sp.text.length > 40 ? '...' : ''}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <div className="text-xs text-muted-foreground p-2 bg-muted/20 rounded border border-border/50">
+                    Нет подпараграфов. Фрейм будет показан сразу.
+                  </div>
+                )}
               </div>
               
               <div className="space-y-1">

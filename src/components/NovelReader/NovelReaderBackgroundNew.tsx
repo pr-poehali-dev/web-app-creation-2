@@ -178,7 +178,7 @@ function NovelReaderBackgroundNew({
                currentParagraph.subParagraphs.length > 0 ? (
                 <div className="bg-card/90 backdrop-blur-sm rounded-xl md:rounded-2xl shadow-xl border border-border p-4 md:p-6 lg:p-8">
                   <div className="leading-relaxed w-full text-base md:text-lg lg:text-xl text-foreground">
-                    {currentParagraph.subParagraphs[currentSubParagraphIndex]}
+                    {currentParagraph.subParagraphs[currentSubParagraphIndex].text}
                   </div>
                 </div>
               ) : (
