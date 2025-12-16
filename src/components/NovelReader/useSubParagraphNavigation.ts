@@ -35,11 +35,14 @@ export function useSubParagraphNavigation({
   const isFirstSubParagraph = currentSubParagraphIndex === 0;
 
   const goToNextSubParagraph = () => {
+    console.log('[SubParagraph] goToNextSubParagraph - current index:', currentSubParagraphIndex, 'count:', subParagraphsCount);
     // Проверяем, что следующий индекс не выйдет за границы
     if (currentSubParagraphIndex < subParagraphsCount) {
+      console.log('[SubParagraph] Incrementing index from', currentSubParagraphIndex, 'to', currentSubParagraphIndex + 1);
       setCurrentSubParagraphIndex(prev => prev + 1);
       return true;
     }
+    console.log('[SubParagraph] Cannot increment - already at or past last subparagraph');
     return false;
   };
 

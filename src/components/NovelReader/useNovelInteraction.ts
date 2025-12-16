@@ -33,15 +33,17 @@ export function useNovelInteraction({
       return;
     }
 
-    console.log('[Click] isTyping:', isTyping, 'canNavigate:', canNavigate, 'paragraphType:', currentParagraph?.type, 'hasSubParagraphs:', hasSubParagraphs);
+    console.log('[Click] isTyping:', isTyping, 'canNavigate:', canNavigate, 'paragraphType:', currentParagraph?.type, 'hasSubParagraphs:', hasSubParagraphs, 'isLastSubParagraph:', isLastSubParagraph);
     if (isTyping) {
       console.log('[Click] Skip typing - setting skipTyping=true');
       setSkipTyping(true);
     } else if (canNavigate) {
       if (currentParagraph?.type !== 'choice') {
         // Если есть подпараграфы, сначала переключаем их
+        console.log('[Click] Checking sub-paragraphs: hasSubParagraphs=', hasSubParagraphs, '!isLastSubParagraph=', !isLastSubParagraph, 'goToNextSubParagraph=', !!goToNextSubParagraph);
         if (hasSubParagraphs && !isLastSubParagraph && goToNextSubParagraph) {
           const moved = goToNextSubParagraph();
+          console.log('[Click] goToNextSubParagraph() returned:', moved);
           if (moved) {
             console.log('[Click] Go to next sub-paragraph');
             return;
@@ -49,7 +51,7 @@ export function useNovelInteraction({
         }
         
         // Если подпараграфов нет или это последний, идем к следующему параграфу
-        console.log('[Click] Go to next paragraph');
+        console.log('[Click] Go to next paragraph - calling goToNextParagraph()');
         goToNextParagraph();
       } else {
         console.log('[Click] Blocked - paragraph is choice type');

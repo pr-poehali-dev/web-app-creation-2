@@ -185,12 +185,19 @@ function NovelReaderBackgroundNew({
                     'text-base md:text-lg lg:text-xl'
                   }`}>
                     {/* Индекс 0 = основной текст параграфа, индекс 1+ = подпараграфы 0, 1, 2... */}
-                    {currentSubParagraphIndex === 0 ? (
-                      currentParagraph.type === 'text' ? currentParagraph.content : currentParagraph.text
-                    ) : (
-                      /* Показываем подпараграф с индексом (currentSubParagraphIndex - 1) */
-                      currentParagraph.subParagraphs[currentSubParagraphIndex - 1]?.text || ''
-                    )}
+                    {(() => {
+                      console.log('[Render] currentSubParagraphIndex:', currentSubParagraphIndex, 'subParagraphs.length:', currentParagraph.subParagraphs?.length);
+                      if (currentSubParagraphIndex === 0) {
+                        const text = currentParagraph.type === 'text' ? currentParagraph.content : currentParagraph.text;
+                        console.log('[Render] Showing main text:', text?.substring(0, 50));
+                        return text;
+                      } else {
+                        const subIndex = currentSubParagraphIndex - 1;
+                        const subText = currentParagraph.subParagraphs?.[subIndex]?.text || '';
+                        console.log('[Render] Showing subparagraph[' + subIndex + ']:', subText.substring(0, 50));
+                        return subText;
+                      }
+                    })()}
                   </div>
                 </div>
               ) : (
