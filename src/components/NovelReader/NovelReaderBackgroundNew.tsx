@@ -137,6 +137,7 @@ function NovelReaderBackgroundNew({
                   paragraph={currentParagraph as TextParagraph | DialogueParagraph}
                   currentSubParagraphIndex={currentParagraph.subParagraphs && currentParagraph.subParagraphs.length > 0 ? currentSubParagraphIndex : undefined}
                   layout={currentParagraph.frameLayout || 'single'}
+                  isTyping={isTyping}
                 />
               </div>
             </div>

@@ -7,12 +7,25 @@ interface ComicFrameReaderProps {
   paragraph: TextParagraph | DialogueParagraph;
   currentSubParagraphIndex?: number; // Индекс текущего подпараграфа
   layout: MergeLayoutType;
+  isTyping: boolean; // Флаг печати текста
 }
 
-export default function ComicFrameReader({ paragraph, currentSubParagraphIndex, layout }: ComicFrameReaderProps) {
+export default function ComicFrameReader({ paragraph, currentSubParagraphIndex, layout, isTyping }: ComicFrameReaderProps) {
   const [activeFrames, setActiveFrames] = useState<ComicFrame[]>([]);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [imageAspectRatios, setImageAspectRatios] = useState<Map<string, number>>(new Map());
+  const [showFrames, setShowFrames] = useState(false);
+
+  // Показываем фреймы только после завершения печати текста
+  useEffect(() => {
+    if (!isTyping) {
+      // Небольшая задержка для плавности
+      const timer = setTimeout(() => setShowFrames(true), 100);
+      return () => clearTimeout(timer);
+    } else {
+      setShowFrames(false);
+    }
+  }, [isTyping]);
 
   useEffect(() => {
     if (!paragraph.comicFrames || paragraph.comicFrames.length === 0) {
@@ -94,7 +107,8 @@ export default function ComicFrameReader({ paragraph, currentSubParagraphIndex, 
     }
   };
 
-  if (activeFrames.length === 0) return null;
+  // Не показываем фреймы, если текст еще печатается или если нет активных фреймов
+  if (!showFrames || activeFrames.length === 0) return null;
 
   const frameAspectRatios = activeFrames.map(frame => imageAspectRatios.get(frame.id) || 1);
   const defaultAnimation = paragraph.frameAnimation;
