@@ -116,7 +116,7 @@ export default function MergedParagraphsLayout({ layout, children }: MergedParag
   return (
     <div className={`w-full h-full ${getLayoutClasses()} max-h-full`}>
       {children.map((child, index) => (
-        <div key={index} className={`${getItemClasses(index)} bg-card/80 backdrop-blur-sm rounded-lg border border-border/50 overflow-hidden`} style={{ aspectRatio: '1/1' }}>
+        <div key={index} className={`${getItemClasses(index)} bg-card/80 backdrop-blur-sm rounded-lg border border-border/50 overflow-hidden flex items-center justify-center`}>
           {child}
         </div>
       ))}

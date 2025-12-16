@@ -44,25 +44,25 @@ export default function ComicFrameReader({ paragraph, currentText, layout }: Com
         {activeFrames.map((frame) => (
           <div 
             key={frame.id} 
-            className="w-full h-full cursor-pointer hover:opacity-90 transition-opacity"
+            className="w-full h-full cursor-pointer hover:opacity-90 transition-opacity flex items-center justify-center"
             onClick={() => setSelectedImage(frame.url)}
           >
             <img 
               src={frame.url} 
               alt={frame.alt || ''} 
-              className="w-full h-full object-cover rounded-lg"
+              className="max-w-full max-h-full object-contain rounded-lg"
             />
           </div>
         ))}
       </MergedParagraphsLayout>
 
       <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
-        <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 overflow-hidden">
+        <DialogContent className="max-w-[95vw] max-h-[95vh] p-2 overflow-auto">
           {selectedImage && (
             <img 
               src={selectedImage} 
               alt="Full size" 
-              className="w-full h-full object-contain"
+              className="w-full h-auto object-contain"
             />
           )}
         </DialogContent>
