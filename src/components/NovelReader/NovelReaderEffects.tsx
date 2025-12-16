@@ -100,10 +100,10 @@ function NovelReaderEffects({
   useEffect(() => {
     console.log('[NovelReader] Paragraph changed, type:', currentParagraph?.type, 'index:', currentParagraphIndex);
     if (currentParagraph?.type === 'text' || currentParagraph?.type === 'dialogue' || currentParagraph?.type === 'item') {
-      console.log('[NovelReader] Setting isTyping=true, skipTyping=false for typing paragraph');
-      setIsTyping(true);
+      console.log('[NovelReader] Text paragraph - immediately allow navigation');
+      setIsTyping(false);
       setSkipTyping(false);
-      setCanNavigate(false);
+      setCanNavigate(true);
     } else {
       console.log('[NovelReader] Setting isTyping=false, canNavigate=true for non-typing paragraph');
       setIsTyping(false);
