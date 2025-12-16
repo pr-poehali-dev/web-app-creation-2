@@ -22,8 +22,8 @@ export function useNovelInteraction({
   const handleClick = useCallback((e: React.MouseEvent) => {
     // Игнорируем клики по кнопкам и интерактивным элементам
     const target = e.target as HTMLElement;
-    if (target.closest('button') || target.closest('a') || target.closest('[role="button"]')) {
-      console.log('[Click] Ignored - clicked on button or link');
+    if (target.closest('button') || target.closest('a') || target.closest('[role="button"]') || target.closest('[role="dialog"]')) {
+      console.log('[Click] Ignored - clicked on button, link or dialog');
       return;
     }
 
