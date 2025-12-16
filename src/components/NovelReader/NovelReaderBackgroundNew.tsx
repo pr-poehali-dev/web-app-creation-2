@@ -153,21 +153,58 @@ function NovelReaderBackgroundNew({
                     size="sm"
                     onClick={(e) => {
                       e.stopPropagation();
-                      goToPreviousParagraph();
+                      // Если есть подпараграфы и мы не на первом, переходим назад по подпараграфам
+                      if ((currentParagraph.type === 'text' || currentParagraph.type === 'dialogue') && 
+                          currentParagraph.subParagraphs && 
+                          currentParagraph.subParagraphs.length > 0 && 
+                          currentSubParagraphIndex > 0) {
+                        goToPreviousSubParagraph();
+                      } else {
+                        goToPreviousParagraph();
+                      }
                     }}
-                    disabled={currentParagraphIndex === 0}
+                    disabled={currentParagraphIndex === 0 && currentSubParagraphIndex === 0}
                     className="h-8 px-3 bg-card/80 backdrop-blur-sm hover:bg-card/90 border border-border/50"
                   >
                     <Icon name="ChevronLeft" size={16} className="text-white" />
                   </Button>
+                  
+                  {(currentParagraph.type === 'text' || currentParagraph.type === 'dialogue') && 
+                   currentParagraph.subParagraphs && 
+                   currentParagraph.subParagraphs.length > 0 && (
+                    <div className="flex items-center gap-1 px-3 py-1 bg-card/80 backdrop-blur-sm rounded-md border border-border/50">
+                      <span className="text-xs font-mono text-white/70">
+                        #{currentParagraphIndex + 1}.{currentSubParagraphIndex}
+                      </span>
+                      <span className="text-[10px] text-white/50">
+                        / {currentParagraph.subParagraphs.length}
+                      </span>
+                    </div>
+                  )}
+                  
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={(e) => {
                       e.stopPropagation();
-                      goToNextParagraph();
+                      // Если есть подпараграфы и мы не на последнем, переходим вперед по подпараграфам
+                      const hasSubParagraphs = (currentParagraph.type === 'text' || currentParagraph.type === 'dialogue') && 
+                                               currentParagraph.subParagraphs && 
+                                               currentParagraph.subParagraphs.length > 0;
+                      const subParagraphsCount = hasSubParagraphs ? currentParagraph.subParagraphs!.length : 0;
+                      const isLastSubParagraph = currentSubParagraphIndex >= subParagraphsCount;
+                      
+                      if (hasSubParagraphs && !isLastSubParagraph) {
+                        goToNextSubParagraph();
+                      } else {
+                        goToNextParagraph();
+                      }
                     }}
-                    disabled={currentParagraphIndex === currentEpisode.paragraphs.length - 1}
+                    disabled={currentParagraphIndex === currentEpisode.paragraphs.length - 1 && 
+                              (!(currentParagraph.type === 'text' || currentParagraph.type === 'dialogue') || 
+                               !currentParagraph.subParagraphs || 
+                               currentParagraph.subParagraphs.length === 0 ||
+                               currentSubParagraphIndex >= currentParagraph.subParagraphs.length)}
                     className="h-8 px-3 bg-card/80 backdrop-blur-sm hover:bg-card/90 border border-border/50"
                   >
                     <Icon name="ChevronRight" size={16} className="text-white" />
@@ -185,19 +222,11 @@ function NovelReaderBackgroundNew({
                     'text-base md:text-lg lg:text-xl'
                   }`}>
                     {/* Индекс 0 = основной текст параграфа, индекс 1+ = подпараграфы 0, 1, 2... */}
-                    {(() => {
-                      console.log('[Render] currentSubParagraphIndex:', currentSubParagraphIndex, 'subParagraphs.length:', currentParagraph.subParagraphs?.length);
-                      if (currentSubParagraphIndex === 0) {
-                        const text = currentParagraph.type === 'text' ? currentParagraph.content : currentParagraph.text;
-                        console.log('[Render] Showing main text:', text?.substring(0, 50));
-                        return text;
-                      } else {
-                        const subIndex = currentSubParagraphIndex - 1;
-                        const subText = currentParagraph.subParagraphs?.[subIndex]?.text || '';
-                        console.log('[Render] Showing subparagraph[' + subIndex + ']:', subText.substring(0, 50));
-                        return subText;
-                      }
-                    })()}
+                    {currentSubParagraphIndex === 0 ? (
+                      currentParagraph.type === 'text' ? currentParagraph.content : currentParagraph.text
+                    ) : (
+                      currentParagraph.subParagraphs?.[currentSubParagraphIndex - 1]?.text || ''
+                    )}
                   </div>
                 </div>
               ) : (

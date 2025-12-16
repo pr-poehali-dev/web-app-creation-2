@@ -52,11 +52,12 @@ export function useAppHandlers({
     setActiveView('admin');
   }, [setIsAdmin, setActiveView]);
 
-  const handleEpisodeSelect = useCallback((episodeId: string, paragraphIndex?: number) => {
+  const handleEpisodeSelect = useCallback((episodeId: string, paragraphIndex?: number, subParagraphIndex?: number) => {
     setProfile(prev => ({
       ...prev,
       currentEpisodeId: episodeId,
-      currentParagraphIndex: paragraphIndex !== undefined ? paragraphIndex : 0
+      currentParagraphIndex: paragraphIndex !== undefined ? paragraphIndex : 0,
+      currentSubParagraphIndex: subParagraphIndex !== undefined ? subParagraphIndex : 0
     }));
     setShowGreetingScreen(false);
     setActiveView('reader');

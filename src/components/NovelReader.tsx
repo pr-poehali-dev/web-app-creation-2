@@ -74,7 +74,9 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
     goToPreviousSubParagraph
   } = useSubParagraphNavigation({
     currentParagraph,
-    paragraphKey
+    paragraphKey,
+    profile,
+    onProfileUpdate
   });
 
   const {

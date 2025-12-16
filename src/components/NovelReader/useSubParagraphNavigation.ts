@@ -1,20 +1,27 @@
 import { useState, useEffect } from 'react';
 import { Paragraph } from '@/types/novel';
+import { UserProfile } from '@/types/settings';
 
 interface UseSubParagraphNavigationProps {
   currentParagraph: Paragraph | undefined;
   paragraphKey: string;
+  profile?: UserProfile;
+  onProfileUpdate?: (profile: UserProfile | ((prev: UserProfile) => UserProfile)) => void;
 }
 
 export function useSubParagraphNavigation({
   currentParagraph,
-  paragraphKey
+  paragraphKey,
+  profile,
+  onProfileUpdate
 }: UseSubParagraphNavigationProps) {
-  const [currentSubParagraphIndex, setCurrentSubParagraphIndex] = useState(0);
+  const [currentSubParagraphIndex, setCurrentSubParagraphIndex] = useState(profile?.currentSubParagraphIndex || 0);
 
   useEffect(() => {
-    setCurrentSubParagraphIndex(0);
-  }, [paragraphKey]);
+    // При смене параграфа восстанавливаем индекс из профиля или сбрасываем в 0
+    const initialIndex = profile?.currentSubParagraphIndex || 0;
+    setCurrentSubParagraphIndex(initialIndex);
+  }, [paragraphKey, profile?.currentSubParagraphIndex]);
 
   const hasSubParagraphs = 
     currentParagraph && 
@@ -35,20 +42,37 @@ export function useSubParagraphNavigation({
   const isFirstSubParagraph = currentSubParagraphIndex === 0;
 
   const goToNextSubParagraph = () => {
-    console.log('[SubParagraph] goToNextSubParagraph - current index:', currentSubParagraphIndex, 'count:', subParagraphsCount);
     // Проверяем, что следующий индекс не выйдет за границы
     if (currentSubParagraphIndex < subParagraphsCount) {
-      console.log('[SubParagraph] Incrementing index from', currentSubParagraphIndex, 'to', currentSubParagraphIndex + 1);
-      setCurrentSubParagraphIndex(prev => prev + 1);
+      const newIndex = currentSubParagraphIndex + 1;
+      setCurrentSubParagraphIndex(newIndex);
+      
+      // Сохраняем в профиль если доступно
+      if (onProfileUpdate) {
+        onProfileUpdate(prev => ({
+          ...prev,
+          currentSubParagraphIndex: newIndex
+        }));
+      }
+      
       return true;
     }
-    console.log('[SubParagraph] Cannot increment - already at or past last subparagraph');
     return false;
   };
 
   const goToPreviousSubParagraph = () => {
     if (!isFirstSubParagraph) {
-      setCurrentSubParagraphIndex(prev => prev - 1);
+      const newIndex = currentSubParagraphIndex - 1;
+      setCurrentSubParagraphIndex(newIndex);
+      
+      // Сохраняем в профиль если доступно
+      if (onProfileUpdate) {
+        onProfileUpdate(prev => ({
+          ...prev,
+          currentSubParagraphIndex: newIndex
+        }));
+      }
+      
       return true;
     }
     return false;

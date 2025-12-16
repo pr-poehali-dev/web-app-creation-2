@@ -46,6 +46,7 @@ export interface UserProfile {
   metCharacters: MetCharacter[];
   currentEpisodeId: string;
   currentParagraphIndex: number;
+  currentSubParagraphIndex?: number;
   readParagraphs: string[];
   usedChoices: string[];
   activePaths: string[];

@@ -9,7 +9,7 @@ interface ParagraphsDialogProps {
   profile: UserProfile;
   selectedEpisodeId: string | null;
   onOpenChange: (open: boolean) => void;
-  onEpisodeSelect: (episodeId: string, paragraphIndex: number) => void;
+  onEpisodeSelect: (episodeId: string, paragraphIndex: number, subParagraphIndex?: number) => void;
   isAdmin?: boolean;
   isGuest?: boolean;
 }
@@ -52,46 +52,80 @@ function ParagraphsDialog({
               isLocked = !isVisited;
             }
             
+            const hasSubParagraphs = (para.type === 'text' || para.type === 'dialogue') && 
+                                     para.subParagraphs && 
+                                     para.subParagraphs.length > 0;
+            
             return (
-              <button
-                key={para.id}
-                onClick={() => {
-                  if (!isLocked) {
-                    onEpisodeSelect(selectedEpisodeId, pIndex);
-                    onOpenChange(false);
-                  }
-                }}
-                disabled={isLocked}
-                className={`w-full text-left p-3 rounded-lg transition-all ${
-                  isCurrentPara
-                    ? 'bg-primary text-primary-foreground font-semibold shadow-md'
-                    : isLocked
-                    ? 'bg-muted text-gray-200 cursor-not-allowed'
-                    : 'bg-muted hover:bg-muted/80 text-gray-200 hover:shadow-md'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <span className="font-mono text-sm font-bold">#{pIndex + 1}</span>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="uppercase text-xs font-bold opacity-70">{para.type}</span>
-                      {isLocked && <Icon name="Lock" size={12} />}
+              <div key={para.id} className="space-y-1">
+                <button
+                  onClick={() => {
+                    if (!isLocked) {
+                      onEpisodeSelect(selectedEpisodeId, pIndex, 0);
+                      onOpenChange(false);
+                    }
+                  }}
+                  disabled={isLocked}
+                  className={`w-full text-left p-3 rounded-lg transition-all ${
+                    isCurrentPara && profile.currentSubParagraphIndex === 0
+                      ? 'bg-primary text-primary-foreground font-semibold shadow-md'
+                      : isLocked
+                      ? 'bg-muted text-gray-200 cursor-not-allowed'
+                      : 'bg-muted hover:bg-muted/80 text-gray-200 hover:shadow-md'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="font-mono text-sm font-bold">#{pIndex + 1}</span>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="uppercase text-xs font-bold opacity-70">{para.type}</span>
+                        {isLocked && <Icon name="Lock" size={12} />}
+                        {hasSubParagraphs && <span className="text-xs opacity-50">({para.subParagraphs!.length} подпараграфов)</span>}
+                      </div>
+                      {para.type === 'text' && para.content && (
+                        <p className="text-sm opacity-80 line-clamp-2">{para.content}</p>
+                      )}
+                      {para.type === 'dialogue' && para.characterName && (
+                        <p className="text-sm opacity-80">{para.characterName}: {para.text?.slice(0, 50)}...</p>
+                      )}
+                      {para.type === 'item' && para.name && (
+                        <p className="text-sm opacity-80">{para.name}</p>
+                      )}
+                      {para.type === 'choice' && para.question && (
+                        <p className="text-sm opacity-80">{para.question}</p>
+                      )}
                     </div>
-                    {para.type === 'text' && para.content && (
-                      <p className="text-sm opacity-80 line-clamp-2">{para.content}</p>
-                    )}
-                    {para.type === 'dialogue' && para.characterName && (
-                      <p className="text-sm opacity-80">{para.characterName}: {para.text?.slice(0, 50)}...</p>
-                    )}
-                    {para.type === 'item' && para.name && (
-                      <p className="text-sm opacity-80">{para.name}</p>
-                    )}
-                    {para.type === 'choice' && para.question && (
-                      <p className="text-sm opacity-80">{para.question}</p>
-                    )}
                   </div>
-                </div>
-              </button>
+                </button>
+                
+                {hasSubParagraphs && para.subParagraphs!.map((sub, subIndex) => {
+                  const isCurrentSub = isCurrentPara && profile.currentSubParagraphIndex === subIndex + 1;
+                  return (
+                    <button
+                      key={sub.id}
+                      onClick={() => {
+                        if (!isLocked) {
+                          onEpisodeSelect(selectedEpisodeId, pIndex, subIndex + 1);
+                          onOpenChange(false);
+                        }
+                      }}
+                      disabled={isLocked}
+                      className={`w-full text-left p-2 ml-8 rounded-lg transition-all ${
+                        isCurrentSub
+                          ? 'bg-primary/80 text-primary-foreground font-semibold shadow-md'
+                          : isLocked
+                          ? 'bg-muted/50 text-gray-300 cursor-not-allowed'
+                          : 'bg-muted/50 hover:bg-muted/70 text-gray-300 hover:shadow-md'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono text-xs">#{pIndex + 1}.{subIndex + 1}</span>
+                        <p className="text-xs opacity-80 line-clamp-1">{sub.text}</p>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
             );
           })}
         </div>

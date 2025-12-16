@@ -267,7 +267,6 @@ export default function ComicFrameEditor({ frames, layout, defaultAnimation, sub
                       onChange={(e) => {
                         const v = e.target.value;
                         const newTrigger = v === 'none' ? undefined : v;
-                        console.log('[ComicFrameEditor] Select change - value:', v, 'newTrigger:', newTrigger, 'frame:', frame.id);
                         updateFrame(index, { subParagraphTrigger: newTrigger });
                       }}
                       className="h-8 w-full rounded-md border border-input bg-background px-3 py-1 text-xs ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
