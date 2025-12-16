@@ -11,9 +11,10 @@ interface ComicFrameEditorProps {
   layout: MergeLayoutType;
   onFramesChange: (frames: ComicFrame[]) => void;
   onLayoutChange: (layout: MergeLayoutType) => void;
+  onBothChange?: (layout: MergeLayoutType, frames: ComicFrame[]) => void;
 }
 
-export default function ComicFrameEditor({ frames, layout, onFramesChange, onLayoutChange }: ComicFrameEditorProps) {
+export default function ComicFrameEditor({ frames, layout, onFramesChange, onLayoutChange, onBothChange }: ComicFrameEditorProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const getRequiredFramesCount = (layoutType: MergeLayoutType): number => {
@@ -41,11 +42,8 @@ export default function ComicFrameEditor({ frames, layout, onFramesChange, onLay
     const requiredCount = getRequiredFramesCount(newLayout);
     const currentCount = frames.length;
     
-    // Сначала обновляем макет
-    onLayoutChange(newLayout);
-    
-    // Затем добавляем недостающие фреймы, если нужно
     if (currentCount < requiredCount) {
+      // Создаем недостающие фреймы
       const newFrames = [...frames];
       for (let i = currentCount; i < requiredCount; i++) {
         newFrames.push({
@@ -55,10 +53,18 @@ export default function ComicFrameEditor({ frames, layout, onFramesChange, onLay
           textTrigger: ''
         });
       }
-      // Используем setTimeout чтобы дать время сохраниться макету
-      setTimeout(() => {
+      
+      // Если есть onBothChange, используем его для атомарного обновления
+      if (onBothChange) {
+        onBothChange(newLayout, newFrames);
+      } else {
+        // Fallback на раздельные вызовы
+        onLayoutChange(newLayout);
         onFramesChange(newFrames);
-      }, 0);
+      }
+    } else {
+      // Если фреймов достаточно, просто меняем макет
+      onLayoutChange(newLayout);
     }
   };
 

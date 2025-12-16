@@ -41,6 +41,13 @@ function TextEditor({ paragraph, index, onUpdate }: TextEditorProps) {
         onLayoutChange={(layout) =>
           onUpdate(index, { ...paragraph, frameLayout: layout })
         }
+        onBothChange={(layout, frames) =>
+          onUpdate(index, { 
+            ...paragraph, 
+            frameLayout: layout, 
+            comicFrames: frames.length > 0 ? frames : undefined 
+          })
+        }
       />
     </div>
   );
