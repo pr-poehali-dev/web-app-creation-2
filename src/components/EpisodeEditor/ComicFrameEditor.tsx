@@ -16,6 +16,47 @@ interface ComicFrameEditorProps {
 export default function ComicFrameEditor({ frames, layout, onFramesChange, onLayoutChange }: ComicFrameEditorProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
+  const getRequiredFramesCount = (layoutType: MergeLayoutType): number => {
+    switch (layoutType) {
+      case 'single': return 1;
+      case 'horizontal-2': return 2;
+      case 'horizontal-3': return 3;
+      case 'horizontal-2-1': return 3;
+      case 'horizontal-1-2': return 3;
+      case 'grid-2x2': return 4;
+      case 'mosaic-left': return 3;
+      case 'mosaic-right': return 3;
+      case 'vertical-left-3': return 4;
+      case 'vertical-right-3': return 4;
+      case 'center-large': return 5;
+      case 'grid-3x3': return 9;
+      case 'asymmetric-1': return 4;
+      case 'asymmetric-2': return 4;
+      case 'l-shape': return 6;
+      default: return 3;
+    }
+  };
+
+  const handleLayoutChange = (newLayout: MergeLayoutType) => {
+    onLayoutChange(newLayout);
+    
+    const requiredCount = getRequiredFramesCount(newLayout);
+    const currentCount = frames.length;
+    
+    if (currentCount < requiredCount) {
+      const newFrames = [...frames];
+      for (let i = currentCount; i < requiredCount; i++) {
+        newFrames.push({
+          id: `frame-${Date.now()}-${i}`,
+          type: 'image',
+          url: '',
+          textTrigger: ''
+        });
+      }
+      onFramesChange(newFrames);
+    }
+  };
+
   const addFrame = () => {
     const newFrame: ComicFrame = {
       id: `frame-${Date.now()}`,
@@ -41,7 +82,7 @@ export default function ComicFrameEditor({ frames, layout, onFramesChange, onLay
       <div className="flex items-center justify-between">
         <Label className="text-sm font-medium">Комикс-фреймы ({frames.length})</Label>
         <div className="flex gap-2">
-          <Select value={layout} onValueChange={(v) => onLayoutChange(v as MergeLayoutType)}>
+          <Select value={layout} onValueChange={(v) => handleLayoutChange(v as MergeLayoutType)}>
             <SelectTrigger className="w-32 h-8 text-xs">
               <SelectValue />
             </SelectTrigger>
