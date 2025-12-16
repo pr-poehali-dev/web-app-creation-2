@@ -251,7 +251,7 @@ export default function ComicFrameEditor({ frames, layout, defaultAnimation, sub
                       <SelectItem value="none">⚫ Показывать всегда</SelectItem>
                       {subParagraphs.map((sp, idx) => (
                         <SelectItem key={sp.id} value={sp.id}>
-                          {idx + 1}. {sp.text.substring(0, 40)}{sp.text.length > 40 ? '...' : ''}
+                          {idx + 1}. {sp.text ? (sp.text.substring(0, 40) + (sp.text.length > 40 ? '...' : '')) : '(пустой)'}
                         </SelectItem>
                       ))}
                     </SelectContent>
