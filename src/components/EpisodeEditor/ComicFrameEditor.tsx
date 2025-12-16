@@ -46,6 +46,8 @@ export default function ComicFrameEditor({ frames, layout, onFramesChange, onLay
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
+              <SelectItem value="single">1 фрейм</SelectItem>
+              <SelectItem value="horizontal-2">2 в ряд</SelectItem>
               <SelectItem value="horizontal-3">3 в ряд</SelectItem>
               <SelectItem value="horizontal-2-1">2+1</SelectItem>
               <SelectItem value="horizontal-1-2">1+2</SelectItem>

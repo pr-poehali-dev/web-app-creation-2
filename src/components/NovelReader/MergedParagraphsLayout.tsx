@@ -9,6 +9,12 @@ interface MergedParagraphsLayoutProps {
 export default function MergedParagraphsLayout({ layout, children }: MergedParagraphsLayoutProps) {
   const getLayoutClasses = () => {
     switch (layout) {
+      case 'single':
+        return 'grid grid-cols-1 gap-4';
+      
+      case 'horizontal-2':
+        return 'grid grid-cols-2 gap-4';
+      
       case 'horizontal-3':
         return 'grid grid-cols-3 gap-4';
       
@@ -110,7 +116,7 @@ export default function MergedParagraphsLayout({ layout, children }: MergedParag
   return (
     <div className={`w-full h-full ${getLayoutClasses()}`}>
       {children.map((child, index) => (
-        <div key={index} className={`${getItemClasses(index)} bg-card/80 backdrop-blur-sm rounded-lg border border-border/50 p-4 overflow-auto`}>
+        <div key={index} className={`${getItemClasses(index)} bg-card/80 backdrop-blur-sm rounded-lg border border-border/50 overflow-hidden aspect-square`}>
           {child}
         </div>
       ))}

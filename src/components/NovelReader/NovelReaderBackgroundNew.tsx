@@ -130,12 +130,14 @@ function NovelReaderBackgroundNew({
       {!isContentHidden && currentParagraph.type !== 'background' && !isBackgroundChanging && (
         <>
           {hasComicFrames && (
-            <div className="absolute top-[60px] left-4 right-4 bottom-[calc(12rem+4rem)] md:top-[80px] md:left-8 md:right-32 md:bottom-[calc(12rem+4rem)] z-10">
-              <ComicFrameReader
-                paragraph={currentParagraph as TextParagraph | DialogueParagraph}
-                currentText={currentSubText}
-                layout={currentParagraph.frameLayout || 'horizontal-3'}
-              />
+            <div className="absolute top-[60px] left-4 right-4 bottom-[calc(14rem+2rem)] md:top-[80px] md:left-8 md:right-32 md:bottom-[calc(14rem+2rem)] z-10 flex items-center justify-center p-4">
+              <div className="w-full max-w-5xl">
+                <ComicFrameReader
+                  paragraph={currentParagraph as TextParagraph | DialogueParagraph}
+                  currentText={currentSubText}
+                  layout={currentParagraph.frameLayout || 'single'}
+                />
+              </div>
             </div>
           )}
           

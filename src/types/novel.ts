@@ -1,6 +1,8 @@
 export type ParagraphType = 'text' | 'image' | 'choice' | 'item' | 'dialogue' | 'background';
 
 export type MergeLayoutType = 
+  | 'single' // 1 фрейм на весь экран
+  | 'horizontal-2' // 2 фрейма в ряд
   | 'horizontal-3' // 3 блока в ряд
   | 'horizontal-2-1' // 2 больших + 1 маленький справа
   | 'horizontal-1-2' // 1 маленький слева + 2 больших
