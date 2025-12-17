@@ -233,48 +233,32 @@ function Index() {
 
   return (
     <div className="relative min-h-screen dark flex" style={uiFontStyle}>
-      {!showSidebar && (
-        <button
-          onClick={() => setShowSidebar(true)}
-          className="md:hidden fixed top-4 left-4 z-[70] bg-card/90 backdrop-blur-sm p-2 rounded-lg shadow-lg text-white"
-        >
-          <Icon name="Menu" size={20} />
-        </button>
-      )}
-
-      {profile.currentEpisodeId && !showGreetingScreen && (
-        <div className="hidden md:block fixed top-4 left-[340px] z-50">
-          <div className="text-xs text-muted-foreground bg-card/50 backdrop-blur-sm px-3 py-2 rounded-lg border border-border">
-            {profile.currentParagraphIndex + 1} / {novel.episodes.find(ep => ep.id === profile.currentEpisodeId)?.paragraphs.length}
-          </div>
-        </div>
-      )}
-
       {showSidebar && (
-        <div
-          className="md:hidden fixed inset-0 bg-black/50 z-[60]"
-          onClick={() => setShowSidebar(false)}
-        />
+        <>
+          <div
+            className="fixed inset-0 bg-black/60 z-[60] backdrop-blur-sm"
+            onClick={() => setShowSidebar(false)}
+          />
+          <div className="fixed inset-y-0 left-0 z-[65] transform transition-transform duration-300 translate-x-0 w-[320px]">
+            <EpisodesSidebar
+              novel={novel}
+              currentEpisodeId={profile.currentEpisodeId}
+              profile={profile}
+              onEpisodeSelect={(episodeId, paragraphIndex) => {
+                handleEpisodeSelect(episodeId, paragraphIndex);
+                setShowSidebar(false);
+              }}
+              onShowParagraphs={(episodeId) => {
+                handleShowParagraphs(episodeId);
+                setShowSidebar(false);
+              }}
+              isAdmin={authState.isAdmin}
+              isGuest={authState.isGuest}
+              onClose={() => setShowSidebar(false)}
+            />
+          </div>
+        </>
       )}
-
-      <div className={`fixed md:relative inset-y-0 left-0 z-[65] transform transition-transform duration-300 ${showSidebar ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
-        <EpisodesSidebar
-          novel={novel}
-          currentEpisodeId={profile.currentEpisodeId}
-          profile={profile}
-          onEpisodeSelect={(episodeId, paragraphIndex) => {
-            handleEpisodeSelect(episodeId, paragraphIndex);
-            setShowSidebar(false);
-          }}
-          onShowParagraphs={(episodeId) => {
-            handleShowParagraphs(episodeId);
-            setShowSidebar(false);
-          }}
-          isAdmin={authState.isAdmin}
-          isGuest={authState.isGuest}
-          onClose={() => setShowSidebar(false)}
-        />
-      </div>
 
       <div className="flex-1 relative">
         <NovelReader 

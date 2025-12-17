@@ -86,66 +86,119 @@ function NovelReaderBackgroundNew({
                          currentParagraph.comicFrames.length > 0;
 
   return (
-    <div className="absolute top-20 left-4 right-4 bottom-4 md:top-20 md:left-8 md:right-32 rounded-2xl overflow-hidden">
-      {previousBackgroundImage && (
+    <div className="absolute inset-0 flex">
+      {/* Левая часть - фоновое изображение с волнистым краем */}
+      <div className="hidden lg:block lg:w-1/2 relative overflow-hidden">
+        {previousBackgroundImage && (
+          <div 
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ 
+              backgroundImage: `url(${previousBackgroundImage})`,
+              opacity: newImageReady ? 0 : 1,
+              filter: getFilterStyle(newImageReady ? 'blur(16px)' : 'blur(0px)'),
+              transition: 'opacity 2.4s ease-in-out, filter 2.4s ease-in-out',
+              zIndex: 1
+            }}
+          />
+        )}
+        
         <div 
           className="absolute inset-0 bg-cover bg-center"
           style={{ 
-            backgroundImage: `url(${previousBackgroundImage})`,
-            opacity: newImageReady ? 0 : 1,
-            filter: getFilterStyle(newImageReady ? 'blur(16px)' : 'blur(0px)'),
-            transition: 'opacity 2.4s ease-in-out, filter 2.4s ease-in-out',
-            zIndex: 1
+            backgroundImage: `url("${backgroundImage}")`,
+            opacity: previousBackgroundImage && !newImageReady ? 0 : 1,
+            filter: getFilterStyle(previousBackgroundImage && !newImageReady ? 'blur(16px)' : 'blur(0px)'),
+            transition: previousBackgroundImage ? 'opacity 2.4s ease-in-out, filter 2.4s ease-in-out' : 'filter 1.2s ease-in-out',
+            zIndex: 0
           }}
         />
-      )}
-      
-      <div 
-        className="absolute inset-0 bg-cover bg-center"
-        style={{ 
-          backgroundImage: `url("${backgroundImage}")`,
-          opacity: previousBackgroundImage && !newImageReady ? 0 : 1,
-          filter: getFilterStyle(previousBackgroundImage && !newImageReady ? 'blur(16px)' : 'blur(0px)'),
-          transition: previousBackgroundImage ? 'opacity 2.4s ease-in-out, filter 2.4s ease-in-out' : 'filter 1.2s ease-in-out',
-          zIndex: 0
-        }}
-      />
 
-      <div className={`absolute inset-0 ${isRetrospective ? 'bg-amber-950/30' : 'bg-black/20'}`} style={{ transition: 'background-color 1.2s ease-in-out' }} />
-      
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={(e) => {
-          e.stopPropagation();
-          if (!isContentHidden) {
-            setWasHidden(true);
-          }
-          setIsContentHidden(!isContentHidden);
+        <div className={`absolute inset-0 ${isRetrospective ? 'bg-amber-950/30' : 'bg-black/20'}`} style={{ transition: 'background-color 1.2s ease-in-out' }} />
+        
+        {/* Волнистый край справа */}
+        <div className="absolute top-0 right-0 h-full w-24">
+          <svg 
+            viewBox="0 0 100 1000" 
+            preserveAspectRatio="none" 
+            className="absolute top-0 right-0 h-full w-full"
+            style={{ filter: 'drop-shadow(2px 0 8px rgba(0,0,0,0.3))' }}
+          >
+            <path 
+              d="M 0 0 Q 50 50, 0 100 T 0 200 T 0 300 T 0 400 T 0 500 T 0 600 T 0 700 T 0 800 T 0 900 T 0 1000 L 100 1000 L 100 0 Z" 
+              fill="hsl(var(--background))"
+            />
+          </svg>
+        </div>
+      </div>
+
+      {/* Правая часть - контент */}
+      <div className="w-full lg:w-1/2 relative bg-background overflow-hidden"
+        style={{
+          clipPath: 'inset(0)',
         }}
-        className="absolute top-6 right-4 md:top-4 z-20 h-10 w-10 p-0 bg-card/80 backdrop-blur-sm hover:bg-card/90 border border-border/50 rounded-full"
-        title={isContentHidden ? 'Показать текст' : 'Скрыть текст'}
       >
-        <Icon name={isContentHidden ? 'Eye' : 'EyeOff'} size={20} className="text-white" />
-      </Button>
-      
-      {!isContentHidden && currentParagraph.type !== 'background' && !isBackgroundChanging && (
-        <>
-          {hasComicFrames && (
-            <div className="absolute top-[60px] left-4 right-4 bottom-[calc(14rem+3rem)] md:top-[80px] md:left-8 md:right-32 md:bottom-[calc(14rem+3rem)] z-10">
-              <div className="w-full h-full max-w-5xl mx-auto px-2 md:px-0">
-                <ComicFrameReader
-                  paragraph={currentParagraph as TextParagraph | DialogueParagraph}
-                  currentSubParagraphIndex={currentParagraph.subParagraphs && currentParagraph.subParagraphs.length > 0 ? currentSubParagraphIndex : undefined}
-                  layout={currentParagraph.frameLayout || 'single'}
-                  isTyping={isTyping}
-                />
-              </div>
-            </div>
+        {/* Мобильный фон */}
+        <div className="lg:hidden absolute inset-0">
+          {previousBackgroundImage && (
+            <div 
+              className="absolute inset-0 bg-cover bg-center"
+              style={{ 
+                backgroundImage: `url(${previousBackgroundImage})`,
+                opacity: newImageReady ? 0 : 1,
+                filter: getFilterStyle(newImageReady ? 'blur(16px)' : 'blur(0px)'),
+                transition: 'opacity 2.4s ease-in-out, filter 2.4s ease-in-out',
+                zIndex: 1
+              }}
+            />
           )}
           
-          <div className="absolute bottom-20 md:bottom-8 left-0 right-0 z-10 flex justify-center px-4 md:px-6 md:pr-8">
-            <div className="w-full max-w-4xl">
+          <div 
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ 
+              backgroundImage: `url("${backgroundImage}")`,
+              opacity: previousBackgroundImage && !newImageReady ? 0 : 1,
+              filter: getFilterStyle(previousBackgroundImage && !newImageReady ? 'blur(16px)' : 'blur(0px)'),
+              transition: previousBackgroundImage ? 'opacity 2.4s ease-in-out, filter 2.4s ease-in-out' : 'filter 1.2s ease-in-out',
+              zIndex: 0
+            }}
+          />
+
+          <div className={`absolute inset-0 ${isRetrospective ? 'bg-amber-950/30' : 'bg-black/20'}`} style={{ transition: 'background-color 1.2s ease-in-out' }} />
+        </div>
+        
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={(e) => {
+            e.stopPropagation();
+            if (!isContentHidden) {
+              setWasHidden(true);
+            }
+            setIsContentHidden(!isContentHidden);
+          }}
+          className="absolute top-6 right-4 z-20 h-10 w-10 p-0 bg-card/80 backdrop-blur-sm hover:bg-card/90 border border-border/50 rounded-full"
+          title={isContentHidden ? 'Показать текст' : 'Скрыть текст'}
+        >
+          <Icon name={isContentHidden ? 'Eye' : 'EyeOff'} size={20} className="text-white" />
+        </Button>
+        
+        {!isContentHidden && currentParagraph.type !== 'background' && !isBackgroundChanging && (
+          <>
+            {hasComicFrames && (
+              <div className="absolute top-[80px] left-4 right-4 bottom-[calc(14rem+3rem)] z-10">
+                <div className="w-full h-full max-w-3xl mx-auto px-2">
+                  <ComicFrameReader
+                    paragraph={currentParagraph as TextParagraph | DialogueParagraph}
+                    currentSubParagraphIndex={currentParagraph.subParagraphs && currentParagraph.subParagraphs.length > 0 ? currentSubParagraphIndex : undefined}
+                    layout={currentParagraph.frameLayout || 'single'}
+                    isTyping={isTyping}
+                  />
+                </div>
+              </div>
+            )}
+            
+            <div className="absolute bottom-20 md:bottom-12 left-0 right-0 z-10 flex justify-center px-4 md:px-8">
+            <div className="w-full max-w-3xl">
               {currentParagraph.type !== 'choice' && (
                 <div className="flex justify-between items-center mb-2 gap-2">
                   <Button
@@ -202,11 +255,11 @@ function NovelReaderBackgroundNew({
               {(currentParagraph.type === 'text' || currentParagraph.type === 'dialogue') && 
                currentParagraph.subParagraphs && 
                currentParagraph.subParagraphs.length > 0 ? (
-                <div className="bg-card/90 backdrop-blur-sm rounded-xl md:rounded-2xl shadow-xl border border-border p-4 md:p-6 lg:p-8 min-h-[10rem] md:min-h-[12rem]">
+                <div className="bg-card/95 backdrop-blur-md rounded-2xl shadow-2xl border border-border p-6 md:p-8 min-h-[10rem] md:min-h-[12rem]">
                   <div className={`leading-relaxed w-full text-foreground ${
-                    settings.textSize === 'small' ? 'text-sm md:text-base lg:text-lg' :
-                    settings.textSize === 'large' ? 'text-lg md:text-xl lg:text-2xl' :
-                    'text-base md:text-lg lg:text-xl'
+                    settings.textSize === 'small' ? 'text-base md:text-lg' :
+                    settings.textSize === 'large' ? 'text-xl md:text-2xl' :
+                    'text-lg md:text-xl'
                   }`}>
                     {/* Индекс 0 = основной текст параграфа, индекс 1+ = подпараграфы 0, 1, 2... */}
                     {currentSubParagraphIndex === 0 ? (
@@ -233,8 +286,9 @@ function NovelReaderBackgroundNew({
               )}
             </div>
           </div>
-        </>
-      )}
+          </>
+        )}
+      </div>
     </div>
   );
 }
