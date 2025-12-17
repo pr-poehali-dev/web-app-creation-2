@@ -82,6 +82,33 @@ export default function MergedParagraphsLayout({ layout, children, aspectRatios 
       case 'filmstrip':
         return 'flex flex-row items-center justify-center gap-2';
       
+      case 'magazine-1':
+        return 'grid grid-cols-[1fr_2fr] grid-rows-[auto_1fr_1fr_1fr] gap-3';
+      
+      case 'magazine-2':
+        return 'grid grid-cols-4 grid-rows-4 gap-3';
+      
+      case 'magazine-3':
+        return 'grid grid-cols-[2fr_1fr] grid-rows-[auto_1fr_1fr_1fr] gap-3';
+      
+      case 'magazine-4':
+        return 'grid grid-cols-[2fr_1fr_1fr] grid-rows-[1fr_1fr_1fr] gap-3';
+      
+      case 'magazine-5':
+        return 'grid grid-cols-4 grid-rows-[2fr_1fr] gap-3';
+      
+      case 'magazine-6':
+        return 'grid grid-cols-[1fr_1fr_1fr_1fr] grid-rows-[auto_1fr_1fr_1fr] gap-3';
+      
+      case 'magazine-7':
+        return 'grid grid-cols-3 grid-rows-[1fr_1fr_auto] gap-3';
+      
+      case 'magazine-8':
+        return 'grid grid-cols-[1fr_2fr] grid-rows-[auto_1fr_1fr] gap-3';
+      
+      case 'magazine-9':
+        return 'grid grid-cols-4 grid-rows-4 gap-3';
+      
       default:
         return 'grid grid-cols-3 gap-4';
     }
@@ -147,6 +174,102 @@ export default function MergedParagraphsLayout({ layout, children, aspectRatios 
         if (index === 2) return 'col-start-3 row-start-1';
         if (index === 3) return 'col-start-1 row-start-3';
         if (index === 4) return 'col-start-3 row-start-3';
+        return '';
+      
+      case 'magazine-1':
+        if (index === 0) return 'col-start-1 row-start-1 row-span-3 rounded-full aspect-square';
+        if (index === 1) return 'col-start-2 row-start-1';
+        if (index === 2) return 'col-start-2 row-start-2';
+        if (index === 3) return 'col-start-2 row-start-3';
+        if (index === 4) return 'col-start-2 row-start-4';
+        if (index === 5) return 'col-start-1 row-start-4';
+        return '';
+      
+      case 'magazine-2':
+        if (index === 0) return 'col-start-2 col-span-2 row-start-2 row-span-2 rounded-full aspect-square';
+        if (index === 1) return 'col-start-1 row-start-1';
+        if (index === 2) return 'col-start-2 row-start-1';
+        if (index === 3) return 'col-start-3 row-start-1';
+        if (index === 4) return 'col-start-4 row-start-1';
+        if (index === 5) return 'col-start-4 row-start-2';
+        if (index === 6) return 'col-start-4 row-start-3';
+        if (index === 7) return 'col-start-1 row-start-4';
+        if (index === 8) return 'col-start-4 row-start-4';
+        return '';
+      
+      case 'magazine-3':
+        if (index === 0) return 'col-start-2 row-start-1 row-span-3 rounded-full aspect-square';
+        if (index === 1) return 'col-start-1 row-start-1';
+        if (index === 2) return 'col-start-1 row-start-2';
+        if (index === 3) return 'col-start-1 row-start-3';
+        if (index === 4) return 'col-start-1 row-start-4';
+        if (index === 5) return 'col-start-2 row-start-4 col-span-1';
+        if (index === 6) return 'col-start-1 row-start-1 col-span-2';
+        if (index === 7) return 'col-start-1 row-start-1 col-span-2';
+        return '';
+      
+      case 'magazine-4':
+        if (index === 0) return 'col-start-1 row-start-1 row-span-3 rounded-full aspect-square';
+        if (index === 1) return 'col-start-2 row-start-1';
+        if (index === 2) return 'col-start-3 row-start-1';
+        if (index === 3) return 'col-start-2 row-start-2';
+        if (index === 4) return 'col-start-3 row-start-2';
+        if (index === 5) return 'col-start-2 row-start-3';
+        if (index === 6) return 'col-start-3 row-start-3';
+        if (index === 7) return 'col-start-2 row-start-1 col-span-2';
+        return '';
+      
+      case 'magazine-5':
+        if (index === 0) return 'col-start-2 col-span-2 row-start-1 rounded-full aspect-square';
+        if (index === 1) return 'col-start-1 row-start-1';
+        if (index === 2) return 'col-start-4 row-start-1';
+        if (index === 3) return 'col-start-1 row-start-2';
+        if (index === 4) return 'col-start-2 row-start-2';
+        if (index === 5) return 'col-start-3 row-start-2';
+        if (index === 6) return 'col-start-4 row-start-2';
+        if (index === 7) return 'col-start-1 row-start-1 col-span-4';
+        return '';
+      
+      case 'magazine-6':
+        if (index === 0) return 'col-start-3 col-span-2 row-start-1 row-span-2 rounded-full aspect-square';
+        if (index === 1) return 'col-start-1 row-start-1';
+        if (index === 2) return 'col-start-2 row-start-1';
+        if (index === 3) return 'col-start-1 row-start-2';
+        if (index === 4) return 'col-start-2 row-start-2';
+        if (index === 5) return 'col-start-1 row-start-3';
+        if (index === 6) return 'col-start-2 row-start-3';
+        if (index === 7) return 'col-start-3 row-start-3 col-span-2';
+        return '';
+      
+      case 'magazine-7':
+        if (index === 0) return 'col-start-1 row-start-1';
+        if (index === 1) return 'col-start-2 row-start-1';
+        if (index === 2) return 'col-start-3 row-start-1';
+        if (index === 3) return 'col-start-1 row-start-2';
+        if (index === 4) return 'col-start-2 row-start-2';
+        if (index === 5) return 'col-start-3 row-start-2';
+        if (index === 6) return 'col-start-1 row-start-3 col-span-2';
+        if (index === 7) return 'col-start-3 row-start-3';
+        return '';
+      
+      case 'magazine-8':
+        if (index === 0) return 'col-start-1 row-start-1 row-span-2 rounded-full aspect-square';
+        if (index === 1) return 'col-start-2 row-start-1';
+        if (index === 2) return 'col-start-1 row-start-3';
+        if (index === 3) return 'col-start-2 row-start-2 row-span-2';
+        if (index === 4) return 'col-start-2 row-start-3';
+        if (index === 5) return 'col-start-2 row-start-1 row-span-3';
+        return '';
+      
+      case 'magazine-9':
+        if (index === 0) return 'col-start-2 col-span-2 row-start-2 row-span-2 rounded-full aspect-square z-10';
+        if (index === 1) return 'col-start-1 row-start-1';
+        if (index === 2) return 'col-start-4 row-start-1';
+        if (index === 3) return 'col-start-1 row-start-4';
+        if (index === 4) return 'col-start-4 row-start-4';
+        if (index === 5) return 'col-start-1 row-start-2';
+        if (index === 6) return 'col-start-4 row-start-2';
+        if (index === 7) return 'col-start-2 row-start-1';
         return '';
       
       default:

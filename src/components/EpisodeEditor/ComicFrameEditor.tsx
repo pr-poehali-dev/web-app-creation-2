@@ -61,6 +61,15 @@ function ComicFrameEditor({ frames, layout, defaultAnimation, subParagraphs, onF
       case 'sandwich': return 3;
       case 'spotlight': return 5;
       case 'filmstrip': return 5;
+      case 'magazine-1': return 6;
+      case 'magazine-2': return 9;
+      case 'magazine-3': return 8;
+      case 'magazine-4': return 8;
+      case 'magazine-5': return 8;
+      case 'magazine-6': return 8;
+      case 'magazine-7': return 8;
+      case 'magazine-8': return 6;
+      case 'magazine-9': return 8;
       default: return 3;
     }
   };
@@ -163,8 +172,6 @@ function ComicFrameEditor({ frames, layout, defaultAnimation, subParagraphs, onF
                 
                 <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground mt-2">Креативные</div>
                 <SelectItem value="center-large">◻️⬛◻️ Центр</SelectItem>
-                <SelectItem value="pyramid">🔺 Пирамида</SelectItem>
-                <SelectItem value="inverted-pyramid">🔻 Обр. пирамида</SelectItem>
                 <SelectItem value="sandwich">◻️⬛◻️ Сэндвич</SelectItem>
                 <SelectItem value="spotlight">◻️⬛◻️ Прожектор</SelectItem>
                 <SelectItem value="l-shape">↪️ L-форма</SelectItem>
@@ -173,6 +180,16 @@ function ComicFrameEditor({ frames, layout, defaultAnimation, subParagraphs, onF
                 <SelectItem value="asymmetric-2">◻️⬛◻️ Асим. 2</SelectItem>
                 <SelectItem value="asymmetric-3">⬛⬛◻️ Асим. 3</SelectItem>
                 
+                <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground mt-2">Журнальные макеты</div>
+                <SelectItem value="magazine-1">📖 Круг слева + колонка</SelectItem>
+                <SelectItem value="magazine-2">📖 Круг центр + сетка</SelectItem>
+                <SelectItem value="magazine-3">📖 Круг справа + колонка</SelectItem>
+                <SelectItem value="magazine-4">📖 Большой круг + блоки</SelectItem>
+                <SelectItem value="magazine-5">📖 Круг + акценты внизу</SelectItem>
+                <SelectItem value="magazine-6">📖 Круг вверху справа</SelectItem>
+                <SelectItem value="magazine-7">📖 Сетка + текст внизу</SelectItem>
+                <SelectItem value="magazine-8">📖 Круг + текст справа</SelectItem>
+                <SelectItem value="magazine-9">📖 Круг + 4 угла</SelectItem>
 
               </SelectContent>
             </Select>
