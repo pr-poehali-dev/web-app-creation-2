@@ -1,4 +1,4 @@
-import { useState, useCallback, memo } from 'react';
+import { useState, useCallback, memo, useRef, useEffect } from 'react';
 import { Episode, Paragraph, ParagraphType, Novel } from '@/types/novel';
 import EpisodeHeader from '@/components/EpisodeEditor/EpisodeHeader';
 import ParagraphTypeButtons from '@/components/EpisodeEditor/ParagraphTypeButtons';
@@ -20,6 +20,11 @@ function EpisodeEditor({ episode, novel, onUpdate, onNovelUpdate }: EpisodeEdito
   const [insertingAt, setInsertingAt] = useState<number | null>(null);
   const [selectedParagraphs, setSelectedParagraphs] = useState<Set<number>>(new Set());
   const [bulkEditMode, setBulkEditMode] = useState(false);
+  const episodeRef = useRef(episode);
+  
+  useEffect(() => {
+    episodeRef.current = episode;
+  }, [episode]);
 
   const handleAddParagraph = useCallback((type: ParagraphType, insertIndex?: number) => {
     let newParagraph: Paragraph;
@@ -72,7 +77,8 @@ function EpisodeEditor({ episode, novel, onUpdate, onNovelUpdate }: EpisodeEdito
   }, [episode, onUpdate]);
 
   const handleUpdateParagraph = useCallback((index: number, updatedParagraph: Paragraph) => {
-    const newParagraphs = [...episode.paragraphs];
+    const currentEpisode = episodeRef.current;
+    const newParagraphs = [...currentEpisode.paragraphs];
     
     // Если режим массового редактирования и параграф выбран - применить к всем выбранным
     if (bulkEditMode && selectedParagraphs.has(index)) {
@@ -89,56 +95,59 @@ function EpisodeEditor({ episode, novel, onUpdate, onNovelUpdate }: EpisodeEdito
       newParagraphs[index] = updatedParagraph;
     }
     
-    onUpdate({ ...episode, paragraphs: newParagraphs });
-  }, [episode, onUpdate, bulkEditMode, selectedParagraphs]);
+    onUpdate({ ...currentEpisode, paragraphs: newParagraphs });
+  }, [onUpdate, bulkEditMode, selectedParagraphs]);
 
   const handleDeleteParagraph = useCallback((index: number) => {
+    const currentEpisode = episodeRef.current;
     // Если режим массового редактирования и параграф выбран - удалить все выбранные
     if (bulkEditMode && selectedParagraphs.has(index)) {
       const confirmed = confirm(`Удалить ${selectedParagraphs.size} параграф(ов)?`);
       if (!confirmed) return;
       
       onUpdate({
-        ...episode,
-        paragraphs: episode.paragraphs.filter((_, i) => !selectedParagraphs.has(i))
+        ...currentEpisode,
+        paragraphs: currentEpisode.paragraphs.filter((_, i) => !selectedParagraphs.has(i))
       });
       setSelectedParagraphs(new Set());
     } else {
       onUpdate({
-        ...episode,
-        paragraphs: episode.paragraphs.filter((_, i) => i !== index)
+        ...currentEpisode,
+        paragraphs: currentEpisode.paragraphs.filter((_, i) => i !== index)
       });
     }
-  }, [episode, onUpdate, bulkEditMode, selectedParagraphs]);
+  }, [onUpdate, bulkEditMode, selectedParagraphs]);
 
   const handleMoveParagraph = useCallback((index: number, direction: 'up' | 'down') => {
+    const currentEpisode = episodeRef.current;
     const newIndex = direction === 'up' ? index - 1 : index + 1;
-    if (newIndex < 0 || newIndex >= episode.paragraphs.length) return;
+    if (newIndex < 0 || newIndex >= currentEpisode.paragraphs.length) return;
 
-    const newParagraphs = [...episode.paragraphs];
+    const newParagraphs = [...currentEpisode.paragraphs];
     [newParagraphs[index], newParagraphs[newIndex]] = [newParagraphs[newIndex], newParagraphs[index]];
-    onUpdate({ ...episode, paragraphs: newParagraphs });
-  }, [episode, onUpdate]);
+    onUpdate({ ...currentEpisode, paragraphs: newParagraphs });
+  }, [onUpdate]);
 
   const handleToggleInsert = useCallback((index: number) => {
     setInsertingAt(prev => prev === index ? null : index);
   }, []);
 
   const handleToggleMerge = useCallback((index: number) => {
-    const paragraph = episode.paragraphs[index];
-    const nextParagraph = episode.paragraphs[index + 1];
+    const currentEpisode = episodeRef.current;
+    const paragraph = currentEpisode.paragraphs[index];
+    const nextParagraph = currentEpisode.paragraphs[index + 1];
     
     if (!nextParagraph) return;
     
-    const newParagraphs = [...episode.paragraphs];
+    const newParagraphs = [...currentEpisode.paragraphs];
     if (paragraph.mergedWith) {
       newParagraphs[index] = { ...paragraph, mergedWith: undefined };
     } else {
       newParagraphs[index] = { ...paragraph, mergedWith: nextParagraph.id };
     }
     
-    onUpdate({ ...episode, paragraphs: newParagraphs });
-  }, [episode, onUpdate]);
+    onUpdate({ ...currentEpisode, paragraphs: newParagraphs });
+  }, [onUpdate]);
 
   const handleToggleSelect = useCallback((index: number) => {
     const newSelected = new Set(selectedParagraphs);

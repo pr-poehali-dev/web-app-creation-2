@@ -73,7 +73,7 @@ function ComicFrameEditor({ frames, layout, defaultAnimation, subParagraphs, onF
       case 'magazine-5': return 8;
       case 'magazine-6': return 8;
       case 'magazine-7': return 8;
-      case 'magazine-8': return 6;
+      case 'magazine-8': return 2;
       case 'magazine-9': return 8;
       default: return 3;
     }
