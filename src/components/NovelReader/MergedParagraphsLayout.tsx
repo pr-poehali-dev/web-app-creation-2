@@ -23,13 +23,13 @@ export default function MergedParagraphsLayout({ layout, children, aspectRatios 
         return 'flex flex-row items-center justify-center gap-4';
       
       case 'vertical-2':
-        return 'flex flex-col items-center justify-center gap-4 px-4';
+        return 'flex flex-col items-center justify-center gap-4 px-6';
       
       case 'vertical-3':
-        return 'flex flex-col items-center justify-center gap-4 px-4';
+        return 'flex flex-col items-center justify-center gap-4 px-6';
       
       case 'vertical-4':
-        return 'flex flex-col items-center justify-center gap-4 px-4';
+        return 'flex flex-col items-center justify-center gap-4 px-6';
       
       case 'horizontal-2-1':
         return 'grid grid-cols-[2fr_2fr_1fr] gap-4';
@@ -38,25 +38,25 @@ export default function MergedParagraphsLayout({ layout, children, aspectRatios 
         return 'grid grid-cols-[1fr_2fr_2fr] gap-4';
       
       case 'grid-2x2':
-        return 'grid grid-cols-2 grid-rows-2 gap-4';
+        return 'grid grid-cols-2 grid-rows-2 gap-4 px-6';
       
       case 'grid-3x3':
         return 'grid grid-cols-3 grid-rows-3 gap-4';
       
       case 'grid-2x3':
-        return 'grid grid-cols-2 grid-rows-3 gap-4';
+        return 'grid grid-cols-2 grid-rows-3 gap-4 px-6';
       
       case 'mosaic-left':
-        return 'grid grid-cols-[2fr_1fr] grid-rows-2 gap-4';
+        return 'grid grid-cols-[2fr_1fr] grid-rows-2 gap-4 px-6';
       
       case 'mosaic-right':
-        return 'grid grid-cols-[1fr_2fr] grid-rows-2 gap-4';
+        return 'grid grid-cols-[1fr_2fr] grid-rows-2 gap-4 px-6';
       
       case 'vertical-left-3':
-        return 'grid grid-cols-[2fr_1fr] grid-rows-3 gap-4';
+        return 'grid grid-cols-[2fr_1fr] grid-rows-3 gap-4 px-6';
       
       case 'vertical-right-3':
-        return 'grid grid-cols-[1fr_2fr] grid-rows-3 gap-4';
+        return 'grid grid-cols-[1fr_2fr] grid-rows-3 gap-4 px-6';
       
       case 'center-large':
         return 'grid grid-cols-3 grid-rows-3 gap-4';
