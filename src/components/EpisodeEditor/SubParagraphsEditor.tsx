@@ -4,6 +4,7 @@ import { Label } from '@/components/ui/label';
 import Icon from '@/components/ui/icon';
 import { SubParagraph } from '@/types/novel';
 import SubParagraphItem from './SubParagraphItem';
+import equal from 'fast-deep-equal';
 
 interface SubParagraphsEditorProps {
   subParagraphs: SubParagraph[];
@@ -73,5 +74,5 @@ function SubParagraphsEditor({ subParagraphs, onSubParagraphsChange }: SubParagr
 }
 
 export default memo(SubParagraphsEditor, (prevProps, nextProps) => {
-  return JSON.stringify(prevProps.subParagraphs) === JSON.stringify(nextProps.subParagraphs);
+  return equal(prevProps.subParagraphs, nextProps.subParagraphs);
 });

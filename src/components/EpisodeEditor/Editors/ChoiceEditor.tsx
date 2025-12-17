@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Icon from '@/components/ui/icon';
+import equal from 'fast-deep-equal';
 
 interface ChoiceEditorProps {
   paragraph: ChoiceParagraph;
@@ -233,7 +234,7 @@ function ChoiceEditor({
 export default memo(ChoiceEditor, (prevProps, nextProps) => {
   return (
     prevProps.paragraph.id === nextProps.paragraph.id &&
-    JSON.stringify(prevProps.paragraph) === JSON.stringify(nextProps.paragraph) &&
-    prevProps.index === nextProps.index
+    prevProps.index === nextProps.index &&
+    equal(prevProps.paragraph, nextProps.paragraph)
   );
 });

@@ -4,6 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { createParagraphEditorHandlers } from './ParagraphEditorLogic';
 import ParagraphEditorHeader from './ParagraphEditorHeader';
 import ParagraphEditorContent from './ParagraphEditorContent';
+import equal from 'fast-deep-equal';
 
 interface ParagraphEditorProps {
   paragraph: Paragraph;
@@ -99,19 +100,14 @@ function ParagraphEditor({
 }
 
 export default memo(ParagraphEditor, (prevProps, nextProps) => {
-  // Глубокое сравнение для paragraph - только если id совпадает
   if (prevProps.paragraph.id !== nextProps.paragraph.id) return false;
   
-  // Сравнение только критичных полей
-  const paragraphEqual = 
-    JSON.stringify(prevProps.paragraph) === JSON.stringify(nextProps.paragraph);
-  
   return (
-    paragraphEqual &&
     prevProps.index === nextProps.index &&
     prevProps.totalParagraphs === nextProps.totalParagraphs &&
     prevProps.isBulkEditMode === nextProps.isBulkEditMode &&
     prevProps.isSelected === nextProps.isSelected &&
-    prevProps.selectedCount === nextProps.selectedCount
+    prevProps.selectedCount === nextProps.selectedCount &&
+    equal(prevProps.paragraph, nextProps.paragraph)
   );
 });

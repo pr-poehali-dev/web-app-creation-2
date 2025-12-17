@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import Icon from '@/components/ui/icon';
 import LayoutAnimationGuide from './LayoutAnimationGuide';
 import ComicFrameItem from './ComicFrameItem';
+import equal from 'fast-deep-equal';
 
 const LAYOUT_OPTIONS = [
   { group: 'Простые', items: [
@@ -373,11 +374,10 @@ function ComicFrameEditor({ frames, layout, defaultAnimation, subParagraphs, onF
 }
 
 export default memo(ComicFrameEditor, (prevProps, nextProps) => {
-  // Сравниваем только важные поля
   return (
     prevProps.layout === nextProps.layout &&
     prevProps.defaultAnimation === nextProps.defaultAnimation &&
-    JSON.stringify(prevProps.frames) === JSON.stringify(nextProps.frames) &&
-    JSON.stringify(prevProps.subParagraphs) === JSON.stringify(nextProps.subParagraphs)
+    equal(prevProps.frames, nextProps.frames) &&
+    equal(prevProps.subParagraphs, nextProps.subParagraphs)
   );
 });

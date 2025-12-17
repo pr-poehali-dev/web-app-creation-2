@@ -1,4 +1,4 @@
-import { useState, memo } from 'react';
+import { useState, memo, useRef, useEffect, useCallback } from 'react';
 import { DialogueParagraph, Novel } from '@/types/novel';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import Icon from '@/components/ui/icon';
 import SubParagraphsEditor from '../SubParagraphsEditor';
 import ComicFrameEditor from '../ComicFrameEditor';
+import equal from 'fast-deep-equal';
 
 interface DialogueEditorProps {
   paragraph: DialogueParagraph;
@@ -33,6 +34,28 @@ function DialogueEditor({
   handleImageUpload,
   handleSelectCharacter
 }: DialogueEditorProps) {
+  const [localText, setLocalText] = useState(paragraph.text);
+  const debounceTimerRef = useRef<NodeJS.Timeout>();
+  const paragraphRef = useRef(paragraph);
+
+  useEffect(() => {
+    paragraphRef.current = paragraph;
+    setLocalText(paragraph.text);
+  }, [paragraph]);
+
+  const handleTextChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newText = e.target.value;
+    setLocalText(newText);
+    
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+    
+    debounceTimerRef.current = setTimeout(() => {
+      onUpdate(index, { ...paragraphRef.current, text: newText });
+    }, 300);
+  }, [index, onUpdate]);
+
   const character = novel.library.characters.find(c => c.name === paragraph.characterName);
   const allImages = character ? [
     ...(character.defaultImage ? [{ id: 'default', url: character.defaultImage, name: 'По умолчанию' }] : []),
@@ -182,10 +205,8 @@ function DialogueEditor({
       <div className="space-y-3">
         <Textarea
           placeholder="Текст диалога"
-          value={paragraph.text}
-          onChange={(e) =>
-            onUpdate(index, { ...paragraph, text: e.target.value })
-          }
+          value={localText}
+          onChange={handleTextChange}
           rows={3}
           className="text-foreground"
         />
@@ -230,7 +251,7 @@ function DialogueEditor({
 export default memo(DialogueEditor, (prevProps, nextProps) => {
   return (
     prevProps.paragraph.id === nextProps.paragraph.id &&
-    JSON.stringify(prevProps.paragraph) === JSON.stringify(nextProps.paragraph) &&
-    prevProps.index === nextProps.index
+    prevProps.index === nextProps.index &&
+    equal(prevProps.paragraph, nextProps.paragraph)
   );
 });

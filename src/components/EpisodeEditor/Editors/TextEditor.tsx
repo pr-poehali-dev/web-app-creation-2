@@ -1,9 +1,10 @@
-import { useCallback, useRef, useEffect, memo } from 'react';
+import { useCallback, useRef, useEffect, memo, useState } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { TextParagraph } from '@/types/novel';
 import SubParagraphsEditor from '../SubParagraphsEditor';
 import ComicFrameEditor from '../ComicFrameEditor';
+import equal from 'fast-deep-equal';
 
 interface TextEditorProps {
   paragraph: TextParagraph;
@@ -13,9 +14,12 @@ interface TextEditorProps {
 
 function TextEditor({ paragraph, index, onUpdate }: TextEditorProps) {
   const paragraphRef = useRef(paragraph);
+  const [localContent, setLocalContent] = useState(paragraph.content);
+  const debounceTimerRef = useRef<NodeJS.Timeout>();
   
   useEffect(() => {
     paragraphRef.current = paragraph;
+    setLocalContent(paragraph.content);
   }, [paragraph]);
 
   const handleFramesChange = useCallback((frames: any[]) => {
@@ -45,13 +49,24 @@ function TextEditor({ paragraph, index, onUpdate }: TextEditorProps) {
     onUpdate(index, { ...paragraphRef.current, subParagraphs: subParagraphs.length > 0 ? subParagraphs : undefined });
   }, [index, onUpdate]);
 
+  const handleContentChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newContent = e.target.value;
+    setLocalContent(newContent);
+    
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+    
+    debounceTimerRef.current = setTimeout(() => {
+      onUpdate(index, { ...paragraphRef.current, content: newContent });
+    }, 300);
+  }, [index, onUpdate]);
+
   return (
     <div className="space-y-3">
       <Textarea
-        value={paragraph.content}
-        onChange={(e) =>
-          onUpdate(index, { ...paragraph, content: e.target.value })
-        }
+        value={localContent}
+        onChange={handleContentChange}
         rows={3}
         className="text-foreground"
       />
@@ -81,7 +96,7 @@ function TextEditor({ paragraph, index, onUpdate }: TextEditorProps) {
 export default memo(TextEditor, (prevProps, nextProps) => {
   return (
     prevProps.paragraph.id === nextProps.paragraph.id &&
-    JSON.stringify(prevProps.paragraph) === JSON.stringify(nextProps.paragraph) &&
-    prevProps.index === nextProps.index
+    prevProps.index === nextProps.index &&
+    equal(prevProps.paragraph, nextProps.paragraph)
   );
 });

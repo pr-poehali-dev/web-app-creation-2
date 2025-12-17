@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useState, useRef, useEffect, useCallback } from 'react';
 import { SubParagraph } from '@/types/novel';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -13,6 +13,26 @@ interface SubParagraphItemProps {
 }
 
 function SubParagraphItem({ subParagraph, index, onUpdate, onRemove }: SubParagraphItemProps) {
+  const [localText, setLocalText] = useState(subParagraph.text);
+  const debounceTimerRef = useRef<NodeJS.Timeout>();
+
+  useEffect(() => {
+    setLocalText(subParagraph.text);
+  }, [subParagraph.text]);
+
+  const handleTextChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newText = e.target.value;
+    setLocalText(newText);
+    
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+    
+    debounceTimerRef.current = setTimeout(() => {
+      onUpdate(index, newText);
+    }, 300);
+  }, [index, onUpdate]);
+
   return (
     <div className="border border-border/50 rounded p-2 space-y-2">
       <div className="flex items-center justify-between">
@@ -28,8 +48,8 @@ function SubParagraphItem({ subParagraph, index, onUpdate, onRemove }: SubParagr
       </div>
       
       <Textarea
-        value={subParagraph.text}
-        onChange={(e) => onUpdate(index, e.target.value)}
+        value={localText}
+        onChange={handleTextChange}
         placeholder="Текст подпараграфа..."
         className="text-xs min-h-[60px]"
       />
