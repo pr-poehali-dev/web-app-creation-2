@@ -131,12 +131,10 @@ export default function ComicFrameReader({ paragraph, currentSubParagraphIndex, 
           const animClass = getAnimationClass(frame.animation, defaultAnimation);
           const hasAnimation = animClass !== '';
           
-          const isVerticalLayout = layout.startsWith('vertical-');
-          
           return (
             <div 
               key={frame.id} 
-              className={`${isVerticalLayout ? 'w-[85%] mx-auto' : 'w-full h-full'} cursor-pointer min-w-0 rounded-lg overflow-hidden ${animClass}`}
+              className={`w-full h-full cursor-pointer min-w-0 ${animClass}`}
               style={{ 
                 animationDelay: hasAnimation ? `${index * 0.2}s` : undefined,
                 opacity: hasAnimation ? 0 : 1
@@ -150,7 +148,7 @@ export default function ComicFrameReader({ paragraph, currentSubParagraphIndex, 
                 src={frame.url} 
                 alt={frame.alt || ''} 
                 onLoad={(e) => handleImageLoad(frame.id, e)}
-                className="w-full h-auto object-cover min-w-0"
+                className="w-full h-full object-cover rounded-lg min-w-0"
               />
             </div>
           );
