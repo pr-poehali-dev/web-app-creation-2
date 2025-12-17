@@ -63,23 +63,11 @@ function NovelReaderBackgroundNew({
 }: NovelReaderBackgroundNewProps) {
   const [isContentHidden, setIsContentHidden] = useState(false);
   const [wasHidden, setWasHidden] = useState(false);
-  const [contentShouldShow, setContentShouldShow] = useState(false);
   
   useEffect(() => {
     setWasHidden(false);
     setIsContentHidden(false);
-    setContentShouldShow(false);
   }, [paragraphKey]);
-  
-  useEffect(() => {
-    if (newImageReady) {
-      const timer = setTimeout(() => {
-        setContentShouldShow(true);
-      }, 800);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [newImageReady]);
   
   if (!backgroundImage) return null;
 
@@ -143,7 +131,7 @@ function NovelReaderBackgroundNew({
         )}
         
         {/* Comic frames поверх фона */}
-        {!isContentHidden && hasComicFrames && contentShouldShow && (
+        {!isContentHidden && hasComicFrames && newImageReady && (
           <div className="absolute inset-0 flex items-center justify-center p-4 md:p-8 z-10">
             <div className="w-full h-full max-w-4xl">
               <ComicFrameReader
@@ -175,13 +163,13 @@ function NovelReaderBackgroundNew({
             }
             setIsContentHidden(!isContentHidden);
           }}
-          className="absolute top-4 right-4 z-30 h-10 w-10 p-0 bg-card/80 backdrop-blur-sm hover:bg-card/90 border border-border/50 rounded-full"
+          className="absolute top-[4.5rem] lg:top-[5rem] right-4 z-20 h-10 w-10 p-0 bg-card/80 backdrop-blur-sm hover:bg-card/90 border border-border/50 rounded-full"
           title={isContentHidden ? 'Показать текст' : 'Скрыть текст'}
         >
           <Icon name={isContentHidden ? 'Eye' : 'EyeOff'} size={20} className="text-white" />
         </Button>
         
-        {!isContentHidden && currentParagraph.type !== 'background' && !isBackgroundChanging && contentShouldShow && (
+        {!isContentHidden && currentParagraph.type !== 'background' && !isBackgroundChanging && newImageReady && (
           <>
             <div className="absolute bottom-20 md:bottom-12 left-0 right-0 z-10 px-5 md:px-8">
             <div className="w-full max-w-3xl mx-auto flex flex-col items-center justify-center">

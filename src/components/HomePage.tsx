@@ -49,7 +49,7 @@ function HomePage({ homePage, novel, onStart }: HomePageProps) {
             <Button 
               size="lg"
               onClick={onStart}
-              className="w-full md:w-auto text-lg px-8 py-6 shadow-2xl bg-primary hover:bg-primary/90 text-primary-foreground"
+              className="w-full md:w-auto text-lg px-8 py-6 shadow-2xl"
             >
               Начать чтение
             </Button>
