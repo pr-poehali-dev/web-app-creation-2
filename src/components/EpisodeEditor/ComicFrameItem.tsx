@@ -169,7 +169,7 @@ function ComicFrameItem({ frame, index, subParagraphs, onUpdate, onRemove }: Com
               </Button>
             </div>
             <div 
-              className="relative w-full h-32 bg-muted rounded border border-border overflow-hidden cursor-pointer hover:border-primary/50 transition-colors"
+              className="relative w-full aspect-square bg-muted rounded border border-border overflow-hidden cursor-pointer hover:border-primary/50 transition-colors"
               onClick={() => setPreviewOpen(true)}
             >
               <img
@@ -185,10 +185,10 @@ function ComicFrameItem({ frame, index, subParagraphs, onUpdate, onRemove }: Com
           </div>
 
           <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
-            <DialogContent className="max-w-[90vw] max-h-[90vh] p-4">
-              <div className="space-y-3">
-                <div className="text-sm font-medium">Полный предпросмотр позиционирования</div>
-                <div className="relative w-full h-[70vh] bg-muted rounded border border-border overflow-hidden">
+            <DialogContent className="max-w-[80vw] max-h-[90vh] p-6">
+              <div className="space-y-4">
+                <div className="text-sm font-medium">Как будет выглядеть фрейм</div>
+                <div className="relative w-full aspect-square bg-muted rounded border-2 border-border overflow-hidden">
                   <img
                     src={frame.url}
                     alt="Full Preview"
@@ -199,9 +199,19 @@ function ComicFrameItem({ frame, index, subParagraphs, onUpdate, onRemove }: Com
                     }}
                   />
                 </div>
-                <div className="text-xs text-muted-foreground space-y-1">
-                  <div>Режим: <span className="font-medium">{frame.objectFit || 'cover'}</span></div>
-                  <div>Позиция: <span className="font-medium">{frame.objectPosition || 'center'}</span></div>
+                <div className="flex gap-6 text-xs text-muted-foreground">
+                  <div className="flex-1">
+                    <div className="font-medium text-foreground mb-1">Режим отображения:</div>
+                    <div className="text-sm">{
+                      frame.objectFit === 'contain' ? '📦 Вместить (целиком)' :
+                      frame.objectFit === 'fill' ? '⬛ Растянуть' :
+                      '🖼️ Обрезать'
+                    }</div>
+                  </div>
+                  <div className="flex-1">
+                    <div className="font-medium text-foreground mb-1">Позиция:</div>
+                    <div className="text-sm">{frame.objectPosition || 'center'}</div>
+                  </div>
                 </div>
               </div>
             </DialogContent>
@@ -217,6 +227,8 @@ export default memo(ComicFrameItem, (prevProps, nextProps) => {
     prevProps.frame.url === nextProps.frame.url &&
     prevProps.frame.animation === nextProps.frame.animation &&
     prevProps.frame.subParagraphTrigger === nextProps.frame.subParagraphTrigger &&
+    prevProps.frame.objectFit === nextProps.frame.objectFit &&
+    prevProps.frame.objectPosition === nextProps.frame.objectPosition &&
     prevProps.index === nextProps.index &&
     prevProps.subParagraphs === nextProps.subParagraphs
   );
