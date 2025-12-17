@@ -116,8 +116,23 @@ function NovelReaderBackgroundNew({
 
         <div className={`absolute inset-0 ${isRetrospective ? 'bg-amber-950/30' : 'bg-black/20'}`} style={{ transition: 'background-color 1.2s ease-in-out' }} />
         
+        {/* Картинки-параграфы поверх фона */}
+        {currentParagraph.type === 'image' && (
+          <div className="absolute inset-0 flex items-center justify-center p-8 z-10">
+            <img 
+              src={currentParagraph.url}
+              alt={currentParagraph.alt || 'Изображение'}
+              className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl animate-fade-in"
+            />
+          </div>
+        )}
+        
         {/* Фигурный переход */}
-        <ShapeTransition type={currentEpisode.shapeTransition || 'organic'} />
+        <ShapeTransition type={
+          currentParagraph.type === 'background' && currentParagraph.shapeTransition 
+            ? currentParagraph.shapeTransition 
+            : currentEpisode.shapeTransition || 'organic'
+        } />
       </div>
 
       {/* Правая часть - контент */}

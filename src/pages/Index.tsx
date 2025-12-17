@@ -3,9 +3,9 @@ import AdminPanel from '@/components/AdminPanel';
 import EpisodeMenu from '@/components/EpisodeMenu';
 import UserProfilePanel from '@/components/UserProfilePanel';
 import SettingsPanel from '@/components/SettingsPanel';
-import EpisodesSidebar from '@/components/EpisodesSidebar';
 import NavigationMenu from '@/components/NavigationMenu';
 import ParagraphsDialog from '@/components/ParagraphsDialog';
+import HomePage from '@/components/HomePage';
 import AuthScreen from '@/components/AuthScreen';
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
@@ -28,8 +28,6 @@ function Index() {
     setShowParagraphsDialog,
     selectedEpisodeForParagraphs,
     setSelectedEpisodeForParagraphs,
-    showSidebar,
-    setShowSidebar,
     isAdmin,
     setIsAdmin,
     showGreetingScreen,
@@ -162,6 +160,7 @@ function Index() {
     return (
       <SettingsPanel
         settings={settings}
+        novel={novel}
         onUpdate={handleSettingsUpdate}
         onBack={() => setActiveView('reader')}
       />
@@ -245,33 +244,6 @@ function Index() {
 
   return (
     <div className="relative min-h-screen dark flex" style={uiFontStyle}>
-      {showSidebar && (
-        <>
-          <div
-            className="fixed inset-0 bg-black/60 z-[60] backdrop-blur-sm"
-            onClick={() => setShowSidebar(false)}
-          />
-          <div className="fixed inset-y-0 left-0 z-[65] transform transition-transform duration-300 translate-x-0 w-[320px]">
-            <EpisodesSidebar
-              novel={novel}
-              currentEpisodeId={profile.currentEpisodeId}
-              profile={profile}
-              onEpisodeSelect={(episodeId, paragraphIndex) => {
-                handleEpisodeSelect(episodeId, paragraphIndex);
-                setShowSidebar(false);
-              }}
-              onShowParagraphs={(episodeId) => {
-                handleShowParagraphs(episodeId);
-                setShowSidebar(false);
-              }}
-              isAdmin={authState.isAdmin}
-              isGuest={authState.isGuest}
-              onClose={() => setShowSidebar(false)}
-            />
-          </div>
-        </>
-      )}
-
       <div className="flex-1 relative">
         <NovelReader 
           novel={novel} 
@@ -289,18 +261,7 @@ function Index() {
         />
       </div>
       
-      {/* Кнопка открытия боковой панели */}
-      {!showSidebar && (
-        <Button
-          variant="ghost"
-          size="icon"
-          className="fixed top-4 left-4 z-[100] bg-card/90 backdrop-blur-md hover:bg-card shadow-lg text-white border border-border/50"
-          onClick={() => setShowSidebar(true)}
-          title="Открыть список эпизодов"
-        >
-          <Icon name="PanelLeft" size={20} />
-        </Button>
-      )}
+
 
       <NavigationMenu
         isAdmin={authState.isAdmin}

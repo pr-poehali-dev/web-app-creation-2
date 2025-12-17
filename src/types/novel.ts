@@ -132,6 +132,7 @@ export interface BackgroundParagraph extends BaseParagraph {
   url: string;
   mobileUrl?: string;
   alt?: string;
+  shapeTransition?: ShapeTransitionType;
 }
 
 export type Paragraph = 
@@ -227,6 +228,11 @@ export interface Novel {
   homePage?: HomePage;
   fileStorage?: {
     images: { id: string; name: string; url: string }[];
-    audio: { id: string; name: string; url: string }[];
+    audio: { id: string; name: string }[];
+  };
+  backgroundImages?: {
+    episodes?: string;
+    profile?: string;
+    settings?: string;
   };
 }

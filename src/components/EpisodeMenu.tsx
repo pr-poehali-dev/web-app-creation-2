@@ -64,7 +64,9 @@ function EpisodeMenu({ novel, profile, onEpisodeSelect, onBack }: EpisodeMenuPro
       <div 
         className="hidden lg:block lg:w-1/2 relative overflow-hidden"
         style={{
-          backgroundImage: 'url(https://cdn.poehali.dev/files/загруженное%20(38).jpg)',
+          backgroundImage: novel.backgroundImages?.episodes 
+            ? `url(${novel.backgroundImages.episodes})` 
+            : 'linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary)/0.6) 100%)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}

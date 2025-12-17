@@ -1,10 +1,11 @@
 import { useState, memo } from 'react';
 import equal from 'fast-deep-equal';
-import { ImageParagraph, BackgroundParagraph } from '@/types/novel';
+import { ImageParagraph, BackgroundParagraph, ShapeTransitionType } from '@/types/novel';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Icon from '@/components/ui/icon';
 
 interface ImageEditorProps {
@@ -59,6 +60,14 @@ function ImageEditor({
     setIsMobileOpen(false);
   };
 
+  const shapeTypes: { value: ShapeTransitionType; label: string }[] = [
+    { value: 'wave', label: 'Волна' },
+    { value: 'diagonal', label: 'Диагональ' },
+    { value: 'organic', label: 'Органика' },
+    { value: 'curved', label: 'Изгибы' },
+    { value: 'liquid', label: 'Жидкость' }
+  ];
+
   return (
     <div className="space-y-2">
       <div className="flex gap-2">
@@ -70,6 +79,25 @@ function ImageEditor({
           }
           className="text-foreground"
         />
+        {paragraph.type === 'background' && (
+          <Select
+            value={paragraph.shapeTransition || 'organic'}
+            onValueChange={(value: ShapeTransitionType) =>
+              onUpdate(index, { ...paragraph, shapeTransition: value })
+            }
+          >
+            <SelectTrigger className="w-[140px]">
+              <SelectValue placeholder="Форма" />
+            </SelectTrigger>
+            <SelectContent>
+              {shapeTypes.map((shape) => (
+                <SelectItem key={shape.value} value={shape.value}>
+                  {shape.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
           <DialogTrigger asChild>
             <Button size="sm" variant="outline" title="Десктоп изображение">

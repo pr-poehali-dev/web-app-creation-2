@@ -12,7 +12,6 @@ export function useAppState() {
 
   const [showParagraphsDialog, setShowParagraphsDialog] = useState(false);
   const [selectedEpisodeForParagraphs, setSelectedEpisodeForParagraphs] = useState<string | null>(null);
-  const [showSidebar, setShowSidebar] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [showGreetingScreen, setShowGreetingScreen] = useState(true);
   const [showAuthPrompt, setShowAuthPrompt] = useState(false);
@@ -71,8 +70,6 @@ export function useAppState() {
     setShowParagraphsDialog,
     selectedEpisodeForParagraphs,
     setSelectedEpisodeForParagraphs,
-    showSidebar,
-    setShowSidebar,
     isAdmin,
     setIsAdmin,
     showGreetingScreen,

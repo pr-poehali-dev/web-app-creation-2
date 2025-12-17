@@ -164,14 +164,11 @@ function NovelReaderContent({
         />
       )}
 
+      {/* ImageParagraph теперь отображается на левой стороне с фоном */}
       {currentParagraph.type === 'image' && (
-        <ImageBox
-          url={currentParagraph.url}
-          mobileUrl={currentParagraph.mobileUrl}
-          alt={currentParagraph.alt}
-          isTopMerged={isTopMerged}
-          isRetrospective={isRetrospective}
-        />
+        <div className="bg-card/90 backdrop-blur-sm rounded-xl md:rounded-2xl shadow-xl border border-border p-6 text-center">
+          <p className="text-foreground/60 italic">Изображение отображается слева</p>
+        </div>
       )}
     </>
   );

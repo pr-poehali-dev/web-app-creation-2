@@ -7,13 +7,16 @@ import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Icon from '@/components/ui/icon';
 
+import { Novel } from '@/types/novel';
+
 interface SettingsPanelProps {
   settings: UserSettings;
+  novel: Novel;
   onUpdate: (settings: UserSettings) => void;
   onBack: () => void;
 }
 
-function SettingsPanel({ settings, onUpdate, onBack }: SettingsPanelProps) {
+function SettingsPanel({ settings, novel, onUpdate, onBack }: SettingsPanelProps) {
   const handleTextSpeedChange = (value: number[]) => {
     onUpdate({ ...settings, textSpeed: value[0] });
   };
@@ -53,7 +56,41 @@ function SettingsPanel({ settings, onUpdate, onBack }: SettingsPanelProps) {
                          settings.textSpeed < 70 ? 'Средне' : 'Быстро';
 
   return (
-    <div className="min-h-screen bg-background p-4 dark">
+    <div className="min-h-screen dark flex">
+      {/* Левая часть - фоновое изображение */}
+      <div 
+        className="hidden lg:block lg:w-1/2 relative overflow-hidden"
+        style={{
+          backgroundImage: novel.backgroundImages?.settings 
+            ? `url(${novel.backgroundImages.settings})` 
+            : 'linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary)/0.6) 100%)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent to-background/20" />
+        
+        {/* Фигурный край */}
+        <div className="absolute top-0 right-0 h-full w-32 pointer-events-none">
+          <svg 
+            viewBox="0 0 100 1000" 
+            preserveAspectRatio="none" 
+            className="absolute top-0 right-0 h-full w-full"
+            style={{ 
+              filter: 'drop-shadow(-3px 0 12px rgba(0,0,0,0.15))',
+              transform: 'translateX(1px)'
+            }}
+          >
+            <path 
+              d="M 0 0 Q 50 50, 0 100 T 0 200 T 0 300 T 0 400 T 0 500 T 0 600 T 0 700 T 0 800 T 0 900 T 0 1000 L 100 1000 L 100 0 Z"
+              fill="hsl(var(--background))"
+            />
+          </svg>
+        </div>
+      </div>
+
+      {/* Правая часть - контент настроек */}
+      <div className="w-full lg:w-1/2 bg-background p-4 overflow-y-auto dark">
       <div className="container mx-auto max-w-3xl">
         <header className="mb-8 flex items-center justify-between">
           <Button variant="ghost" size="icon" onClick={onBack}>
@@ -276,6 +313,7 @@ function SettingsPanel({ settings, onUpdate, onBack }: SettingsPanelProps) {
             <p className="mt-1">Все изменения сохраняются автоматически</p>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

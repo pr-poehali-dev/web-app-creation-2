@@ -57,7 +57,41 @@ function UserProfilePanel({ profile, novel, onUpdate, onBack, onNavigateTo, user
   ];
 
   return (
-    <div className="min-h-screen bg-background p-4 dark">
+    <div className="min-h-screen dark flex">
+      {/* Левая часть - фоновое изображение */}
+      <div 
+        className="hidden lg:block lg:w-1/2 relative overflow-hidden"
+        style={{
+          backgroundImage: novel.backgroundImages?.profile 
+            ? `url(${novel.backgroundImages.profile})` 
+            : 'linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary)/0.6) 100%)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent to-background/20" />
+        
+        {/* Фигурный край */}
+        <div className="absolute top-0 right-0 h-full w-32 pointer-events-none">
+          <svg 
+            viewBox="0 0 100 1000" 
+            preserveAspectRatio="none" 
+            className="absolute top-0 right-0 h-full w-full"
+            style={{ 
+              filter: 'drop-shadow(-3px 0 12px rgba(0,0,0,0.15))',
+              transform: 'translateX(1px)'
+            }}
+          >
+            <path 
+              d="M 0 0 C 60 50, 80 150, 0 200 S -20 300, 0 400 S 80 500, 0 600 S -20 700, 0 800 S 60 900, 0 1000 L 100 1000 L 100 0 Z"
+              fill="hsl(var(--background))"
+            />
+          </svg>
+        </div>
+      </div>
+
+      {/* Правая часть - контент профиля */}
+      <div className="w-full lg:w-1/2 bg-background p-4 overflow-y-auto dark">
       <div className="container mx-auto max-w-4xl">
         <header className="mb-8 flex items-center justify-between">
           <Button variant="ghost" size="icon" onClick={onBack}>
@@ -94,6 +128,7 @@ function UserProfilePanel({ profile, novel, onUpdate, onBack, onNavigateTo, user
         />
 
         <ProfileActions onUpdate={onUpdate} />
+      </div>
       </div>
     </div>
   );
