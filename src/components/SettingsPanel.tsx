@@ -90,13 +90,24 @@ function SettingsPanel({ settings, novel, onUpdate, onBack }: SettingsPanelProps
       </div>
 
       {/* Правая часть - контент настроек */}
-      <div className="w-full lg:w-1/2 bg-background p-4 overflow-y-auto dark">
-      <div className="container mx-auto max-w-3xl">
+      <div className="w-full lg:w-1/2 p-4 overflow-y-auto dark relative" style={{ background: 'linear-gradient(135deg, hsl(210, 70%, 15%) 0%, hsl(215, 65%, 20%) 100%)' }}>
+      {/* Декоративные элементы */}
+      <div className="absolute top-24 right-16 w-32 h-32 bg-primary/20 blur-3xl" />
+      <svg className="absolute top-10 left-16 w-18 h-18 text-primary/30" viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" strokeWidth="2" />
+        <circle cx="50" cy="50" r="30" fill="currentColor" opacity="0.3" />
+      </svg>
+      <div className="absolute bottom-40 left-10 w-28 h-28 bg-accent/15 blur-2xl" />
+      <svg className="absolute bottom-16 right-20 w-16 h-16 text-accent/25" viewBox="0 0 100 100">
+        <rect x="10" y="10" width="80" height="80" rx="10" fill="currentColor" />
+      </svg>
+      
+      <div className="container mx-auto max-w-3xl relative z-10">
         <header className="mb-8 flex items-center justify-between">
-          <Button variant="ghost" size="icon" onClick={onBack}>
+          <Button variant="ghost" size="icon" onClick={onBack} className="text-white hover:bg-white/10">
             <Icon name="ArrowLeft" size={20} />
           </Button>
-          <h1 className="text-3xl font-bold text-foreground">Настройки</h1>
+          <h1 className="text-3xl font-bold text-white">Настройки</h1>
           <div className="w-10" />
         </header>
 

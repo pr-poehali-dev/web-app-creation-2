@@ -93,13 +93,20 @@ function EpisodeMenu({ novel, profile, onEpisodeSelect, onBack }: EpisodeMenuPro
       </div>
 
       {/* Правая часть - список эпизодов */}
-      <div className="w-full lg:w-1/2 bg-background p-6 lg:p-12 overflow-y-auto">
-        <div className="max-w-2xl mx-auto">
+      <div className="w-full lg:w-1/2 p-6 lg:p-12 overflow-y-auto relative" style={{ background: 'linear-gradient(135deg, hsl(210, 70%, 15%) 0%, hsl(215, 65%, 20%) 100%)' }}>
+        {/* Декоративные элементы */}
+        <div className="absolute top-10 right-20 w-24 h-24 bg-primary/20 rounded-full blur-2xl" />
+        <svg className="absolute top-32 left-10 w-16 h-16 text-accent/20" viewBox="0 0 100 100">
+          <rect x="20" y="20" width="60" height="60" fill="none" stroke="currentColor" strokeWidth="3" transform="rotate(45 50 50)" />
+        </svg>
+        <div className="absolute bottom-20 right-10 w-32 h-32 bg-accent/10 blur-3xl" />
+        
+        <div className="max-w-2xl mx-auto relative z-10">
           <header className="mb-8 flex items-center justify-between">
-            <Button variant="ghost" size="icon" onClick={onBack}>
+            <Button variant="ghost" size="icon" onClick={onBack} className="text-white hover:bg-white/10">
               <Icon name="ArrowLeft" size={20} />
             </Button>
-            <h1 className="text-3xl font-bold text-foreground">Эпизоды</h1>
+            <h1 className="text-3xl font-bold text-white">Эпизоды</h1>
             <div className="w-10" />
           </header>
 

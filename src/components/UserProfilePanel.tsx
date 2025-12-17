@@ -91,13 +91,23 @@ function UserProfilePanel({ profile, novel, onUpdate, onBack, onNavigateTo, user
       </div>
 
       {/* Правая часть - контент профиля */}
-      <div className="w-full lg:w-1/2 bg-background p-4 overflow-y-auto dark">
-      <div className="container mx-auto max-w-4xl">
+      <div className="w-full lg:w-1/2 p-4 overflow-y-auto dark relative" style={{ background: 'linear-gradient(135deg, hsl(210, 70%, 15%) 0%, hsl(215, 65%, 20%) 100%)' }}>
+      {/* Декоративные элементы */}
+      <div className="absolute top-16 left-10 w-28 h-28 bg-primary/15 blur-2xl" />
+      <svg className="absolute top-40 right-16 w-20 h-20 text-primary/25" viewBox="0 0 100 100">
+        <polygon points="50,5 95,75 5,75" fill="currentColor" />
+      </svg>
+      <div className="absolute bottom-32 left-20 w-36 h-36 bg-accent/10 rounded-full blur-3xl" />
+      <svg className="absolute bottom-10 right-10 w-14 h-14 text-accent/20" viewBox="0 0 100 100">
+        <path d="M50,10 L90,50 L50,90 L10,50 Z" fill="currentColor" />
+      </svg>
+      
+      <div className="container mx-auto max-w-4xl relative z-10">
         <header className="mb-8 flex items-center justify-between">
-          <Button variant="ghost" size="icon" onClick={onBack}>
+          <Button variant="ghost" size="icon" onClick={onBack} className="text-white hover:bg-white/10">
             <Icon name="ArrowLeft" size={20} />
           </Button>
-          <h1 className="text-3xl font-bold text-foreground">Профиль</h1>
+          <h1 className="text-3xl font-bold text-white">Профиль</h1>
           <div className="w-10" />
         </header>
 
