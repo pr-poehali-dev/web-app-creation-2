@@ -277,6 +277,19 @@ function Index() {
         />
       </div>
       
+      {/* Кнопка открытия боковой панели */}
+      {!showSidebar && !showGreetingScreen && (
+        <Button
+          variant="ghost"
+          size="icon"
+          className="fixed top-4 left-4 z-50 bg-card/50 backdrop-blur-sm hover:bg-card/80 text-white"
+          onClick={() => setShowSidebar(true)}
+          title="Открыть список эпизодов"
+        >
+          <Icon name="PanelLeft" size={20} />
+        </Button>
+      )}
+
       <NavigationMenu
         isAdmin={authState.isAdmin}
         onSetActiveView={setActiveView}
