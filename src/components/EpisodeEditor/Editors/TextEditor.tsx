@@ -31,8 +31,11 @@ function TextEditor({ paragraph, index, onUpdate }: TextEditorProps) {
   }, [index, onUpdate]);
 
   const handleBothChange = useCallback((layout: any, frames: any[]) => {
+    const current = paragraphRef.current;
     onUpdate(index, { 
-      ...paragraphRef.current, 
+      ...current,
+      content: current.content, // Явно сохраняем текущий контент
+      subParagraphs: current.subParagraphs, // Явно сохраняем подпараграфы
       frameLayout: layout, 
       comicFrames: frames.length > 0 ? frames : undefined 
     });

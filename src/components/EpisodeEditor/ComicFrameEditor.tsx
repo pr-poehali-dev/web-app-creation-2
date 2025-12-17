@@ -83,15 +83,22 @@ function ComicFrameEditor({ frames, layout, defaultAnimation, subParagraphs, onF
     const requiredCount = getRequiredFramesCount(newLayout);
     const currentCount = frames.length;
     
-    if (currentCount < requiredCount) {
-      // Создаем недостающие фреймы
+    if (currentCount !== requiredCount) {
+      // Создаем или обрезаем фреймы до нужного количества
       const newFrames = [...frames];
-      for (let i = currentCount; i < requiredCount; i++) {
-        newFrames.push({
-          id: `frame-${Date.now()}-${i}`,
-          type: 'image',
-          url: ''
-        });
+      
+      if (currentCount < requiredCount) {
+        // Добавляем недостающие фреймы
+        for (let i = currentCount; i < requiredCount; i++) {
+          newFrames.push({
+            id: `frame-${Date.now()}-${i}`,
+            type: 'image',
+            url: ''
+          });
+        }
+      } else {
+        // Обрезаем лишние фреймы
+        newFrames.splice(requiredCount);
       }
       
       // Если есть onBothChange, используем его для атомарного обновления
@@ -103,7 +110,7 @@ function ComicFrameEditor({ frames, layout, defaultAnimation, subParagraphs, onF
         onFramesChange(newFrames);
       }
     } else {
-      // Если фреймов достаточно, просто меняем макет
+      // Если фреймов ровно столько, сколько нужно - просто меняем макет
       onLayoutChange(newLayout);
     }
   };
