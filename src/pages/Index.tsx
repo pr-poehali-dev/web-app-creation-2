@@ -169,7 +169,7 @@ function Index() {
 
   if (activeView === 'home') {
     return (
-      <div className="relative min-h-screen dark">
+      <>
         <HomePage 
           homePage={novel.homePage || { greeting: 'Добро пожаловать', news: [] }}
           onStart={() => {
@@ -227,7 +227,7 @@ function Index() {
             </Button>
           )}
         </div>
-      </div>
+      </>
     );
   }
 
