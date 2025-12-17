@@ -1,3 +1,4 @@
+import { useCallback, useRef, useEffect } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { TextParagraph } from '@/types/novel';
@@ -11,6 +12,36 @@ interface TextEditorProps {
 }
 
 function TextEditor({ paragraph, index, onUpdate }: TextEditorProps) {
+  const paragraphRef = useRef(paragraph);
+  
+  useEffect(() => {
+    paragraphRef.current = paragraph;
+  }, [paragraph]);
+
+  const handleFramesChange = useCallback((frames: any[]) => {
+    onUpdate(index, { ...paragraphRef.current, comicFrames: frames.length > 0 ? frames : undefined });
+  }, [index, onUpdate]);
+
+  const handleLayoutChange = useCallback((layout: any) => {
+    onUpdate(index, { ...paragraphRef.current, frameLayout: layout });
+  }, [index, onUpdate]);
+
+  const handleAnimationChange = useCallback((animation: any) => {
+    onUpdate(index, { ...paragraphRef.current, frameAnimation: animation });
+  }, [index, onUpdate]);
+
+  const handleBothChange = useCallback((layout: any, frames: any[]) => {
+    onUpdate(index, { 
+      ...paragraphRef.current, 
+      frameLayout: layout, 
+      comicFrames: frames.length > 0 ? frames : undefined 
+    });
+  }, [index, onUpdate]);
+
+  const handleSubParagraphsChange = useCallback((subParagraphs: any[]) => {
+    onUpdate(index, { ...paragraphRef.current, subParagraphs: subParagraphs.length > 0 ? subParagraphs : undefined });
+  }, [index, onUpdate]);
+
   return (
     <div className="space-y-3">
       <Textarea
@@ -27,9 +58,7 @@ function TextEditor({ paragraph, index, onUpdate }: TextEditorProps) {
 
       <SubParagraphsEditor
         subParagraphs={paragraph.subParagraphs || []}
-        onSubParagraphsChange={(subParagraphs) =>
-          onUpdate(index, { ...paragraph, subParagraphs: subParagraphs.length > 0 ? subParagraphs : undefined })
-        }
+        onSubParagraphsChange={handleSubParagraphsChange}
       />
 
       <ComicFrameEditor
@@ -37,22 +66,10 @@ function TextEditor({ paragraph, index, onUpdate }: TextEditorProps) {
         layout={paragraph.frameLayout || 'horizontal-3'}
         defaultAnimation={paragraph.frameAnimation}
         subParagraphs={paragraph.subParagraphs}
-        onFramesChange={(frames) =>
-          onUpdate(index, { ...paragraph, comicFrames: frames.length > 0 ? frames : undefined })
-        }
-        onLayoutChange={(layout) =>
-          onUpdate(index, { ...paragraph, frameLayout: layout })
-        }
-        onAnimationChange={(animation) =>
-          onUpdate(index, { ...paragraph, frameAnimation: animation })
-        }
-        onBothChange={(layout, frames) =>
-          onUpdate(index, { 
-            ...paragraph, 
-            frameLayout: layout, 
-            comicFrames: frames.length > 0 ? frames : undefined 
-          })
-        }
+        onFramesChange={handleFramesChange}
+        onLayoutChange={handleLayoutChange}
+        onAnimationChange={handleAnimationChange}
+        onBothChange={handleBothChange}
       />
     </div>
   );
