@@ -73,12 +73,6 @@ export default function MergedParagraphsLayout({ layout, children, aspectRatios 
       case 'l-shape':
         return 'grid grid-cols-3 grid-rows-3 gap-4';
       
-      case 'pyramid':
-        return 'grid grid-cols-2 grid-rows-2 gap-4';
-      
-      case 'inverted-pyramid':
-        return 'grid grid-cols-2 grid-rows-2 gap-4';
-      
       case 'sandwich':
         return 'flex flex-col items-center justify-center gap-4';
       
@@ -87,18 +81,6 @@ export default function MergedParagraphsLayout({ layout, children, aspectRatios 
       
       case 'filmstrip':
         return 'flex flex-row items-center justify-center gap-2';
-      
-      case 'diamond-grid':
-        return 'grid grid-cols-5 grid-rows-5 gap-3';
-      
-      case 'triangle-flow':
-        return 'grid grid-cols-4 grid-rows-3 gap-3';
-      
-      case 'diamond-cascade':
-        return 'grid grid-cols-4 grid-rows-4 gap-3';
-      
-      case 'rotated-squares':
-        return 'grid grid-cols-3 grid-rows-3 gap-4';
       
       default:
         return 'grid grid-cols-3 gap-4';
@@ -159,63 +141,12 @@ export default function MergedParagraphsLayout({ layout, children, aspectRatios 
         if (index === 5) return 'col-start-3 row-start-3';
         return '';
       
-      case 'pyramid':
-        if (index === 0) return 'col-span-2';
-        return '';
-      
-      case 'inverted-pyramid':
-        if (index === 2) return 'col-span-2';
-        return '';
-      
       case 'spotlight':
-        if (index === 0) return 'col-start-2 row-start-2';
+        if (index === 0) return 'col-start-2 row-start-2 col-span-1 row-span-1';
         if (index === 1) return 'col-start-1 row-start-1';
         if (index === 2) return 'col-start-3 row-start-1';
         if (index === 3) return 'col-start-1 row-start-3';
         if (index === 4) return 'col-start-3 row-start-3';
-        return '';
-      
-      case 'diamond-grid':
-        // 9 ромбов в форме большого ромба
-        if (index === 0) return 'col-start-3 row-start-1 rotate-45';
-        if (index === 1) return 'col-start-2 row-start-2 rotate-45';
-        if (index === 2) return 'col-start-3 row-start-2 rotate-45';
-        if (index === 3) return 'col-start-4 row-start-2 rotate-45';
-        if (index === 4) return 'col-start-1 row-start-3 rotate-45';
-        if (index === 5) return 'col-start-3 row-start-3 rotate-45';
-        if (index === 6) return 'col-start-5 row-start-3 rotate-45';
-        if (index === 7) return 'col-start-2 row-start-4 rotate-45';
-        if (index === 8) return 'col-start-4 row-start-4 rotate-45';
-        return '';
-      
-      case 'triangle-flow':
-        // 6 треугольников в художественной композиции
-        if (index === 0) return 'col-start-1 row-start-1 [clip-path:polygon(50%_0%,0%_100%,100%_100%)]';
-        if (index === 1) return 'col-start-2 row-start-1 col-span-2 [clip-path:polygon(50%_0%,0%_100%,100%_100%)]';
-        if (index === 2) return 'col-start-1 row-start-2 [clip-path:polygon(50%_100%,0%_0%,100%_0%)]';
-        if (index === 3) return 'col-start-2 row-start-2 [clip-path:polygon(50%_0%,0%_100%,100%_100%)]';
-        if (index === 4) return 'col-start-3 row-start-2 col-span-2 row-span-2 [clip-path:polygon(50%_0%,0%_100%,100%_100%)]';
-        if (index === 5) return 'col-start-1 row-start-3 col-span-2 [clip-path:polygon(50%_100%,0%_0%,100%_0%)]';
-        return '';
-      
-      case 'diamond-cascade':
-        // 7 ромбов по диагонали с разными размерами
-        if (index === 0) return 'col-start-1 row-start-1 rotate-45 scale-75';
-        if (index === 1) return 'col-start-2 row-start-1 rotate-45';
-        if (index === 2) return 'col-start-2 row-start-2 rotate-45 scale-90';
-        if (index === 3) return 'col-start-3 row-start-2 rotate-45 scale-110';
-        if (index === 4) return 'col-start-3 row-start-3 rotate-45';
-        if (index === 5) return 'col-start-4 row-start-3 rotate-45 scale-90';
-        if (index === 6) return 'col-start-4 row-start-4 rotate-45 scale-75';
-        return '';
-      
-      case 'rotated-squares':
-        // 5 квадратов повернутых на 45°
-        if (index === 0) return 'col-start-2 row-start-1 rotate-45 scale-90';
-        if (index === 1) return 'col-start-1 row-start-2 rotate-45 scale-75';
-        if (index === 2) return 'col-start-2 row-start-2 rotate-45 scale-110 z-10';
-        if (index === 3) return 'col-start-3 row-start-2 rotate-45 scale-75';
-        if (index === 4) return 'col-start-2 row-start-3 rotate-45 scale-90';
         return '';
       
       default:

@@ -90,7 +90,7 @@ function EpisodesVisualization({
                 refY="3"
                 orient="auto"
               >
-                <polygon points="0 0, 10 3, 0 6" fill="hsl(var(--primary))" fillOpacity="0.3" />
+                <circle cx="5" cy="3" r="2" fill="hsl(var(--primary))" fillOpacity="0.5" />
               </marker>
             </defs>
           </svg>

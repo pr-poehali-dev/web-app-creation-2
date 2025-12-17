@@ -58,15 +58,9 @@ function ComicFrameEditor({ frames, layout, defaultAnimation, subParagraphs, onF
       case 'asymmetric-2': return 4;
       case 'asymmetric-3': return 5;
       case 'l-shape': return 6;
-      case 'pyramid': return 3;
-      case 'inverted-pyramid': return 3;
       case 'sandwich': return 3;
       case 'spotlight': return 5;
       case 'filmstrip': return 5;
-      case 'diamond-grid': return 9;
-      case 'triangle-flow': return 6;
-      case 'diamond-cascade': return 7;
-      case 'rotated-squares': return 5;
       default: return 3;
     }
   };
@@ -179,11 +173,7 @@ function ComicFrameEditor({ frames, layout, defaultAnimation, subParagraphs, onF
                 <SelectItem value="asymmetric-2">◻️⬛◻️ Асим. 2</SelectItem>
                 <SelectItem value="asymmetric-3">⬛⬛◻️ Асим. 3</SelectItem>
                 
-                <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground mt-2">Ромбы и треугольники</div>
-                <SelectItem value="diamond-grid">💎 Ромбы (9 шт)</SelectItem>
-                <SelectItem value="triangle-flow">🔺 Треугольники (6 шт)</SelectItem>
-                <SelectItem value="diamond-cascade">💠 Каскад ромбов (7 шт)</SelectItem>
-                <SelectItem value="rotated-squares">🔷 Квадраты 45° (5 шт)</SelectItem>
+
               </SelectContent>
             </Select>
           </div>
