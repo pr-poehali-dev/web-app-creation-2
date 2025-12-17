@@ -88,7 +88,7 @@ function NovelReaderBackgroundNew({
   return (
     <div className="absolute inset-0 flex flex-col lg:flex-row">
       {/* Верхняя/Левая часть - фоновое изображение */}
-      <div className="h-1/2 lg:h-screen lg:w-1/2 relative overflow-hidden lg:sticky lg:top-0">
+      <div className="h-[calc(100vh-280px)] lg:h-screen lg:w-1/2 relative overflow-hidden lg:sticky lg:top-0">
         {previousBackgroundImage && (
           <div 
             className="absolute inset-0 bg-cover bg-center"
@@ -145,13 +145,13 @@ function NovelReaderBackgroundNew({
         )}
         
         {/* Плавный градиент-переход */}
-        <div className="absolute bottom-0 left-0 right-0 h-32 lg:h-auto lg:top-0 lg:right-0 lg:left-auto lg:bottom-auto lg:w-64 pointer-events-none">
+        <div className="absolute bottom-0 left-0 right-0 h-64 lg:h-auto lg:top-0 lg:right-0 lg:left-auto lg:bottom-auto lg:w-64 pointer-events-none">
           <div className="w-full h-full bg-gradient-to-b lg:bg-gradient-to-r from-transparent via-[#151d28]/50 to-[#151d28]" />
         </div>
       </div>
 
       {/* Нижняя/Правая часть - контент */}
-      <div className="h-1/2 lg:h-auto w-full lg:w-1/2 relative overflow-hidden" style={{ backgroundColor: '#151d28' }}>
+      <div className="min-h-[280px] lg:h-auto w-full lg:w-1/2 relative overflow-hidden" style={{ backgroundColor: '#151d28' }}>
         
         <Button
           variant="ghost"
@@ -163,7 +163,7 @@ function NovelReaderBackgroundNew({
             }
             setIsContentHidden(!isContentHidden);
           }}
-          className="hidden lg:block absolute top-6 right-4 z-20 h-10 w-10 p-0 bg-card/80 backdrop-blur-sm hover:bg-card/90 border border-border/50 rounded-full"
+          className="absolute top-16 lg:top-20 right-4 z-20 h-10 w-10 p-0 bg-card/80 backdrop-blur-sm hover:bg-card/90 border border-border/50 rounded-full"
           title={isContentHidden ? 'Показать текст' : 'Скрыть текст'}
         >
           <Icon name={isContentHidden ? 'Eye' : 'EyeOff'} size={20} className="text-white" />
