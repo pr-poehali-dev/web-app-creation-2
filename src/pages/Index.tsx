@@ -169,7 +169,7 @@ function Index() {
 
   if (activeView === 'home') {
     return (
-      <>
+      <div className="relative">
         <HomePage 
           homePage={novel.homePage || { greeting: 'Добро пожаловать', news: [] }}
           onStart={() => {
@@ -195,7 +195,7 @@ function Index() {
           <Button
             variant="ghost"
             size="icon"
-            className="bg-card/90 backdrop-blur-md hover:bg-card shadow-lg text-white border border-border/50"
+            className="bg-card/90 backdrop-blur-md hover:bg-card shadow-lg border border-border/50"
             onClick={() => setActiveView('episodes')}
             title="Список эпизодов"
           >
@@ -227,7 +227,7 @@ function Index() {
             </Button>
           )}
         </div>
-      </>
+      </div>
     );
   }
 
