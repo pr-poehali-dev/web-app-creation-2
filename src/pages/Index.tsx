@@ -278,7 +278,7 @@ function Index() {
       </div>
       
       {/* Кнопка открытия боковой панели */}
-      {!showSidebar && !showGreetingScreen && (
+      {!showSidebar && (
         <Button
           variant="ghost"
           size="icon"
