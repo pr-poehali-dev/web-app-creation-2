@@ -123,7 +123,7 @@ function NovelReaderBackgroundNew({
           }
           setIsContentHidden(!isContentHidden);
         }}
-        className="absolute top-4 right-4 z-20 h-10 w-10 p-0 bg-card/80 backdrop-blur-sm hover:bg-card/90 border border-border/50 rounded-full"
+        className="absolute top-6 right-4 md:top-4 z-20 h-10 w-10 p-0 bg-card/80 backdrop-blur-sm hover:bg-card/90 border border-border/50 rounded-full"
         title={isContentHidden ? 'Показать текст' : 'Скрыть текст'}
       >
         <Icon name={isContentHidden ? 'Eye' : 'EyeOff'} size={20} className="text-white" />
