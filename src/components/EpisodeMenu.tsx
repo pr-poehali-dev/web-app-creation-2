@@ -59,18 +59,32 @@ function EpisodeMenu({ novel, profile, onEpisodeSelect, onBack }: EpisodeMenuPro
   };
 
   return (
-    <div className="min-h-screen bg-background p-4 dark">
-      <div className="container mx-auto max-w-4xl">
-        <header className="mb-8 flex items-center justify-between">
-          <Button variant="ghost" size="icon" onClick={onBack}>
-            <Icon name="ArrowLeft" size={20} />
-          </Button>
-          <h1 className="text-3xl font-bold text-foreground">Эпизоды</h1>
-          <div className="w-10" />
-        </header>
+    <div className="min-h-screen dark flex">
+      {/* Левая часть - фоновое изображение */}
+      <div 
+        className="hidden lg:block lg:w-1/2 relative"
+        style={{
+          backgroundImage: 'url(https://cdn.poehali.dev/files/загруженное%20(38).jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent to-background/20" />
+      </div>
 
-        <div className="space-y-4">
-          {novel.episodes.map((episode, index) => {
+      {/* Правая часть - список эпизодов */}
+      <div className="w-full lg:w-1/2 bg-background p-6 lg:p-12 overflow-y-auto">
+        <div className="max-w-2xl mx-auto">
+          <header className="mb-8 flex items-center justify-between">
+            <Button variant="ghost" size="icon" onClick={onBack}>
+              <Icon name="ArrowLeft" size={20} />
+            </Button>
+            <h1 className="text-3xl font-bold text-foreground">Эпизоды</h1>
+            <div className="w-10" />
+          </header>
+
+          <div className="space-y-4">
+            {novel.episodes.map((episode, index) => {
             const progress = getEpisodeProgress(episode.id);
             const isCurrent = novel.currentEpisodeId === episode.id;
             const isLocked = !isEpisodeUnlocked(index) && !isCurrent;
@@ -212,10 +226,11 @@ function EpisodeMenu({ novel, profile, onEpisodeSelect, onBack }: EpisodeMenuPro
               </Card>
             );
           })}
-        </div>
+          </div>
 
-        <div className="mt-8 text-center text-sm text-muted-foreground">
-          <p>Завершите эпизоды по порядку, чтобы открыть следующие</p>
+          <div className="mt-8 text-center text-sm text-muted-foreground">
+            <p>Завершите эпизоды по порядку, чтобы открыть следующие</p>
+          </div>
         </div>
       </div>
     </div>
