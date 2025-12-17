@@ -23,13 +23,13 @@ export default function MergedParagraphsLayout({ layout, children, aspectRatios 
         return 'flex flex-row items-center justify-center gap-2';
       
       case 'vertical-2':
-        return 'flex flex-col items-center justify-center gap-4 px-4';
+        return 'flex flex-col items-center justify-center gap-4';
       
       case 'vertical-3':
-        return 'flex flex-col items-center justify-center gap-4 px-4';
+        return 'flex flex-col items-center justify-center gap-4';
       
       case 'vertical-4':
-        return 'flex flex-col items-center justify-center gap-4 px-4';
+        return 'flex flex-col items-center justify-center gap-4';
       
       case 'horizontal-2-1':
         return 'grid grid-cols-[2fr_2fr_1fr] gap-2';

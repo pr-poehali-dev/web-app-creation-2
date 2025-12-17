@@ -131,10 +131,12 @@ export default function ComicFrameReader({ paragraph, currentSubParagraphIndex, 
           const animClass = getAnimationClass(frame.animation, defaultAnimation);
           const hasAnimation = animClass !== '';
           
+          const isVerticalLayout = layout.startsWith('vertical-');
+          
           return (
             <div 
               key={frame.id} 
-              className={`w-full h-full cursor-pointer min-w-0 rounded-lg overflow-hidden ${animClass}`}
+              className={`${isVerticalLayout ? 'w-[85%] mx-auto' : 'w-full h-full'} cursor-pointer min-w-0 rounded-lg overflow-hidden ${animClass}`}
               style={{ 
                 animationDelay: hasAnimation ? `${index * 0.2}s` : undefined,
                 opacity: hasAnimation ? 0 : 1
