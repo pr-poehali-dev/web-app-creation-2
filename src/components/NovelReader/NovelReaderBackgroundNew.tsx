@@ -163,7 +163,7 @@ function NovelReaderBackgroundNew({
             }
             setIsContentHidden(!isContentHidden);
           }}
-          className="absolute top-16 lg:top-20 right-4 z-20 h-10 w-10 p-0 bg-card/80 backdrop-blur-sm hover:bg-card/90 border border-border/50 rounded-full"
+          className="absolute top-14 lg:top-20 right-4 z-20 h-10 w-10 p-0 bg-card/80 backdrop-blur-sm hover:bg-card/90 border border-border/50 rounded-full"
           title={isContentHidden ? 'Показать текст' : 'Скрыть текст'}
         >
           <Icon name={isContentHidden ? 'Eye' : 'EyeOff'} size={20} className="text-white" />
@@ -171,7 +171,7 @@ function NovelReaderBackgroundNew({
         
         {!isContentHidden && currentParagraph.type !== 'background' && !isBackgroundChanging && (
           <>
-            <div className="absolute bottom-20 md:bottom-12 left-0 right-0 z-10 px-4 md:px-8">
+            <div className="absolute bottom-20 md:bottom-12 left-0 right-0 z-10 px-5 md:px-8">
             <div className="w-full max-w-3xl mx-auto flex flex-col items-center justify-center">
               {currentParagraph.type !== 'choice' && (
                 <div className="flex justify-between items-center mb-2 gap-2">
