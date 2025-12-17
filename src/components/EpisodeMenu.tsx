@@ -62,7 +62,7 @@ function EpisodeMenu({ novel, profile, onEpisodeSelect, onBack }: EpisodeMenuPro
     <div className="min-h-screen dark flex">
       {/* Левая часть - фоновое изображение */}
       <div 
-        className="hidden lg:block lg:w-1/2 relative"
+        className="hidden lg:block lg:w-1/2 relative overflow-hidden"
         style={{
           backgroundImage: 'url(https://cdn.poehali.dev/files/загруженное%20(38).jpg)',
           backgroundSize: 'cover',
@@ -70,6 +70,24 @@ function EpisodeMenu({ novel, profile, onEpisodeSelect, onBack }: EpisodeMenuPro
         }}
       >
         <div className="absolute inset-0 bg-gradient-to-r from-transparent to-background/20" />
+        
+        {/* Фигурный край справа */}
+        <div className="absolute top-0 right-0 h-full w-32 pointer-events-none">
+          <svg 
+            viewBox="0 0 100 1000" 
+            preserveAspectRatio="none" 
+            className="absolute top-0 right-0 h-full w-full"
+            style={{ 
+              filter: 'drop-shadow(-3px 0 12px rgba(0,0,0,0.15))',
+              transform: 'translateX(1px)'
+            }}
+          >
+            <path 
+              d="M 0 0 Q 70 80, 30 160 Q -10 240, 50 320 Q 100 400, 20 480 Q -20 560, 60 640 Q 110 720, 10 800 Q -30 880, 40 960 Q 90 1020, 0 1000 L 100 1000 L 100 0 Z"
+              fill="hsl(var(--background))"
+            />
+          </svg>
+        </div>
       </div>
 
       {/* Правая часть - список эпизодов */}

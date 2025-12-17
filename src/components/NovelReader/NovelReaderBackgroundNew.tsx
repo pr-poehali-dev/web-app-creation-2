@@ -6,6 +6,7 @@ import Icon from '@/components/ui/icon';
 import NovelReaderContent from './NovelReaderContent';
 import ComicFrameReader from './ComicFrameReader';
 import TypewriterText from '../TypewriterText';
+import ShapeTransition from './ShapeTransitions';
 
 interface NovelReaderBackgroundNewProps {
   backgroundImage: string | null;
@@ -115,20 +116,8 @@ function NovelReaderBackgroundNew({
 
         <div className={`absolute inset-0 ${isRetrospective ? 'bg-amber-950/30' : 'bg-black/20'}`} style={{ transition: 'background-color 1.2s ease-in-out' }} />
         
-        {/* Волнистый край справа */}
-        <div className="absolute top-0 right-0 h-full w-24">
-          <svg 
-            viewBox="0 0 100 1000" 
-            preserveAspectRatio="none" 
-            className="absolute top-0 right-0 h-full w-full"
-            style={{ filter: 'drop-shadow(2px 0 8px rgba(0,0,0,0.3))' }}
-          >
-            <path 
-              d="M 0 0 Q 50 50, 0 100 T 0 200 T 0 300 T 0 400 T 0 500 T 0 600 T 0 700 T 0 800 T 0 900 T 0 1000 L 100 1000 L 100 0 Z" 
-              fill="hsl(var(--background))"
-            />
-          </svg>
-        </div>
+        {/* Фигурный переход */}
+        <ShapeTransition type={currentEpisode.shapeTransition || 'organic'} />
       </div>
 
       {/* Правая часть - контент */}

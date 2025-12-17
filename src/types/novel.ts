@@ -142,6 +142,8 @@ export type Paragraph =
   | DialogueParagraph
   | BackgroundParagraph;
 
+export type ShapeTransitionType = 'wave' | 'diagonal' | 'organic' | 'curved' | 'liquid';
+
 export interface Episode {
   id: string;
   title: string;
@@ -154,6 +156,7 @@ export interface Episode {
   requiredPaths?: string[];
   unlockedForAll?: boolean;
   timeframes?: ('present' | 'retrospective')[];
+  shapeTransition?: ShapeTransitionType;
 }
 
 export interface LibraryItem {
