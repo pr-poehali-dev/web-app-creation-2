@@ -98,7 +98,7 @@ function CharactersTab({ profile, novel, onProfileUpdate }: CharactersTabProps) 
                 };
                 
                 return (
-                  <div className="grid grid-cols-1 lg:grid-cols-2 h-full">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 h-full max-h-[85vh] lg:max-h-full overflow-y-auto lg:overflow-hidden scrollbar-hide">
                     <div className="relative bg-muted/30 p-6 lg:p-8 flex items-center justify-center min-h-[400px] lg:min-h-[600px]">
                       <div className="w-full h-full max-w-md max-h-[500px] rounded-xl overflow-hidden shadow-2xl border-4 border-primary/20">
                         {currentImage ? (
