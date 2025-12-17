@@ -118,11 +118,15 @@ function NovelReaderBackgroundNew({
         
         {/* Картинки-параграфы поверх фона */}
         {currentParagraph.type === 'image' && (
-          <div className="absolute inset-0 flex items-center justify-center p-8 z-10">
+          <div className="absolute inset-0 flex items-center justify-center p-4 md:p-8 z-10">
             <img 
               src={currentParagraph.url}
               alt={currentParagraph.alt || 'Изображение'}
-              className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl animate-fade-in"
+              className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl"
+              style={{
+                animation: 'fadeIn 0.8s ease-in-out',
+                filter: getFilterStyle('blur(0px)')
+              }}
             />
           </div>
         )}
@@ -136,10 +140,9 @@ function NovelReaderBackgroundNew({
       </div>
 
       {/* Правая часть - контент */}
-      <div className="w-full lg:w-1/2 relative overflow-hidden"
+      <div className="w-full lg:w-1/2 relative overflow-hidden bg-background"
         style={{
-          clipPath: 'inset(0)',
-          background: 'linear-gradient(135deg, hsl(210, 70%, 15%) 0%, hsl(215, 65%, 20%) 100%)'
+          clipPath: 'inset(0)'
         }}
       >
         {/* Мобильный фон */}
@@ -202,8 +205,8 @@ function NovelReaderBackgroundNew({
               </div>
             )}
             
-            <div className="absolute inset-0 z-10 flex items-center justify-center px-4 md:px-8">
-            <div className="w-full max-w-3xl">
+            <div className="absolute bottom-20 md:bottom-12 left-0 right-0 z-10 px-4 md:px-8">
+            <div className="w-full max-w-3xl mx-auto">
               {currentParagraph.type !== 'choice' && (
                 <div className="flex justify-between items-center mb-2 gap-2">
                   <Button
@@ -260,13 +263,12 @@ function NovelReaderBackgroundNew({
               {(currentParagraph.type === 'text' || currentParagraph.type === 'dialogue') && 
                currentParagraph.subParagraphs && 
                currentParagraph.subParagraphs.length > 0 ? (
-                <div className="backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 p-6 md:p-8 min-h-[10rem] md:min-h-[12rem]" style={{ background: 'linear-gradient(135deg, hsl(210, 70%, 15%) 0%, hsl(215, 65%, 20%) 100%)' }}>
-                  <div className={`leading-relaxed w-full text-white ${
+                <div className="bg-card/90 backdrop-blur-sm rounded-2xl shadow-2xl border border-border p-6 md:p-8 min-h-[10rem] md:min-h-[12rem]">
+                  <div className={`leading-relaxed w-full text-foreground ${
                     settings.textSize === 'small' ? 'text-base md:text-lg' :
                     settings.textSize === 'large' ? 'text-xl md:text-2xl' :
                     'text-lg md:text-xl'
                   }`}>
-                    {/* Индекс 0 = основной текст параграфа, индекс 1+ = подпараграфы 0, 1, 2... */}
                     {currentSubParagraphIndex === 0 ? (
                       currentParagraph.type === 'text' ? currentParagraph.content : currentParagraph.text
                     ) : (
@@ -275,9 +277,7 @@ function NovelReaderBackgroundNew({
                   </div>
                 </div>
               ) : currentParagraph.type === 'image' ? (
-                <div className="backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 p-6 md:p-8 min-h-[10rem] md:min-h-[12rem] flex items-center justify-center" style={{ background: 'linear-gradient(135deg, hsl(210, 70%, 15%) 0%, hsl(215, 65%, 20%) 100%)' }}>
-                  <p className="text-white/60 text-center">Изображение отображается на фоне</p>
-                </div>
+                null
               ) : (
                 <NovelReaderContent
                   currentParagraph={currentParagraph}

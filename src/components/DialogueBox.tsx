@@ -47,7 +47,7 @@ function DialogueBox({
 
   return (
     <>
-      <Card className={`relative backdrop-blur-sm border border-white/20 shadow-xl ${shouldAnimate ? 'animate-scale-in' : ''} rounded-xl md:rounded-2xl w-full min-h-[10rem] md:min-h-[12rem]`} style={{ background: 'linear-gradient(135deg, hsl(210, 70%, 15%) 0%, hsl(215, 65%, 20%) 100%)' }}>
+      <Card className={`relative bg-card/95 backdrop-blur-sm border-0 shadow-xl ${shouldAnimate ? 'animate-scale-in' : ''} rounded-xl md:rounded-2xl w-full min-h-[10rem] md:min-h-[12rem]`}>
         <div 
           className="absolute inset-0 pointer-events-none rounded-xl md:rounded-2xl transition-all duration-1000 ease-in-out"
           style={{
@@ -100,7 +100,7 @@ function DialogueBox({
                 {characterName}
               </h3>
             )}
-            <div className={`novel-text leading-relaxed text-white ${
+            <div className={`novel-text leading-relaxed text-foreground ${
               isTopMerged 
                 ? "text-sm md:text-base lg:text-lg" 
                 : "text-sm md:text-base lg:text-lg"

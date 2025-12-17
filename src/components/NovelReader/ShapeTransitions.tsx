@@ -49,19 +49,27 @@ function ShapeTransition({ type = 'wave', fillColor = 'hsl(var(--background))' }
   };
 
   return (
-    <div className="absolute top-0 right-0 h-full w-32 pointer-events-none">
+    <div className="absolute top-0 right-0 h-full w-48 pointer-events-none">
       <svg 
         viewBox="0 0 100 1000" 
         preserveAspectRatio="none" 
         className="absolute top-0 right-0 h-full w-full"
         style={{ 
-          filter: 'drop-shadow(-3px 0 12px rgba(0,0,0,0.15))',
-          transform: 'translateX(1px)' // Устраняем зазор
+          filter: 'blur(2px)',
+          transform: 'translateX(1px)'
         }}
       >
+        <defs>
+          <linearGradient id="shapeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style={{ stopColor: 'transparent', stopOpacity: 0 }} />
+            <stop offset="30%" style={{ stopColor: fillColor, stopOpacity: 0.3 }} />
+            <stop offset="70%" style={{ stopColor: fillColor, stopOpacity: 0.8 }} />
+            <stop offset="100%" style={{ stopColor: fillColor, stopOpacity: 1 }} />
+          </linearGradient>
+        </defs>
         <path 
           d={shapes[type]}
-          fill={fillColor}
+          fill="url(#shapeGradient)"
         />
       </svg>
     </div>
