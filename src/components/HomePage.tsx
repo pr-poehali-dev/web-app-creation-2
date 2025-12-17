@@ -22,13 +22,13 @@ function HomePage({ homePage, novel, onStart }: HomePageProps) {
         }}
       >
         <div className="absolute inset-0 bg-gradient-to-r from-transparent to-background/20" />
-        <div className="absolute top-0 right-0 h-full w-32 pointer-events-none">
-          <div className="w-full h-full bg-gradient-to-r from-transparent to-background" />
+        <div className="absolute top-0 right-0 h-full w-64 pointer-events-none">
+          <div className="w-full h-full bg-gradient-to-r from-transparent via-background/50 to-background" />
         </div>
       </div>
 
       {/* Правая часть - приветствие и новости */}
-      <div className="w-full lg:w-1/2 relative overflow-y-auto bg-background">
+      <div className="w-full lg:w-1/2 relative overflow-y-auto" style={{ backgroundColor: '#151d28' }}>
         {/* Декоративные фигуры */}
         <div className="absolute top-20 right-10 w-32 h-32 bg-primary/20 rounded-full blur-3xl" />
         <div className="absolute top-40 right-32 w-24 h-24 rotate-45" style={{ background: 'linear-gradient(135deg, hsl(var(--primary)/0.3), hsl(var(--accent)/0.2))' }} />
@@ -93,16 +93,21 @@ function HomePage({ homePage, novel, onStart }: HomePageProps) {
 
       {/* Мобильный фон */}
       <div 
-        className="lg:hidden absolute inset-0 -z-10"
-        style={{
-          backgroundImage: homePage.greetingImage 
-            ? `url(${homePage.greetingImage})` 
-            : 'linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary)/0.6) 100%)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        }}
+        className="lg:hidden absolute inset-0 -z-10 flex flex-col"
       >
-        <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" />
+        <div 
+          className="h-1/2 relative"
+          style={{
+            backgroundImage: homePage.greetingImage 
+              ? `url(${homePage.greetingImage})` 
+              : 'linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary)/0.6) 100%)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+        >
+          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-b from-transparent via-[#151d28]/50 to-[#151d28]" />
+        </div>
+        <div className="h-1/2" style={{ backgroundColor: '#151d28' }} />
       </div>
     </div>
   );

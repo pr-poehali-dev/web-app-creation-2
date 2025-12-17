@@ -68,7 +68,7 @@ function CharactersTab({ profile, novel, onProfileUpdate }: CharactersTabProps) 
               setCommentText('');
             }
           }}>
-            <DialogContent className="max-w-6xl bg-card/95 backdrop-blur-sm border-2 border-primary/30 p-0 overflow-hidden">
+            <DialogContent className="max-w-6xl border-2 border-primary/30 p-0 overflow-hidden" style={{ backgroundColor: '#151d28' }}>
               {selectedCharacter && (() => {
                 const character = profile.metCharacters.find(c => c.id === selectedCharacter);
                 const episode = novel.episodes.find(ep => ep.id === character?.episodeId);
@@ -99,7 +99,15 @@ function CharactersTab({ profile, novel, onProfileUpdate }: CharactersTabProps) 
                 
                 return (
                   <div className="grid grid-cols-1 lg:grid-cols-2 h-full max-h-[85vh] lg:max-h-full overflow-y-auto lg:overflow-hidden scrollbar-hide">
-                    <div className="relative bg-muted/30 p-6 lg:p-8 flex items-center justify-center min-h-[400px] lg:min-h-[600px]">
+                    <div className="relative p-6 lg:p-8 flex items-center justify-center min-h-[400px] lg:min-h-[600px]" style={{ backgroundColor: '#1a2531' }}>
+                      {/* Плавный градиент-переход */}
+                      <div className="absolute top-0 right-0 h-full w-64 pointer-events-none hidden lg:block">
+                        <div className="w-full h-full bg-gradient-to-r from-transparent via-[#151d28]/50 to-[#151d28]" />
+                      </div>
+                      {/* Мобильный градиент */}
+                      <div className="absolute bottom-0 left-0 right-0 h-32 pointer-events-none lg:hidden">
+                        <div className="w-full h-full bg-gradient-to-b from-transparent via-[#151d28]/50 to-[#151d28]" />
+                      </div>
                       <div className="w-full h-full max-w-md max-h-[500px] rounded-xl overflow-hidden shadow-2xl border-4 border-primary/20">
                         {currentImage ? (
                           currentImage.startsWith('data:') || currentImage.startsWith('http') ? (

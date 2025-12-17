@@ -145,8 +145,8 @@ function NovelReaderBackgroundNew({
         )}
         
         {/* Плавный градиент-переход */}
-        <div className="absolute top-0 right-0 h-full w-32 pointer-events-none">
-          <div className="w-full h-full bg-gradient-to-r from-transparent to-background" />
+        <div className="absolute top-0 right-0 h-full w-64 pointer-events-none">
+          <div className="w-full h-full bg-gradient-to-r from-transparent via-background/50 to-background" />
         </div>
       </div>
 
@@ -204,7 +204,7 @@ function NovelReaderBackgroundNew({
         {!isContentHidden && currentParagraph.type !== 'background' && !isBackgroundChanging && (
           <>
             <div className="absolute bottom-20 md:bottom-12 left-0 right-0 z-10 px-4 md:px-8">
-            <div className="w-full max-w-3xl mx-auto">
+            <div className="w-full max-w-3xl mx-auto flex flex-col items-center justify-center">
               {currentParagraph.type !== 'choice' && (
                 <div className="flex justify-between items-center mb-2 gap-2">
                   <Button

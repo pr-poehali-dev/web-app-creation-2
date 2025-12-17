@@ -72,13 +72,13 @@ function UserProfilePanel({ profile, novel, onUpdate, onBack, onNavigateTo, user
         <div className="absolute inset-0 bg-gradient-to-r from-transparent to-background/20" />
         
         {/* Плавный градиент */}
-        <div className="absolute top-0 right-0 h-full w-32 pointer-events-none">
-          <div className="w-full h-full bg-gradient-to-r from-transparent to-background" />
+        <div className="absolute top-0 right-0 h-full w-64 pointer-events-none">
+          <div className="w-full h-full bg-gradient-to-r from-transparent via-[#151d28]/50 to-[#151d28]" />
         </div>
       </div>
 
       {/* Правая часть - контент профиля */}
-      <div className="w-full lg:w-1/2 p-4 overflow-y-auto dark relative bg-background">
+      <div className="w-full lg:w-1/2 p-4 overflow-y-auto dark relative" style={{ backgroundColor: '#151d28' }}>
       {/* Декоративные элементы */}
       <div className="absolute top-16 left-10 w-28 h-28 bg-primary/15 blur-2xl" />
       <svg className="absolute top-40 right-16 w-20 h-20 text-primary/25" viewBox="0 0 100 100">
