@@ -22,7 +22,7 @@ function HomePage({ homePage, onStart }: HomePageProps) {
         }}
       >
         <div className="absolute inset-0 bg-gradient-to-r from-transparent to-background/20" />
-        <ShapeTransition type="liquid" />
+        <ShapeTransition type="rounded" fillColor="hsl(210, 70%, 15%)" />
       </div>
 
       {/* Правая часть - приветствие и новости */}

@@ -82,8 +82,8 @@ function SettingsPanel({ settings, novel, onUpdate, onBack }: SettingsPanelProps
             }}
           >
             <path 
-              d="M 0 0 Q 50 50, 0 100 T 0 200 T 0 300 T 0 400 T 0 500 T 0 600 T 0 700 T 0 800 T 0 900 T 0 1000 L 100 1000 L 100 0 Z"
-              fill="hsl(var(--background))"
+              d="M 0 0 Q 120 500, 0 1000 L 100 1000 L 100 0 Z"
+              fill="hsl(210, 70%, 15%)"
             />
           </svg>
         </div>

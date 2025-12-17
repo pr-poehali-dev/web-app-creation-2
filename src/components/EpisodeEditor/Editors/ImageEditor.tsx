@@ -65,7 +65,15 @@ function ImageEditor({
     { value: 'diagonal', label: 'Диагональ' },
     { value: 'organic', label: 'Органика' },
     { value: 'curved', label: 'Изгибы' },
-    { value: 'liquid', label: 'Жидкость' }
+    { value: 'liquid', label: 'Жидкость' },
+    { value: 'triangle', label: 'Треугольники' },
+    { value: 'hexagon', label: 'Шестиугольники' },
+    { value: 'arc', label: 'Дуга' },
+    { value: 'stairs', label: 'Ступеньки' },
+    { value: 'zigzag', label: 'Зигзаг' },
+    { value: 'rounded', label: 'Округлая' },
+    { value: 'sharp', label: 'Острая' },
+    { value: 'double-wave', label: 'Двойная волна' }
   ];
 
   return (

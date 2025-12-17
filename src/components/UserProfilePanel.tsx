@@ -83,8 +83,8 @@ function UserProfilePanel({ profile, novel, onUpdate, onBack, onNavigateTo, user
             }}
           >
             <path 
-              d="M 0 0 C 60 50, 80 150, 0 200 S -20 300, 0 400 S 80 500, 0 600 S -20 700, 0 800 S 60 900, 0 1000 L 100 1000 L 100 0 Z"
-              fill="hsl(var(--background))"
+              d="M 0 0 L 80 100 L 80 200 L 0 300 L 80 400 L 80 500 L 0 600 L 80 700 L 80 800 L 0 900 L 100 1000 L 100 0 Z"
+              fill="hsl(210, 70%, 15%)"
             />
           </svg>
         </div>

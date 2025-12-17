@@ -85,8 +85,8 @@ function EpisodeMenu({ novel, profile, onEpisodeSelect, onBack }: EpisodeMenuPro
             }}
           >
             <path 
-              d="M 0 0 Q 70 80, 30 160 Q -10 240, 50 320 Q 100 400, 20 480 Q -20 560, 60 640 Q 110 720, 10 800 Q -30 880, 40 960 Q 90 1020, 0 1000 L 100 1000 L 100 0 Z"
-              fill="hsl(var(--background))"
+              d="M 0 0 L 100 150 L 0 300 L 100 450 L 0 600 L 100 750 L 0 900 L 100 1000 L 100 0 Z"
+              fill="hsl(210, 70%, 15%)"
             />
           </svg>
         </div>

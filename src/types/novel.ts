@@ -143,7 +143,7 @@ export type Paragraph =
   | DialogueParagraph
   | BackgroundParagraph;
 
-export type ShapeTransitionType = 'wave' | 'diagonal' | 'organic' | 'curved' | 'liquid';
+export type ShapeTransitionType = 'wave' | 'diagonal' | 'organic' | 'curved' | 'liquid' | 'triangle' | 'hexagon' | 'arc' | 'stairs' | 'zigzag' | 'rounded' | 'sharp' | 'double-wave';
 
 export interface Episode {
   id: string;
