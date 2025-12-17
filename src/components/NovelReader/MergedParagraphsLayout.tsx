@@ -8,27 +8,19 @@ interface MergedParagraphsLayoutProps {
 }
 
 export default function MergedParagraphsLayout({ layout, children, aspectRatios }: MergedParagraphsLayoutProps) {
-  const isHorizontalLayout = layout.includes('horizontal') || 
-                             layout === 'grid-2x2' || 
-                             layout === 'grid-2x3' || 
-                             layout === 'mosaic-left' || 
-                             layout === 'mosaic-right' ||
-                             layout === 'vertical-left-3' ||
-                             layout === 'vertical-right-3';
-  
   const getLayoutClasses = () => {
     switch (layout) {
       case 'single':
         return 'flex items-center justify-center gap-4';
       
       case 'horizontal-2':
-        return 'flex flex-row items-center justify-center gap-2 overflow-x-auto';
+        return 'flex flex-row items-center justify-center gap-2';
       
       case 'horizontal-3':
-        return 'flex flex-row items-center justify-center gap-2 overflow-x-auto';
+        return 'flex flex-row items-center justify-center gap-2';
       
       case 'horizontal-4':
-        return 'flex flex-row items-center justify-center gap-2 overflow-x-auto';
+        return 'flex flex-row items-center justify-center gap-2';
       
       case 'vertical-2':
         return 'flex flex-col items-center justify-center gap-4';

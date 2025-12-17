@@ -133,7 +133,7 @@ function NovelReaderBackgroundNew({
         <>
           {hasComicFrames && (
             <div className="absolute top-[60px] left-8 right-8 bottom-[calc(14rem+3rem)] md:top-[80px] md:left-8 md:right-32 md:bottom-[calc(14rem+3rem)] z-10">
-              <div className="w-full h-full max-w-5xl mx-auto">
+              <div className="w-full h-full max-w-5xl mx-auto overflow-y-auto">
                 <ComicFrameReader
                   paragraph={currentParagraph as TextParagraph | DialogueParagraph}
                   currentSubParagraphIndex={currentParagraph.subParagraphs && currentParagraph.subParagraphs.length > 0 ? currentSubParagraphIndex : undefined}
