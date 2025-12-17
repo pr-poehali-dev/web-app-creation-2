@@ -6,8 +6,6 @@ import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Icon from '@/components/ui/icon';
-import ShapeTransition from './NovelReader/ShapeTransitions';
-
 import { Novel } from '@/types/novel';
 
 interface SettingsPanelProps {
@@ -71,12 +69,14 @@ function SettingsPanel({ settings, novel, onUpdate, onBack }: SettingsPanelProps
       >
         <div className="absolute inset-0 bg-gradient-to-r from-transparent to-background/20" />
         
-        {/* Фигурный край */}
-        <ShapeTransition type={novel.settingsShapeTransition || 'arc'} fillColor="hsl(210, 70%, 15%)" />
+        {/* Плавный градиент */}
+        <div className="absolute top-0 right-0 h-full w-32 pointer-events-none">
+          <div className="w-full h-full bg-gradient-to-r from-transparent to-background" />
+        </div>
       </div>
 
       {/* Правая часть - контент настроек */}
-      <div className="w-full lg:w-1/2 p-4 overflow-y-auto dark relative" style={{ background: 'linear-gradient(135deg, hsl(210, 70%, 15%) 0%, hsl(215, 65%, 20%) 100%)' }}>
+      <div className="w-full lg:w-1/2 p-4 overflow-y-auto dark relative bg-background">
       {/* Декоративные элементы */}
       <div className="absolute top-24 right-16 w-32 h-32 bg-primary/20 blur-3xl" />
       <svg className="absolute top-10 left-16 w-18 h-18 text-primary/30" viewBox="0 0 100 100">

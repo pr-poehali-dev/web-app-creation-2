@@ -1,6 +1,5 @@
 import { HomePage as HomePageData, Novel } from '@/types/novel';
 import { Button } from './ui/button';
-import ShapeTransition from './NovelReader/ShapeTransitions';
 
 interface HomePageProps {
   homePage: HomePageData;
@@ -23,11 +22,13 @@ function HomePage({ homePage, novel, onStart }: HomePageProps) {
         }}
       >
         <div className="absolute inset-0 bg-gradient-to-r from-transparent to-background/20" />
-        <ShapeTransition type={novel.homeShapeTransition || 'rounded'} fillColor="hsl(210, 70%, 15%)" />
+        <div className="absolute top-0 right-0 h-full w-32 pointer-events-none">
+          <div className="w-full h-full bg-gradient-to-r from-transparent to-background" />
+        </div>
       </div>
 
       {/* Правая часть - приветствие и новости */}
-      <div className="w-full lg:w-1/2 relative overflow-y-auto" style={{ background: 'linear-gradient(135deg, hsl(210, 70%, 15%) 0%, hsl(215, 65%, 20%) 100%)' }}>
+      <div className="w-full lg:w-1/2 relative overflow-y-auto bg-background">
         {/* Декоративные фигуры */}
         <div className="absolute top-20 right-10 w-32 h-32 bg-primary/20 rounded-full blur-3xl" />
         <div className="absolute top-40 right-32 w-24 h-24 rotate-45" style={{ background: 'linear-gradient(135deg, hsl(var(--primary)/0.3), hsl(var(--accent)/0.2))' }} />

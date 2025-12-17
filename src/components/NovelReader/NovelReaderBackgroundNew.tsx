@@ -6,7 +6,6 @@ import Icon from '@/components/ui/icon';
 import NovelReaderContent from './NovelReaderContent';
 import ComicFrameReader from './ComicFrameReader';
 import TypewriterText from '../TypewriterText';
-import ShapeTransition from './ShapeTransitions';
 
 interface NovelReaderBackgroundNewProps {
   backgroundImage: string | null;
@@ -131,12 +130,10 @@ function NovelReaderBackgroundNew({
           </div>
         )}
         
-        {/* Фигурный переход */}
-        <ShapeTransition type={
-          currentParagraph.type === 'background' && currentParagraph.shapeTransition 
-            ? currentParagraph.shapeTransition 
-            : currentEpisode.shapeTransition || 'organic'
-        } />
+        {/* Плавный градиент-переход */}
+        <div className="absolute top-0 right-0 h-full w-32 pointer-events-none">
+          <div className="w-full h-full bg-gradient-to-r from-transparent to-background" />
+        </div>
       </div>
 
       {/* Правая часть - контент */}

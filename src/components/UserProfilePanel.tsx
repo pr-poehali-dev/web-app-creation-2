@@ -2,7 +2,6 @@ import { Novel } from '@/types/novel';
 import { UserProfile } from '@/types/settings';
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
-import ShapeTransition from './NovelReader/ShapeTransitions';
 import ProfileHeader from './UserProfile/ProfileHeader';
 import ProfileProgress from './UserProfile/ProfileProgress';
 import ProfileTabs from './UserProfile/ProfileTabs';
@@ -72,12 +71,14 @@ function UserProfilePanel({ profile, novel, onUpdate, onBack, onNavigateTo, user
       >
         <div className="absolute inset-0 bg-gradient-to-r from-transparent to-background/20" />
         
-        {/* Фигурный край */}
-        <ShapeTransition type={novel.profileShapeTransition || 'hexagon'} fillColor="hsl(210, 70%, 15%)" />
+        {/* Плавный градиент */}
+        <div className="absolute top-0 right-0 h-full w-32 pointer-events-none">
+          <div className="w-full h-full bg-gradient-to-r from-transparent to-background" />
+        </div>
       </div>
 
       {/* Правая часть - контент профиля */}
-      <div className="w-full lg:w-1/2 p-4 overflow-y-auto dark relative" style={{ background: 'linear-gradient(135deg, hsl(210, 70%, 15%) 0%, hsl(215, 65%, 20%) 100%)' }}>
+      <div className="w-full lg:w-1/2 p-4 overflow-y-auto dark relative bg-background">
       {/* Декоративные элементы */}
       <div className="absolute top-16 left-10 w-28 h-28 bg-primary/15 blur-2xl" />
       <svg className="absolute top-40 right-16 w-20 h-20 text-primary/25" viewBox="0 0 100 100">
