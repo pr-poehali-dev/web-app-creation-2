@@ -99,8 +99,15 @@ function ParagraphEditor({
 }
 
 export default memo(ParagraphEditor, (prevProps, nextProps) => {
+  // Глубокое сравнение для paragraph - только если id совпадает
+  if (prevProps.paragraph.id !== nextProps.paragraph.id) return false;
+  
+  // Сравнение только критичных полей
+  const paragraphEqual = 
+    JSON.stringify(prevProps.paragraph) === JSON.stringify(nextProps.paragraph);
+  
   return (
-    prevProps.paragraph === nextProps.paragraph &&
+    paragraphEqual &&
     prevProps.index === nextProps.index &&
     prevProps.totalParagraphs === nextProps.totalParagraphs &&
     prevProps.isBulkEditMode === nextProps.isBulkEditMode &&

@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Paragraph } from '@/types/novel';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -31,4 +32,10 @@ function PauseEditor({ paragraph, index, onUpdate }: PauseEditorProps) {
   );
 }
 
-export default PauseEditor;
+export default memo(PauseEditor, (prevProps, nextProps) => {
+  return (
+    prevProps.paragraph.id === nextProps.paragraph.id &&
+    JSON.stringify(prevProps.paragraph) === JSON.stringify(nextProps.paragraph) &&
+    prevProps.index === nextProps.index
+  );
+});

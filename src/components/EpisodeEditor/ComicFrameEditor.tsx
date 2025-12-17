@@ -8,6 +8,52 @@ import Icon from '@/components/ui/icon';
 import LayoutAnimationGuide from './LayoutAnimationGuide';
 import ComicFrameItem from './ComicFrameItem';
 
+const LAYOUT_OPTIONS = [
+  { group: 'Простые', items: [
+    { value: 'single', label: '◻️ 1 фрейм' },
+    { value: 'horizontal-2', label: '◼️◼️ 2 в ряд' },
+    { value: 'horizontal-3', label: '◼️◼️◼️ 3 в ряд' },
+    { value: 'horizontal-4', label: '◼️◼️◼️◼️ 4 в ряд' },
+    { value: 'vertical-2', label: '⬛⬛ 2 в столбец' },
+    { value: 'vertical-3', label: '⬛⬛⬛ 3 в столбец' },
+    { value: 'vertical-4', label: '⬛⬛⬛⬛ 4 в столбец' }
+  ]},
+  { group: 'Сетки', items: [
+    { value: 'grid-2x2', label: '▦ Сетка 2×2' },
+    { value: 'grid-3x3', label: '▦ Сетка 3×3' },
+    { value: 'grid-2x3', label: '▦ Сетка 2×3' }
+  ]},
+  { group: 'Комбинации', items: [
+    { value: 'horizontal-2-1', label: '◼️◼️◻️ 2+1' },
+    { value: 'horizontal-1-2', label: '◻️◼️◼️ 1+2' },
+    { value: 'mosaic-left', label: '⬛◻️◻️ Мозаика ←' },
+    { value: 'mosaic-right', label: '◻️◻️⬛ Мозаика →' },
+    { value: 'vertical-left-3', label: '⬛◻️◻️◻️ ← + 3' },
+    { value: 'vertical-right-3', label: '◻️◻️◻️⬛ 3 + →' }
+  ]},
+  { group: 'Креативные', items: [
+    { value: 'center-large', label: '◻️⬛◻️ Центр' },
+    { value: 'sandwich', label: '◻️⬛◻️ Сэндвич' },
+    { value: 'spotlight', label: '◻️⬛◻️ Прожектор' },
+    { value: 'l-shape', label: '↪️ L-форма' },
+    { value: 'filmstrip', label: '🎞️ Кинолента' },
+    { value: 'asymmetric-1', label: '⬛◻️◻️ Асим. 1' },
+    { value: 'asymmetric-2', label: '◻️⬛◻️ Асим. 2' },
+    { value: 'asymmetric-3', label: '⬛⬛◻️ Асим. 3' }
+  ]},
+  { group: 'Журнальные макеты', items: [
+    { value: 'magazine-1', label: '📖 Круг слева + колонка' },
+    { value: 'magazine-2', label: '📖 Круг центр + сетка' },
+    { value: 'magazine-3', label: '📖 Круг справа + колонка' },
+    { value: 'magazine-4', label: '📖 Большой круг + блоки' },
+    { value: 'magazine-5', label: '📖 Круг + акценты внизу' },
+    { value: 'magazine-6', label: '📖 Круг вверху справа' },
+    { value: 'magazine-7', label: '📖 Сетка + текст внизу' },
+    { value: 'magazine-8', label: '📖 Круг + текст справа' },
+    { value: 'magazine-9', label: '📖 Круг + 4 угла' }
+  ]}
+] as const;
+
 interface ComicFrameEditorProps {
   frames: ComicFrame[];
   layout: MergeLayoutType;
@@ -228,49 +274,16 @@ function ComicFrameEditor({ frames, layout, defaultAnimation, subParagraphs, onF
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="max-h-[400px]">
-                <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">Простые</div>
-                <SelectItem value="single">◻️ 1 фрейм</SelectItem>
-                <SelectItem value="horizontal-2">◼️◼️ 2 в ряд</SelectItem>
-                <SelectItem value="horizontal-3">◼️◼️◼️ 3 в ряд</SelectItem>
-                <SelectItem value="horizontal-4">◼️◼️◼️◼️ 4 в ряд</SelectItem>
-                <SelectItem value="vertical-2">⬛⬛ 2 в столбец</SelectItem>
-                <SelectItem value="vertical-3">⬛⬛⬛ 3 в столбец</SelectItem>
-                <SelectItem value="vertical-4">⬛⬛⬛⬛ 4 в столбец</SelectItem>
-                
-                <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground mt-2">Сетки</div>
-                <SelectItem value="grid-2x2">▦ Сетка 2×2</SelectItem>
-                <SelectItem value="grid-3x3">▦ Сетка 3×3</SelectItem>
-                <SelectItem value="grid-2x3">▦ Сетка 2×3</SelectItem>
-                
-                <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground mt-2">Комбинации</div>
-                <SelectItem value="horizontal-2-1">◼️◼️◻️ 2+1</SelectItem>
-                <SelectItem value="horizontal-1-2">◻️◼️◼️ 1+2</SelectItem>
-                <SelectItem value="mosaic-left">⬛◻️◻️ Мозаика ←</SelectItem>
-                <SelectItem value="mosaic-right">◻️◻️⬛ Мозаика →</SelectItem>
-                <SelectItem value="vertical-left-3">⬛◻️◻️◻️ ← + 3</SelectItem>
-                <SelectItem value="vertical-right-3">◻️◻️◻️⬛ 3 + →</SelectItem>
-                
-                <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground mt-2">Креативные</div>
-                <SelectItem value="center-large">◻️⬛◻️ Центр</SelectItem>
-                <SelectItem value="sandwich">◻️⬛◻️ Сэндвич</SelectItem>
-                <SelectItem value="spotlight">◻️⬛◻️ Прожектор</SelectItem>
-                <SelectItem value="l-shape">↪️ L-форма</SelectItem>
-                <SelectItem value="filmstrip">🎞️ Кинолента</SelectItem>
-                <SelectItem value="asymmetric-1">⬛◻️◻️ Асим. 1</SelectItem>
-                <SelectItem value="asymmetric-2">◻️⬛◻️ Асим. 2</SelectItem>
-                <SelectItem value="asymmetric-3">⬛⬛◻️ Асим. 3</SelectItem>
-                
-                <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground mt-2">Журнальные макеты</div>
-                <SelectItem value="magazine-1">📖 Круг слева + колонка</SelectItem>
-                <SelectItem value="magazine-2">📖 Круг центр + сетка</SelectItem>
-                <SelectItem value="magazine-3">📖 Круг справа + колонка</SelectItem>
-                <SelectItem value="magazine-4">📖 Большой круг + блоки</SelectItem>
-                <SelectItem value="magazine-5">📖 Круг + акценты внизу</SelectItem>
-                <SelectItem value="magazine-6">📖 Круг вверху справа</SelectItem>
-                <SelectItem value="magazine-7">📖 Сетка + текст внизу</SelectItem>
-                <SelectItem value="magazine-8">📖 Круг + текст справа</SelectItem>
-                <SelectItem value="magazine-9">📖 Круг + 4 угла</SelectItem>
-
+                {LAYOUT_OPTIONS.map((group, idx) => (
+                  <div key={group.group}>
+                    <div className={`px-2 py-1.5 text-xs font-semibold text-muted-foreground ${idx > 0 ? 'mt-2' : ''}`}>
+                      {group.group}
+                    </div>
+                    {group.items.map(item => (
+                      <SelectItem key={item.value} value={item.value}>{item.label}</SelectItem>
+                    ))}
+                  </div>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -359,4 +372,12 @@ function ComicFrameEditor({ frames, layout, defaultAnimation, subParagraphs, onF
   );
 }
 
-export default memo(ComicFrameEditor);
+export default memo(ComicFrameEditor, (prevProps, nextProps) => {
+  // Сравниваем только важные поля
+  return (
+    prevProps.layout === nextProps.layout &&
+    prevProps.defaultAnimation === nextProps.defaultAnimation &&
+    JSON.stringify(prevProps.frames) === JSON.stringify(nextProps.frames) &&
+    JSON.stringify(prevProps.subParagraphs) === JSON.stringify(nextProps.subParagraphs)
+  );
+});

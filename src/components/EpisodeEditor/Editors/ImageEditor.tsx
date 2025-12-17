@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import { ImageParagraph, BackgroundParagraph } from '@/types/novel';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -173,4 +173,10 @@ function ImageEditor({
   );
 }
 
-export default ImageEditor;
+export default memo(ImageEditor, (prevProps, nextProps) => {
+  return (
+    prevProps.paragraph.id === nextProps.paragraph.id &&
+    JSON.stringify(prevProps.paragraph) === JSON.stringify(nextProps.paragraph) &&
+    prevProps.index === nextProps.index
+  );
+});

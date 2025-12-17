@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { ChoiceParagraph, Novel } from '@/types/novel';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -229,4 +230,10 @@ function ChoiceEditor({
   );
 }
 
-export default ChoiceEditor;
+export default memo(ChoiceEditor, (prevProps, nextProps) => {
+  return (
+    prevProps.paragraph.id === nextProps.paragraph.id &&
+    JSON.stringify(prevProps.paragraph) === JSON.stringify(nextProps.paragraph) &&
+    prevProps.index === nextProps.index
+  );
+});

@@ -72,4 +72,6 @@ function SubParagraphsEditor({ subParagraphs, onSubParagraphsChange }: SubParagr
   );
 }
 
-export default memo(SubParagraphsEditor);
+export default memo(SubParagraphsEditor, (prevProps, nextProps) => {
+  return JSON.stringify(prevProps.subParagraphs) === JSON.stringify(nextProps.subParagraphs);
+});

@@ -1,4 +1,4 @@
-import { useCallback, useRef, useEffect } from 'react';
+import { useCallback, useRef, useEffect, memo } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { TextParagraph } from '@/types/novel';
@@ -78,4 +78,10 @@ function TextEditor({ paragraph, index, onUpdate }: TextEditorProps) {
   );
 }
 
-export default TextEditor;
+export default memo(TextEditor, (prevProps, nextProps) => {
+  return (
+    prevProps.paragraph.id === nextProps.paragraph.id &&
+    JSON.stringify(prevProps.paragraph) === JSON.stringify(nextProps.paragraph) &&
+    prevProps.index === nextProps.index
+  );
+});

@@ -259,35 +259,38 @@ function EpisodeEditor({ episode, novel, onUpdate, onNovelUpdate }: EpisodeEdito
       <ParagraphTypeButtons onAddParagraph={(type) => handleAddParagraph(type)} />
 
       <div className="space-y-3">
-        {episode.paragraphs.map((paragraph, index) => (
-          <div key={paragraph.id}>
-            <div className="flex items-start gap-2">
-              {bulkEditMode && (
-                <Checkbox
-                  checked={selectedParagraphs.has(index)}
-                  onCheckedChange={() => handleToggleSelect(index)}
-                  className="mt-4"
-                />
-              )}
-              <div className="flex-1">
-                <ParagraphEditor
-                  paragraph={paragraph}
-                  index={index}
-                  episodeId={episode.id}
-                  novel={novel}
-                  totalParagraphs={episode.paragraphs.length}
-                  onUpdate={handleUpdateParagraph}
-                  onDelete={handleDeleteParagraph}
-                  onMove={handleMoveParagraph}
-                  onToggleInsert={handleToggleInsert}
-                  onToggleMerge={handleToggleMerge}
-                  onNovelUpdate={onNovelUpdate}
-                  isBulkEditMode={bulkEditMode}
-                  isSelected={selectedParagraphs.has(index)}
-                  selectedCount={selectedParagraphs.size}
-                />
+        {episode.paragraphs.map((paragraph, index) => {
+          const isSelected = selectedParagraphs.has(index);
+          
+          return (
+            <div key={paragraph.id}>
+              <div className="flex items-start gap-2">
+                {bulkEditMode && (
+                  <Checkbox
+                    checked={isSelected}
+                    onCheckedChange={() => handleToggleSelect(index)}
+                    className="mt-4"
+                  />
+                )}
+                <div className="flex-1">
+                  <ParagraphEditor
+                    paragraph={paragraph}
+                    index={index}
+                    episodeId={episode.id}
+                    novel={novel}
+                    totalParagraphs={episode.paragraphs.length}
+                    onUpdate={handleUpdateParagraph}
+                    onDelete={handleDeleteParagraph}
+                    onMove={handleMoveParagraph}
+                    onToggleInsert={handleToggleInsert}
+                    onToggleMerge={handleToggleMerge}
+                    onNovelUpdate={onNovelUpdate}
+                    isBulkEditMode={bulkEditMode}
+                    isSelected={isSelected}
+                    selectedCount={selectedParagraphs.size}
+                  />
+                </div>
               </div>
-            </div>
             
             {insertingAt === index ? (
               <div className="flex gap-2 justify-center my-2 p-2 bg-secondary/20 rounded-lg">
