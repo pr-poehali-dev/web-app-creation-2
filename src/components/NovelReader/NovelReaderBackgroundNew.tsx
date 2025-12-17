@@ -130,6 +130,20 @@ function NovelReaderBackgroundNew({
           </div>
         )}
         
+        {/* Comic frames поверх фона */}
+        {!isContentHidden && hasComicFrames && (
+          <div className="absolute inset-0 flex items-center justify-center p-4 md:p-8 z-10">
+            <div className="w-full h-full max-w-4xl">
+              <ComicFrameReader
+                paragraph={currentParagraph as TextParagraph | DialogueParagraph}
+                currentSubParagraphIndex={currentParagraph.subParagraphs && currentParagraph.subParagraphs.length > 0 ? currentSubParagraphIndex : undefined}
+                layout={currentParagraph.frameLayout || 'single'}
+                isTyping={isTyping}
+              />
+            </div>
+          </div>
+        )}
+        
         {/* Плавный градиент-переход */}
         <div className="absolute top-0 right-0 h-full w-32 pointer-events-none">
           <div className="w-full h-full bg-gradient-to-r from-transparent to-background" />
@@ -189,19 +203,6 @@ function NovelReaderBackgroundNew({
         
         {!isContentHidden && currentParagraph.type !== 'background' && !isBackgroundChanging && (
           <>
-            {hasComicFrames && (
-              <div className="absolute top-[80px] left-4 right-4 bottom-[calc(14rem+3rem)] z-10">
-                <div className="w-full h-full max-w-3xl mx-auto px-2">
-                  <ComicFrameReader
-                    paragraph={currentParagraph as TextParagraph | DialogueParagraph}
-                    currentSubParagraphIndex={currentParagraph.subParagraphs && currentParagraph.subParagraphs.length > 0 ? currentSubParagraphIndex : undefined}
-                    layout={currentParagraph.frameLayout || 'single'}
-                    isTyping={isTyping}
-                  />
-                </div>
-              </div>
-            )}
-            
             <div className="absolute bottom-20 md:bottom-12 left-0 right-0 z-10 px-4 md:px-8">
             <div className="w-full max-w-3xl mx-auto">
               {currentParagraph.type !== 'choice' && (
