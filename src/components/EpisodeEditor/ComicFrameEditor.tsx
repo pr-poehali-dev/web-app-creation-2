@@ -29,29 +29,7 @@ const LAYOUT_OPTIONS = [
     { value: 'horizontal-1-2', label: '◻️◼️◼️ 1+2' },
     { value: 'mosaic-left', label: '⬛◻️◻️ Мозаика ←' },
     { value: 'mosaic-right', label: '◻️◻️⬛ Мозаика →' },
-    { value: 'vertical-left-3', label: '⬛◻️◻️◻️ ← + 3' },
-    { value: 'vertical-right-3', label: '◻️◻️◻️⬛ 3 + →' }
-  ]},
-  { group: 'Креативные', items: [
-    { value: 'center-large', label: '◻️⬛◻️ Центр' },
-    { value: 'sandwich', label: '◻️⬛◻️ Сэндвич' },
-    { value: 'spotlight', label: '◻️⬛◻️ Прожектор' },
-    { value: 'l-shape', label: '↪️ L-форма' },
-    { value: 'filmstrip', label: '🎞️ Кинолента' },
-    { value: 'asymmetric-1', label: '⬛◻️◻️ Асим. 1' },
-    { value: 'asymmetric-2', label: '◻️⬛◻️ Асим. 2' },
-    { value: 'asymmetric-3', label: '⬛⬛◻️ Асим. 3' }
-  ]},
-  { group: 'Журнальные макеты', items: [
-    { value: 'magazine-1', label: '📖 Круг слева + колонка' },
-    { value: 'magazine-2', label: '📖 Круг центр + сетка' },
-    { value: 'magazine-3', label: '📖 Круг справа + колонка' },
-    { value: 'magazine-4', label: '📖 Большой круг + блоки' },
-    { value: 'magazine-5', label: '📖 Круг + акценты внизу' },
-    { value: 'magazine-6', label: '📖 Круг вверху справа' },
-    { value: 'magazine-7', label: '📖 Сетка + текст внизу' },
-    { value: 'magazine-8', label: '📖 Круг + текст справа' },
-    { value: 'magazine-9', label: '📖 Круг + 4 угла' }
+    { value: 'l-shape', label: '↪️ L-форма' }
   ]}
 ] as const;
 
