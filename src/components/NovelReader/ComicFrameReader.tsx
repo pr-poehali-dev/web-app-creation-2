@@ -155,7 +155,11 @@ export default function ComicFrameReader({ paragraph, currentSubParagraphIndex, 
                 src={frame.url} 
                 alt={frame.alt || ''} 
                 onLoad={(e) => handleImageLoad(frame.id, e)}
-                className="w-full h-full object-cover rounded-lg min-w-0"
+                className="w-full h-full rounded-lg min-w-0"
+                style={{
+                  objectFit: frame.objectFit || 'cover',
+                  objectPosition: frame.objectPosition || 'center'
+                }}
               />
             </div>
           );

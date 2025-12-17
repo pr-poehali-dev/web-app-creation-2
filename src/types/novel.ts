@@ -68,6 +68,8 @@ export interface ComicFrame {
   alt?: string;
   subParagraphTrigger?: string; // ID подпараграфа, при котором показывается этот фрейм
   animation?: FrameAnimationType; // Тип анимации появления
+  objectPosition?: string; // CSS object-position (например: 'center', 'top', 'left', '50% 30%')
+  objectFit?: 'cover' | 'contain' | 'fill'; // CSS object-fit
 }
 
 export interface BaseParagraph {

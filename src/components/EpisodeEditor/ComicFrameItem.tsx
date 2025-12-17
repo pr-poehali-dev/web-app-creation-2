@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useState } from 'react';
 import { ComicFrame, FrameAnimationType, SubParagraph } from '@/types/novel';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -99,6 +99,75 @@ function ComicFrameItem({ frame, index, subParagraphs, onUpdate, onRemove }: Com
           </SelectContent>
         </Select>
       </div>
+
+      {frame.url && (
+        <div className="space-y-2 pt-2 border-t border-border/50">
+          <Label className="text-xs font-semibold">Позиционирование картинки</Label>
+          
+          <div className="space-y-1">
+            <Label className="text-xs text-muted-foreground">Режим отображения</Label>
+            <Select 
+              value={frame.objectFit || 'cover'} 
+              onValueChange={(v) => onUpdate(index, { objectFit: v as 'cover' | 'contain' | 'fill' })}
+            >
+              <SelectTrigger className="h-8 text-xs">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="cover">🖼️ Обрезать (cover)</SelectItem>
+                <SelectItem value="contain">📦 Вместить (contain)</SelectItem>
+                <SelectItem value="fill">⬛ Растянуть (fill)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-1">
+            <Label className="text-xs text-muted-foreground">Позиция</Label>
+            <div className="grid grid-cols-3 gap-1">
+              {['top', 'center', 'bottom'].map(row => (
+                ['left', 'center', 'right'].map(col => {
+                  const position = row === 'center' && col === 'center' ? 'center' : `${row} ${col}`;
+                  const isActive = (frame.objectPosition || 'center') === position;
+                  return (
+                    <Button
+                      key={position}
+                      variant={isActive ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => onUpdate(index, { objectPosition: position })}
+                      className="h-8 text-[10px] p-1"
+                    >
+                      {row === 'top' && col === 'left' && '↖️'}
+                      {row === 'top' && col === 'center' && '⬆️'}
+                      {row === 'top' && col === 'right' && '↗️'}
+                      {row === 'center' && col === 'left' && '⬅️'}
+                      {row === 'center' && col === 'center' && '🎯'}
+                      {row === 'center' && col === 'right' && '➡️'}
+                      {row === 'bottom' && col === 'left' && '↙️'}
+                      {row === 'bottom' && col === 'center' && '⬇️'}
+                      {row === 'bottom' && col === 'right' && '↘️'}
+                    </Button>
+                  );
+                })
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-1">
+            <Label className="text-xs text-muted-foreground">Предпросмотр</Label>
+            <div className="relative w-full h-32 bg-muted rounded border border-border overflow-hidden">
+              <img
+                src={frame.url}
+                alt="Preview"
+                className="w-full h-full"
+                style={{
+                  objectFit: frame.objectFit || 'cover',
+                  objectPosition: frame.objectPosition || 'center'
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
