@@ -8,7 +8,7 @@ export function useAppState() {
   const [novel, setNovel] = useState<Novel | null>(null);
   const [settings, setSettings] = useState<UserSettings>(defaultSettings);
   const [profile, setProfile] = useState<UserProfile>(defaultProfile);
-  const [activeView, setActiveView] = useState<View>('reader');
+  const [activeView, setActiveView] = useState<View>('home');
 
   const [showParagraphsDialog, setShowParagraphsDialog] = useState(false);
   const [selectedEpisodeForParagraphs, setSelectedEpisodeForParagraphs] = useState<string | null>(null);
