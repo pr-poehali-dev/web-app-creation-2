@@ -212,7 +212,7 @@ function CharactersTab({ profile, novel, onProfileUpdate }: CharactersTabProps) 
                               onChange={(e) => setCommentText(e.target.value)}
                               placeholder="Здесь вы можете написать свои мысли о персонаже..."
                               rows={4}
-                              className="text-sm bg-card/30 border-border resize-none"
+                              className="text-sm bg-card/30 border-border resize-none text-white placeholder:text-white/50"
                             />
                             <div className="flex gap-2">
                               <Button 
