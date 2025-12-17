@@ -23,7 +23,14 @@ function EpisodeEditor({ episode, novel, onUpdate, onNovelUpdate }: EpisodeEdito
   const episodeRef = useRef(episode);
   
   useEffect(() => {
+    const start = performance.now();
+    console.log('📝 EpisodeEditor render START:', episode.title, 'paragraphs:', episode.paragraphs.length);
     episodeRef.current = episode;
+    
+    requestAnimationFrame(() => {
+      const end = performance.now();
+      console.log(`⏱️ EpisodeEditor rendered in ${(end - start).toFixed(2)}ms`);
+    });
   }, [episode]);
 
   const handleAddParagraph = useCallback((type: ParagraphType, insertIndex?: number) => {

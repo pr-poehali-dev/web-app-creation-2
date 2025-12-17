@@ -6,7 +6,7 @@ import { Switch } from '@/components/ui/switch';
 import Icon from '@/components/ui/icon';
 import EpisodeEditor from '../EpisodeEditor';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { useRef, memo } from 'react';
+import { useRef, memo, useState, useTransition, Suspense } from 'react';
 
 interface EpisodeEditorTabProps {
   novel: Novel;
@@ -245,7 +245,7 @@ function EpisodeEditorTab({
   onDeleteEpisode,
   onUpdateEpisode,
   onMoveEpisode,
-  onSelectEpisode,
+  onSelectEpisode: onSelectEpisodeOriginal,
   onToggleEpisodeSelect,
   onSelectAllEpisodes,
   onBulkEpisodeTimeframeChange,
@@ -253,6 +253,20 @@ function EpisodeEditorTab({
   onShowBulkImport,
   onBulkEditChange
 }: EpisodeEditorTabProps) {
+  const [isPending, startTransition] = useTransition();
+  const [displayEpisodeId, setDisplayEpisodeId] = useState(selectedEpisodeId);
+
+  const onSelectEpisode = (episodeId: string) => {
+    console.log('🎯 Selecting episode:', episodeId);
+    onSelectEpisodeOriginal(episodeId);
+    
+    startTransition(() => {
+      setDisplayEpisodeId(episodeId);
+    });
+  };
+
+  const displayEpisode = novel.episodes.find(ep => ep.id === displayEpisodeId) || selectedEpisode;
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -345,16 +359,22 @@ function EpisodeEditorTab({
         />
 
         <div className="lg:col-span-3">
-          {selectedEpisode ? (
+          {isPending && (
+            <div className="flex items-center justify-center py-12">
+              <Icon name="Loader2" size={32} className="animate-spin text-primary" />
+              <span className="ml-3 text-muted-foreground">Загрузка эпизода...</span>
+            </div>
+          )}
+          {displayEpisode && !isPending ? (
             <>
-              {bulkEditEpisodes && selectedEpisodes.has(selectedEpisode.id) && selectedEpisodes.size > 1 && (
+              {bulkEditEpisodes && selectedEpisodes.has(displayEpisode.id) && selectedEpisodes.size > 1 && (
                 <div className="mb-4 p-3 bg-primary/10 rounded-lg text-primary font-medium border-2 border-primary">
                   <Icon name="Info" size={16} className="inline mr-2" />
                   Изменения временных слоёв и путей применятся к {selectedEpisodes.size} выбранным эпизодам
                 </div>
               )}
               <EpisodeEditor
-                episode={selectedEpisode}
+                episode={displayEpisode}
                 novel={novel}
                 onUpdate={onUpdateEpisode}
                 onNovelUpdate={onUpdate}

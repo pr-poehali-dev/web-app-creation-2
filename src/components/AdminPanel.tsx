@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import { Novel } from '@/types/novel';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Icon from '@/components/ui/icon';
@@ -20,6 +20,7 @@ interface AdminPanelProps {
 }
 
 function AdminPanel({ novel, onUpdate, onLogout, authState }: AdminPanelProps) {
+  const [isPending, startTransition] = useTransition();
   const [selectedEpisodeId, setSelectedEpisodeId] = useState<string | null>(
     novel.episodes[0]?.id || null
   );
@@ -97,28 +98,30 @@ function AdminPanel({ novel, onUpdate, onLogout, authState }: AdminPanelProps) {
   const handleUpdateEpisode = (updatedEpisode: typeof selectedEpisode) => {
     if (!updatedEpisode) return;
 
-    if (bulkEditEpisodes && selectedEpisodes.has(updatedEpisode.id)) {
-      onUpdate({
-        ...novel,
-        episodes: novel.episodes.map(ep => {
-          if (selectedEpisodes.has(ep.id)) {
-            return { 
-              ...ep, 
-              timeframes: updatedEpisode.timeframes,
-              requiredPaths: updatedEpisode.requiredPaths
-            };
-          }
-          return ep;
-        })
-      });
-    } else {
-      onUpdate({
-        ...novel,
-        episodes: novel.episodes.map(ep => 
-          ep.id === updatedEpisode.id ? updatedEpisode : ep
-        )
-      });
-    }
+    startTransition(() => {
+      if (bulkEditEpisodes && selectedEpisodes.has(updatedEpisode.id)) {
+        onUpdate({
+          ...novel,
+          episodes: novel.episodes.map(ep => {
+            if (selectedEpisodes.has(ep.id)) {
+              return { 
+                ...ep, 
+                timeframes: updatedEpisode.timeframes,
+                requiredPaths: updatedEpisode.requiredPaths
+              };
+            }
+            return ep;
+          })
+        });
+      } else {
+        onUpdate({
+          ...novel,
+          episodes: novel.episodes.map(ep => 
+            ep.id === updatedEpisode.id ? updatedEpisode : ep
+          )
+        });
+      }
+    });
   };
 
   const handleMoveEpisode = (episodeId: string, direction: 'up' | 'down') => {
