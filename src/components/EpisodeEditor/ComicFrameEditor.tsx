@@ -127,6 +127,56 @@ function ComicFrameEditor({ frames, layout, defaultAnimation, subParagraphs, onF
     onFramesChange(updated);
   }, [onFramesChange]);
 
+  const handleBulkUpload = useCallback(() => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.multiple = true;
+    
+    input.onchange = async (e) => {
+      const files = (e.target as HTMLInputElement).files;
+      if (!files || files.length === 0) return;
+      
+      const uploadPromises = Array.from(files).map(async (file) => {
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        const response = await fetch('https://cdn.poehali.dev/upload', {
+          method: 'POST',
+          body: formData,
+        });
+        
+        if (!response.ok) throw new Error('Upload failed');
+        const data = await response.json();
+        return data.url;
+      });
+      
+      try {
+        const urls = await Promise.all(uploadPromises);
+        const currentFrames = [...framesRef.current];
+        
+        urls.forEach((url, idx) => {
+          if (idx < currentFrames.length) {
+            currentFrames[idx] = { ...currentFrames[idx], url };
+          } else {
+            currentFrames.push({
+              id: `frame-${Date.now()}-${idx}`,
+              type: 'image',
+              url
+            });
+          }
+        });
+        
+        onFramesChange(currentFrames);
+      } catch (error) {
+        console.error('Bulk upload failed:', error);
+        alert('Ошибка при загрузке изображений');
+      }
+    };
+    
+    input.click();
+  }, [onFramesChange]);
+
   return (
     <div className="border border-border rounded-lg p-3 space-y-3">
       <div className="space-y-2">
@@ -247,6 +297,27 @@ function ComicFrameEditor({ frames, layout, defaultAnimation, subParagraphs, onF
 
       {isExpanded && (
         <div className="space-y-2">
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleBulkUpload}
+              className="flex-1 h-8"
+            >
+              <Icon name="Upload" size={14} className="mr-1" />
+              Загрузить изображения
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={addFrame}
+              className="flex-1 h-8"
+            >
+              <Icon name="Plus" size={14} className="mr-1" />
+              Добавить фрейм
+            </Button>
+          </div>
+
           {frames.map((frame, index) => (
             <ComicFrameItem
               key={frame.id}
@@ -257,16 +328,6 @@ function ComicFrameEditor({ frames, layout, defaultAnimation, subParagraphs, onF
               onRemove={removeFrame}
             />
           ))}
-
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={addFrame}
-            className="w-full h-8"
-          >
-            <Icon name="Plus" size={14} className="mr-1" />
-            Добавить фрейм
-          </Button>
         </div>
       )}
     </div>
