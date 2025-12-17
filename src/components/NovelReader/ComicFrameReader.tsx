@@ -33,13 +33,6 @@ export default function ComicFrameReader({ paragraph, currentSubParagraphIndex, 
       return;
     }
 
-    // DEBUG: Log paragraph data
-    console.log('[DEBUG] Paragraph data:', {
-      layout,
-      framesCount: paragraph.comicFrames.length,
-      frames: paragraph.comicFrames.map(f => ({ url: f.url, id: f.id }))
-    });
-
     // Если есть подпараграфы, показываем фреймы по индексу
     if (paragraph.subParagraphs && paragraph.subParagraphs.length > 0 && currentSubParagraphIndex !== undefined) {
       // Индекс 0 = основной текст (показываем только фреймы без триггера)
