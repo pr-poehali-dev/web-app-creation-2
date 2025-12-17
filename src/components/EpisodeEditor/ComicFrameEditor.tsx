@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo, memo } from 'react';
+import { useState, useEffect, useCallback, useMemo, memo, useRef } from 'react';
 import { ComicFrame, MergeLayoutType, FrameAnimationType, SubParagraph } from '@/types/novel';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,6 +21,11 @@ interface ComicFrameEditorProps {
 
 function ComicFrameEditor({ frames, layout, defaultAnimation, subParagraphs, onFramesChange, onLayoutChange, onAnimationChange, onBothChange }: ComicFrameEditorProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const framesRef = useRef(frames);
+  
+  useEffect(() => {
+    framesRef.current = frames;
+  }, [frames]);
 
   // Очищаем старые поля textTrigger из фреймов при первом рендере
   useEffect(() => {
@@ -109,18 +114,18 @@ function ComicFrameEditor({ frames, layout, defaultAnimation, subParagraphs, onF
       type: 'image',
       url: ''
     };
-    onFramesChange([...frames, newFrame]);
-  }, [frames, onFramesChange]);
+    onFramesChange([...framesRef.current, newFrame]);
+  }, [onFramesChange]);
 
   const removeFrame = useCallback((index: number) => {
-    onFramesChange(frames.filter((_, i) => i !== index));
-  }, [frames, onFramesChange]);
+    onFramesChange(framesRef.current.filter((_, i) => i !== index));
+  }, [onFramesChange]);
 
   const updateFrame = useCallback((index: number, updates: Partial<ComicFrame>) => {
-    const updated = [...frames];
+    const updated = [...framesRef.current];
     updated[index] = { ...updated[index], ...updates };
     onFramesChange(updated);
-  }, [frames, onFramesChange]);
+  }, [onFramesChange]);
 
   return (
     <div className="border border-border rounded-lg p-3 space-y-3">
