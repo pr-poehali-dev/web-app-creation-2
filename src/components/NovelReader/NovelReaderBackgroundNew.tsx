@@ -203,10 +203,10 @@ function NovelReaderBackgroundNew({
         
         {!isContentHidden && currentParagraph.type !== 'background' && !isBackgroundChanging && (
           <>
-            <div className="absolute bottom-20 md:bottom-12 left-0 right-0 z-10 px-4 md:px-8">
-            <div className="w-full max-w-3xl mx-auto flex flex-col items-center justify-center">
+            <div className="absolute inset-0 flex items-center justify-center z-10 px-4 md:px-8 pb-20">
+            <div className="w-full max-w-3xl flex flex-col items-center justify-center">
               {currentParagraph.type !== 'choice' && (
-                <div className="flex justify-between items-center mb-2 gap-2">
+                <div className="flex justify-between items-center mb-4 gap-2 w-full">
                   <Button
                     variant="ghost"
                     size="sm"
@@ -261,7 +261,7 @@ function NovelReaderBackgroundNew({
               {(currentParagraph.type === 'text' || currentParagraph.type === 'dialogue') && 
                currentParagraph.subParagraphs && 
                currentParagraph.subParagraphs.length > 0 ? (
-                <div className="bg-card/90 backdrop-blur-sm rounded-2xl shadow-2xl border border-border p-6 md:p-8 min-h-[10rem] md:min-h-[12rem]">
+                <div className="bg-card/90 backdrop-blur-sm rounded-2xl shadow-2xl border border-border p-6 md:p-8 w-full">
                   <div className={`leading-relaxed w-full text-foreground ${
                     settings.textSize === 'small' ? 'text-base md:text-lg' :
                     settings.textSize === 'large' ? 'text-xl md:text-2xl' :
