@@ -32,10 +32,10 @@ export default function MergedParagraphsLayout({ layout, children, aspectRatios 
         return 'flex flex-col items-center justify-center gap-4';
       
       case 'horizontal-2-1':
-        return 'grid grid-cols-[2fr_2fr_1fr] gap-2';
+        return 'grid grid-cols-[minmax(0,2fr)_minmax(0,2fr)_minmax(0,1fr)] gap-2';
       
       case 'horizontal-1-2':
-        return 'grid grid-cols-[1fr_2fr_2fr] gap-2';
+        return 'grid grid-cols-[minmax(0,1fr)_minmax(0,2fr)_minmax(0,2fr)] gap-2';
       
       case 'grid-2x2':
         return 'grid grid-cols-2 grid-rows-2 gap-2';
