@@ -148,7 +148,7 @@ export default function ComicFrameReader({ paragraph, currentSubParagraphIndex, 
                 src={frame.url} 
                 alt={frame.alt || ''} 
                 onLoad={(e) => handleImageLoad(frame.id, e)}
-                className="w-full h-full object-cover min-w-0"
+                className="w-full h-auto object-cover min-w-0"
               />
             </div>
           );
