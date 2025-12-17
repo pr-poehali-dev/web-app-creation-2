@@ -98,8 +98,8 @@ function CharactersTab({ profile, novel, onProfileUpdate }: CharactersTabProps) 
                 };
                 
                 return (
-                  <div className="grid grid-cols-1 lg:grid-cols-2 h-full lg:h-screen overflow-y-auto lg:overflow-hidden scrollbar-hide">
-                    <div className="relative p-6 lg:p-8 flex items-center justify-center min-h-[400px] lg:h-screen lg:sticky lg:top-0" style={{ backgroundColor: '#1a2531' }}>
+                  <div className="grid grid-cols-1 lg:grid-cols-2 h-full max-h-[85vh] lg:max-h-full overflow-y-auto lg:overflow-hidden scrollbar-hide">
+                    <div className="relative p-6 lg:p-8 flex items-center justify-center min-h-[400px] lg:min-h-[600px]" style={{ backgroundColor: '#1a2531' }}>
                       {/* Плавный градиент-переход */}
                       <div className="absolute top-0 right-0 h-full w-64 pointer-events-none hidden lg:block">
                         <div className="w-full h-full bg-gradient-to-r from-transparent via-[#151d28]/50 to-[#151d28]" />
