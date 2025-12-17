@@ -115,10 +115,10 @@ function CharactersTab({ profile, novel, onProfileUpdate }: CharactersTabProps) 
                       </div>
                     </div>
 
-                    <div className="flex flex-col h-full">
+                    <div className="flex flex-col h-full max-h-[80vh] lg:max-h-full">
                       <div className="border-b border-border/50 p-4 lg:p-6 bg-gradient-to-r from-primary/10 to-transparent">
                         {characterImages.length > 0 && (
-                          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-primary/30 scrollbar-track-transparent">
+                          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
                             {characterImages.slice(0, 6).map((img) => (
                               <div key={img.id} className="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 border-border hover:border-primary/50 transition-all cursor-pointer group">
                                 <ZoomableImage src={img.url} alt={img.name || character.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform" />
@@ -133,7 +133,7 @@ function CharactersTab({ profile, novel, onProfileUpdate }: CharactersTabProps) 
                         )}
                       </div>
 
-                      <div className="flex-1 overflow-y-auto p-4 lg:p-6 space-y-6">
+                      <div className="flex-1 overflow-y-auto p-4 lg:p-6 space-y-6 scrollbar-hide">
                         <div className="flex gap-4 items-start">
                           {currentImage && (
                             <div className="flex-shrink-0 w-20 h-20 rounded-full overflow-hidden border-4 border-primary/30 shadow-lg">
