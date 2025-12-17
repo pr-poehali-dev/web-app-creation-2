@@ -132,7 +132,7 @@ function NovelReaderBackgroundNew({
       {!isContentHidden && currentParagraph.type !== 'background' && !isBackgroundChanging && (
         <>
           {hasComicFrames && (
-            <div className="absolute top-[60px] left-4 right-4 bottom-[calc(14rem+3rem)] md:top-[80px] md:left-8 md:right-32 md:bottom-[calc(14rem+3rem)] z-10 p-4">
+            <div className="absolute top-[60px] left-0 right-0 bottom-[calc(14rem+3rem)] md:top-[80px] md:left-8 md:right-32 md:bottom-[calc(14rem+3rem)] z-10">
               <div className="w-full h-full max-w-5xl mx-auto">
                 <ComicFrameReader
                   paragraph={currentParagraph as TextParagraph | DialogueParagraph}
