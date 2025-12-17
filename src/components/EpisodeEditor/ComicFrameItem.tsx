@@ -105,7 +105,9 @@ function ComicFrameItem({ frame, index, subParagraphs, onUpdate, onRemove }: Com
 
 export default memo(ComicFrameItem, (prevProps, nextProps) => {
   return (
-    prevProps.frame === nextProps.frame &&
+    prevProps.frame.url === nextProps.frame.url &&
+    prevProps.frame.animation === nextProps.frame.animation &&
+    prevProps.frame.subParagraphTrigger === nextProps.frame.subParagraphTrigger &&
     prevProps.index === nextProps.index &&
     prevProps.subParagraphs === nextProps.subParagraphs
   );
