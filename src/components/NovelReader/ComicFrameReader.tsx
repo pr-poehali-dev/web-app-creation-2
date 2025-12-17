@@ -124,6 +124,14 @@ export default function ComicFrameReader({ paragraph, currentSubParagraphIndex, 
   const frameAspectRatios = activeFrames.map(frame => imageAspectRatios.get(frame.id) || 1);
   const defaultAnimation = paragraph.frameAnimation;
 
+  const isHorizontalLayout = layout.includes('horizontal') || 
+                             layout === 'grid-2x2' || 
+                             layout === 'grid-2x3' || 
+                             layout === 'mosaic-left' || 
+                             layout === 'mosaic-right' ||
+                             layout === 'vertical-left-3' ||
+                             layout === 'vertical-right-3';
+
   return (
     <>
       <MergedParagraphsLayout layout={layout} aspectRatios={frameAspectRatios}>
@@ -134,7 +142,7 @@ export default function ComicFrameReader({ paragraph, currentSubParagraphIndex, 
           return (
             <div 
               key={frame.id} 
-              className={`w-full h-full cursor-pointer min-w-0 rounded-lg overflow-hidden ${animClass}`}
+              className={`w-full h-full cursor-pointer min-w-0 ${isHorizontalLayout ? 'rounded-lg overflow-hidden' : ''} ${animClass}`}
               style={{ 
                 animationDelay: hasAnimation ? `${index * 0.2}s` : undefined,
                 opacity: hasAnimation ? 0 : 1
@@ -148,7 +156,7 @@ export default function ComicFrameReader({ paragraph, currentSubParagraphIndex, 
                 src={frame.url} 
                 alt={frame.alt || ''} 
                 onLoad={(e) => handleImageLoad(frame.id, e)}
-                className="w-full h-full object-cover min-w-0"
+                className={`w-full h-full object-cover min-w-0 ${!isHorizontalLayout ? 'rounded-lg' : ''}`}
               />
             </div>
           );
