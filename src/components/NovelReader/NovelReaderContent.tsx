@@ -54,9 +54,9 @@ function NovelReaderContent({
   return (
     <>
       {currentParagraph.type === 'text' && (
-        <div className={`bg-card/90 backdrop-blur-sm rounded-xl md:rounded-2xl shadow-xl border border-border flex items-start relative ${
+        <div className={`backdrop-blur-sm rounded-xl md:rounded-2xl shadow-xl border border-white/20 flex items-start relative ${
           isTopMerged ? 'p-12 md:p-16 lg:p-24 h-full w-full justify-center' : 'p-4 md:p-6 lg:p-8 min-h-[10rem] md:min-h-[12rem]'
-        }`}>
+        }`} style={{ background: 'linear-gradient(135deg, hsl(210, 70%, 15%) 0%, hsl(215, 65%, 20%) 100%)' }}>
           <div 
             className="absolute inset-0 pointer-events-none rounded-xl md:rounded-2xl transition-all duration-1000 ease-in-out"
             style={{
@@ -73,7 +73,7 @@ function NovelReaderContent({
               : (settings.textSize === 'small' ? 'text-sm md:text-base lg:text-lg text-left' :
                  settings.textSize === 'large' ? 'text-lg md:text-xl lg:text-2xl text-left' :
                  'text-base md:text-lg lg:text-xl text-left')
-          } text-foreground`} style={novelFontStyle}>
+          } text-white`} style={novelFontStyle}>
             {console.log('[NovelReaderContent] Rendering TypewriterText with key:', paragraphKey, 'skipTyping:', skipTyping)}
             <TypewriterText
               text={currentParagraph.content}

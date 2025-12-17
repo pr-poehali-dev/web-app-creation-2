@@ -136,9 +136,10 @@ function NovelReaderBackgroundNew({
       </div>
 
       {/* Правая часть - контент */}
-      <div className="w-full lg:w-1/2 relative bg-background overflow-hidden"
+      <div className="w-full lg:w-1/2 relative overflow-hidden"
         style={{
           clipPath: 'inset(0)',
+          background: 'linear-gradient(135deg, hsl(210, 70%, 15%) 0%, hsl(215, 65%, 20%) 100%)'
         }}
       >
         {/* Мобильный фон */}
@@ -201,7 +202,7 @@ function NovelReaderBackgroundNew({
               </div>
             )}
             
-            <div className="absolute bottom-20 md:bottom-12 left-0 right-0 z-10 flex justify-center px-4 md:px-8">
+            <div className="absolute inset-0 z-10 flex items-center justify-center px-4 md:px-8">
             <div className="w-full max-w-3xl">
               {currentParagraph.type !== 'choice' && (
                 <div className="flex justify-between items-center mb-2 gap-2">
@@ -259,8 +260,8 @@ function NovelReaderBackgroundNew({
               {(currentParagraph.type === 'text' || currentParagraph.type === 'dialogue') && 
                currentParagraph.subParagraphs && 
                currentParagraph.subParagraphs.length > 0 ? (
-                <div className="bg-card/95 backdrop-blur-md rounded-2xl shadow-2xl border border-border p-6 md:p-8 min-h-[10rem] md:min-h-[12rem]">
-                  <div className={`leading-relaxed w-full text-foreground ${
+                <div className="backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 p-6 md:p-8 min-h-[10rem] md:min-h-[12rem]" style={{ background: 'linear-gradient(135deg, hsl(210, 70%, 15%) 0%, hsl(215, 65%, 20%) 100%)' }}>
+                  <div className={`leading-relaxed w-full text-white ${
                     settings.textSize === 'small' ? 'text-base md:text-lg' :
                     settings.textSize === 'large' ? 'text-xl md:text-2xl' :
                     'text-lg md:text-xl'
@@ -272,6 +273,10 @@ function NovelReaderBackgroundNew({
                       currentParagraph.subParagraphs?.[currentSubParagraphIndex - 1]?.text || ''
                     )}
                   </div>
+                </div>
+              ) : currentParagraph.type === 'image' ? (
+                <div className="backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 p-6 md:p-8 min-h-[10rem] md:min-h-[12rem] flex items-center justify-center" style={{ background: 'linear-gradient(135deg, hsl(210, 70%, 15%) 0%, hsl(215, 65%, 20%) 100%)' }}>
+                  <p className="text-white/60 text-center">Изображение отображается на фоне</p>
                 </div>
               ) : (
                 <NovelReaderContent
