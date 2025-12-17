@@ -124,7 +124,7 @@ function CharactersTab({ profile, novel, onProfileUpdate }: CharactersTabProps) 
                     </div>
 
                     <div className="flex flex-col h-full max-h-[80vh] lg:max-h-full">
-                      <div className="border-b border-border/50 p-4 lg:p-6 bg-gradient-to-r from-primary/10 to-transparent">
+                      <div className="border-b border-border/50 p-4 lg:p-6 from-primary/10 to-transparent bg-[#151d28]">
                         {characterImages.length > 0 && (
                           <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
                             {characterImages.slice(0, 6).map((img) => (
@@ -162,7 +162,7 @@ function CharactersTab({ profile, novel, onProfileUpdate }: CharactersTabProps) 
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                          <div className="p-3 bg-card/50 border border-border/50 rounded-lg flex items-center gap-3">
+                          <div className="p-3 border border-border/50 rounded-lg flex items-center gap-3 bg-[#151d28]">
                             <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
                               <Icon name="Calendar" size={18} className="text-primary" />
                             </div>
@@ -172,7 +172,7 @@ function CharactersTab({ profile, novel, onProfileUpdate }: CharactersTabProps) 
                             </div>
                           </div>
                           
-                          <div className="p-3 bg-card/50 border border-border/50 rounded-lg flex items-center gap-3">
+                          <div className="p-3 border border-border/50 rounded-lg flex items-center gap-3 bg-[#151d28]">
                             <div className="w-10 h-10 rounded-full bg-secondary/20 flex items-center justify-center flex-shrink-0">
                               <Icon name="MapPin" size={18} className="text-secondary" />
                             </div>
@@ -184,7 +184,7 @@ function CharactersTab({ profile, novel, onProfileUpdate }: CharactersTabProps) 
                         </div>
                       </div>
 
-                      <div className="border-t border-border/50 p-4 lg:p-6 bg-muted/20">
+                      <div className="border-t border-border/50 p-4 lg:p-6 bg-[#151d28]">
                         <div className="flex items-center justify-between mb-4">
                           <div className="flex items-center gap-2">
                             <Icon name="FileText" size={18} className="text-primary" />
