@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 import Icon from '@/components/ui/icon';
 
 interface ComicFrameItemProps {
@@ -15,6 +16,8 @@ interface ComicFrameItemProps {
 }
 
 function ComicFrameItem({ frame, index, subParagraphs, onUpdate, onRemove }: ComicFrameItemProps) {
+  const [previewOpen, setPreviewOpen] = useState(false);
+  
   return (
     <div className="border border-border/50 rounded p-2 space-y-2">
       <div className="flex items-center justify-between">
@@ -153,8 +156,22 @@ function ComicFrameItem({ frame, index, subParagraphs, onUpdate, onRemove }: Com
           </div>
 
           <div className="space-y-1">
-            <Label className="text-xs text-muted-foreground">Предпросмотр</Label>
-            <div className="relative w-full h-32 bg-muted rounded border border-border overflow-hidden">
+            <div className="flex items-center justify-between">
+              <Label className="text-xs text-muted-foreground">Предпросмотр</Label>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setPreviewOpen(true)}
+                className="h-6 text-[10px] px-2"
+              >
+                <Icon name="Maximize2" size={12} className="mr-1" />
+                Открыть
+              </Button>
+            </div>
+            <div 
+              className="relative w-full h-32 bg-muted rounded border border-border overflow-hidden cursor-pointer hover:border-primary/50 transition-colors"
+              onClick={() => setPreviewOpen(true)}
+            >
               <img
                 src={frame.url}
                 alt="Preview"
@@ -166,6 +183,29 @@ function ComicFrameItem({ frame, index, subParagraphs, onUpdate, onRemove }: Com
               />
             </div>
           </div>
+
+          <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
+            <DialogContent className="max-w-[90vw] max-h-[90vh] p-4">
+              <div className="space-y-3">
+                <div className="text-sm font-medium">Полный предпросмотр позиционирования</div>
+                <div className="relative w-full h-[70vh] bg-muted rounded border border-border overflow-hidden">
+                  <img
+                    src={frame.url}
+                    alt="Full Preview"
+                    className="w-full h-full"
+                    style={{
+                      objectFit: frame.objectFit || 'cover',
+                      objectPosition: frame.objectPosition || 'center'
+                    }}
+                  />
+                </div>
+                <div className="text-xs text-muted-foreground space-y-1">
+                  <div>Режим: <span className="font-medium">{frame.objectFit || 'cover'}</span></div>
+                  <div>Позиция: <span className="font-medium">{frame.objectPosition || 'center'}</span></div>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       )}
     </div>
