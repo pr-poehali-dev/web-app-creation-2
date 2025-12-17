@@ -86,9 +86,9 @@ function NovelReaderBackgroundNew({
                          currentParagraph.comicFrames.length > 0;
 
   return (
-    <div className="absolute inset-0 flex">
-      {/* Левая часть - фоновое изображение с волнистым краем */}
-      <div className="hidden lg:block lg:w-1/2 relative overflow-hidden lg:sticky lg:top-0 lg:h-screen">
+    <div className="absolute inset-0 flex flex-col lg:flex-row">
+      {/* Верхняя/Левая часть - фоновое изображение */}
+      <div className="h-1/2 lg:h-screen lg:w-1/2 relative overflow-hidden lg:sticky lg:top-0">
         {previousBackgroundImage && (
           <div 
             className="absolute inset-0 bg-cover bg-center"
@@ -145,45 +145,13 @@ function NovelReaderBackgroundNew({
         )}
         
         {/* Плавный градиент-переход */}
-        <div className="absolute top-0 right-0 h-full w-64 pointer-events-none">
-          <div className="w-full h-full bg-gradient-to-r from-transparent via-background/50 to-background" />
+        <div className="absolute bottom-0 left-0 right-0 h-32 lg:h-auto lg:top-0 lg:right-0 lg:left-auto lg:bottom-auto lg:w-64 pointer-events-none">
+          <div className="w-full h-full bg-gradient-to-b lg:bg-gradient-to-r from-transparent via-[#151d28]/50 to-[#151d28]" />
         </div>
       </div>
 
-      {/* Правая часть - контент */}
-      <div className="w-full lg:w-1/2 relative overflow-hidden bg-background"
-        style={{
-          clipPath: 'inset(0)'
-        }}
-      >
-        {/* Мобильный фон */}
-        <div className="lg:hidden absolute inset-0">
-          {previousBackgroundImage && (
-            <div 
-              className="absolute inset-0 bg-cover bg-center"
-              style={{ 
-                backgroundImage: `url(${previousBackgroundImage})`,
-                opacity: newImageReady ? 0 : 1,
-                filter: getFilterStyle(newImageReady ? 'blur(16px)' : 'blur(0px)'),
-                transition: 'opacity 2.4s ease-in-out, filter 2.4s ease-in-out',
-                zIndex: 1
-              }}
-            />
-          )}
-          
-          <div 
-            className="absolute inset-0 bg-cover bg-center"
-            style={{ 
-              backgroundImage: `url("${backgroundImage}")`,
-              opacity: previousBackgroundImage && !newImageReady ? 0 : 1,
-              filter: getFilterStyle(previousBackgroundImage && !newImageReady ? 'blur(16px)' : 'blur(0px)'),
-              transition: previousBackgroundImage ? 'opacity 2.4s ease-in-out, filter 2.4s ease-in-out' : 'filter 1.2s ease-in-out',
-              zIndex: 0
-            }}
-          />
-
-          <div className={`absolute inset-0 ${isRetrospective ? 'bg-amber-950/30' : 'bg-black/20'}`} style={{ transition: 'background-color 1.2s ease-in-out' }} />
-        </div>
+      {/* Нижняя/Правая часть - контент */}
+      <div className="h-1/2 lg:h-auto w-full lg:w-1/2 relative overflow-hidden" style={{ backgroundColor: '#151d28' }}>
         
         <Button
           variant="ghost"
@@ -195,7 +163,7 @@ function NovelReaderBackgroundNew({
             }
             setIsContentHidden(!isContentHidden);
           }}
-          className="absolute top-6 right-4 z-20 h-10 w-10 p-0 bg-card/80 backdrop-blur-sm hover:bg-card/90 border border-border/50 rounded-full"
+          className="hidden lg:block absolute top-6 right-4 z-20 h-10 w-10 p-0 bg-card/80 backdrop-blur-sm hover:bg-card/90 border border-border/50 rounded-full"
           title={isContentHidden ? 'Показать текст' : 'Скрыть текст'}
         >
           <Icon name={isContentHidden ? 'Eye' : 'EyeOff'} size={20} className="text-white" />
