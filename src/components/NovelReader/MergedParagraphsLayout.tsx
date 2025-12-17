@@ -14,13 +14,13 @@ export default function MergedParagraphsLayout({ layout, children, aspectRatios 
         return 'flex items-center justify-center gap-4';
       
       case 'horizontal-2':
-        return 'flex flex-row items-center justify-center gap-2';
+        return 'flex flex-row items-center justify-center gap-2 max-w-[95%] mx-auto';
       
       case 'horizontal-3':
-        return 'flex flex-row items-center justify-center gap-2';
+        return 'flex flex-row items-center justify-center gap-2 max-w-[95%] mx-auto';
       
       case 'horizontal-4':
-        return 'flex flex-row items-center justify-center gap-2';
+        return 'flex flex-row items-center justify-center gap-2 max-w-[95%] mx-auto';
       
       case 'vertical-2':
         return 'flex flex-col items-center justify-center gap-4';
@@ -32,31 +32,31 @@ export default function MergedParagraphsLayout({ layout, children, aspectRatios 
         return 'flex flex-col items-center justify-center gap-4';
       
       case 'horizontal-2-1':
-        return 'grid grid-cols-[2fr_2fr_1fr] gap-2';
+        return 'grid grid-cols-[2fr_2fr_1fr] gap-2 max-w-[95%] mx-auto';
       
       case 'horizontal-1-2':
-        return 'grid grid-cols-[1fr_2fr_2fr] gap-2';
+        return 'grid grid-cols-[1fr_2fr_2fr] gap-2 max-w-[95%] mx-auto';
       
       case 'grid-2x2':
-        return 'grid grid-cols-2 grid-rows-2 gap-2';
+        return 'grid grid-cols-2 grid-rows-2 gap-2 max-w-[95%] mx-auto';
       
       case 'grid-3x3':
         return 'grid grid-cols-3 grid-rows-3 gap-4';
       
       case 'grid-2x3':
-        return 'grid grid-cols-2 grid-rows-3 gap-2';
+        return 'grid grid-cols-2 grid-rows-3 gap-2 max-w-[95%] mx-auto';
       
       case 'mosaic-left':
-        return 'grid grid-cols-[2fr_1fr] grid-rows-2 gap-2';
+        return 'grid grid-cols-[2fr_1fr] grid-rows-2 gap-2 max-w-[95%] mx-auto';
       
       case 'mosaic-right':
-        return 'grid grid-cols-[1fr_2fr] grid-rows-2 gap-2';
+        return 'grid grid-cols-[1fr_2fr] grid-rows-2 gap-2 max-w-[95%] mx-auto';
       
       case 'vertical-left-3':
-        return 'grid grid-cols-[2fr_1fr] grid-rows-3 gap-2';
+        return 'grid grid-cols-[2fr_1fr] grid-rows-3 gap-2 max-w-[95%] mx-auto';
       
       case 'vertical-right-3':
-        return 'grid grid-cols-[1fr_2fr] grid-rows-3 gap-2';
+        return 'grid grid-cols-[1fr_2fr] grid-rows-3 gap-2 max-w-[95%] mx-auto';
       
       case 'center-large':
         return 'grid grid-cols-3 grid-rows-3 gap-4';
