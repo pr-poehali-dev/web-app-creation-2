@@ -47,16 +47,16 @@ export default function MergedParagraphsLayout({ layout, children, aspectRatios 
         return 'grid grid-cols-2 grid-rows-3 gap-2';
       
       case 'mosaic-left':
-        return 'grid grid-cols-[2fr_1fr] grid-rows-2 gap-2';
+        return 'grid grid-cols-[minmax(0,2fr)_minmax(0,1fr)] grid-rows-2 gap-2';
       
       case 'mosaic-right':
-        return 'grid grid-cols-[1fr_2fr] grid-rows-2 gap-2';
+        return 'grid grid-cols-[minmax(0,1fr)_minmax(0,2fr)] grid-rows-2 gap-2';
       
       case 'vertical-left-3':
-        return 'grid grid-cols-[2fr_1fr] grid-rows-3 gap-2';
+        return 'grid grid-cols-[minmax(0,2fr)_minmax(0,1fr)] grid-rows-3 gap-2';
       
       case 'vertical-right-3':
-        return 'grid grid-cols-[1fr_2fr] grid-rows-3 gap-2';
+        return 'grid grid-cols-[minmax(0,1fr)_minmax(0,2fr)] grid-rows-3 gap-2';
       
       case 'center-large':
         return 'grid grid-cols-3 grid-rows-3 gap-4';
@@ -83,28 +83,28 @@ export default function MergedParagraphsLayout({ layout, children, aspectRatios 
         return 'flex flex-row items-center justify-center gap-2';
       
       case 'magazine-1':
-        return 'grid grid-cols-[1fr_2fr] grid-rows-[auto_1fr_1fr_1fr] gap-3';
+        return 'grid grid-cols-[minmax(0,1fr)_minmax(0,2fr)] grid-rows-[auto_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)] gap-3';
       
       case 'magazine-2':
         return 'grid grid-cols-4 grid-rows-4 gap-3';
       
       case 'magazine-3':
-        return 'grid grid-cols-[2fr_1fr] grid-rows-[auto_1fr_1fr_1fr] gap-3';
+        return 'grid grid-cols-[minmax(0,2fr)_minmax(0,1fr)] grid-rows-[auto_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)] gap-3';
       
       case 'magazine-4':
-        return 'grid grid-cols-[2fr_1fr_1fr] grid-rows-[1fr_1fr_1fr] gap-3';
+        return 'grid grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)] grid-rows-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)] gap-3';
       
       case 'magazine-5':
-        return 'grid grid-cols-4 grid-rows-[2fr_1fr] gap-3';
+        return 'grid grid-cols-4 grid-rows-[minmax(0,2fr)_minmax(0,1fr)] gap-3';
       
       case 'magazine-6':
-        return 'grid grid-cols-[1fr_1fr_1fr_1fr] grid-rows-[auto_1fr_1fr_1fr] gap-3';
+        return 'grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)] grid-rows-[auto_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)] gap-3';
       
       case 'magazine-7':
-        return 'grid grid-cols-3 grid-rows-[1fr_1fr_auto] gap-3';
+        return 'grid grid-cols-3 grid-rows-[minmax(0,1fr)_minmax(0,1fr)_auto] gap-3';
       
       case 'magazine-8':
-        return 'grid grid-cols-[1fr_2fr] grid-rows-[auto_1fr_1fr] gap-3';
+        return 'grid grid-cols-[minmax(0,1fr)_minmax(0,2fr)] grid-rows-[auto_minmax(0,1fr)_minmax(0,1fr)] gap-3';
       
       case 'magazine-9':
         return 'grid grid-cols-4 grid-rows-4 gap-3';
