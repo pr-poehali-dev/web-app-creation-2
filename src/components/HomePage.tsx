@@ -22,8 +22,8 @@ function HomePage({ homePage, novel, onStart }: HomePageProps) {
         }}
       >
         <div className="absolute inset-0 bg-gradient-to-r from-transparent to-background/20" />
-        <div className="absolute top-0 right-0 h-full w-64 pointer-events-none">
-          <div className="w-full h-full bg-gradient-to-r from-transparent via-background/50 to-background" />
+        <div className="absolute top-0 right-0 h-full w-64 pointer-events-none z-20">
+          <div className="w-full h-full bg-gradient-to-r from-transparent via-[#151d28]/50 to-[#151d28]" />
         </div>
       </div>
 
@@ -105,7 +105,7 @@ function HomePage({ homePage, novel, onStart }: HomePageProps) {
             backgroundPosition: 'center',
           }}
         >
-          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-b from-transparent via-[#151d28]/50 to-[#151d28]" />
+          <div className="absolute bottom-0 left-0 right-0 h-64 bg-gradient-to-b from-transparent via-[#151d28]/50 to-[#151d28] z-20" />
         </div>
         <div className="h-1/2" style={{ backgroundColor: '#151d28' }} />
       </div>

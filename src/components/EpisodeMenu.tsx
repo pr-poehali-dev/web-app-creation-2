@@ -74,7 +74,7 @@ function EpisodeMenu({ novel, profile, onEpisodeSelect, onBack }: EpisodeMenuPro
         <div className="absolute inset-0 bg-gradient-to-r from-transparent to-background/20" />
         
         {/* Плавный градиент справа */}
-        <div className="absolute top-0 right-0 h-full w-64 pointer-events-none">
+        <div className="absolute top-0 right-0 h-full w-64 pointer-events-none z-20">
           <div className="w-full h-full bg-gradient-to-r from-transparent via-[#151d28]/50 to-[#151d28]" />
         </div>
       </div>

@@ -70,7 +70,7 @@ function SettingsPanel({ settings, novel, onUpdate, onBack }: SettingsPanelProps
         <div className="absolute inset-0 bg-gradient-to-r from-transparent to-background/20" />
         
         {/* Плавный градиент */}
-        <div className="absolute top-0 right-0 h-full w-64 pointer-events-none">
+        <div className="absolute top-0 right-0 h-full w-64 pointer-events-none z-20">
           <div className="w-full h-full bg-gradient-to-r from-transparent via-[#151d28]/50 to-[#151d28]" />
         </div>
       </div>
