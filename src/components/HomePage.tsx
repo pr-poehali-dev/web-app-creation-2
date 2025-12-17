@@ -1,13 +1,14 @@
-import { HomePage as HomePageData } from '@/types/novel';
+import { HomePage as HomePageData, Novel } from '@/types/novel';
 import { Button } from './ui/button';
 import ShapeTransition from './NovelReader/ShapeTransitions';
 
 interface HomePageProps {
   homePage: HomePageData;
+  novel: Novel;
   onStart: () => void;
 }
 
-function HomePage({ homePage, onStart }: HomePageProps) {
+function HomePage({ homePage, novel, onStart }: HomePageProps) {
   return (
     <div className="min-h-screen flex">
       {/* Левая часть - фоновое изображение */}
@@ -22,7 +23,7 @@ function HomePage({ homePage, onStart }: HomePageProps) {
         }}
       >
         <div className="absolute inset-0 bg-gradient-to-r from-transparent to-background/20" />
-        <ShapeTransition type="rounded" fillColor="hsl(210, 70%, 15%)" />
+        <ShapeTransition type={novel.homeShapeTransition || 'rounded'} fillColor="hsl(210, 70%, 15%)" />
       </div>
 
       {/* Правая часть - приветствие и новости */}

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Episode, Novel } from '@/types/novel';
+import { Episode, Novel, ShapeTransitionType } from '@/types/novel';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -209,6 +209,35 @@ function EpisodeHeader({ episode, novel, onUpdate, onNovelUpdate }: EpisodeHeade
         <div>
           <Label className="text-foreground">ID эпизода</Label>
           <Input value={episode.id} disabled className="font-mono text-sm mt-1" />
+        </div>
+
+        <div>
+          <Label className="text-foreground">Фигурный переход</Label>
+          <Select
+            value={episode.shapeTransition || 'organic'}
+            onValueChange={(value: ShapeTransitionType) =>
+              onUpdate({ ...episode, shapeTransition: value })
+            }
+          >
+            <SelectTrigger className="mt-1">
+              <SelectValue placeholder="Выберите форму" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="wave">Волна</SelectItem>
+              <SelectItem value="diagonal">Диагональ</SelectItem>
+              <SelectItem value="organic">Органика</SelectItem>
+              <SelectItem value="curved">Изгибы</SelectItem>
+              <SelectItem value="liquid">Жидкость</SelectItem>
+              <SelectItem value="triangle">Треугольники</SelectItem>
+              <SelectItem value="hexagon">Шестиугольники</SelectItem>
+              <SelectItem value="arc">Дуга</SelectItem>
+              <SelectItem value="stairs">Ступеньки</SelectItem>
+              <SelectItem value="zigzag">Зигзаг</SelectItem>
+              <SelectItem value="rounded">Округлая</SelectItem>
+              <SelectItem value="sharp">Острая</SelectItem>
+              <SelectItem value="double-wave">Двойная волна</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         <div>

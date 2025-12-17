@@ -2,6 +2,7 @@ import { Novel } from '@/types/novel';
 import { UserProfile } from '@/types/settings';
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
+import ShapeTransition from './NovelReader/ShapeTransitions';
 import ProfileHeader from './UserProfile/ProfileHeader';
 import ProfileProgress from './UserProfile/ProfileProgress';
 import ProfileTabs from './UserProfile/ProfileTabs';
@@ -72,22 +73,7 @@ function UserProfilePanel({ profile, novel, onUpdate, onBack, onNavigateTo, user
         <div className="absolute inset-0 bg-gradient-to-r from-transparent to-background/20" />
         
         {/* Фигурный край */}
-        <div className="absolute top-0 right-0 h-full w-32 pointer-events-none">
-          <svg 
-            viewBox="0 0 100 1000" 
-            preserveAspectRatio="none" 
-            className="absolute top-0 right-0 h-full w-full"
-            style={{ 
-              filter: 'drop-shadow(-3px 0 12px rgba(0,0,0,0.15))',
-              transform: 'translateX(1px)'
-            }}
-          >
-            <path 
-              d="M 0 0 L 80 100 L 80 200 L 0 300 L 80 400 L 80 500 L 0 600 L 80 700 L 80 800 L 0 900 L 100 1000 L 100 0 Z"
-              fill="hsl(210, 70%, 15%)"
-            />
-          </svg>
-        </div>
+        <ShapeTransition type={novel.profileShapeTransition || 'hexagon'} fillColor="hsl(210, 70%, 15%)" />
       </div>
 
       {/* Правая часть - контент профиля */}

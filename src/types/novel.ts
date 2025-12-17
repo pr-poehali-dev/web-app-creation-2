@@ -235,4 +235,8 @@ export interface Novel {
     profile?: string;
     settings?: string;
   };
+  homeShapeTransition?: ShapeTransitionType;
+  episodesShapeTransition?: ShapeTransitionType;
+  profileShapeTransition?: ShapeTransitionType;
+  settingsShapeTransition?: ShapeTransitionType;
 }

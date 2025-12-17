@@ -8,6 +8,7 @@ import HomePageEditor from './HomePageEditor';
 import PathsManager from './PathsManager';
 import BulkImportDialog from './BulkImportDialog';
 import UsersManagement from './UsersManagement';
+import BackgroundImagesEditor from './BackgroundImagesEditor';
 import AdminPanelHeader from './AdminPanel/AdminPanelHeader';
 import EpisodeEditorTab from './AdminPanel/EpisodeEditorTab';
 import SystemTab from './AdminPanel/SystemTab';
@@ -199,7 +200,7 @@ function AdminPanel({ novel, onUpdate, onLogout, authState }: AdminPanelProps) {
 
       <div className="container mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full max-w-5xl grid-cols-7 mb-8">
+          <TabsList className="grid w-full max-w-5xl grid-cols-8 mb-8">
             <TabsTrigger value="home">
               <Icon name="Home" size={16} className="mr-2" />
               Главная
@@ -215,6 +216,10 @@ function AdminPanel({ novel, onUpdate, onLogout, authState }: AdminPanelProps) {
             <TabsTrigger value="library">
               <Icon name="BookMarked" size={16} className="mr-2" />
               Библиотека
+            </TabsTrigger>
+            <TabsTrigger value="backgrounds">
+              <Icon name="Image" size={16} className="mr-2" />
+              Фоны
             </TabsTrigger>
             <TabsTrigger value="visualization">
               <Icon name="Network" size={16} className="mr-2" />
@@ -268,6 +273,10 @@ function AdminPanel({ novel, onUpdate, onLogout, authState }: AdminPanelProps) {
 
           <TabsContent value="library">
             <LibraryManager novel={novel} onUpdate={onUpdate} />
+          </TabsContent>
+
+          <TabsContent value="backgrounds">
+            <BackgroundImagesEditor novel={novel} onUpdate={onUpdate} />
           </TabsContent>
 
           <TabsContent value="visualization">

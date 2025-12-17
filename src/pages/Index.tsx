@@ -169,6 +169,7 @@ function Index() {
       <div className="relative">
         <HomePage 
           homePage={novel.homePage || { greeting: 'Добро пожаловать', news: [] }}
+          novel={novel}
           onStart={() => {
             const hasValidProgress = profile.currentEpisodeId && 
               novel.episodes.some(ep => ep.id === profile.currentEpisodeId) &&

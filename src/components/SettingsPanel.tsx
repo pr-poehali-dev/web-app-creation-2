@@ -6,6 +6,7 @@ import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Icon from '@/components/ui/icon';
+import ShapeTransition from './NovelReader/ShapeTransitions';
 
 import { Novel } from '@/types/novel';
 
@@ -71,22 +72,7 @@ function SettingsPanel({ settings, novel, onUpdate, onBack }: SettingsPanelProps
         <div className="absolute inset-0 bg-gradient-to-r from-transparent to-background/20" />
         
         {/* Фигурный край */}
-        <div className="absolute top-0 right-0 h-full w-32 pointer-events-none">
-          <svg 
-            viewBox="0 0 100 1000" 
-            preserveAspectRatio="none" 
-            className="absolute top-0 right-0 h-full w-full"
-            style={{ 
-              filter: 'drop-shadow(-3px 0 12px rgba(0,0,0,0.15))',
-              transform: 'translateX(1px)'
-            }}
-          >
-            <path 
-              d="M 0 0 Q 120 500, 0 1000 L 100 1000 L 100 0 Z"
-              fill="hsl(210, 70%, 15%)"
-            />
-          </svg>
-        </div>
+        <ShapeTransition type={novel.settingsShapeTransition || 'arc'} fillColor="hsl(210, 70%, 15%)" />
       </div>
 
       {/* Правая часть - контент настроек */}

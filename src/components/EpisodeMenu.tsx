@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Novel } from '@/types/novel';
+import ShapeTransition from './NovelReader/ShapeTransitions';
 import { UserProfile } from '@/types/settings';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -74,22 +75,7 @@ function EpisodeMenu({ novel, profile, onEpisodeSelect, onBack }: EpisodeMenuPro
         <div className="absolute inset-0 bg-gradient-to-r from-transparent to-background/20" />
         
         {/* Фигурный край справа */}
-        <div className="absolute top-0 right-0 h-full w-32 pointer-events-none">
-          <svg 
-            viewBox="0 0 100 1000" 
-            preserveAspectRatio="none" 
-            className="absolute top-0 right-0 h-full w-full"
-            style={{ 
-              filter: 'drop-shadow(-3px 0 12px rgba(0,0,0,0.15))',
-              transform: 'translateX(1px)'
-            }}
-          >
-            <path 
-              d="M 0 0 L 100 150 L 0 300 L 100 450 L 0 600 L 100 750 L 0 900 L 100 1000 L 100 0 Z"
-              fill="hsl(210, 70%, 15%)"
-            />
-          </svg>
-        </div>
+        <ShapeTransition type={novel.episodesShapeTransition || 'triangle'} fillColor="hsl(210, 70%, 15%)" />
       </div>
 
       {/* Правая часть - список эпизодов */}
