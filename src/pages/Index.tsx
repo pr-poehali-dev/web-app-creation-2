@@ -192,6 +192,18 @@ function Index() {
           }}
         />
         
+        <div className="fixed top-4 left-4 z-50">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="bg-card/90 backdrop-blur-md hover:bg-card shadow-lg text-white border border-border/50"
+            onClick={() => setActiveView('episodes')}
+            title="Список эпизодов"
+          >
+            <Icon name="List" size={20} />
+          </Button>
+        </div>
+        
         <div className="fixed top-4 right-4 flex gap-2 z-50">
           <Button
             variant="ghost"
