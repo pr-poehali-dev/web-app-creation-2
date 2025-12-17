@@ -138,17 +138,35 @@ function ComicFrameEditor({ frames, layout, defaultAnimation, subParagraphs, onF
       if (!files || files.length === 0) return;
       
       const uploadPromises = Array.from(files).map(async (file) => {
-        const formData = new FormData();
-        formData.append('file', file);
-        
-        const response = await fetch('https://cdn.poehali.dev/upload', {
-          method: 'POST',
-          body: formData,
+        return new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          
+          reader.onload = async () => {
+            try {
+              const base64 = (reader.result as string).split(',')[1];
+              
+              const response = await fetch('https://functions.poehali.dev/98305cdc-9d3f-46e5-9744-c418d3d4cb24', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  image: base64,
+                  filename: file.name
+                }),
+              });
+              
+              if (!response.ok) throw new Error('Upload failed');
+              const data = await response.json();
+              resolve(data.url);
+            } catch (error) {
+              reject(error);
+            }
+          };
+          
+          reader.onerror = () => reject(new Error('File read failed'));
+          reader.readAsDataURL(file);
         });
-        
-        if (!response.ok) throw new Error('Upload failed');
-        const data = await response.json();
-        return data.url;
       });
       
       try {
