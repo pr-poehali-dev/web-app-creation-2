@@ -14,7 +14,6 @@ interface UseAppHandlersProps {
   setIsAdmin: (isAdmin: boolean) => void;
   setSelectedEpisodeForParagraphs: (episodeId: string | null) => void;
   setShowParagraphsDialog: (show: boolean) => void;
-  setShowGreetingScreen: (show: boolean) => void;
 }
 
 export function useAppHandlers({
@@ -27,8 +26,7 @@ export function useAppHandlers({
   setActiveView,
   setIsAdmin,
   setSelectedEpisodeForParagraphs,
-  setShowParagraphsDialog,
-  setShowGreetingScreen
+  setShowParagraphsDialog
 }: UseAppHandlersProps) {
   const handleNovelUpdate = useCallback((updatedNovel: Novel) => {
     setNovel(updatedNovel);
@@ -59,9 +57,8 @@ export function useAppHandlers({
       currentParagraphIndex: paragraphIndex !== undefined ? paragraphIndex : 0,
       currentSubParagraphIndex: subParagraphIndex !== undefined ? subParagraphIndex : 0
     }));
-    setShowGreetingScreen(false);
     setActiveView('reader');
-  }, [setProfile, setActiveView, setShowGreetingScreen]);
+  }, [setProfile, setActiveView]);
 
   const handleNavigateToBookmark = useCallback((episodeId: string, paragraphIndex: number) => {
     setProfile(prev => ({

@@ -62,8 +62,7 @@ function Index() {
     setActiveView,
     setIsAdmin,
     setSelectedEpisodeForParagraphs,
-    setShowParagraphsDialog,
-    setShowGreetingScreen
+    setShowParagraphsDialog
   });
 
   // Показываем экран авторизации только если пользователь явно запросил или достиг конца доступного контента
