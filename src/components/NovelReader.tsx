@@ -7,7 +7,6 @@ import { useNovelInteraction } from './NovelReader/useNovelInteraction';
 import { useSubParagraphNavigation } from './NovelReader/useSubParagraphNavigation';
 import NovelReaderEffects from './NovelReader/NovelReaderEffects';
 import NovelReaderBackgroundNew from './NovelReader/NovelReaderBackgroundNew';
-import NovelReaderGreeting from './NovelReader/NovelReaderGreeting';
 
 interface NovelReaderProps {
   novel: Novel;
@@ -17,14 +16,13 @@ interface NovelReaderProps {
   onProfileUpdate: (profile: UserProfile | ((prev: UserProfile) => UserProfile)) => void;
   currentEpisodeId: string;
   currentParagraphIndex: number;
-  showGreetingScreen?: boolean;
   isGuest?: boolean;
   onGuestLimitReached?: () => void;
   isMusicPlaying: boolean;
   onToggleMusic: () => void;
 }
 
-function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, currentEpisodeId, currentParagraphIndex, showGreetingScreen = false, isGuest = false, onGuestLimitReached, isMusicPlaying, onToggleMusic }: NovelReaderProps) {
+function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, currentEpisodeId, currentParagraphIndex, isGuest = false, onGuestLimitReached, isMusicPlaying, onToggleMusic }: NovelReaderProps) {
   const currentEpisode = novel.episodes.find(ep => ep.id === currentEpisodeId);
   const currentParagraph = currentEpisode?.paragraphs[currentParagraphIndex];
   const previousParagraph = currentParagraphIndex > 0 ? currentEpisode?.paragraphs[currentParagraphIndex - 1] : undefined;
@@ -132,12 +130,10 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
     );
   }
 
-  const showGreeting = showGreetingScreen && novel.homePage?.greeting;
-
   return (
     <div 
-      className={`min-h-screen flex ${showGreeting ? 'items-center justify-center px-2 md:px-4 md:pr-32 md:pl-8' : ''} ${showGreeting ? '' : 'cursor-pointer'} relative bg-background`}
-      onClick={showGreeting ? undefined : handleClick}
+      className="min-h-screen flex cursor-pointer relative bg-background"
+      onClick={handleClick}
       style={{
         fontFamily: settings.fontFamily === 'merriweather' ? '"Merriweather", serif' :
                     settings.fontFamily === 'montserrat' ? '"Montserrat", sans-serif' :
@@ -170,7 +166,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
         goToPreviousSubParagraph={goToPreviousSubParagraph}
       />
 
-      {!showGreeting && currentEpisode.backgroundMusic && (
+      {currentEpisode.backgroundMusic && (
         <MusicPlayer 
           audioSrc={currentEpisode.backgroundMusic} 
           volume={settings.musicVolume}
@@ -179,8 +175,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
         />
       )}
 
-      {!showGreeting && (
-        <NovelReaderBackgroundNew
+      <NovelReaderBackgroundNew
           backgroundImage={backgroundImage}
           previousBackgroundImage={previousBackgroundImage}
           newImageReady={newImageReady}
@@ -208,11 +203,6 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
           handleRemoveBookmark={handleRemoveBookmark}
           previousParagraph={previousParagraph}
         />
-      )}
-
-      {showGreeting && (
-        <NovelReaderGreeting novel={novel} />
-      )}
     </div>
   );
 }

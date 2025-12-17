@@ -30,8 +30,6 @@ function Index() {
     setSelectedEpisodeForParagraphs,
     isAdmin,
     setIsAdmin,
-    showGreetingScreen,
-    setShowGreetingScreen,
     showAuthPrompt,
     setShowAuthPrompt,
     authPromptDismissed,
@@ -253,7 +251,6 @@ function Index() {
           onProfileUpdate={handleProfileUpdate}
           currentEpisodeId={profile.currentEpisodeId}
           currentParagraphIndex={profile.currentParagraphIndex}
-          showGreetingScreen={showGreetingScreen}
           isGuest={authState.isGuest}
           onGuestLimitReached={() => setShowAuthPrompt(true)}
           isMusicPlaying={isMusicPlaying}
@@ -276,10 +273,6 @@ function Index() {
         )}
         onAddBookmark={handleAddBookmark}
         onRemoveBookmark={handleRemoveBookmark}
-        onGoToGreeting={() => {
-          setShowGreetingScreen(true);
-        }}
-        showGreeting={showGreetingScreen}
         onLogout={handleLogout}
         username={authState.username || undefined}
         isGuest={authState.isGuest}
