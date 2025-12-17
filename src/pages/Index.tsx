@@ -282,7 +282,7 @@ function Index() {
         <Button
           variant="ghost"
           size="icon"
-          className="fixed top-4 left-4 z-50 bg-card/50 backdrop-blur-sm hover:bg-card/80 text-white"
+          className="fixed top-4 left-4 z-[100] bg-card/90 backdrop-blur-md hover:bg-card shadow-lg text-white border border-border/50"
           onClick={() => setShowSidebar(true)}
           title="Открыть список эпизодов"
         >
