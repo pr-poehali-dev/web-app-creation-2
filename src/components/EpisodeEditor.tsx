@@ -331,7 +331,8 @@ function EpisodeEditor({ episode, novel, onUpdate, onNovelUpdate }: EpisodeEdito
               </Button>
             )}
           </div>
-        ))}
+        );
+        })}
       </div>
 
       {episode.paragraphs.length === 0 && (
