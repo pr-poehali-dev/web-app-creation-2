@@ -279,21 +279,24 @@ export default function MergedParagraphsLayout({ layout, children, aspectRatios 
 
   const isFlexLayout = ['single', 'horizontal-2', 'horizontal-3', 'horizontal-4', 'vertical-2', 'vertical-3', 'vertical-4', 'sandwich', 'filmstrip'].includes(layout);
 
+  const isVerticalLayout = ['vertical-2', 'vertical-3', 'vertical-4'].includes(layout);
+
   return (
-    <div className={`w-full h-full ${getLayoutClasses()}`}>
+    <div className={`w-full h-full ${isVerticalLayout ? 'max-w-full' : ''} ${getLayoutClasses()}`}>
       {children.map((child, index) => {
         const aspectRatio = aspectRatios?.[index] || 1;
         
         return (
           <div 
             key={index} 
-            className={`${!isFlexLayout ? getItemClasses(index) : ''} overflow-hidden flex items-center justify-center`}
+            className={`${!isFlexLayout ? getItemClasses(index) : ''} ${isVerticalLayout ? 'max-w-full' : ''} overflow-hidden flex items-center justify-center`}
             style={isFlexLayout ? {
               aspectRatio: aspectRatio.toString(),
               flex: '1 1 0',
               minWidth: 0,
               minHeight: 0,
-              maxHeight: '100%'
+              maxHeight: '100%',
+              maxWidth: isVerticalLayout ? '100%' : undefined
             } : undefined}
           >
             <div 
