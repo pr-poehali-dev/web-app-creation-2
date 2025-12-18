@@ -216,7 +216,7 @@ function InteractiveText({ text, className = '' }: InteractiveTextProps) {
       {/* Dialog для мобильных */}
       {mobileHint && (
         <Dialog open={true} onOpenChange={(open) => { if (!open) setMobileHint(null); }}>
-          <DialogContent onClick={(e) => e.stopPropagation()} className="max-w-[90vw]">
+          <DialogContent onClick={(e) => e.stopPropagation()} className="max-w-[90vw] bg-[#151d28] border-primary/20">
             <DialogHeader>
               <DialogTitle className="text-left text-white">{mobileHint.content}</DialogTitle>
               <DialogDescription className="text-white text-left">
