@@ -145,7 +145,7 @@ function EpisodeMenu({ novel, profile, onEpisodeSelect, onBack }: EpisodeMenuPro
                         </h3>
                         <div className="flex gap-2">
                           {isCurrent && (
-                            <Badge variant="default">
+                            <Badge variant="default" className="mt-1">
                               Текущий
                             </Badge>
                           )}
@@ -191,7 +191,7 @@ function EpisodeMenu({ novel, profile, onEpisodeSelect, onBack }: EpisodeMenuPro
                       )}
 
                       {expandedEpisode === episode.id && (
-                        <div className="mt-4 pt-4 border-t border-border space-y-2">
+                        <div className="mt-4 pt-4 border-t border-border space-y-2 max-w-[calc(100vw-3rem)] md:max-w-full">
                           <div className="flex items-center justify-between mb-2">
                             <p className="text-sm font-medium text-foreground">Перейти к параграфу:</p>
                             <Button 

@@ -40,16 +40,16 @@ function HomePage({ homePage, novel, onStart }: HomePageProps) {
           <circle cx="50" cy="50" r="40" fill="none" stroke="currentColor" strokeWidth="3" />
         </svg>
         
-        <div className="min-h-screen flex flex-col items-center justify-end pb-16 md:justify-center p-8 md:p-16 relative z-10">
+        <div className="min-h-screen flex flex-col items-center justify-end pb-24 md:justify-center p-8 md:p-16 relative z-10">
           {/* Приветствие */}
-          <div className="max-w-2xl w-full mb-12">
+          <div className="max-w-2xl w-full mb-16">
             <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight drop-shadow-lg">
               {homePage.greeting}
             </h1>
             <Button 
               size="lg"
               onClick={onStart}
-              className="w-full md:w-auto text-lg px-8 py-6 shadow-2xl"
+              className="w-full md:w-auto text-lg px-8 py-6 shadow-2xl bg-[#151d28] text-white hover:bg-[#1a2430]"
             >
               Начать чтение
             </Button>
