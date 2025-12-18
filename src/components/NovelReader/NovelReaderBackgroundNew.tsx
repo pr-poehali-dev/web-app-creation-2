@@ -157,13 +157,13 @@ function NovelReaderBackgroundNew({
         )}
         
         {/* Плавный градиент-переход */}
-        <div className="absolute bottom-0 left-0 right-0 h-80 lg:h-auto lg:top-0 lg:right-0 lg:left-auto lg:bottom-auto lg:w-64 pointer-events-none z-20">
+        <div className="absolute bottom-0 left-0 right-0 h-80 lg:h-full lg:top-0 lg:right-0 lg:left-auto lg:bottom-auto lg:w-64 pointer-events-none z-20">
           <div className="w-full h-full bg-gradient-to-b lg:bg-gradient-to-r from-transparent via-[#151d28]/50 to-[#151d28]" />
         </div>
       </div>
 
       {/* Нижняя/Правая часть - контент */}
-      <div className="min-h-[280px] lg:h-screen w-full lg:w-1/2 relative overflow-hidden flex items-center justify-center" style={{ backgroundColor: '#151d28' }}>
+      <div className="min-h-[280px] lg:h-screen w-full lg:w-1/2 relative overflow-hidden" style={{ backgroundColor: '#151d28' }}>
         
         <Button
           variant="ghost"
@@ -175,7 +175,7 @@ function NovelReaderBackgroundNew({
             }
             setIsContentHidden(!isContentHidden);
           }}
-          className="hidden lg:block absolute top-[5.5rem] right-4 z-30 h-10 w-10 p-0 bg-card/80 backdrop-blur-sm hover:bg-card/90 border border-border/50 rounded-full"
+          className="lg:block absolute top-2 md:top-4 lg:top-[5.5rem] right-4 z-30 h-10 w-10 p-0 bg-card/80 backdrop-blur-sm hover:bg-card/90 border border-border/50 rounded-full"
           title={isContentHidden ? 'Показать текст' : 'Скрыть текст'}
         >
           <Icon name={isContentHidden ? 'Eye' : 'EyeOff'} size={20} className="text-white" />
@@ -183,7 +183,7 @@ function NovelReaderBackgroundNew({
         
         {!isContentHidden && currentParagraph.type !== 'background' && !isBackgroundChanging && newImageReady && (
           <>
-            <div className="absolute lg:relative bottom-12 md:bottom-8 lg:bottom-0 left-0 right-0 z-10 px-5 md:px-8">
+            <div className="absolute bottom-12 md:bottom-8 lg:top-1/2 lg:-translate-y-1/2 left-0 right-0 z-10 px-5 md:px-8">
             <div className="w-full max-w-3xl mx-auto flex flex-col items-center justify-center">
               {currentParagraph.type !== 'choice' && (
                 <div className="flex justify-between items-center mb-2 gap-2">
