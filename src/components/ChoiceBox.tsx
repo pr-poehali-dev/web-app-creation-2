@@ -21,7 +21,7 @@ interface ChoiceBoxProps {
 
 function ChoiceBox({ question, options, novel, onChoice }: ChoiceBoxProps) {
   return (
-    <Card className="bg-card/95 backdrop-blur-sm border-0 shadow-2xl animate-scale-in rounded-xl md:rounded-2xl">
+    <Card className="bg-card/95 backdrop-blur-sm border-0 shadow-2xl animate-scale-in rounded-xl md:rounded-2xl w-full lg:w-[48rem]">
       <CardContent className="p-3 md:p-6 lg:p-10">
         <h3 className="text-base md:text-lg lg:text-2xl font-bold text-center mb-4 md:mb-6 lg:mb-8 text-foreground">
           {question}
