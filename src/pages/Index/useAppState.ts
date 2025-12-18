@@ -16,6 +16,7 @@ export function useAppState() {
   const [showAuthPrompt, setShowAuthPrompt] = useState(false);
   const [authPromptDismissed, setAuthPromptDismissed] = useState(false);
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
+  const [isContentHidden, setIsContentHidden] = useState(false);
 
   useEffect(() => {
     const savedSettings = localStorage.getItem('userSettings');
@@ -76,6 +77,8 @@ export function useAppState() {
     authPromptDismissed,
     setAuthPromptDismissed,
     isMusicPlaying,
-    setIsMusicPlaying
+    setIsMusicPlaying,
+    isContentHidden,
+    setIsContentHidden
   };
 }

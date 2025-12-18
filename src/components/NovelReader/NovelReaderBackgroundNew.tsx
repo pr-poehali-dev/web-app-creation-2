@@ -34,6 +34,8 @@ interface NovelReaderBackgroundNewProps {
   setCurrentSubParagraphIndex: (index: number) => void;
   goToNextSubParagraph: () => boolean;
   goToPreviousSubParagraph: () => boolean;
+  isContentHidden?: boolean;
+  onToggleContentVisibility?: () => void;
 }
 
 function NovelReaderBackgroundNew({
@@ -59,10 +61,14 @@ function NovelReaderBackgroundNew({
   currentSubParagraphIndex,
   setCurrentSubParagraphIndex,
   goToNextSubParagraph,
-  goToPreviousSubParagraph
+  goToPreviousSubParagraph,
+  isContentHidden: externalIsContentHidden,
+  onToggleContentVisibility
 }: NovelReaderBackgroundNewProps) {
   const [isContentHidden, setIsContentHidden] = useState(false);
   const [wasHidden, setWasHidden] = useState(false);
+  
+  const actualIsContentHidden = externalIsContentHidden !== undefined ? externalIsContentHidden : isContentHidden;
   const [showComicFrames, setShowComicFrames] = useState(false);
   
   useEffect(() => {
@@ -143,7 +149,7 @@ function NovelReaderBackgroundNew({
         )}
         
         {/* Comic frames поверх фона */}
-        {!isContentHidden && hasComicFrames && showComicFrames && (
+        {!actualIsContentHidden && hasComicFrames && showComicFrames && (
           <div className="absolute inset-0 flex items-center justify-center p-4 md:p-8 z-10">
             <div className="w-full h-full max-w-4xl">
               <ComicFrameReader
@@ -170,18 +176,22 @@ function NovelReaderBackgroundNew({
           size="sm"
           onClick={(e) => {
             e.stopPropagation();
-            if (!isContentHidden) {
+            if (!actualIsContentHidden) {
               setWasHidden(true);
             }
-            setIsContentHidden(!isContentHidden);
+            if (onToggleContentVisibility) {
+              onToggleContentVisibility();
+            } else {
+              setIsContentHidden(!isContentHidden);
+            }
           }}
-          className="lg:block absolute top-2 md:top-4 lg:top-[5.5rem] right-4 z-30 h-10 w-10 p-0 bg-card/80 backdrop-blur-sm hover:bg-card/90 border border-border/50 rounded-full"
-          title={isContentHidden ? 'Показать текст' : 'Скрыть текст'}
+          className="md:hidden absolute top-2 md:top-4 right-4 z-30 h-10 w-10 p-0 bg-card/80 backdrop-blur-sm hover:bg-card/90 border border-border/50 rounded-full"
+          title={actualIsContentHidden ? 'Показать текст' : 'Скрыть текст'}
         >
-          <Icon name={isContentHidden ? 'Eye' : 'EyeOff'} size={20} className="text-white" />
+          <Icon name={actualIsContentHidden ? 'Eye' : 'EyeOff'} size={20} className="text-white" />
         </Button>
         
-        {!isContentHidden && currentParagraph.type !== 'background' && !isBackgroundChanging && newImageReady && (
+        {!actualIsContentHidden && currentParagraph.type !== 'background' && !isBackgroundChanging && newImageReady && (
           <>
             <div className="absolute bottom-12 md:bottom-8 lg:top-1/2 lg:-translate-y-1/2 left-0 right-0 z-10 px-5 md:px-8">
             <div className="w-full max-w-3xl mx-auto flex flex-col items-center justify-center">

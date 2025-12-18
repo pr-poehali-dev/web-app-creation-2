@@ -35,7 +35,9 @@ function Index() {
     authPromptDismissed,
     setAuthPromptDismissed,
     isMusicPlaying,
-    setIsMusicPlaying
+    setIsMusicPlaying,
+    isContentHidden,
+    setIsContentHidden
   } = useAppState();
 
   const { isLoading, setNovelForSaving } = useNovelDatabase(setNovel, isAdmin);
@@ -255,6 +257,8 @@ function Index() {
           onGuestLimitReached={() => setShowAuthPrompt(true)}
           isMusicPlaying={isMusicPlaying}
           onToggleMusic={() => setIsMusicPlaying(!isMusicPlaying)}
+          isContentHidden={isContentHidden}
+          onToggleContentVisibility={() => setIsContentHidden(!isContentHidden)}
         />
       </div>
       
@@ -280,6 +284,8 @@ function Index() {
         isMusicPlaying={isMusicPlaying}
         onToggleMusic={() => setIsMusicPlaying(!isMusicPlaying)}
         hasMusic={!!novel.episodes.find(ep => ep.id === profile.currentEpisodeId)?.backgroundMusic}
+        isContentHidden={isContentHidden}
+        onToggleContentVisibility={() => setIsContentHidden(!isContentHidden)}
       />
 
       <ParagraphsDialog

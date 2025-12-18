@@ -20,9 +20,11 @@ interface NovelReaderProps {
   onGuestLimitReached?: () => void;
   isMusicPlaying: boolean;
   onToggleMusic: () => void;
+  isContentHidden?: boolean;
+  onToggleContentVisibility?: () => void;
 }
 
-function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, currentEpisodeId, currentParagraphIndex, isGuest = false, onGuestLimitReached, isMusicPlaying, onToggleMusic }: NovelReaderProps) {
+function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, currentEpisodeId, currentParagraphIndex, isGuest = false, onGuestLimitReached, isMusicPlaying, onToggleMusic, isContentHidden, onToggleContentVisibility }: NovelReaderProps) {
   const currentEpisode = novel.episodes.find(ep => ep.id === currentEpisodeId);
   const currentParagraph = currentEpisode?.paragraphs[currentParagraphIndex];
   const previousParagraph = currentParagraphIndex > 0 ? currentEpisode?.paragraphs[currentParagraphIndex - 1] : undefined;
@@ -202,6 +204,8 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
           handleAddBookmark={handleAddBookmark}
           handleRemoveBookmark={handleRemoveBookmark}
           previousParagraph={previousParagraph}
+          isContentHidden={isContentHidden}
+          onToggleContentVisibility={onToggleContentVisibility}
         />
     </div>
   );

@@ -24,6 +24,8 @@ interface NavigationMenuProps {
   isMusicPlaying?: boolean;
   onToggleMusic?: () => void;
   hasMusic?: boolean;
+  isContentHidden?: boolean;
+  onToggleContentVisibility?: () => void;
 }
 
 function NavigationMenu({
@@ -43,7 +45,9 @@ function NavigationMenu({
   onShowAuthPrompt,
   isMusicPlaying,
   onToggleMusic,
-  hasMusic
+  hasMusic,
+  isContentHidden,
+  onToggleContentVisibility
 }: NavigationMenuProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -60,40 +64,8 @@ function NavigationMenu({
         <Icon name={isMenuOpen ? "X" : "Menu"} size={20} />
       </Button>
 
-      {/* Вторая строка: закладка и музыка */}
-      <div className="flex gap-2">
-        {hasMusic && onToggleMusic && (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="bg-card/50 backdrop-blur-sm hover:bg-card/80 text-white"
-            onClick={(e) => {
-              e.stopPropagation();
-              onToggleMusic();
-            }}
-            title={isMusicPlaying ? "Выключить музыку" : "Включить музыку"}
-          >
-            {isMusicPlaying ? (
-              <Icon name="Music" size={20} className="animate-pulse" />
-            ) : (
-              <Icon name="Music" size={20} />
-            )}
-          </Button>
-        )}
-        
-        {!isGuest && episodeId && paragraphIndex !== undefined && onAddBookmark && onRemoveBookmark && (
-          <BookmarkButton
-            episodeId={episodeId}
-            paragraphIndex={paragraphIndex}
-            existingBookmark={existingBookmark}
-            onAdd={onAddBookmark}
-            onRemove={onRemoveBookmark}
-          />
-        )}
-      </div>
-
-      {/* Раскрывающееся меню */}
-      <div className={`flex gap-2 flex-wrap justify-end ${isMenuOpen ? 'flex' : 'hidden md:flex'}`}>
+      {/* Первая строка: основные кнопки навигации (скрываются на мобильной) */}
+      <div className={`gap-2 ${isMenuOpen ? 'flex' : 'hidden md:flex'}`}>
         <Button
           variant="ghost"
           size="icon"
@@ -188,6 +160,54 @@ function NavigationMenu({
           </Button>
         )}
       </div>
+
+      {/* Вторая строка: закладка и музыка */}
+      <div className="hidden md:flex gap-2">
+        {!isGuest && episodeId && paragraphIndex !== undefined && onAddBookmark && onRemoveBookmark && (
+          <BookmarkButton
+            episodeId={episodeId}
+            paragraphIndex={paragraphIndex}
+            existingBookmark={existingBookmark}
+            onAdd={onAddBookmark}
+            onRemove={onRemoveBookmark}
+          />
+        )}
+        
+        {hasMusic && onToggleMusic && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="bg-card/50 backdrop-blur-sm hover:bg-card/80 text-white"
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleMusic();
+            }}
+            title={isMusicPlaying ? "Выключить музыку" : "Включить музыку"}
+          >
+            {isMusicPlaying ? (
+              <Icon name="Music" size={20} className="animate-pulse" />
+            ) : (
+              <Icon name="Music" size={20} />
+            )}
+          </Button>
+        )}
+      </div>
+
+      {/* Третья строка: кнопка с глазом */}
+      {onToggleContentVisibility && (
+        <Button
+          variant="ghost"
+          size="icon"
+          className="hidden md:block bg-card/80 backdrop-blur-sm hover:bg-card/90 text-white border border-border/50"
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleContentVisibility();
+          }}
+          title={isContentHidden ? 'Показать текст' : 'Скрыть текст'}
+        >
+          <Icon name={isContentHidden ? 'Eye' : 'EyeOff'} size={20} />
+        </Button>
+      )}
     </div>
   );
 }
