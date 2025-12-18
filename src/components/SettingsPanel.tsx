@@ -48,10 +48,10 @@ function SettingsPanel({ settings, novel, onUpdate, onBack }: SettingsPanelProps
   };
 
   return (
-    <div className="min-h-screen dark flex">
+    <div className="fixed inset-0 dark flex overflow-hidden">
       {/* Левая часть - фоновое изображение */}
       <div 
-        className="hidden lg:block lg:w-1/2 relative overflow-hidden"
+        className="hidden lg:block lg:w-1/2 h-screen relative overflow-hidden flex-shrink-0"
         style={{
           backgroundImage: novel.backgroundImages?.settings 
             ? `url(${novel.backgroundImages.settings})` 
@@ -69,7 +69,7 @@ function SettingsPanel({ settings, novel, onUpdate, onBack }: SettingsPanelProps
       </div>
 
       {/* Правая часть - контент настроек */}
-      <div className="w-full lg:w-1/2 p-4 overflow-y-auto scrollbar-hide dark relative" style={{ backgroundColor: '#151d28' }}>
+      <div className="w-full lg:w-1/2 h-screen p-4 overflow-y-auto scrollbar-hide dark relative" style={{ backgroundColor: '#151d28' }}>
       {/* Декоративные элементы */}
       <div className="absolute top-24 right-16 w-32 h-32 bg-primary/20 blur-3xl" />
       <svg className="absolute top-10 left-16 w-18 h-18 text-primary/30" viewBox="0 0 100 100">
