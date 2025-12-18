@@ -49,17 +49,50 @@ function NavigationMenu({
 
   return (
     <div className="fixed top-4 right-4 flex flex-col gap-2 z-50 items-end">
-      {/* Кнопка-гамбургер (только на мобильной) */}
-      <Button
-        variant="ghost"
-        size="icon"
-        className="md:hidden bg-card/50 backdrop-blur-sm hover:bg-card/80 text-white"
-        onClick={() => setIsMenuOpen(!isMenuOpen)}
-        title="Меню"
-      >
-        <Icon name={isMenuOpen ? "X" : "Menu"} size={20} />
-      </Button>
+      {/* Верхний ряд: всегда видимые кнопки */}
+      <div className="flex gap-2">
+        {/* Кнопка-гамбургер (только на мобильной) */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="md:hidden bg-card/50 backdrop-blur-sm hover:bg-card/80 text-white"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          title="Меню"
+        >
+          <Icon name={isMenuOpen ? "X" : "Menu"} size={20} />
+        </Button>
 
+        {hasMusic && onToggleMusic && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="bg-card/50 backdrop-blur-sm hover:bg-card/80 text-white"
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleMusic();
+            }}
+            title={isMusicPlaying ? "Выключить музыку" : "Включить музыку"}
+          >
+            {isMusicPlaying ? (
+              <Icon name="Music" size={20} className="animate-pulse" />
+            ) : (
+              <Icon name="Music" size={20} />
+            )}
+          </Button>
+        )}
+        
+        {!isGuest && episodeId && paragraphIndex !== undefined && onAddBookmark && onRemoveBookmark && (
+          <BookmarkButton
+            episodeId={episodeId}
+            paragraphIndex={paragraphIndex}
+            existingBookmark={existingBookmark}
+            onAdd={onAddBookmark}
+            onRemove={onRemoveBookmark}
+          />
+        )}
+      </div>
+
+      {/* Раскрывающееся меню */}
       <div className={`flex gap-2 flex-wrap justify-end ${isMenuOpen ? 'flex' : 'hidden md:flex'}`}>
         <Button
           variant="ghost"
@@ -154,36 +187,6 @@ function NavigationMenu({
             <Icon name="Settings2" size={20} />
           </Button>
         )}
-      </div>
-
-      <div className="flex gap-2">
-          {hasMusic && onToggleMusic && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="bg-card/50 backdrop-blur-sm hover:bg-card/80 text-white"
-              onClick={(e) => {
-                e.stopPropagation();
-                onToggleMusic();
-              }}
-              title={isMusicPlaying ? "Выключить музыку" : "Включить музыку"}
-            >
-              {isMusicPlaying ? (
-                <Icon name="Music" size={20} className="animate-pulse" />
-              ) : (
-                <Icon name="Music" size={20} />
-              )}
-            </Button>
-          )}
-          {!isGuest && episodeId && paragraphIndex !== undefined && onAddBookmark && onRemoveBookmark && (
-            <BookmarkButton
-              episodeId={episodeId}
-              paragraphIndex={paragraphIndex}
-              existingBookmark={existingBookmark}
-              onAdd={onAddBookmark}
-              onRemove={onRemoveBookmark}
-            />
-          )}
       </div>
     </div>
   );
