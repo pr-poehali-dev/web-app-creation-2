@@ -193,7 +193,7 @@ function Index() {
           <Button
             variant="ghost"
             size="icon"
-            className="bg-card/90 backdrop-blur-md hover:bg-card shadow-lg border border-border/50"
+            className="bg-[#151d28] text-white backdrop-blur-md hover:bg-[#1a2430] shadow-lg border border-border/50"
             onClick={() => setActiveView('episodes')}
             title="Список эпизодов"
           >
@@ -205,7 +205,7 @@ function Index() {
           <Button
             variant="ghost"
             size="icon"
-            className="bg-card/50 backdrop-blur-sm hover:bg-card/80"
+            className="bg-[#151d28] text-white backdrop-blur-sm hover:bg-[#1a2430]"
             onClick={() => setActiveView('settings')}
           >
             <Icon name="Settings" size={20} />
@@ -215,7 +215,7 @@ function Index() {
             <Button
               variant="ghost"
               size="icon"
-              className="bg-card/50 backdrop-blur-sm hover:bg-card/80"
+              className="bg-[#151d28] text-white backdrop-blur-sm hover:bg-[#1a2430]"
               onClick={() => {
                 setActiveView('admin');
                 setIsAdmin(true);

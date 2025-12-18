@@ -40,7 +40,7 @@ function HomePage({ homePage, novel, onStart }: HomePageProps) {
           <circle cx="50" cy="50" r="40" fill="none" stroke="currentColor" strokeWidth="3" />
         </svg>
         
-        <div className="min-h-screen flex flex-col items-center justify-end pb-24 md:justify-center p-8 md:p-16 relative z-10">
+        <div className="min-h-screen flex flex-col items-center justify-center pt-20 pb-32 md:pb-16 p-8 md:p-16 relative z-10">
           {/* Приветствие */}
           <div className="max-w-2xl w-full mb-16">
             <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight drop-shadow-lg">
