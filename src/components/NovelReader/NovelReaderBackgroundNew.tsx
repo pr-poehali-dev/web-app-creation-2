@@ -159,8 +159,14 @@ function NovelReaderBackgroundNew({
         )}
         
         {/* Comic frames поверх фона */}
-        {!actualIsContentHidden && hasComicFrames && showComicFrames && (
-          <div className="absolute inset-0 flex items-center justify-center p-4 md:p-8 z-30">
+        {hasComicFrames && showComicFrames && (
+          <div 
+            className="absolute inset-0 flex items-center justify-center p-4 md:p-8 z-30 transition-all duration-300 ease-in-out"
+            style={{ 
+              opacity: actualIsContentHidden ? 0 : 1,
+              pointerEvents: actualIsContentHidden ? 'none' : 'auto'
+            }}
+          >
             <div className="w-full h-full max-w-4xl">
               <ComicFrameReader
                 paragraph={currentParagraph as TextParagraph | DialogueParagraph}
