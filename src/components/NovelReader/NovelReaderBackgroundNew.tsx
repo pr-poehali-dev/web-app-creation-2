@@ -63,11 +63,23 @@ function NovelReaderBackgroundNew({
 }: NovelReaderBackgroundNewProps) {
   const [isContentHidden, setIsContentHidden] = useState(false);
   const [wasHidden, setWasHidden] = useState(false);
+  const [showComicFrames, setShowComicFrames] = useState(false);
   
   useEffect(() => {
     setWasHidden(false);
     setIsContentHidden(false);
+    setShowComicFrames(false);
   }, [paragraphKey]);
+  
+  useEffect(() => {
+    if (newImageReady) {
+      const timer = setTimeout(() => {
+        setShowComicFrames(true);
+      }, 2400);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [newImageReady]);
   
   if (!backgroundImage) return null;
 
@@ -131,7 +143,7 @@ function NovelReaderBackgroundNew({
         )}
         
         {/* Comic frames поверх фона */}
-        {!isContentHidden && hasComicFrames && newImageReady && (
+        {!isContentHidden && hasComicFrames && showComicFrames && (
           <div className="absolute inset-0 flex items-center justify-center p-4 md:p-8 z-10">
             <div className="w-full h-full max-w-4xl">
               <ComicFrameReader

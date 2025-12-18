@@ -199,12 +199,12 @@ function InteractiveText({ text, className = '' }: InteractiveTextProps) {
                   </span>
                 </HoverCardTrigger>
                 <HoverCardContent 
-                  className="w-80 bg-card/95 backdrop-blur-sm border-primary/20"
+                  className="w-80 bg-[#151d28] text-white backdrop-blur-sm border-primary/20"
                   side={tooltipPosition.side}
                   align={tooltipPosition.align}
                   sideOffset={10}
                 >
-                  <p className="text-sm text-foreground">{part.hint}</p>
+                  <p className="text-sm">{part.hint}</p>
                 </HoverCardContent>
               </HoverCard>
             );
