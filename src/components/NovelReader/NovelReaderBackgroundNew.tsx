@@ -201,7 +201,7 @@ function NovelReaderBackgroundNew({
           <Icon name={actualIsContentHidden ? 'Eye' : 'EyeOff'} size={20} className="text-white" />
         </Button>
         
-        {!actualIsContentHidden && currentParagraph.type !== 'background' && !isBackgroundChanging && newImageReady && (
+        {currentParagraph.type !== 'background' && !isBackgroundChanging && newImageReady && (
           <>
             <div className="absolute bottom-12 md:bottom-8 lg:top-1/2 lg:-translate-y-1/2 left-0 right-0 z-10 px-5 md:px-8">
             <div className="w-full max-w-3xl mx-auto flex flex-col items-center justify-center">
