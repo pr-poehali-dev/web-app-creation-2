@@ -134,10 +134,10 @@ export default function ComicFrameReader({ paragraph, currentSubParagraphIndex, 
           return (
             <div 
               key={frame.id} 
-              className={`w-full h-full cursor-pointer min-w-0 ${animClass}`}
+              className={`w-full h-full cursor-pointer min-w-0 ${hasAnimation ? animClass : 'animate-fade-in'}`}
               style={{ 
-                animationDelay: hasAnimation ? `${index * 0.2}s` : undefined,
-                opacity: hasAnimation ? 0 : 1
+                animationDelay: `${index * 0.2}s`,
+                opacity: 0
               }}
               onClick={(e) => {
                 e.stopPropagation();
