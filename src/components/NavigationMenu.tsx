@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
 import BookmarkButton from './BookmarkButton';
@@ -44,14 +45,30 @@ function NavigationMenu({
   onToggleMusic,
   hasMusic
 }: NavigationMenuProps) {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   return (
     <div className="fixed top-4 right-4 flex flex-col gap-2 z-50 items-end">
-      <div className="flex gap-2 flex-wrap justify-end">
+      {/* Кнопка-гамбургер (только на мобильной) */}
+      <Button
+        variant="ghost"
+        size="icon"
+        className="md:hidden bg-card/50 backdrop-blur-sm hover:bg-card/80 text-white"
+        onClick={() => setIsMenuOpen(!isMenuOpen)}
+        title="Меню"
+      >
+        <Icon name={isMenuOpen ? "X" : "Menu"} size={20} />
+      </Button>
+
+      <div className={`flex gap-2 flex-wrap justify-end ${isMenuOpen ? 'flex' : 'hidden md:flex'}`}>
         <Button
           variant="ghost"
           size="icon"
           className="bg-card/50 backdrop-blur-sm hover:bg-card/80 text-white"
-          onClick={() => onSetActiveView('episodes')}
+          onClick={() => {
+            onSetActiveView('episodes');
+            setIsMenuOpen(false);
+          }}
           title="Список эпизодов"
         >
           <Icon name="List" size={20} />
@@ -60,7 +77,10 @@ function NavigationMenu({
           variant="ghost"
           size="icon"
           className="bg-card/50 backdrop-blur-sm hover:bg-card/80 text-white"
-          onClick={() => onSetActiveView('home')}
+          onClick={() => {
+            onSetActiveView('home');
+            setIsMenuOpen(false);
+          }}
           title="На главную"
         >
           <Icon name="Home" size={20} />
@@ -69,7 +89,10 @@ function NavigationMenu({
           <Button
             variant="default"
             className="bg-primary/90 backdrop-blur-sm hover:bg-primary text-white"
-            onClick={onShowAuthPrompt}
+            onClick={() => {
+              onShowAuthPrompt?.();
+              setIsMenuOpen(false);
+            }}
             title="Войти или зарегистрироваться"
           >
             <Icon name="LogIn" size={20} />
@@ -80,7 +103,10 @@ function NavigationMenu({
             <Button
               variant="ghost"
               className="bg-card/50 backdrop-blur-sm hover:bg-card/80 text-white"
-              onClick={() => onSetActiveView('profile')}
+              onClick={() => {
+                onSetActiveView('profile');
+                setIsMenuOpen(false);
+              }}
               title="Профиль"
             >
               <Icon name="User" size={20} />
@@ -91,7 +117,10 @@ function NavigationMenu({
                 variant="ghost"
                 size="icon"
                 className="bg-card/50 backdrop-blur-sm hover:bg-card/80 text-white"
-                onClick={onLogout}
+                onClick={() => {
+                  onLogout();
+                  setIsMenuOpen(false);
+                }}
                 title="Выйти"
               >
                 <Icon name="LogOut" size={20} />
@@ -103,7 +132,10 @@ function NavigationMenu({
           variant="ghost"
           size="icon"
           className="bg-card/50 backdrop-blur-sm hover:bg-card/80 text-white"
-          onClick={() => onSetActiveView('settings')}
+          onClick={() => {
+            onSetActiveView('settings');
+            setIsMenuOpen(false);
+          }}
         >
           <Icon name="Settings" size={20} />
         </Button>
@@ -113,7 +145,10 @@ function NavigationMenu({
             variant="ghost"
             size="icon"
             className="bg-card/50 backdrop-blur-sm hover:bg-card/80 text-white"
-            onClick={onAdminLogin}
+            onClick={() => {
+              onAdminLogin();
+              setIsMenuOpen(false);
+            }}
             title="Админ-панель"
           >
             <Icon name="Settings2" size={20} />
