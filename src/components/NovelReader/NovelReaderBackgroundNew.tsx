@@ -74,8 +74,28 @@ function NovelReaderBackgroundNew({
   useEffect(() => {
     setWasHidden(false);
     setIsContentHidden(false);
-    setShowComicFrames(true);
+    setShowComicFrames(false);
+    
+    const timer = setTimeout(() => {
+      if (!isBackgroundChanging) {
+        setShowComicFrames(true);
+      }
+    }, 100);
+    
+    return () => clearTimeout(timer);
   }, [paragraphKey]);
+  
+  useEffect(() => {
+    if (isBackgroundChanging) {
+      setShowComicFrames(false);
+    } else {
+      const timer = setTimeout(() => {
+        setShowComicFrames(true);
+      }, 100);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [isBackgroundChanging]);
   
   if (!backgroundImage) return null;
 
@@ -103,8 +123,8 @@ function NovelReaderBackgroundNew({
             style={{ 
               backgroundImage: `url(${previousBackgroundImage})`,
               opacity: newImageReady ? 0 : 1,
-              filter: getFilterStyle(newImageReady ? 'blur(8px)' : 'blur(0px)'),
-              transition: 'opacity 1s ease-in-out, filter 1s ease-in-out',
+              filter: getFilterStyle(newImageReady ? 'blur(16px)' : 'blur(0px)'),
+              transition: 'opacity 2.4s ease-in-out, filter 2.4s ease-in-out',
               zIndex: 1
             }}
           />
@@ -115,13 +135,13 @@ function NovelReaderBackgroundNew({
           style={{ 
             backgroundImage: `url("${backgroundImage}")`,
             opacity: previousBackgroundImage && !newImageReady ? 0 : 1,
-            filter: getFilterStyle(previousBackgroundImage && !newImageReady ? 'blur(8px)' : 'blur(0px)'),
-            transition: previousBackgroundImage ? 'opacity 1s ease-in-out, filter 1s ease-in-out' : 'filter 0.6s ease-in-out',
+            filter: getFilterStyle(previousBackgroundImage && !newImageReady ? 'blur(16px)' : 'blur(0px)'),
+            transition: previousBackgroundImage ? 'opacity 2.4s ease-in-out, filter 2.4s ease-in-out' : 'filter 1.2s ease-in-out',
             zIndex: 0
           }}
         />
 
-        <div className={`absolute inset-0 ${isRetrospective ? 'bg-amber-950/30' : 'bg-black/20'}`} style={{ transition: 'background-color 0.6s ease-in-out' }} />
+        <div className={`absolute inset-0 ${isRetrospective ? 'bg-amber-950/30' : 'bg-black/20'}`} style={{ transition: 'background-color 1.2s ease-in-out' }} />
         
         {/* Картинки-параграфы поверх фона */}
         {currentParagraph.type === 'image' && (
@@ -187,7 +207,7 @@ function NovelReaderBackgroundNew({
           <Icon name={actualIsContentHidden ? 'Eye' : 'EyeOff'} size={20} className="text-white" />
         </Button>
         
-        {currentParagraph.type !== 'background' && (
+        {currentParagraph.type !== 'background' && !isBackgroundChanging && newImageReady && (
           <>
             <div className="absolute bottom-12 md:bottom-8 lg:top-1/2 lg:-translate-y-1/2 left-0 right-0 z-10 px-5 md:px-8">
             <div className="w-full max-w-3xl mx-auto flex flex-col items-center justify-center">

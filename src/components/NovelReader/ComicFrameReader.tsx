@@ -16,9 +16,15 @@ export default function ComicFrameReader({ paragraph, currentSubParagraphIndex, 
   const [imageAspectRatios, setImageAspectRatios] = useState<Map<string, number>>(new Map());
   const [showFrames, setShowFrames] = useState(false);
 
-  // Показываем фреймы сразу
+  // Показываем фреймы только после завершения печати текста
   useEffect(() => {
-    setShowFrames(!isTyping);
+    if (!isTyping) {
+      // Небольшая задержка для плавности
+      const timer = setTimeout(() => setShowFrames(true), 100);
+      return () => clearTimeout(timer);
+    } else {
+      setShowFrames(false);
+    }
   }, [isTyping]);
 
   useEffect(() => {
