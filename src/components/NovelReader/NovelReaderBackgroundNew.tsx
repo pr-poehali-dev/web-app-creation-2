@@ -114,9 +114,9 @@ function NovelReaderBackgroundNew({
                          currentParagraph.comicFrames.length > 0;
 
   return (
-    <div className="absolute inset-0 flex flex-col lg:flex-row">
+    <div className="fixed inset-0 flex flex-col lg:flex-row overflow-hidden">
       {/* Верхняя/Левая часть - фоновое изображение */}
-      <div className="h-[calc(100vh-280px)] lg:h-screen lg:w-1/2 relative overflow-hidden lg:fixed lg:top-0 lg:left-0">
+      <div className="h-[calc(100vh-280px)] lg:h-screen lg:w-1/2 relative overflow-hidden flex-shrink-0">
         {previousBackgroundImage && (
           <div 
             className="absolute inset-0 bg-cover bg-center"
@@ -185,7 +185,7 @@ function NovelReaderBackgroundNew({
       </div>
 
       {/* Нижняя/Правая часть - контент */}
-      <div className="min-h-[280px] lg:h-screen w-full lg:w-1/2 lg:ml-[50%] relative overflow-hidden" style={{ backgroundColor: '#151d28' }}>
+      <div className="min-h-[280px] lg:h-screen w-full lg:w-1/2 relative overflow-y-auto" style={{ backgroundColor: '#151d28' }}>
         
         <Button
           variant="ghost"
