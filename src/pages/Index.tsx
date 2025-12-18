@@ -138,6 +138,8 @@ function Index() {
         profile={profile}
         onEpisodeSelect={handleEpisodeSelect}
         onBack={() => setActiveView('reader')}
+        isAdmin={authState.isAdmin}
+        isGuest={authState.isGuest}
       />
     );
   }

@@ -13,9 +13,11 @@ interface EpisodeMenuProps {
   profile: UserProfile;
   onEpisodeSelect: (episodeId: string, paragraphIndex?: number) => void;
   onBack: () => void;
+  isAdmin?: boolean;
+  isGuest?: boolean;
 }
 
-function EpisodeMenu({ novel, profile, onEpisodeSelect, onBack }: EpisodeMenuProps) {
+function EpisodeMenu({ novel, profile, onEpisodeSelect, onBack, isAdmin = false, isGuest = false }: EpisodeMenuProps) {
   const [expandedEpisode, setExpandedEpisode] = useState<string | null>(null);
 
   const getEpisodeProgress = (episodeId: string) => {
@@ -38,9 +40,11 @@ function EpisodeMenu({ novel, profile, onEpisodeSelect, onBack }: EpisodeMenuPro
   };
 
   const isEpisodeUnlocked = (index: number) => {
+    if (isAdmin) return true;
     if (index === 0) return true;
     const episode = novel.episodes[index];
     if (episode.unlockedForAll) return true;
+    if (isGuest) return false;
     const prevEpisode = novel.episodes[index - 1];
     return isEpisodeFullyRead(prevEpisode.id);
   };
