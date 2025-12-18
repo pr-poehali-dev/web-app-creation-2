@@ -198,7 +198,7 @@ function NavigationMenu({
         <Button
           variant="ghost"
           size="icon"
-          className="hidden md:block bg-card/80 backdrop-blur-sm hover:bg-card/90 text-white border border-border/50"
+          className="hidden md:flex items-center justify-center bg-card/80 backdrop-blur-sm hover:bg-card/90 text-white border border-border/50"
           onClick={(e) => {
             e.stopPropagation();
             onToggleContentVisibility();

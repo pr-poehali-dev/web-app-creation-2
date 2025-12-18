@@ -150,7 +150,7 @@ function NovelReaderBackgroundNew({
         
         {/* Comic frames поверх фона */}
         {!actualIsContentHidden && hasComicFrames && showComicFrames && (
-          <div className="absolute inset-0 flex items-center justify-center p-4 md:p-8 z-10">
+          <div className="absolute inset-0 flex items-center justify-center p-4 md:p-8 z-30">
             <div className="w-full h-full max-w-4xl">
               <ComicFrameReader
                 paragraph={currentParagraph as TextParagraph | DialogueParagraph}
@@ -163,7 +163,7 @@ function NovelReaderBackgroundNew({
         )}
         
         {/* Плавный градиент-переход */}
-        <div className="absolute bottom-0 left-0 right-0 h-80 lg:h-full lg:top-0 lg:right-0 lg:left-auto lg:bottom-auto lg:w-64 pointer-events-none z-20">
+        <div className="absolute bottom-0 left-0 right-0 h-80 lg:h-full lg:top-0 lg:right-0 lg:left-auto lg:bottom-auto lg:w-64 pointer-events-none z-10">
           <div className="w-full h-full bg-gradient-to-b lg:bg-gradient-to-r from-transparent via-[#151d28]/50 to-[#151d28]" />
         </div>
       </div>
