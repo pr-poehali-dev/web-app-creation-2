@@ -16,10 +16,6 @@ interface SettingsPanelProps {
 }
 
 function SettingsPanel({ settings, novel, onUpdate, onBack }: SettingsPanelProps) {
-  const handleTextSpeedChange = (value: number[]) => {
-    onUpdate({ ...settings, textSpeed: value[0] });
-  };
-
   const handleMusicVolumeChange = (value: number[]) => {
     onUpdate({ ...settings, musicVolume: value[0] });
   };
@@ -50,9 +46,6 @@ function SettingsPanel({ settings, novel, onUpdate, onBack }: SettingsPanelProps
       });
     }
   };
-
-  const textSpeedLabel = settings.textSpeed < 30 ? 'Медленно' : 
-                         settings.textSpeed < 70 ? 'Средне' : 'Быстро';
 
   return (
     <div className="min-h-screen dark flex">
@@ -104,24 +97,6 @@ function SettingsPanel({ settings, novel, onUpdate, onBack }: SettingsPanelProps
               <CardDescription>Параметры отображения текста</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="space-y-3">
-                <Label className="text-foreground">
-                  Скорость печати: <span className="text-primary font-semibold">{textSpeedLabel}</span>
-                </Label>
-                <Slider
-                  value={[settings.textSpeed]}
-                  onValueChange={handleTextSpeedChange}
-                  max={100}
-                  min={10}
-                  step={10}
-                  className="w-full"
-                />
-                <div className="flex justify-between text-xs text-muted-foreground">
-                  <span>Медленнее</span>
-                  <span>Быстрее</span>
-                </div>
-              </div>
-
               <div className="space-y-3">
                 <Label className="text-foreground">Размер текста</Label>
                 <Select value={settings.textSize} onValueChange={handleTextSizeChange}>
