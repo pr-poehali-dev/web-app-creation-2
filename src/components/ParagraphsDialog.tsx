@@ -26,13 +26,13 @@ function ParagraphsDialog({
 }: ParagraphsDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[80vh] md:ml-16">
+      <DialogContent className="max-w-2xl max-h-[90vh] w-[95vw] sm:w-full md:ml-16 overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle>
             Параграфы: {novel.episodes.find(ep => ep.id === selectedEpisodeId)?.title}
           </DialogTitle>
         </DialogHeader>
-        <div className="overflow-y-auto max-h-[60vh] space-y-2 pr-2">
+        <div className="overflow-y-auto flex-1 space-y-2 pr-2 -mr-2">
           {selectedEpisodeId && novel.episodes.find(ep => ep.id === selectedEpisodeId)?.paragraphs.map((para, pIndex) => {
             const isCurrentPara = profile.currentEpisodeId === selectedEpisodeId && profile.currentParagraphIndex === pIndex;
             const paragraphId = `${selectedEpisodeId}-${pIndex}`;
