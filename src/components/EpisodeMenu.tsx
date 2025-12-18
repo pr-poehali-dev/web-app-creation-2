@@ -210,7 +210,7 @@ function EpisodeMenu({ novel, profile, onEpisodeSelect, onBack }: EpisodeMenuPro
                             <SelectTrigger className="text-foreground">
                               <SelectValue placeholder="Выберите конкретный параграф" />
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectContent className="max-w-[calc(100vw-4rem)]">
                               {episode.paragraphs.map((para, pIndex) => (
                                 <SelectItem key={para.id} value={pIndex.toString()}>
                                   <span className="font-mono text-xs mr-2">#{pIndex + 1}</span>
