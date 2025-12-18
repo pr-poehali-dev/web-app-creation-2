@@ -84,8 +84,10 @@ function NovelReaderBackgroundNew({
       }, 2400);
       
       return () => clearTimeout(timer);
+    } else if (!isBackgroundChanging) {
+      setShowComicFrames(true);
     }
-  }, [newImageReady]);
+  }, [newImageReady, isBackgroundChanging]);
   
   if (!backgroundImage) return null;
 
