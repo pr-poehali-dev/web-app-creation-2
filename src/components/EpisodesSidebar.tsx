@@ -98,7 +98,7 @@ function EpisodesSidebar({ novel, currentEpisodeId, profile, onEpisodeSelect, on
           {novel.episodes.map((episode, index) => {
             const isCurrent = currentEpisodeId === episode.id;
             const status = episodesStatus[index];
-            const isAccessible = status.isAccessible || isCurrent;
+            const isAccessible = isAdmin || status.isAccessible || isCurrent;
             const isLocked = !isAccessible;
             const isFullyRead = status.isFullyRead;
             
