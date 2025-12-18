@@ -49,19 +49,19 @@ function NavigationMenu({
 
   return (
     <div className="fixed top-4 right-4 flex flex-col gap-2 z-50 items-end">
-      {/* Верхний ряд: всегда видимые кнопки */}
-      <div className="flex gap-2">
-        {/* Кнопка-гамбургер (только на мобильной) */}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="md:hidden bg-card/50 backdrop-blur-sm hover:bg-card/80 text-white"
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          title="Меню"
-        >
-          <Icon name={isMenuOpen ? "X" : "Menu"} size={20} />
-        </Button>
+      {/* Кнопка-гамбургер (только на мобильной) */}
+      <Button
+        variant="ghost"
+        size="icon"
+        className="md:hidden bg-card/50 backdrop-blur-sm hover:bg-card/80 text-white"
+        onClick={() => setIsMenuOpen(!isMenuOpen)}
+        title="Меню"
+      >
+        <Icon name={isMenuOpen ? "X" : "Menu"} size={20} />
+      </Button>
 
+      {/* Вторая строка: закладка и музыка */}
+      <div className="flex gap-2">
         {hasMusic && onToggleMusic && (
           <Button
             variant="ghost"
