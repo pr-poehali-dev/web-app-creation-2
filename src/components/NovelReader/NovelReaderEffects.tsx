@@ -86,12 +86,12 @@ function NovelReaderEffects({
         
         setTimeout(() => {
           setNewImageReady(true);
-        }, 400);
+        }, 200);
         
         setTimeout(() => {
           setIsBackgroundChanging(false);
           setPreviousBackgroundImage(null);
-        }, 2800);
+        }, 1200);
       }
     }
     
@@ -126,7 +126,7 @@ function NovelReaderEffects({
     if (currentParagraph?.type === 'background') {
       const timer = setTimeout(() => {
         goToNextParagraph();
-      }, 500);
+      }, 100);
       return () => clearTimeout(timer);
     }
   }, [currentParagraph, goToNextParagraph]);
