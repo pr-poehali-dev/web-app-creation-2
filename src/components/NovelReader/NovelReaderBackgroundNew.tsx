@@ -75,19 +75,27 @@ function NovelReaderBackgroundNew({
     setWasHidden(false);
     setIsContentHidden(false);
     setShowComicFrames(false);
+    
+    const timer = setTimeout(() => {
+      if (!isBackgroundChanging) {
+        setShowComicFrames(true);
+      }
+    }, 100);
+    
+    return () => clearTimeout(timer);
   }, [paragraphKey]);
   
   useEffect(() => {
     if (isBackgroundChanging) {
       setShowComicFrames(false);
-    } else if (newImageReady) {
+    } else {
       const timer = setTimeout(() => {
         setShowComicFrames(true);
       }, 100);
       
       return () => clearTimeout(timer);
     }
-  }, [isBackgroundChanging, newImageReady]);
+  }, [isBackgroundChanging]);
   
   if (!backgroundImage) return null;
 
