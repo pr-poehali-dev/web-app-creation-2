@@ -13,6 +13,7 @@ interface UseNovelNavigationProps {
   setIsTyping: (value: boolean) => void;
   setSkipTyping: (value: boolean) => void;
   isGuest?: boolean;
+  isAdmin?: boolean;
   onGuestLimitReached?: () => void;
 }
 
@@ -27,6 +28,7 @@ export function useNovelNavigation({
   setIsTyping,
   setSkipTyping,
   isGuest = false,
+  isAdmin = false,
   onGuestLimitReached
 }: UseNovelNavigationProps) {
   // Проверка, доступен ли эпизод для гостей
@@ -97,8 +99,8 @@ export function useNovelNavigation({
       }
       
       if (targetEpisodeId) {
-        // Проверяем доступ для гостя
-        if (isGuest && !isEpisodeAccessibleForGuest(targetEpisodeId)) {
+        // Проверяем доступ для гостя (админы могут все)
+        if (!isAdmin && isGuest && !isEpisodeAccessibleForGuest(targetEpisodeId)) {
           if (onGuestLimitReached) {
             onGuestLimitReached();
           }
@@ -194,8 +196,8 @@ export function useNovelNavigation({
     }
 
     if (nextEpisodeId) {
-      // Проверяем доступ для гостя
-      if (isGuest && !isEpisodeAccessibleForGuest(nextEpisodeId)) {
+      // Проверяем доступ для гостя (админы могут все)
+      if (!isAdmin && isGuest && !isEpisodeAccessibleForGuest(nextEpisodeId)) {
         if (onGuestLimitReached) {
           onGuestLimitReached();
         }

@@ -254,6 +254,7 @@ function Index() {
           currentEpisodeId={profile.currentEpisodeId}
           currentParagraphIndex={profile.currentParagraphIndex}
           isGuest={authState.isGuest}
+          isAdmin={authState.isAdmin}
           onGuestLimitReached={() => setShowAuthPrompt(true)}
           isMusicPlaying={isMusicPlaying}
           onToggleMusic={() => setIsMusicPlaying(!isMusicPlaying)}
