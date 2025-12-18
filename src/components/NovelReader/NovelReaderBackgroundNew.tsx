@@ -78,16 +78,16 @@ function NovelReaderBackgroundNew({
   }, [paragraphKey]);
   
   useEffect(() => {
-    if (newImageReady) {
+    if (isBackgroundChanging) {
+      setShowComicFrames(false);
+    } else if (newImageReady) {
       const timer = setTimeout(() => {
         setShowComicFrames(true);
-      }, 2400);
+      }, 100);
       
       return () => clearTimeout(timer);
-    } else if (!isBackgroundChanging) {
-      setShowComicFrames(true);
     }
-  }, [newImageReady, isBackgroundChanging]);
+  }, [isBackgroundChanging, newImageReady]);
   
   if (!backgroundImage) return null;
 
