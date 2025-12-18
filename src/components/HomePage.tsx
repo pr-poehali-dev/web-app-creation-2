@@ -9,10 +9,10 @@ interface HomePageProps {
 
 function HomePage({ homePage, novel, onStart }: HomePageProps) {
   return (
-    <div className="min-h-screen flex">
+    <div className="fixed inset-0 flex overflow-hidden">
       {/* Левая часть - фоновое изображение */}
       <div 
-        className="hidden lg:block lg:w-1/2 relative overflow-hidden"
+        className="hidden lg:block lg:w-1/2 h-screen relative overflow-hidden flex-shrink-0"
         style={{
           backgroundImage: homePage.greetingImage 
             ? `url(${homePage.greetingImage})` 
@@ -28,7 +28,7 @@ function HomePage({ homePage, novel, onStart }: HomePageProps) {
       </div>
 
       {/* Правая часть - приветствие и новости */}
-      <div className="w-full lg:w-1/2 relative overflow-y-auto scrollbar-hide" style={{ backgroundColor: '#151d28' }}>
+      <div className="w-full lg:w-1/2 h-screen relative overflow-y-auto scrollbar-hide" style={{ backgroundColor: '#151d28' }}>
         {/* Декоративные фигуры */}
         <div className="absolute top-20 right-10 w-32 h-32 bg-primary/20 rounded-full blur-3xl" />
         <div className="absolute top-40 right-32 w-24 h-24 rotate-45" style={{ background: 'linear-gradient(135deg, hsl(var(--primary)/0.3), hsl(var(--accent)/0.2))' }} />
