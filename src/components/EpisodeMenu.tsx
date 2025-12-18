@@ -143,30 +143,31 @@ function EpisodeMenu({ novel, profile, onEpisodeSelect, onBack }: EpisodeMenuPro
                         <h3 className="text-xl font-bold text-foreground">
                           {episode.title}
                         </h3>
-                        <div className="flex gap-2">
-                          {isCurrent && (
-                            <Badge variant="default" className="mt-1">
-                              Текущий
-                            </Badge>
-                          )}
-                          {progress === 100 && (
-                            <Badge variant="secondary" className="bg-green-500/20 text-green-500">
-                              Пройден
-                            </Badge>
-                          )}
-                          {!isLocked && (
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setExpandedEpisode(expandedEpisode === episode.id ? null : episode.id);
-                              }}
-                            >
-                              <Icon name={expandedEpisode === episode.id ? "ChevronUp" : "ChevronDown"} size={16} />
-                            </Button>
-                          )}
-                        </div>
+                        {!isLocked && (
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setExpandedEpisode(expandedEpisode === episode.id ? null : episode.id);
+                            }}
+                          >
+                            <Icon name={expandedEpisode === episode.id ? "ChevronUp" : "ChevronDown"} size={16} />
+                          </Button>
+                        )}
+                      </div>
+                      
+                      <div className="flex gap-2 mb-3">
+                        {isCurrent && (
+                          <Badge variant="default">
+                            Текущий
+                          </Badge>
+                        )}
+                        {progress === 100 && (
+                          <Badge variant="secondary" className="bg-green-500/20 text-green-500">
+                            Пройден
+                          </Badge>
+                        )}
                       </div>
 
                       <p className="text-sm text-muted-foreground mb-3">
