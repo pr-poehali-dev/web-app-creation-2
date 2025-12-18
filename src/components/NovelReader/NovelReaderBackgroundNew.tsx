@@ -184,7 +184,7 @@ function NovelReaderBackgroundNew({
         {!isContentHidden && currentParagraph.type !== 'background' && !isBackgroundChanging && newImageReady && (
           <>
             <div className="absolute bottom-12 md:bottom-8 lg:top-1/2 lg:-translate-y-1/2 left-0 right-0 z-10 px-5 md:px-8">
-            <div className="w-full lg:w-[48rem] mx-auto flex flex-col items-center justify-center">
+            <div className="w-full max-w-3xl mx-auto flex flex-col items-center justify-center">
               {currentParagraph.type !== 'choice' && (
                 <div className="flex justify-between items-center mb-2 gap-2">
                   <Button
@@ -241,7 +241,7 @@ function NovelReaderBackgroundNew({
               {(currentParagraph.type === 'text' || currentParagraph.type === 'dialogue') && 
                currentParagraph.subParagraphs && 
                currentParagraph.subParagraphs.length > 0 ? (
-                <div className="bg-card/90 backdrop-blur-sm rounded-2xl shadow-2xl border border-border p-6 md:p-8 w-full lg:w-[48rem]">
+                <div className="bg-card/90 backdrop-blur-sm rounded-2xl shadow-2xl border border-border p-6 md:p-8 w-full">
                   <div className={`leading-relaxed w-full text-foreground ${
                     settings.textSize === 'small' ? 'text-base md:text-lg' :
                     settings.textSize === 'large' ? 'text-xl md:text-2xl' :
