@@ -78,7 +78,7 @@ function UserProfilePanel({ profile, novel, onUpdate, onBack, onNavigateTo, user
       </div>
 
       {/* Правая часть - контент профиля */}
-      <div className="w-full lg:w-1/2 p-4 overflow-y-auto dark relative" style={{ backgroundColor: '#151d28' }}>
+      <div className="w-full lg:w-1/2 p-4 overflow-y-auto scrollbar-hide dark relative" style={{ backgroundColor: '#151d28' }}>
       {/* Декоративные элементы */}
       <div className="absolute top-16 left-10 w-28 h-28 bg-primary/15 blur-2xl" />
       <svg className="absolute top-40 right-16 w-20 h-20 text-primary/25" viewBox="0 0 100 100">

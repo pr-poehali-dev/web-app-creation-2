@@ -80,7 +80,7 @@ function EpisodeMenu({ novel, profile, onEpisodeSelect, onBack }: EpisodeMenuPro
       </div>
 
       {/* Правая часть - список эпизодов */}
-      <div className="w-full lg:w-1/2 p-6 lg:p-12 overflow-y-auto relative" style={{ backgroundColor: '#151d28' }}>
+      <div className="w-full lg:w-1/2 p-6 lg:p-12 overflow-y-auto scrollbar-hide relative" style={{ backgroundColor: '#151d28' }}>
         {/* Декоративные элементы */}
         <div className="absolute top-10 right-20 w-24 h-24 bg-primary/20 rounded-full blur-2xl" />
         <svg className="absolute top-32 left-10 w-16 h-16 text-accent/20" viewBox="0 0 100 100">
