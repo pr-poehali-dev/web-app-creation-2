@@ -161,7 +161,7 @@ function NavigationMenu({
         )}
       </div>
 
-      {/* Вторая строка: закладка и музыка */}
+      {/* Вторая строка: закладка и музыка (только десктоп) */}
       <div className="hidden md:flex gap-2">
         {!isGuest && episodeId && paragraphIndex !== undefined && onAddBookmark && onRemoveBookmark && (
           <BookmarkButton
@@ -181,6 +181,39 @@ function NavigationMenu({
             onClick={(e) => {
               e.stopPropagation();
               onToggleMusic();
+            }}
+            title={isMusicPlaying ? "Выключить музыку" : "Включить музыку"}
+          >
+            {isMusicPlaying ? (
+              <Icon name="Music" size={20} className="animate-pulse" />
+            ) : (
+              <Icon name="Music" size={20} />
+            )}
+          </Button>
+        )}
+      </div>
+      
+      {/* Мобильная версия: закладка и музыка в гамбургере */}
+      <div className={`md:hidden gap-2 ${isMenuOpen ? 'flex' : 'hidden'}`}>
+        {!isGuest && episodeId && paragraphIndex !== undefined && onAddBookmark && onRemoveBookmark && (
+          <BookmarkButton
+            episodeId={episodeId}
+            paragraphIndex={paragraphIndex}
+            existingBookmark={existingBookmark}
+            onAdd={onAddBookmark}
+            onRemove={onRemoveBookmark}
+          />
+        )}
+        
+        {hasMusic && onToggleMusic && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="bg-card/50 backdrop-blur-sm hover:bg-card/80 text-white"
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleMusic();
+              setIsMenuOpen(false);
             }}
             title={isMusicPlaying ? "Выключить музыку" : "Включить музыку"}
           >
