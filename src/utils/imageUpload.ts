@@ -1,12 +1,51 @@
-// Convert file to base64
-const fileToBase64 = (file: File): Promise<string> => {
+// Compress and convert image to base64
+const compressImage = (file: File, maxSizeMB: number = 5): Promise<string> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onload = () => {
-      const result = reader.result as string;
-      // Убираем префикс data:image/...;base64,
-      const base64 = result.split(',')[1];
-      resolve(base64);
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+        
+        // Рассчитываем размер для уменьшения
+        const maxDimension = 2048; // максимальная сторона
+        if (width > maxDimension || height > maxDimension) {
+          if (width > height) {
+            height = (height / width) * maxDimension;
+            width = maxDimension;
+          } else {
+            width = (width / height) * maxDimension;
+            height = maxDimension;
+          }
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          reject(new Error('Failed to get canvas context'));
+          return;
+        }
+        
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        // Пробуем разное качество, пока не получим нужный размер
+        let quality = 0.9;
+        let base64 = canvas.toDataURL('image/jpeg', quality).split(',')[1];
+        
+        // Если файл все еще слишком большой, уменьшаем качество
+        while (base64.length > maxSizeMB * 1024 * 1024 * 1.37 && quality > 0.1) {
+          quality -= 0.1;
+          base64 = canvas.toDataURL('image/jpeg', quality).split(',')[1];
+        }
+        
+        resolve(base64);
+      };
+      img.onerror = reject;
+      img.src = e.target?.result as string;
     };
     reader.onerror = reject;
     reader.readAsDataURL(file);
@@ -16,8 +55,8 @@ const fileToBase64 = (file: File): Promise<string> => {
 // Upload image to S3 storage instead of base64
 export const uploadImageToS3 = async (file: File): Promise<string | null> => {
   try {
-    // Конвертируем файл в base64
-    const base64Data = await fileToBase64(file);
+    // Сжимаем и конвертируем файл в base64
+    const base64Data = await compressImage(file, 4); // Максимум 4 МБ для безопасности
     
     // Отправляем в backend функцию для загрузки в S3
     const response = await fetch('https://functions.poehali.dev/a0c6a23f-1d31-4d44-9ca4-fd04d7e97063', {
