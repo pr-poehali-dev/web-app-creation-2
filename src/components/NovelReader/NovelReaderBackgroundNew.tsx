@@ -171,7 +171,7 @@ function NovelReaderBackgroundNew({
         
         {!isContentHidden && currentParagraph.type !== 'background' && !isBackgroundChanging && newImageReady && (
           <>
-            <div className="absolute bottom-20 md:bottom-12 left-0 right-0 z-10 px-5 md:px-8">
+            <div className="absolute bottom-12 md:bottom-8 left-0 right-0 z-10 px-5 md:px-8">
             <div className="w-full max-w-3xl mx-auto flex flex-col items-center justify-center">
               {currentParagraph.type !== 'choice' && (
                 <div className="flex justify-between items-center mb-2 gap-2">
