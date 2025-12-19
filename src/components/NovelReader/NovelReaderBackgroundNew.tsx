@@ -80,7 +80,7 @@ function NovelReaderBackgroundNew({
       if (!isBackgroundChanging) {
         setShowComicFrames(true);
       }
-    }, 100);
+    }, 1300);
     
     return () => clearTimeout(timer);
   }, [paragraphKey]);
@@ -91,7 +91,7 @@ function NovelReaderBackgroundNew({
     } else {
       const timer = setTimeout(() => {
         setShowComicFrames(true);
-      }, 100);
+      }, 1300);
       
       return () => clearTimeout(timer);
     }
