@@ -59,7 +59,7 @@ export const parseMarkdownToEpisode = (markdown: string, episodeId: string): Epi
           }
           para.subParagraphs.push({
             id: `sub${Date.now()}_${para.subParagraphs.length}`,
-            content: subContent
+            text: subContent
           });
           console.log('[Import Debug] Added subparagraph to index', currentParagraphIndex, 'total:', para.subParagraphs.length);
           console.log('[Import Debug] Paragraph after adding:', para);
@@ -103,7 +103,7 @@ export const parseMarkdownToEpisode = (markdown: string, episodeId: string): Epi
                 }
                 para.subParagraphs.push({
                   id: `sub${Date.now()}_${para.subParagraphs.length}`,
-                  content: subContent
+                  text: subContent
                 });
               }
             }
@@ -150,7 +150,7 @@ export const parseMarkdownToEpisode = (markdown: string, episodeId: string): Epi
             const subContent = currentLine.substring(1).trim();
             subParagraphs.push({
               id: `sub${Date.now()}_${subParagraphs.length}`,
-              content: subContent
+              text: subContent
             });
           } else {
             text += (text ? '\n' : '') + currentLine;
