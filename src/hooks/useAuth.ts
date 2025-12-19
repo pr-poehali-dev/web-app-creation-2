@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react';
 import { UserProfile } from '@/types/settings';
 
-const AUTH_API = 'https://functions.poehali.dev/f895202d-2b99-4eae-a334-8b273bf2cbd1';
-
 interface AuthState {
   isAuthenticated: boolean;
   username: string | null;
@@ -20,7 +18,6 @@ export function useAuth(profile: UserProfile, setProfile: (profile: UserProfile)
     isGuest: true
   });
 
-  // Загрузка сохраненной сессии
   useEffect(() => {
     const savedAuth = localStorage.getItem('auth');
     if (savedAuth) {
@@ -33,21 +30,12 @@ export function useAuth(profile: UserProfile, setProfile: (profile: UserProfile)
     }
   }, []);
 
-  // Автосохранение профиля на сервер каждые 5 секунд
   useEffect(() => {
     if (!authState.isAuthenticated || !authState.username) return;
 
-    const saveProfile = async () => {
+    const saveProfile = () => {
       try {
-        await fetch(AUTH_API, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            action: 'save_profile',
-            username: authState.username,
-            profile
-          })
-        });
+        localStorage.setItem(`profile_${authState.username}`, JSON.stringify(profile));
       } catch (e) {
         console.error('Failed to save profile:', e);
       }

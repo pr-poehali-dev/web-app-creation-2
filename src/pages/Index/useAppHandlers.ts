@@ -45,11 +45,6 @@ export function useAppHandlers({
     }
   }, [setProfile]);
 
-  const handleAdminLogin = useCallback(() => {
-    setIsAdmin(true);
-    setActiveView('admin');
-  }, [setIsAdmin, setActiveView]);
-
   const handleEpisodeSelect = useCallback((episodeId: string, paragraphIndex?: number, subParagraphIndex?: number) => {
     setProfile(prev => ({
       ...prev,
@@ -122,7 +117,6 @@ export function useAppHandlers({
     handleNovelUpdate,
     handleSettingsUpdate,
     handleProfileUpdate,
-    handleAdminLogin,
     handleEpisodeSelect,
     handleNavigateToBookmark,
     handleShowParagraphs,

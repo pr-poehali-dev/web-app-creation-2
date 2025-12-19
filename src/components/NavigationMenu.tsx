@@ -20,7 +20,6 @@ interface NavigationMenuProps {
   onLogout?: () => void;
   username?: string;
   isGuest?: boolean;
-  onShowAuthPrompt?: () => void;
   isMusicPlaying?: boolean;
   onToggleMusic?: () => void;
   hasMusic?: boolean;
@@ -42,7 +41,6 @@ function NavigationMenu({
   onLogout,
   username,
   isGuest = false,
-  onShowAuthPrompt,
   isMusicPlaying,
   onToggleMusic,
   hasMusic,
@@ -90,49 +88,18 @@ function NavigationMenu({
         >
           <Icon name="Home" size={20} />
         </Button>
-        {isGuest ? (
-          <Button
-            variant="default"
-            className="bg-primary/90 backdrop-blur-sm hover:bg-primary text-white"
-            onClick={() => {
-              onShowAuthPrompt?.();
-              setIsMenuOpen(false);
-            }}
-            title="Войти или зарегистрироваться"
-          >
-            <Icon name="LogIn" size={20} />
-            <span className="ml-2 hidden md:inline">Войти</span>
-          </Button>
-        ) : (
-          <>
-            <Button
-              variant="ghost"
-              className="bg-card/50 backdrop-blur-sm hover:bg-card/80 text-white"
-              onClick={() => {
-                onSetActiveView('profile');
-                setIsMenuOpen(false);
-              }}
-              title="Профиль"
-            >
-              <Icon name="User" size={20} />
-              {username && <span className="ml-2 hidden md:inline">{username}</span>}
-            </Button>
-            {onLogout && (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="bg-card/50 backdrop-blur-sm hover:bg-card/80 text-white"
-                onClick={() => {
-                  onLogout();
-                  setIsMenuOpen(false);
-                }}
-                title="Выйти"
-              >
-                <Icon name="LogOut" size={20} />
-              </Button>
-            )}
-          </>
-        )}
+        <Button
+          variant="ghost"
+          className="bg-card/50 backdrop-blur-sm hover:bg-card/80 text-white"
+          onClick={() => {
+            onSetActiveView('profile');
+            setIsMenuOpen(false);
+          }}
+          title="Профиль"
+        >
+          <Icon name="User" size={20} />
+          {username && <span className="ml-2 hidden md:inline">{username}</span>}
+        </Button>
         <Button
           variant="ghost"
           size="icon"

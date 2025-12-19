@@ -6,15 +6,17 @@ import SettingsPanel from '@/components/SettingsPanel';
 import NavigationMenu from '@/components/NavigationMenu';
 import ParagraphsDialog from '@/components/ParagraphsDialog';
 import HomePage from '@/components/HomePage';
-import AuthScreen from '@/components/AuthScreen';
+import AdminLogin from '@/components/AdminLogin';
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
 import { useAppState } from './Index/useAppState';
 import { useNovelDatabase } from './Index/useNovelDatabase';
 import { useAppHandlers } from './Index/useAppHandlers';
 import { useAuth } from '@/hooks/useAuth';
+import { useState } from 'react';
 
 function Index() {
+  const [showAdminLogin, setShowAdminLogin] = useState(false);
   const {
     novel,
     setNovel,
@@ -30,10 +32,6 @@ function Index() {
     setSelectedEpisodeForParagraphs,
     isAdmin,
     setIsAdmin,
-    showAuthPrompt,
-    setShowAuthPrompt,
-    authPromptDismissed,
-    setAuthPromptDismissed,
     isMusicPlaying,
     setIsMusicPlaying,
     isContentHidden,
@@ -48,7 +46,6 @@ function Index() {
     handleNovelUpdate,
     handleSettingsUpdate,
     handleProfileUpdate,
-    handleAdminLogin,
     handleEpisodeSelect,
     handleNavigateToBookmark,
     handleShowParagraphs,
@@ -67,21 +64,17 @@ function Index() {
     setShowParagraphsDialog
   });
 
-  // Показываем экран авторизации только если пользователь явно запросил или достиг конца доступного контента
-  // И только если он ещё не отказался от входа в этой сессии
-  if (showAuthPrompt && !authState.isAuthenticated && !authPromptDismissed) {
-    return (
-      <div className="relative min-h-screen bg-background dark">
-        <AuthScreen 
-          onAuthSuccess={handleAuthSuccess} 
-          onClose={authState.isGuest ? () => {
-            setShowAuthPrompt(false);
-            setAuthPromptDismissed(true); // Запоминаем, что пользователь отказался
-          } : undefined}
-        />
-      </div>
-    );
-  }
+  const handleAdminLogin = () => {
+    const isAdminAuth = localStorage.getItem('adminAuth') === 'true';
+    if (isAdminAuth) {
+      setIsAdmin(true);
+      setActiveView('admin');
+    } else {
+      setShowAdminLogin(true);
+    }
+  };
+
+
 
   if (isLoading) {
     return (
@@ -105,7 +98,8 @@ function Index() {
   }
 
   if (activeView === 'admin') {
-    if (!authState.isAdmin) {
+    const isAdminAuth = localStorage.getItem('adminAuth') === 'true';
+    if (!isAdminAuth && !isAdmin) {
       return (
         <div className="min-h-screen bg-background dark flex items-center justify-center">
           <div className="text-center">
@@ -125,6 +119,7 @@ function Index() {
         onLogout={() => {
           setActiveView('reader');
           setIsAdmin(false);
+          localStorage.removeItem('adminAuth');
         }}
         authState={authState}
       />
@@ -215,19 +210,15 @@ function Index() {
             <Icon name="Settings" size={20} />
           </Button>
           
-          {authState.isAdmin && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="bg-[#151d28] text-white backdrop-blur-sm hover:bg-[#1a2430]"
-              onClick={() => {
-                setActiveView('admin');
-                setIsAdmin(true);
-              }}
-            >
-              <Icon name="Settings2" size={20} />
-            </Button>
-          )}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="bg-[#151d28] text-white backdrop-blur-sm hover:bg-[#1a2430]"
+            onClick={handleAdminLogin}
+            title="Админ-панель"
+          >
+            <Icon name="Settings2" size={20} />
+          </Button>
         </div>
       </div>
     );
@@ -257,7 +248,6 @@ function Index() {
           currentParagraphIndex={profile.currentParagraphIndex}
           isGuest={authState.isGuest}
           isAdmin={authState.isAdmin}
-          onGuestLimitReached={() => setShowAuthPrompt(true)}
           isMusicPlaying={isMusicPlaying}
           onToggleMusic={() => setIsMusicPlaying(!isMusicPlaying)}
           isContentHidden={isContentHidden}
@@ -283,7 +273,6 @@ function Index() {
         onLogout={handleLogout}
         username={authState.username || undefined}
         isGuest={authState.isGuest}
-        onShowAuthPrompt={() => setShowAuthPrompt(true)}
         isMusicPlaying={isMusicPlaying}
         onToggleMusic={() => setIsMusicPlaying(!isMusicPlaying)}
         hasMusic={!!novel.episodes.find(ep => ep.id === profile.currentEpisodeId)?.backgroundMusic}
@@ -301,6 +290,17 @@ function Index() {
         isAdmin={authState.isAdmin}
         isGuest={authState.isGuest}
       />
+
+      {showAdminLogin && (
+        <AdminLogin
+          onSuccess={() => {
+            setShowAdminLogin(false);
+            setIsAdmin(true);
+            setActiveView('admin');
+          }}
+          onCancel={() => setShowAdminLogin(false)}
+        />
+      )}
     </div>
   );
 }
