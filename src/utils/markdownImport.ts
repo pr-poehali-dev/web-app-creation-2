@@ -64,13 +64,13 @@ export const parseMarkdownToEpisode = (markdown: string, episodeId: string): Epi
     
     if (!line.startsWith('[')) {
       // Обычный текст без тега - каждая строка = отдельный параграф
-      const textPara = {
+      const textPara: any = {
         id: `p${Date.now()}_${paragraphs.length}`,
         type: 'text' as const,
         content: line
       };
       paragraphs.push(textPara);
-      currentParagraphForSub = textPara;
+      currentParagraphForSub = paragraphs[paragraphs.length - 1];
       i++;
       continue;
     }
@@ -97,13 +97,13 @@ export const parseMarkdownToEpisode = (markdown: string, episodeId: string): Epi
             }
           } else {
             // Каждая непустая строка = текстовый параграф
-            const textPara = {
+            const textPara: any = {
               id: `p${Date.now()}_${paragraphs.length}`,
               type: 'text' as const,
               content: currentLine
             };
             paragraphs.push(textPara);
-            currentParagraphForSub = textPara;
+            currentParagraphForSub = paragraphs[paragraphs.length - 1];
           }
         }
         i++;
@@ -137,7 +137,7 @@ export const parseMarkdownToEpisode = (markdown: string, episodeId: string): Epi
       }
       
       if (text) {
-        const dialoguePara = {
+        const dialoguePara: any = {
           id: `p${Date.now()}_${paragraphs.length}`,
           type: 'dialogue' as const,
           characterName,
@@ -145,7 +145,7 @@ export const parseMarkdownToEpisode = (markdown: string, episodeId: string): Epi
           text
         };
         paragraphs.push(dialoguePara);
-        currentParagraphForSub = dialoguePara;
+        currentParagraphForSub = paragraphs[paragraphs.length - 1];
       }
       continue;
     }
