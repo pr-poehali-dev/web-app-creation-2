@@ -6,8 +6,16 @@ export const parseMarkdownToEpisode = (markdown: string, episodeId: string): Epi
   let backgroundMusic: string | undefined;
   const paragraphs: Paragraph[] = [];
   
+  // Первый параграф всегда с фоном
+  paragraphs.push({
+    id: `p${Date.now()}_bg`,
+    type: 'background',
+    backgroundUrl: ''
+  });
+  
   let i = 0;
   let consecutiveEmptyLines = 0;
+  let currentParagraphForSub: any = null; // Для подпараграфов
   
   while (i < lines.length) {
     const line = lines[i].trim();
@@ -35,13 +43,34 @@ export const parseMarkdownToEpisode = (markdown: string, episodeId: string): Epi
     // Сбрасываем счетчик пустых строк
     consecutiveEmptyLines = 0;
     
+    // Проверка на подпараграф (начинается с >)
+    if (line.startsWith('>')) {
+      const subContent = line.substring(1).trim();
+      
+      // Если есть предыдущий текстовый/диалоговый параграф, добавляем к нему подпараграф
+      if (currentParagraphForSub && 
+          (currentParagraphForSub.type === 'text' || currentParagraphForSub.type === 'dialogue')) {
+        if (!currentParagraphForSub.subParagraphs) {
+          currentParagraphForSub.subParagraphs = [];
+        }
+        currentParagraphForSub.subParagraphs.push({
+          id: `sub${Date.now()}_${currentParagraphForSub.subParagraphs.length}`,
+          content: subContent
+        });
+      }
+      i++;
+      continue;
+    }
+    
     if (!line.startsWith('[')) {
       // Обычный текст без тега - каждая строка = отдельный параграф
-      paragraphs.push({
+      const textPara = {
         id: `p${Date.now()}_${paragraphs.length}`,
-        type: 'text',
+        type: 'text' as const,
         content: line
-      });
+      };
+      paragraphs.push(textPara);
+      currentParagraphForSub = textPara;
       i++;
       continue;
     }
@@ -53,12 +82,29 @@ export const parseMarkdownToEpisode = (markdown: string, episodeId: string): Epi
         const currentLine = lines[i].trim();
         
         if (currentLine) {
-          // Каждая непустая строка = текстовый параграф
-          paragraphs.push({
-            id: `p${Date.now()}_${paragraphs.length}`,
-            type: 'text',
-            content: currentLine
-          });
+          // Проверка на подпараграф
+          if (currentLine.startsWith('>')) {
+            const subContent = currentLine.substring(1).trim();
+            if (currentParagraphForSub && 
+                (currentParagraphForSub.type === 'text' || currentParagraphForSub.type === 'dialogue')) {
+              if (!currentParagraphForSub.subParagraphs) {
+                currentParagraphForSub.subParagraphs = [];
+              }
+              currentParagraphForSub.subParagraphs.push({
+                id: `sub${Date.now()}_${currentParagraphForSub.subParagraphs.length}`,
+                content: subContent
+              });
+            }
+          } else {
+            // Каждая непустая строка = текстовый параграф
+            const textPara = {
+              id: `p${Date.now()}_${paragraphs.length}`,
+              type: 'text' as const,
+              content: currentLine
+            };
+            paragraphs.push(textPara);
+            currentParagraphForSub = textPara;
+          }
         }
         i++;
       }
@@ -91,13 +137,15 @@ export const parseMarkdownToEpisode = (markdown: string, episodeId: string): Epi
       }
       
       if (text) {
-        paragraphs.push({
+        const dialoguePara = {
           id: `p${Date.now()}_${paragraphs.length}`,
-          type: 'dialogue',
+          type: 'dialogue' as const,
           characterName,
           characterImage,
           text
-        });
+        };
+        paragraphs.push(dialoguePara);
+        currentParagraphForSub = dialoguePara;
       }
       continue;
     }
@@ -216,13 +264,17 @@ export const getMarkdownTemplate = (): string => {
 [MUSIC:url_или_base64_музыки]
 
 Первая строка текста
-Вторая строка текста
+> Это подпараграф первой строки
+> Ещё один подпараграф
 
+Вторая строка текста
 Третья строка текста (после пустой строки)
 
 [DIALOGUE:Имя персонажа] [IMG:эмодзи_или_url]
 Текст диалога персонажа.
 Может быть многострочным.
+> Подпараграф диалога
+> Ещё подпараграф
 
 
 Четвертая строка текста
@@ -230,6 +282,7 @@ export const getMarkdownTemplate = (): string => {
 
 [TEXT]
 В блоке [TEXT] каждая строка = отдельный параграф
+> Подпараграф
 Это второй параграф
 
 Пустая строка = разделитель (fade)
@@ -249,6 +302,8 @@ export const getMarkdownTemplate = (): string => {
 
 Продолжение текста после выбора
 
+💡 Первым параграфом автоматически создаётся фон
+💡 Строки начинающиеся с > это подпараграфы (привязаны к предыдущему тексту/диалогу)
 💡 Две пустые строки после [DIALOGUE], [ITEM], [CHOICE] возвращают к обычному тексту
 💡 Интерактивные подсказки: [слово|текст подсказки]`;
 };
