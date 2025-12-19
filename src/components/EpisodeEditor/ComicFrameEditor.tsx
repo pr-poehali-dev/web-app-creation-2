@@ -159,7 +159,7 @@ function ComicFrameEditor({ frames, layout, defaultAnimation, subParagraphs, onF
     onFramesChange(updated);
   }, [onFramesChange]);
 
-  const handleBulkUpload = useCallback(() => {
+  const handleBulkUpload = useCallback(async () => {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
@@ -169,40 +169,70 @@ function ComicFrameEditor({ frames, layout, defaultAnimation, subParagraphs, onF
       const files = (e.target as HTMLInputElement).files;
       if (!files || files.length === 0) return;
       
-      const uploadPromises = Array.from(files).map(async (file) => {
-        return new Promise<string>((resolve, reject) => {
-          const reader = new FileReader();
-          
+      const uploadImage = async (file: File): Promise<string> => {
+        const reader = new FileReader();
+        return new Promise((resolve, reject) => {
           reader.onload = async () => {
             try {
-              const base64 = (reader.result as string).split(',')[1];
-              
-              const response = await fetch('https://functions.poehali.dev/98305cdc-9d3f-46e5-9744-c418d3d4cb24', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                  image: base64,
-                  filename: file.name
-                }),
-              });
-              
-              if (!response.ok) throw new Error('Upload failed');
-              const data = await response.json();
-              resolve(data.url);
+              const img = new Image();
+              img.onload = async () => {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+                
+                const maxDimension = 2048;
+                if (width > maxDimension || height > maxDimension) {
+                  if (width > height) {
+                    height = (height / width) * maxDimension;
+                    width = maxDimension;
+                  } else {
+                    width = (width / height) * maxDimension;
+                    height = maxDimension;
+                  }
+                }
+                
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                if (!ctx) throw new Error('Canvas context failed');
+                
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                let quality = 0.9;
+                let base64 = canvas.toDataURL('image/jpeg', quality).split(',')[1];
+                
+                while (base64.length > 4 * 1024 * 1024 * 1.37 && quality > 0.1) {
+                  quality -= 0.1;
+                  base64 = canvas.toDataURL('image/jpeg', quality).split(',')[1];
+                }
+                
+                const response = await fetch('https://functions.poehali.dev/a0c6a23f-1d31-4d44-9ca4-fd04d7e97063', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    fileData: base64,
+                    fileName: file.name,
+                    contentType: file.type
+                  })
+                });
+                
+                if (!response.ok) throw new Error('Upload failed');
+                const data = await response.json();
+                resolve(data.url);
+              };
+              img.onerror = reject;
+              img.src = reader.result as string;
             } catch (error) {
               reject(error);
             }
           };
-          
-          reader.onerror = () => reject(new Error('File read failed'));
+          reader.onerror = reject;
           reader.readAsDataURL(file);
         });
-      });
+      };
       
       try {
-        const urls = await Promise.all(uploadPromises);
+        const urls = await Promise.all(Array.from(files).map(uploadImage));
         const currentFrames = [...framesRef.current];
         
         urls.forEach((url, idx) => {
