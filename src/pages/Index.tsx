@@ -121,7 +121,6 @@ function Index() {
           setIsAdmin(false);
           localStorage.removeItem('adminAuth');
         }}
-        authState={authState}
       />
     );
   }

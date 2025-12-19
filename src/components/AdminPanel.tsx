@@ -7,7 +7,7 @@ import LibraryManager from './LibraryManager';
 import HomePageEditor from './HomePageEditor';
 import PathsManager from './PathsManager';
 import BulkImportDialog from './BulkImportDialog';
-import UsersManagement from './UsersManagement';
+
 import BackgroundImagesEditor from './BackgroundImagesEditor';
 import AdminPanelHeader from './AdminPanel/AdminPanelHeader';
 import EpisodeEditorTab from './AdminPanel/EpisodeEditorTab';
@@ -17,10 +17,9 @@ interface AdminPanelProps {
   novel: Novel;
   onUpdate: (novel: Novel) => void;
   onLogout: () => void;
-  authState?: { username: string | null; isAdmin: boolean };
 }
 
-function AdminPanel({ novel, onUpdate, onLogout, authState }: AdminPanelProps) {
+function AdminPanel({ novel, onUpdate, onLogout }: AdminPanelProps) {
   const [isPending, startTransition] = useTransition();
   const [selectedEpisodeId, setSelectedEpisodeId] = useState<string | null>(
     novel.episodes[0]?.id || null
@@ -200,7 +199,7 @@ function AdminPanel({ novel, onUpdate, onLogout, authState }: AdminPanelProps) {
 
       <div className="container mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full max-w-5xl grid-cols-8 mb-8">
+          <TabsList className="grid w-full max-w-5xl grid-cols-7 mb-8">
             <TabsTrigger value="home">
               <Icon name="Home" size={16} className="mr-2" />
               Главная
@@ -224,10 +223,6 @@ function AdminPanel({ novel, onUpdate, onLogout, authState }: AdminPanelProps) {
             <TabsTrigger value="visualization">
               <Icon name="Network" size={16} className="mr-2" />
               Визуализация
-            </TabsTrigger>
-            <TabsTrigger value="users">
-              <Icon name="Users" size={16} className="mr-2" />
-              Пользователи
             </TabsTrigger>
             <TabsTrigger value="system">
               <Icon name="Settings" size={16} className="mr-2" />
@@ -289,12 +284,6 @@ function AdminPanel({ novel, onUpdate, onLogout, authState }: AdminPanelProps) {
 
           <TabsContent value="system">
             <SystemTab novel={novel} onUpdate={onUpdate} />
-          </TabsContent>
-
-          <TabsContent value="users">
-            {authState?.username && (
-              <UsersManagement adminUsername={authState.username} />
-            )}
           </TabsContent>
         </Tabs>
       </div>

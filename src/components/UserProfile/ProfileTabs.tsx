@@ -5,7 +5,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Icon from '@/components/ui/icon';
 import AchievementsTab from './AchievementsTab';
 import CharactersTab from './CharactersTab';
-import SecurityTab from './SecurityTab';
+
 
 interface ProfileTabsProps {
   profile: UserProfile;
@@ -22,7 +22,7 @@ function ProfileTabs({ profile, novel, achievements, username, onDeleteBookmark,
     <Card className="animate-fade-in" style={{ animationDelay: '200ms' }}>
       <CardContent className="p-6">
         <Tabs defaultValue="bookmarks" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="bookmarks" className="flex items-center gap-1">
               <Icon name="Bookmark" size={16} />
               <span className="hidden md:inline">Закладки</span>
@@ -34,10 +34,6 @@ function ProfileTabs({ profile, novel, achievements, username, onDeleteBookmark,
             <TabsTrigger value="characters" className="flex items-center gap-1">
               <Icon name="Users" size={16} />
               <span className="hidden md:inline">Персонажи</span>
-            </TabsTrigger>
-            <TabsTrigger value="security" className="flex items-center gap-1">
-              <Icon name="Lock" size={16} />
-              <span className="hidden md:inline">Безопасность</span>
             </TabsTrigger>
           </TabsList>
 
@@ -54,8 +50,6 @@ function ProfileTabs({ profile, novel, achievements, username, onDeleteBookmark,
             novel={novel}
             onProfileUpdate={onProfileUpdate}
           />
-
-          <SecurityTab username={username} />
         </Tabs>
       </CardContent>
     </Card>
