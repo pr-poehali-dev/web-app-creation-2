@@ -8,9 +8,10 @@ interface ComicFrameReaderProps {
   currentSubParagraphIndex?: number; // Индекс текущего подпараграфа
   layout: MergeLayoutType;
   isTyping: boolean; // Флаг печати текста
+  isRetrospective?: boolean; // Флаг времени прошлого
 }
 
-export default function ComicFrameReader({ paragraph, currentSubParagraphIndex, layout, isTyping }: ComicFrameReaderProps) {
+export default function ComicFrameReader({ paragraph, currentSubParagraphIndex, layout, isTyping, isRetrospective = false }: ComicFrameReaderProps) {
   const [activeFrames, setActiveFrames] = useState<ComicFrame[]>([]);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [imageAspectRatios, setImageAspectRatios] = useState<Map<string, number>>(new Map());
@@ -151,7 +152,9 @@ export default function ComicFrameReader({ paragraph, currentSubParagraphIndex, 
                 className="w-full h-full rounded-lg min-w-0"
                 style={{
                   objectFit: frame.objectFit || 'cover',
-                  objectPosition: frame.objectPosition || 'center'
+                  objectPosition: frame.objectPosition || 'center',
+                  filter: isRetrospective ? 'sepia(0.6) contrast(0.9) brightness(0.85)' : 'none',
+                  transition: 'filter 1.2s ease-in-out'
                 }}
               />
             </div>

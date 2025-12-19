@@ -182,6 +182,7 @@ function NovelReaderBackgroundNew({
                 currentSubParagraphIndex={currentParagraph.subParagraphs && currentParagraph.subParagraphs.length > 0 ? currentSubParagraphIndex : undefined}
                 layout={currentParagraph.frameLayout || 'single'}
                 isTyping={isTyping}
+                isRetrospective={isRetrospective}
               />
             </div>
           </div>
