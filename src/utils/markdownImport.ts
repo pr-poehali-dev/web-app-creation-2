@@ -15,7 +15,7 @@ export const parseMarkdownToEpisode = (markdown: string, episodeId: string): Epi
   
   let i = 0;
   let consecutiveEmptyLines = 0;
-  const currentParagraphIndex: number = -1; // Индекс параграфа для подпараграфов
+  let currentParagraphIndex: number = -1; // Индекс параграфа для подпараграфов
   
   while (i < lines.length) {
     const line = lines[i].trim();
