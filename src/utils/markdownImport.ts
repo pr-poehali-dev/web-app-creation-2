@@ -160,7 +160,7 @@ export const parseMarkdownToEpisode = (markdown: string, episodeId: string): Epi
       let text = '';
       let emptyLinesCount = 0;
       const subParagraphs: any[] = [];
-      const isRetrospective = false;
+      let isRetrospective = false;
       
       while (i < lines.length && !lines[i].trim().startsWith('[')) {
         const currentLine = lines[i].trim();
