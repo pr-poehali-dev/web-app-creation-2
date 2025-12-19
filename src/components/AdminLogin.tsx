@@ -16,7 +16,7 @@ function AdminLogin({ onSuccess, onCancel }: AdminLoginProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    const ADMIN_PASSWORD = 'admin123';
+    const ADMIN_PASSWORD = localStorage.getItem('adminPassword') || 'admin123';
     
     if (password === ADMIN_PASSWORD) {
       localStorage.setItem('adminAuth', 'true');

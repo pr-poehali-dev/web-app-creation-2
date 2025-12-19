@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { UserSettings } from '@/types/settings';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -5,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
 import Icon from '@/components/ui/icon';
 import { Novel } from '@/types/novel';
 
@@ -16,6 +18,12 @@ interface SettingsPanelProps {
 }
 
 function SettingsPanel({ settings, novel, onUpdate, onBack }: SettingsPanelProps) {
+  const [showPasswordChange, setShowPasswordChange] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+
   const handleMusicVolumeChange = (value: number[]) => {
     onUpdate({ ...settings, musicVolume: value[0] });
   };
@@ -45,6 +53,33 @@ function SettingsPanel({ settings, novel, onUpdate, onBack }: SettingsPanelProps
         uiFontFamily: 'system'
       });
     }
+  };
+
+  const handleChangePassword = () => {
+    const savedPassword = localStorage.getItem('adminPassword') || 'admin123';
+    
+    if (currentPassword !== savedPassword) {
+      setPasswordError('Неверный текущий пароль');
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      setPasswordError('Пароль должен быть не менее 6 символов');
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setPasswordError('Пароли не совпадают');
+      return;
+    }
+
+    localStorage.setItem('adminPassword', newPassword);
+    setPasswordError('');
+    setCurrentPassword('');
+    setNewPassword('');
+    setConfirmPassword('');
+    setShowPasswordChange(false);
+    alert('Пароль успешно изменён!');
   };
 
   return (
@@ -276,6 +311,86 @@ function SettingsPanel({ settings, novel, onUpdate, onBack }: SettingsPanelProps
                 Сбросить настройки
               </Button>
 
+              <Button
+                variant="outline"
+                className="w-full justify-start text-foreground"
+                onClick={() => setShowPasswordChange(!showPasswordChange)}
+              >
+                <Icon name="Lock" size={16} className="mr-2" />
+                Изменить пароль админа
+              </Button>
+
+              {showPasswordChange && (
+                <div className="space-y-3 p-4 border border-border rounded-lg bg-card/50">
+                  <div>
+                    <Label htmlFor="current-password" className="text-foreground">Текущий пароль</Label>
+                    <Input
+                      id="current-password"
+                      type="password"
+                      value={currentPassword}
+                      onChange={(e) => {
+                        setCurrentPassword(e.target.value);
+                        setPasswordError('');
+                      }}
+                      placeholder="Введите текущий пароль"
+                      className="mt-1"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="new-password" className="text-foreground">Новый пароль</Label>
+                    <Input
+                      id="new-password"
+                      type="password"
+                      value={newPassword}
+                      onChange={(e) => {
+                        setNewPassword(e.target.value);
+                        setPasswordError('');
+                      }}
+                      placeholder="Минимум 6 символов"
+                      className="mt-1"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="confirm-password" className="text-foreground">Подтвердите пароль</Label>
+                    <Input
+                      id="confirm-password"
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => {
+                        setConfirmPassword(e.target.value);
+                        setPasswordError('');
+                      }}
+                      placeholder="Повторите новый пароль"
+                      className="mt-1"
+                    />
+                  </div>
+
+                  {passwordError && (
+                    <p className="text-destructive text-sm">{passwordError}</p>
+                  )}
+
+                  <div className="flex gap-2">
+                    <Button onClick={handleChangePassword} className="flex-1">
+                      Сохранить
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      onClick={() => {
+                        setShowPasswordChange(false);
+                        setCurrentPassword('');
+                        setNewPassword('');
+                        setConfirmPassword('');
+                        setPasswordError('');
+                      }}
+                      className="flex-1"
+                    >
+                      Отмена
+                    </Button>
+                  </div>
+                </div>
+              )}
 
             </CardContent>
           </Card>
