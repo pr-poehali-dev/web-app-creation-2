@@ -73,14 +73,28 @@ export const parseMarkdownToEpisode = (markdown: string, episodeId: string): Epi
     
     if (!line.startsWith('[')) {
       // Обычный текст без тега - каждая строка = отдельный параграф
+      // Проверяем наличие символа ^ для ретроспективы
+      let content = line;
+      let isRetrospective = false;
+      
+      if (line.startsWith('^')) {
+        content = line.substring(1).trim();
+        isRetrospective = true;
+      }
+      
       const textPara: any = {
         id: `p${Date.now()}_${paragraphs.length}`,
         type: 'text' as const,
-        content: line
+        content: content
       };
+      
+      if (isRetrospective) {
+        textPara.timeframes = ['retrospective'];
+      }
+      
       paragraphs.push(textPara);
       currentParagraphIndex = paragraphs.length - 1;
-      console.log('[Import Debug] Created text paragraph:', line, 'Index:', currentParagraphIndex);
+      console.log('[Import Debug] Created text paragraph:', content, 'Index:', currentParagraphIndex, 'Retrospective:', isRetrospective);
       i++;
       continue;
     }
@@ -109,11 +123,25 @@ export const parseMarkdownToEpisode = (markdown: string, episodeId: string): Epi
             }
           } else {
             // Каждая непустая строка = текстовый параграф
+            // Проверяем наличие символа ^ для ретроспективы
+            let content = currentLine;
+            let isRetrospective = false;
+            
+            if (currentLine.startsWith('^')) {
+              content = currentLine.substring(1).trim();
+              isRetrospective = true;
+            }
+            
             const textPara: any = {
               id: `p${Date.now()}_${paragraphs.length}`,
               type: 'text' as const,
-              content: currentLine
+              content: content
             };
+            
+            if (isRetrospective) {
+              textPara.timeframes = ['retrospective'];
+            }
+            
             paragraphs.push(textPara);
             currentParagraphIndex = paragraphs.length - 1;
           }
@@ -132,6 +160,7 @@ export const parseMarkdownToEpisode = (markdown: string, episodeId: string): Epi
       let text = '';
       let emptyLinesCount = 0;
       const subParagraphs: any[] = [];
+      const isRetrospective = false;
       
       while (i < lines.length && !lines[i].trim().startsWith('[')) {
         const currentLine = lines[i].trim();
@@ -152,6 +181,10 @@ export const parseMarkdownToEpisode = (markdown: string, episodeId: string): Epi
               id: `sub${Date.now()}_${subParagraphs.length}`,
               text: subContent
             });
+          } else if (currentLine.startsWith('^')) {
+            // Ретроспектива в диалоге
+            isRetrospective = true;
+            text += (text ? '\n' : '') + currentLine.substring(1).trim();
           } else {
             text += (text ? '\n' : '') + currentLine;
           }
@@ -170,6 +203,10 @@ export const parseMarkdownToEpisode = (markdown: string, episodeId: string): Epi
         
         if (subParagraphs.length > 0) {
           dialoguePara.subParagraphs = subParagraphs;
+        }
+        
+        if (isRetrospective) {
+          dialoguePara.timeframes = ['retrospective'];
         }
         
         paragraphs.push(dialoguePara);
