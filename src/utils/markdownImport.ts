@@ -47,6 +47,9 @@ export const parseMarkdownToEpisode = (markdown: string, episodeId: string): Epi
     if (line.startsWith('>')) {
       const subContent = line.substring(1).trim();
       
+      console.log('[Import Debug] Found subparagraph:', subContent);
+      console.log('[Import Debug] currentParagraphForSub:', currentParagraphForSub);
+      
       // Если есть предыдущий текстовый/диалоговый параграф, добавляем к нему подпараграф
       if (currentParagraphForSub && 
           (currentParagraphForSub.type === 'text' || currentParagraphForSub.type === 'dialogue')) {
@@ -57,6 +60,9 @@ export const parseMarkdownToEpisode = (markdown: string, episodeId: string): Epi
           id: `sub${Date.now()}_${currentParagraphForSub.subParagraphs.length}`,
           content: subContent
         });
+        console.log('[Import Debug] Added subparagraph, total:', currentParagraphForSub.subParagraphs.length);
+      } else {
+        console.log('[Import Debug] No valid parent paragraph for subparagraph');
       }
       i++;
       continue;
@@ -71,6 +77,7 @@ export const parseMarkdownToEpisode = (markdown: string, episodeId: string): Epi
       };
       paragraphs.push(textPara);
       currentParagraphForSub = paragraphs[paragraphs.length - 1];
+      console.log('[Import Debug] Created text paragraph:', line, 'Set as currentParagraphForSub');
       i++;
       continue;
     }
@@ -119,6 +126,7 @@ export const parseMarkdownToEpisode = (markdown: string, episodeId: string): Epi
       i++;
       let text = '';
       let emptyLinesCount = 0;
+      const subParagraphs: any[] = [];
       
       while (i < lines.length && !lines[i].trim().startsWith('[')) {
         const currentLine = lines[i].trim();
@@ -131,7 +139,17 @@ export const parseMarkdownToEpisode = (markdown: string, episodeId: string): Epi
           }
         } else {
           emptyLinesCount = 0;
-          text += (text ? '\n' : '') + currentLine;
+          
+          // Проверка на подпараграф
+          if (currentLine.startsWith('>')) {
+            const subContent = currentLine.substring(1).trim();
+            subParagraphs.push({
+              id: `sub${Date.now()}_${subParagraphs.length}`,
+              content: subContent
+            });
+          } else {
+            text += (text ? '\n' : '') + currentLine;
+          }
         }
         i++;
       }
@@ -144,6 +162,11 @@ export const parseMarkdownToEpisode = (markdown: string, episodeId: string): Epi
           characterImage,
           text
         };
+        
+        if (subParagraphs.length > 0) {
+          dialoguePara.subParagraphs = subParagraphs;
+        }
+        
         paragraphs.push(dialoguePara);
         currentParagraphForSub = paragraphs[paragraphs.length - 1];
       }
@@ -248,6 +271,9 @@ export const parseMarkdownToEpisode = (markdown: string, episodeId: string): Epi
     
     i++;
   }
+  
+  // Отладка: выводим результат
+  console.log('[Import Debug] Parsed paragraphs:', JSON.stringify(paragraphs, null, 2));
   
   return {
     id: episodeId,
