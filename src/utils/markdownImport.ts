@@ -15,7 +15,7 @@ export const parseMarkdownToEpisode = (markdown: string, episodeId: string): Epi
   
   let i = 0;
   let consecutiveEmptyLines = 0;
-  let currentParagraphForSub: any = null; // Для подпараграфов
+  const currentParagraphIndex: number = -1; // Индекс параграфа для подпараграфов
   
   while (i < lines.length) {
     const line = lines[i].trim();
@@ -48,19 +48,22 @@ export const parseMarkdownToEpisode = (markdown: string, episodeId: string): Epi
       const subContent = line.substring(1).trim();
       
       console.log('[Import Debug] Found subparagraph:', subContent);
-      console.log('[Import Debug] currentParagraphForSub:', currentParagraphForSub);
+      console.log('[Import Debug] currentParagraphIndex:', currentParagraphIndex);
       
       // Если есть предыдущий текстовый/диалоговый параграф, добавляем к нему подпараграф
-      if (currentParagraphForSub && 
-          (currentParagraphForSub.type === 'text' || currentParagraphForSub.type === 'dialogue')) {
-        if (!currentParagraphForSub.subParagraphs) {
-          currentParagraphForSub.subParagraphs = [];
+      if (currentParagraphIndex >= 0 && currentParagraphIndex < paragraphs.length) {
+        const para = paragraphs[currentParagraphIndex] as any;
+        if (para.type === 'text' || para.type === 'dialogue') {
+          if (!para.subParagraphs) {
+            para.subParagraphs = [];
+          }
+          para.subParagraphs.push({
+            id: `sub${Date.now()}_${para.subParagraphs.length}`,
+            content: subContent
+          });
+          console.log('[Import Debug] Added subparagraph to index', currentParagraphIndex, 'total:', para.subParagraphs.length);
+          console.log('[Import Debug] Paragraph after adding:', para);
         }
-        currentParagraphForSub.subParagraphs.push({
-          id: `sub${Date.now()}_${currentParagraphForSub.subParagraphs.length}`,
-          content: subContent
-        });
-        console.log('[Import Debug] Added subparagraph, total:', currentParagraphForSub.subParagraphs.length);
       } else {
         console.log('[Import Debug] No valid parent paragraph for subparagraph');
       }
@@ -76,8 +79,8 @@ export const parseMarkdownToEpisode = (markdown: string, episodeId: string): Epi
         content: line
       };
       paragraphs.push(textPara);
-      currentParagraphForSub = paragraphs[paragraphs.length - 1];
-      console.log('[Import Debug] Created text paragraph:', line, 'Set as currentParagraphForSub');
+      currentParagraphIndex = paragraphs.length - 1;
+      console.log('[Import Debug] Created text paragraph:', line, 'Index:', currentParagraphIndex);
       i++;
       continue;
     }
@@ -92,15 +95,17 @@ export const parseMarkdownToEpisode = (markdown: string, episodeId: string): Epi
           // Проверка на подпараграф
           if (currentLine.startsWith('>')) {
             const subContent = currentLine.substring(1).trim();
-            if (currentParagraphForSub && 
-                (currentParagraphForSub.type === 'text' || currentParagraphForSub.type === 'dialogue')) {
-              if (!currentParagraphForSub.subParagraphs) {
-                currentParagraphForSub.subParagraphs = [];
+            if (currentParagraphIndex >= 0 && currentParagraphIndex < paragraphs.length) {
+              const para = paragraphs[currentParagraphIndex] as any;
+              if (para.type === 'text' || para.type === 'dialogue') {
+                if (!para.subParagraphs) {
+                  para.subParagraphs = [];
+                }
+                para.subParagraphs.push({
+                  id: `sub${Date.now()}_${para.subParagraphs.length}`,
+                  content: subContent
+                });
               }
-              currentParagraphForSub.subParagraphs.push({
-                id: `sub${Date.now()}_${currentParagraphForSub.subParagraphs.length}`,
-                content: subContent
-              });
             }
           } else {
             // Каждая непустая строка = текстовый параграф
@@ -110,7 +115,7 @@ export const parseMarkdownToEpisode = (markdown: string, episodeId: string): Epi
               content: currentLine
             };
             paragraphs.push(textPara);
-            currentParagraphForSub = paragraphs[paragraphs.length - 1];
+            currentParagraphIndex = paragraphs.length - 1;
           }
         }
         i++;
@@ -168,7 +173,7 @@ export const parseMarkdownToEpisode = (markdown: string, episodeId: string): Epi
         }
         
         paragraphs.push(dialoguePara);
-        currentParagraphForSub = paragraphs[paragraphs.length - 1];
+        currentParagraphIndex = paragraphs.length - 1;
       }
       continue;
     }
