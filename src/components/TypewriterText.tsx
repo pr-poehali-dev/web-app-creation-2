@@ -26,7 +26,7 @@ function TypewriterText({ text, onComplete, subParagraphs, onSubParagraphChange 
           <div 
             key={index}
             onClick={() => onSubParagraphChange?.(subText)}
-            className="cursor-pointer hover:bg-primary/5 p-2 rounded transition-colors"
+            className="cursor-pointer hover:opacity-90 transition-all bg-card/90 backdrop-blur-sm rounded-xl md:rounded-2xl shadow-xl border border-border p-6 md:p-8 lg:p-10"
           >
             <InteractiveText text={subText} />
           </div>
