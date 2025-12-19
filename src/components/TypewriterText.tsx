@@ -26,11 +26,9 @@ function TypewriterText({ text, onComplete, subParagraphs, onSubParagraphChange 
           <div 
             key={index}
             onClick={() => onSubParagraphChange?.(subText)}
-            className="cursor-pointer hover:opacity-90 transition-all bg-card/90 backdrop-blur-sm rounded-xl md:rounded-2xl shadow-xl border border-border p-4 md:p-6 lg:p-8 h-[10rem] md:h-[12rem] flex items-start overflow-hidden"
+            className="cursor-pointer hover:opacity-90 transition-all bg-card/90 backdrop-blur-sm rounded-xl md:rounded-2xl shadow-xl border border-border p-4 md:p-6 lg:p-8 min-h-[10rem] md:min-h-[12rem] flex items-start"
           >
-            <div className="overflow-y-auto w-full">
-              <InteractiveText text={subText} />
-            </div>
+            <InteractiveText text={subText} />
           </div>
         ))}
       </div>
