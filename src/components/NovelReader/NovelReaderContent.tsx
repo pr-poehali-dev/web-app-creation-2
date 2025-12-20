@@ -60,9 +60,10 @@ function NovelReaderContent({
           <div 
             className="absolute inset-0 pointer-events-none rounded-xl md:rounded-2xl transition-all duration-1000 ease-in-out"
             style={{
-              opacity: isRetrospective ? 1 : 0,
-              boxShadow: 'inset 0 0 60px 20px rgba(0, 0, 0, 0.4)',
-              background: 'radial-gradient(ellipse at center, transparent 30%, rgba(0, 0, 0, 0.3) 100%)'
+              opacity: isRetrospective ? 0.4 : 0,
+              background: 'linear-gradient(135deg, rgba(255, 182, 193, 0.3), rgba(173, 216, 230, 0.3), rgba(255, 218, 185, 0.3), rgba(221, 160, 221, 0.3))',
+              backdropFilter: isRetrospective ? 'saturate(1.3) contrast(0.95)' : 'none',
+              mixBlendMode: 'soft-light'
             }}
           />
           <div className={`leading-relaxed w-full ${
