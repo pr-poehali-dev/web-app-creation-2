@@ -1,4 +1,4 @@
-import { Paragraph, Novel, ParagraphType, MergeLayoutType } from '@/types/novel';
+import { Paragraph, Novel, ParagraphType, MergeLayoutType, PastelColor } from '@/types/novel';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -111,6 +111,28 @@ function ParagraphEditorHeader({
             <Label htmlFor={`timeframe-retro-${index}`} className="cursor-pointer">
               <Icon name="History" size={12} className="text-amber-600" />
             </Label>
+            {paragraph.timeframes?.includes('retrospective') && (
+              <Select
+                value={paragraph.pastelColor || 'pink'}
+                onValueChange={(value) => {
+                  onUpdate(index, { ...paragraph, pastelColor: value as PastelColor });
+                }}
+              >
+                <SelectTrigger className="w-20 h-6 text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="pink">🌸 Pink</SelectItem>
+                  <SelectItem value="blue">💙 Blue</SelectItem>
+                  <SelectItem value="peach">🍑 Peach</SelectItem>
+                  <SelectItem value="lavender">💜 Lavender</SelectItem>
+                  <SelectItem value="mint">🌿 Mint</SelectItem>
+                  <SelectItem value="yellow">💛 Yellow</SelectItem>
+                  <SelectItem value="coral">🪸 Coral</SelectItem>
+                  <SelectItem value="sky">☁️ Sky</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
           </div>
         </div>
         <div className="flex gap-1">
