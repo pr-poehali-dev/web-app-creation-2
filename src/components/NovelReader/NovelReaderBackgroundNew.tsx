@@ -104,14 +104,14 @@ function NovelReaderBackgroundNew({
 
   const getPastelColor = (color?: string) => {
     const colors = {
-      pink: 'rgba(255, 182, 193, 0.6)',
-      blue: 'rgba(173, 216, 230, 0.6)',
-      peach: 'rgba(255, 218, 185, 0.6)',
-      lavender: 'rgba(221, 160, 221, 0.6)',
-      mint: 'rgba(152, 255, 152, 0.6)',
-      yellow: 'rgba(255, 255, 153, 0.6)',
-      coral: 'rgba(255, 160, 122, 0.6)',
-      sky: 'rgba(135, 206, 235, 0.6)'
+      pink: 'rgba(255, 182, 193, 0.4)',
+      blue: 'rgba(173, 216, 230, 0.4)',
+      peach: 'rgba(255, 218, 185, 0.4)',
+      lavender: 'rgba(221, 160, 221, 0.4)',
+      mint: 'rgba(152, 255, 152, 0.4)',
+      yellow: 'rgba(255, 255, 153, 0.4)',
+      coral: 'rgba(255, 160, 122, 0.4)',
+      sky: 'rgba(135, 206, 235, 0.4)'
     };
     return colors[color as keyof typeof colors] || colors.pink;
   };
@@ -168,7 +168,7 @@ function NovelReaderBackgroundNew({
           className="absolute inset-0 transition-all duration-1000 ease-in-out"
           style={{ 
             background: isRetrospective 
-              ? `radial-gradient(circle at center, ${getPastelColor(currentParagraph.pastelColor)} 0%, ${getPastelColor(currentParagraph.pastelColor).replace('0.6', '0.25')} 60%, rgba(0, 0, 0, 0.3) 100%)`
+              ? `radial-gradient(circle at center, ${getPastelColor(currentParagraph.pastelColor)} 0%, ${getPastelColor(currentParagraph.pastelColor).replace('0.4', '0.15')} 60%, rgba(0, 0, 0, 0.3) 100%)`
               : 'rgba(0, 0, 0, 0.2)'
           }}
         />

@@ -53,14 +53,14 @@ function NovelReaderContent({
 
   const getPastelColor = (color?: string) => {
     const colors = {
-      pink: 'rgba(255, 182, 193, 0.7)',
-      blue: 'rgba(173, 216, 230, 0.7)',
-      peach: 'rgba(255, 218, 185, 0.7)',
-      lavender: 'rgba(221, 160, 221, 0.7)',
-      mint: 'rgba(152, 255, 152, 0.7)',
-      yellow: 'rgba(255, 255, 153, 0.7)',
-      coral: 'rgba(255, 160, 122, 0.7)',
-      sky: 'rgba(135, 206, 235, 0.7)'
+      pink: 'rgba(255, 182, 193, 0.5)',
+      blue: 'rgba(173, 216, 230, 0.5)',
+      peach: 'rgba(255, 218, 185, 0.5)',
+      lavender: 'rgba(221, 160, 221, 0.5)',
+      mint: 'rgba(152, 255, 152, 0.5)',
+      yellow: 'rgba(255, 255, 153, 0.5)',
+      coral: 'rgba(255, 160, 122, 0.5)',
+      sky: 'rgba(135, 206, 235, 0.5)'
     };
     return colors[color as keyof typeof colors] || colors.pink;
   };
@@ -75,8 +75,8 @@ function NovelReaderContent({
             className="absolute inset-0 pointer-events-none rounded-xl md:rounded-2xl transition-all duration-1000 ease-in-out"
             style={{
               opacity: isRetrospective ? 1 : 0,
-              background: `radial-gradient(circle at center, ${getPastelColor(currentParagraph.pastelColor)} 0%, ${getPastelColor(currentParagraph.pastelColor).replace('0.7', '0.3')} 50%, transparent 100%)`,
-              backdropFilter: isRetrospective ? 'saturate(1.3) brightness(1.08)' : 'none'
+              background: `radial-gradient(circle at center, ${getPastelColor(currentParagraph.pastelColor)} 0%, ${getPastelColor(currentParagraph.pastelColor).replace('0.5', '0.2')} 50%, transparent 100%)`,
+              backdropFilter: isRetrospective ? 'saturate(1.2) brightness(1.05)' : 'none'
             }}
           />
           <div className={`leading-relaxed w-full ${

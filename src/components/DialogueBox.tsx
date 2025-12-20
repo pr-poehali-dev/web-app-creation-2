@@ -55,27 +55,27 @@ function DialogueBox({
           style={{
             opacity: isRetrospective ? 1 : 0,
             background: `radial-gradient(circle at center, ${
-              pastelColor === 'pink' ? 'rgba(255, 182, 193, 0.7)' :
-              pastelColor === 'blue' ? 'rgba(173, 216, 230, 0.7)' :
-              pastelColor === 'peach' ? 'rgba(255, 218, 185, 0.7)' :
-              pastelColor === 'lavender' ? 'rgba(221, 160, 221, 0.7)' :
-              pastelColor === 'mint' ? 'rgba(152, 255, 152, 0.7)' :
-              pastelColor === 'yellow' ? 'rgba(255, 255, 153, 0.7)' :
-              pastelColor === 'coral' ? 'rgba(255, 160, 122, 0.7)' :
-              pastelColor === 'sky' ? 'rgba(135, 206, 235, 0.7)' :
-              'rgba(255, 182, 193, 0.7)'
+              pastelColor === 'pink' ? 'rgba(255, 182, 193, 0.5)' :
+              pastelColor === 'blue' ? 'rgba(173, 216, 230, 0.5)' :
+              pastelColor === 'peach' ? 'rgba(255, 218, 185, 0.5)' :
+              pastelColor === 'lavender' ? 'rgba(221, 160, 221, 0.5)' :
+              pastelColor === 'mint' ? 'rgba(152, 255, 152, 0.5)' :
+              pastelColor === 'yellow' ? 'rgba(255, 255, 153, 0.5)' :
+              pastelColor === 'coral' ? 'rgba(255, 160, 122, 0.5)' :
+              pastelColor === 'sky' ? 'rgba(135, 206, 235, 0.5)' :
+              'rgba(255, 182, 193, 0.5)'
             } 0%, ${
-              pastelColor === 'pink' ? 'rgba(255, 182, 193, 0.3)' :
-              pastelColor === 'blue' ? 'rgba(173, 216, 230, 0.3)' :
-              pastelColor === 'peach' ? 'rgba(255, 218, 185, 0.3)' :
-              pastelColor === 'lavender' ? 'rgba(221, 160, 221, 0.3)' :
-              pastelColor === 'mint' ? 'rgba(152, 255, 152, 0.3)' :
-              pastelColor === 'yellow' ? 'rgba(255, 255, 153, 0.3)' :
-              pastelColor === 'coral' ? 'rgba(255, 160, 122, 0.3)' :
-              pastelColor === 'sky' ? 'rgba(135, 206, 235, 0.3)' :
-              'rgba(255, 182, 193, 0.3)'
+              pastelColor === 'pink' ? 'rgba(255, 182, 193, 0.2)' :
+              pastelColor === 'blue' ? 'rgba(173, 216, 230, 0.2)' :
+              pastelColor === 'peach' ? 'rgba(255, 218, 185, 0.2)' :
+              pastelColor === 'lavender' ? 'rgba(221, 160, 221, 0.2)' :
+              pastelColor === 'mint' ? 'rgba(152, 255, 152, 0.2)' :
+              pastelColor === 'yellow' ? 'rgba(255, 255, 153, 0.2)' :
+              pastelColor === 'coral' ? 'rgba(255, 160, 122, 0.2)' :
+              pastelColor === 'sky' ? 'rgba(135, 206, 235, 0.2)' :
+              'rgba(255, 182, 193, 0.2)'
             } 50%, transparent 100%)`,
-            backdropFilter: isRetrospective ? 'saturate(1.3) brightness(1.08)' : 'none'
+            backdropFilter: isRetrospective ? 'saturate(1.2) brightness(1.05)' : 'none'
           }}
         />
         
