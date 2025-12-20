@@ -164,16 +164,26 @@ export default function ComicFrameReader({ paragraph, currentSubParagraphIndex, 
                     className="absolute inset-0 rounded-lg pointer-events-none transition-opacity duration-1000"
                     style={{
                       background: `radial-gradient(circle at center, ${
-                        pastelColor === 'pink' ? 'rgba(255, 182, 193, 0.3)' :
-                        pastelColor === 'blue' ? 'rgba(173, 216, 230, 0.3)' :
-                        pastelColor === 'peach' ? 'rgba(255, 218, 185, 0.3)' :
-                        pastelColor === 'lavender' ? 'rgba(221, 160, 221, 0.3)' :
-                        pastelColor === 'mint' ? 'rgba(152, 255, 152, 0.3)' :
-                        pastelColor === 'yellow' ? 'rgba(255, 255, 153, 0.3)' :
-                        pastelColor === 'coral' ? 'rgba(255, 160, 122, 0.3)' :
-                        pastelColor === 'sky' ? 'rgba(135, 206, 235, 0.3)' :
-                        'rgba(255, 182, 193, 0.3)'
-                      } 0%, transparent 70%)`,
+                        pastelColor === 'pink' ? 'rgba(255, 182, 193, 0.5)' :
+                        pastelColor === 'blue' ? 'rgba(173, 216, 230, 0.5)' :
+                        pastelColor === 'peach' ? 'rgba(255, 218, 185, 0.5)' :
+                        pastelColor === 'lavender' ? 'rgba(221, 160, 221, 0.5)' :
+                        pastelColor === 'mint' ? 'rgba(152, 255, 152, 0.5)' :
+                        pastelColor === 'yellow' ? 'rgba(255, 255, 153, 0.5)' :
+                        pastelColor === 'coral' ? 'rgba(255, 160, 122, 0.5)' :
+                        pastelColor === 'sky' ? 'rgba(135, 206, 235, 0.5)' :
+                        'rgba(255, 182, 193, 0.5)'
+                      } 0%, ${
+                        pastelColor === 'pink' ? 'rgba(255, 182, 193, 0.2)' :
+                        pastelColor === 'blue' ? 'rgba(173, 216, 230, 0.2)' :
+                        pastelColor === 'peach' ? 'rgba(255, 218, 185, 0.2)' :
+                        pastelColor === 'lavender' ? 'rgba(221, 160, 221, 0.2)' :
+                        pastelColor === 'mint' ? 'rgba(152, 255, 152, 0.2)' :
+                        pastelColor === 'yellow' ? 'rgba(255, 255, 153, 0.2)' :
+                        pastelColor === 'coral' ? 'rgba(255, 160, 122, 0.2)' :
+                        pastelColor === 'sky' ? 'rgba(135, 206, 235, 0.2)' :
+                        'rgba(255, 182, 193, 0.2)'
+                      } 60%, transparent 100%)`,
                       mixBlendMode: 'soft-light'
                     }}
                   />
