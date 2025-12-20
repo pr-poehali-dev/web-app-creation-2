@@ -51,6 +51,20 @@ function NovelReaderContent({
   const timeframes = currentParagraph.timeframes || currentEpisode.timeframes || ['present'];
   const isRetrospective = timeframes.includes('retrospective');
 
+  const getPastelColor = (color?: string) => {
+    const colors = {
+      pink: 'rgba(255, 182, 193, 0.5)',
+      blue: 'rgba(173, 216, 230, 0.5)',
+      peach: 'rgba(255, 218, 185, 0.5)',
+      lavender: 'rgba(221, 160, 221, 0.5)',
+      mint: 'rgba(152, 255, 152, 0.5)',
+      yellow: 'rgba(255, 255, 153, 0.5)',
+      coral: 'rgba(255, 160, 122, 0.5)',
+      sky: 'rgba(135, 206, 235, 0.5)'
+    };
+    return colors[color as keyof typeof colors] || colors.pink;
+  };
+
   return (
     <>
       {currentParagraph.type === 'text' && (
@@ -60,10 +74,9 @@ function NovelReaderContent({
           <div 
             className="absolute inset-0 pointer-events-none rounded-xl md:rounded-2xl transition-all duration-1000 ease-in-out"
             style={{
-              opacity: isRetrospective ? 0.4 : 0,
-              background: 'linear-gradient(135deg, rgba(255, 182, 193, 0.3), rgba(173, 216, 230, 0.3), rgba(255, 218, 185, 0.3), rgba(221, 160, 221, 0.3))',
-              backdropFilter: isRetrospective ? 'saturate(1.3) contrast(0.95)' : 'none',
-              mixBlendMode: 'soft-light'
+              opacity: isRetrospective ? 1 : 0,
+              background: `radial-gradient(circle at center, ${getPastelColor(currentParagraph.pastelColor)} 0%, transparent 70%)`,
+              backdropFilter: isRetrospective ? 'saturate(1.2) brightness(1.05)' : 'none'
             }}
           />
           <div className={`leading-relaxed w-full ${

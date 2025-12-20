@@ -72,6 +72,8 @@ export interface ComicFrame {
   objectFit?: 'cover' | 'contain' | 'fill'; // CSS object-fit
 }
 
+export type PastelColor = 'pink' | 'blue' | 'peach' | 'lavender' | 'mint' | 'yellow' | 'coral' | 'sky';
+
 export interface BaseParagraph {
   id: string;
   type: ParagraphType;
@@ -80,6 +82,7 @@ export interface BaseParagraph {
   frameLayout?: MergeLayoutType; // Раскладка фреймов
   frameAnimation?: FrameAnimationType; // Общая анимация для всех фреймов
   timeframes?: ('present' | 'retrospective')[];
+  pastelColor?: PastelColor; // Цвет для ретроспективы
   requiredPaths?: string[];
 }
 
