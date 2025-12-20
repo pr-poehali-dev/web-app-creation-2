@@ -121,6 +121,7 @@ function NovelReaderContent({
             fontFamily={novelFontStyle.fontFamily}
             isTopMerged={isTopMerged}
             isRetrospective={isRetrospective}
+            pastelColor={currentParagraph.pastelColor}
             shouldAnimate={!isSameCharacter}
             resetKey={paragraphKey}
             existingComment={profile.metCharacters?.find(

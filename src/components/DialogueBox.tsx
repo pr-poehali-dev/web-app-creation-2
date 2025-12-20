@@ -18,6 +18,7 @@ interface DialogueBoxProps {
   fontFamily?: string;
   isTopMerged?: boolean;
   isRetrospective?: boolean;
+  pastelColor?: string;
   shouldAnimate?: boolean;
   resetKey?: string;
 }
@@ -34,6 +35,7 @@ function DialogueBox({
   fontFamily,
   isTopMerged = false,
   isRetrospective = false,
+  pastelColor,
   shouldAnimate = true,
   resetKey
 }: DialogueBoxProps) {
@@ -52,8 +54,18 @@ function DialogueBox({
           className="absolute inset-0 pointer-events-none rounded-xl md:rounded-2xl transition-all duration-1000 ease-in-out"
           style={{
             opacity: isRetrospective ? 1 : 0,
-            boxShadow: 'inset 0 0 60px 20px rgba(0, 0, 0, 0.4)',
-            background: 'radial-gradient(ellipse at center, transparent 30%, rgba(0, 0, 0, 0.3) 100%)'
+            background: `radial-gradient(circle at center, ${
+              pastelColor === 'pink' ? 'rgba(255, 182, 193, 0.5)' :
+              pastelColor === 'blue' ? 'rgba(173, 216, 230, 0.5)' :
+              pastelColor === 'peach' ? 'rgba(255, 218, 185, 0.5)' :
+              pastelColor === 'lavender' ? 'rgba(221, 160, 221, 0.5)' :
+              pastelColor === 'mint' ? 'rgba(152, 255, 152, 0.5)' :
+              pastelColor === 'yellow' ? 'rgba(255, 255, 153, 0.5)' :
+              pastelColor === 'coral' ? 'rgba(255, 160, 122, 0.5)' :
+              pastelColor === 'sky' ? 'rgba(135, 206, 235, 0.5)' :
+              'rgba(255, 182, 193, 0.5)'
+            } 0%, transparent 70%)`,
+            backdropFilter: isRetrospective ? 'saturate(1.2) brightness(1.05)' : 'none'
           }}
         />
         
@@ -69,9 +81,23 @@ function DialogueBox({
                     : "max-w-[7rem] max-h-[9rem] md:max-w-[9rem] md:max-h-[12rem] lg:max-w-[12rem] lg:max-h-[16rem] object-contain"
                   }
                   style={{
-                    filter: isRetrospective ? 'sepia(0.6) contrast(0.9) brightness(0.85)' : 'none',
+                    filter: isRetrospective ? 'saturate(1.2) brightness(1.05) contrast(0.95)' : 'none',
                     transition: 'filter 1.2s ease-in-out'
                   }}
+                  overlayStyle={isRetrospective ? {
+                    background: `radial-gradient(circle at center, ${
+                      pastelColor === 'pink' ? 'rgba(255, 182, 193, 0.3)' :
+                      pastelColor === 'blue' ? 'rgba(173, 216, 230, 0.3)' :
+                      pastelColor === 'peach' ? 'rgba(255, 218, 185, 0.3)' :
+                      pastelColor === 'lavender' ? 'rgba(221, 160, 221, 0.3)' :
+                      pastelColor === 'mint' ? 'rgba(152, 255, 152, 0.3)' :
+                      pastelColor === 'yellow' ? 'rgba(255, 255, 153, 0.3)' :
+                      pastelColor === 'coral' ? 'rgba(255, 160, 122, 0.3)' :
+                      pastelColor === 'sky' ? 'rgba(135, 206, 235, 0.3)' :
+                      'rgba(255, 182, 193, 0.3)'
+                    } 0%, transparent 70%)`,
+                    mixBlendMode: 'soft-light' as const
+                  } : undefined}
                 />
               ) : (
                 <div className={isTopMerged ? "text-5xl md:text-6xl lg:text-8xl" : "text-6xl md:text-7xl lg:text-9xl"}>{characterImage}</div>
