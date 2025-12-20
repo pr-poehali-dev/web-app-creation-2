@@ -9,9 +9,10 @@ interface ComicFrameReaderProps {
   layout: MergeLayoutType;
   isTyping: boolean; // Флаг печати текста
   isRetrospective?: boolean; // Флаг времени прошлого
+  pastelColor?: string; // Пастельный цвет для ретроспективы
 }
 
-export default function ComicFrameReader({ paragraph, currentSubParagraphIndex, layout, isTyping, isRetrospective = false }: ComicFrameReaderProps) {
+export default function ComicFrameReader({ paragraph, currentSubParagraphIndex, layout, isTyping, isRetrospective = false, pastelColor }: ComicFrameReaderProps) {
   const [activeFrames, setActiveFrames] = useState<ComicFrame[]>([]);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [imageAspectRatios, setImageAspectRatios] = useState<Map<string, number>>(new Map());
@@ -145,18 +146,39 @@ export default function ComicFrameReader({ paragraph, currentSubParagraphIndex, 
                 setSelectedImage(frame.url);
               }}
             >
-              <img 
-                src={frame.url} 
-                alt={frame.alt || ''} 
-                onLoad={(e) => handleImageLoad(frame.id, e)}
-                className="w-full h-full rounded-lg min-w-0"
-                style={{
-                  objectFit: frame.objectFit || 'cover',
-                  objectPosition: frame.objectPosition || 'center',
-                  filter: isRetrospective ? 'sepia(0.6) contrast(0.9) brightness(0.85)' : 'none',
-                  transition: 'filter 1.2s ease-in-out'
-                }}
-              />
+              <div className="relative w-full h-full">
+                <img 
+                  src={frame.url} 
+                  alt={frame.alt || ''} 
+                  onLoad={(e) => handleImageLoad(frame.id, e)}
+                  className="w-full h-full rounded-lg min-w-0"
+                  style={{
+                    objectFit: frame.objectFit || 'cover',
+                    objectPosition: frame.objectPosition || 'center',
+                    filter: isRetrospective ? 'saturate(1.2) brightness(1.05) contrast(0.95)' : 'none',
+                    transition: 'filter 1.2s ease-in-out'
+                  }}
+                />
+                {isRetrospective && (
+                  <div 
+                    className="absolute inset-0 rounded-lg pointer-events-none transition-opacity duration-1000"
+                    style={{
+                      background: `radial-gradient(circle at center, ${
+                        pastelColor === 'pink' ? 'rgba(255, 182, 193, 0.3)' :
+                        pastelColor === 'blue' ? 'rgba(173, 216, 230, 0.3)' :
+                        pastelColor === 'peach' ? 'rgba(255, 218, 185, 0.3)' :
+                        pastelColor === 'lavender' ? 'rgba(221, 160, 221, 0.3)' :
+                        pastelColor === 'mint' ? 'rgba(152, 255, 152, 0.3)' :
+                        pastelColor === 'yellow' ? 'rgba(255, 255, 153, 0.3)' :
+                        pastelColor === 'coral' ? 'rgba(255, 160, 122, 0.3)' :
+                        pastelColor === 'sky' ? 'rgba(135, 206, 235, 0.3)' :
+                        'rgba(255, 182, 193, 0.3)'
+                      } 0%, transparent 70%)`,
+                      mixBlendMode: 'soft-light'
+                    }}
+                  />
+                )}
+              </div>
             </div>
           );
         })}

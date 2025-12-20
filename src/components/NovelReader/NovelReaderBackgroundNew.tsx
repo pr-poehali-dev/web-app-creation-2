@@ -102,11 +102,25 @@ function NovelReaderBackgroundNew({
   const timeframes = currentParagraph.timeframes || currentEpisode.timeframes || ['present'];
   const isRetrospective = timeframes.includes('retrospective');
 
+  const getPastelColor = (color?: string) => {
+    const colors = {
+      pink: 'rgba(255, 182, 193, 0.4)',
+      blue: 'rgba(173, 216, 230, 0.4)',
+      peach: 'rgba(255, 218, 185, 0.4)',
+      lavender: 'rgba(221, 160, 221, 0.4)',
+      mint: 'rgba(152, 255, 152, 0.4)',
+      yellow: 'rgba(255, 255, 153, 0.4)',
+      coral: 'rgba(255, 160, 122, 0.4)',
+      sky: 'rgba(135, 206, 235, 0.4)'
+    };
+    return colors[color as keyof typeof colors] || colors.pink;
+  };
+
   const getFilterStyle = (baseFilter: string) => {
-    const sepiaAmount = isRetrospective ? 0.6 : 0;
-    const contrastAmount = isRetrospective ? 0.9 : 1;
-    const brightnessAmount = isRetrospective ? 0.85 : 1;
-    return `${baseFilter} sepia(${sepiaAmount}) contrast(${contrastAmount}) brightness(${brightnessAmount})`;
+    const contrastAmount = isRetrospective ? 0.95 : 1;
+    const brightnessAmount = isRetrospective ? 1.05 : 1;
+    const saturationAmount = isRetrospective ? 1.2 : 1;
+    return `${baseFilter} contrast(${contrastAmount}) brightness(${brightnessAmount}) saturate(${saturationAmount})`;
   };
 
   const hasComicFrames = (currentParagraph.type === 'text' || currentParagraph.type === 'dialogue') && 
@@ -150,7 +164,14 @@ function NovelReaderBackgroundNew({
           }}
         />
 
-        <div className={`absolute inset-0 ${isRetrospective ? 'bg-amber-950/30' : 'bg-black/20'}`} style={{ transition: 'background-color 1.2s ease-in-out' }} />
+        <div 
+          className="absolute inset-0 transition-all duration-1000 ease-in-out"
+          style={{ 
+            background: isRetrospective 
+              ? `radial-gradient(circle at center, ${getPastelColor(currentParagraph.pastelColor)} 0%, rgba(0, 0, 0, 0.3) 70%)`
+              : 'rgba(0, 0, 0, 0.2)'
+          }}
+        />
         
         {/* Картинки-параграфы поверх фона */}
         {currentParagraph.type === 'image' && (
@@ -183,6 +204,7 @@ function NovelReaderBackgroundNew({
                 layout={currentParagraph.frameLayout || 'single'}
                 isTyping={isTyping}
                 isRetrospective={isRetrospective}
+                pastelColor={currentParagraph.pastelColor}
               />
             </div>
           </div>
