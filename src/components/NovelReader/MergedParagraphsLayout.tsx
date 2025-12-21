@@ -109,6 +109,45 @@ export default function MergedParagraphsLayout({ layout, children, aspectRatios 
       case 'magazine-9':
         return 'grid grid-cols-4 grid-rows-4 gap-3';
       
+      case 'diagonal-left':
+        return 'grid grid-cols-2 grid-rows-3 gap-2';
+      
+      case 'diagonal-right':
+        return 'grid grid-cols-2 grid-rows-3 gap-2';
+      
+      case 'diagonal-split':
+        return 'grid grid-cols-1 grid-rows-2 gap-0 relative';
+      
+      case 'triangle-top':
+        return 'grid grid-cols-2 grid-rows-2 gap-2';
+      
+      case 'triangle-bottom':
+        return 'grid grid-cols-2 grid-rows-2 gap-2';
+      
+      case 'triangle-left':
+        return 'grid grid-cols-2 grid-rows-2 gap-2';
+      
+      case 'triangle-right':
+        return 'grid grid-cols-2 grid-rows-2 gap-2';
+      
+      case 'parallelogram-2':
+        return 'grid grid-cols-2 grid-rows-5 gap-3';
+      
+      case 'parallelogram-3':
+        return 'grid grid-cols-3 grid-rows-5 gap-3';
+      
+      case 'zigzag-3':
+        return 'grid grid-cols-3 grid-rows-3 gap-3';
+      
+      case 'diamond-center':
+        return 'grid grid-cols-4 grid-rows-4 gap-3';
+      
+      case 'chevron-2':
+        return 'grid grid-cols-2 grid-rows-2 gap-0';
+      
+      case 'chevron-3':
+        return 'grid grid-cols-3 grid-rows-2 gap-0';
+      
       default:
         return 'grid grid-cols-3 gap-4';
     }
@@ -270,6 +309,81 @@ export default function MergedParagraphsLayout({ layout, children, aspectRatios 
         if (index === 5) return 'col-start-1 row-start-2';
         if (index === 6) return 'col-start-4 row-start-2';
         if (index === 7) return 'col-start-2 row-start-1';
+        return '';
+      
+      case 'diagonal-left':
+        if (index === 0) return 'col-start-1 row-start-1 row-span-2';
+        if (index === 1) return 'col-start-2 row-start-2 row-span-2';
+        return '';
+      
+      case 'diagonal-right':
+        if (index === 0) return 'col-start-2 row-start-1 row-span-2';
+        if (index === 1) return 'col-start-1 row-start-2 row-span-2';
+        return '';
+      
+      case 'diagonal-split':
+        if (index === 0) return 'col-start-1 row-start-1 row-span-2 [clip-path:polygon(0_0,100%_0,100%_70%,0_100%)]';
+        if (index === 1) return 'col-start-1 row-start-1 row-span-2 [clip-path:polygon(0_30%,100%_0,100%_100%,0_100%)]';
+        return '';
+      
+      case 'triangle-top':
+        if (index === 0) return 'col-start-1 col-span-2 row-start-1';
+        if (index === 1) return 'col-start-1 row-start-2';
+        if (index === 2) return 'col-start-2 row-start-2';
+        return '';
+      
+      case 'triangle-bottom':
+        if (index === 0) return 'col-start-1 row-start-1';
+        if (index === 1) return 'col-start-2 row-start-1';
+        if (index === 2) return 'col-start-1 col-span-2 row-start-2';
+        return '';
+      
+      case 'triangle-left':
+        if (index === 0) return 'col-start-1 row-start-1 row-span-2';
+        if (index === 1) return 'col-start-2 row-start-1';
+        if (index === 2) return 'col-start-2 row-start-2';
+        return '';
+      
+      case 'triangle-right':
+        if (index === 0) return 'col-start-1 row-start-1';
+        if (index === 1) return 'col-start-1 row-start-2';
+        if (index === 2) return 'col-start-2 row-start-1 row-span-2';
+        return '';
+      
+      case 'parallelogram-2':
+        if (index === 0) return 'col-start-1 row-start-1 row-span-3 [transform:skewY(-5deg)]';
+        if (index === 1) return 'col-start-2 row-start-2 row-span-3 [transform:skewY(-5deg)]';
+        return '';
+      
+      case 'parallelogram-3':
+        if (index === 0) return 'col-start-1 row-start-1 row-span-2 [transform:skewY(-5deg)]';
+        if (index === 1) return 'col-start-2 row-start-2 row-span-2 [transform:skewY(-5deg)]';
+        if (index === 2) return 'col-start-3 row-start-3 row-span-2 [transform:skewY(-5deg)]';
+        return '';
+      
+      case 'zigzag-3':
+        if (index === 0) return 'col-start-1 row-start-1 row-span-2 [transform:rotate(-8deg)]';
+        if (index === 1) return 'col-start-2 row-start-2 row-span-2 [transform:rotate(3deg)]';
+        if (index === 2) return 'col-start-3 row-start-1 row-span-2 [transform:rotate(-5deg)]';
+        return '';
+      
+      case 'diamond-center':
+        if (index === 0) return 'col-start-2 col-span-2 row-start-2 row-span-2 [transform:rotate(45deg)] aspect-square';
+        if (index === 1) return 'col-start-1 row-start-1';
+        if (index === 2) return 'col-start-4 row-start-1';
+        if (index === 3) return 'col-start-1 row-start-4';
+        if (index === 4) return 'col-start-4 row-start-4';
+        return '';
+      
+      case 'chevron-2':
+        if (index === 0) return 'col-start-1 row-start-1 row-span-2 [clip-path:polygon(0_0,70%_0,100%_50%,70%_100%,0_100%)]';
+        if (index === 1) return 'col-start-2 row-start-1 row-span-2 [clip-path:polygon(30%_0,100%_0,100%_100%,30%_100%,0_50%)]';
+        return '';
+      
+      case 'chevron-3':
+        if (index === 0) return 'col-start-1 row-start-1 row-span-2 [clip-path:polygon(0_0,80%_0,100%_50%,80%_100%,0_100%)]';
+        if (index === 1) return 'col-start-2 row-start-1 row-span-2 [clip-path:polygon(20%_0,80%_0,100%_50%,80%_100%,20%_100%,0_50%)]';
+        if (index === 2) return 'col-start-3 row-start-1 row-span-2 [clip-path:polygon(20%_0,100%_0,100%_100%,20%_100%,0_50%)]';
         return '';
       
       default:

@@ -30,6 +30,27 @@ const LAYOUT_OPTIONS = [
     { value: 'mosaic-left', label: '⬛◻️◻️ Мозаика ←' },
     { value: 'mosaic-right', label: '◻️◻️⬛ Мозаика →' },
     { value: 'l-shape', label: '↪️ L-форма' }
+  ]},
+  { group: 'Диагональные', items: [
+    { value: 'diagonal-left', label: '◥◤ Диагональ ←' },
+    { value: 'diagonal-right', label: '◤◥ Диагональ →' },
+    { value: 'diagonal-split', label: '⧄ Диагональный разрез' }
+  ]},
+  { group: 'Треугольники', items: [
+    { value: 'triangle-top', label: '▲ Треугольник ↑' },
+    { value: 'triangle-bottom', label: '▼ Треугольник ↓' },
+    { value: 'triangle-left', label: '◀ Треугольник ←' },
+    { value: 'triangle-right', label: '▶ Треугольник →' }
+  ]},
+  { group: 'Наклонные', items: [
+    { value: 'parallelogram-2', label: '▱▱ Параллелограммы 2' },
+    { value: 'parallelogram-3', label: '▱▱▱ Параллелограммы 3' },
+    { value: 'zigzag-3', label: '⚡ Зигзаг' },
+    { value: 'chevron-2', label: '⌃⌃ Шеврон 2' },
+    { value: 'chevron-3', label: '⌃⌃⌃ Шеврон 3' }
+  ]},
+  { group: 'Фигурные', items: [
+    { value: 'diamond-center', label: '◇ Ромб в центре' }
   ]}
 ] as const;
 
@@ -100,6 +121,19 @@ function ComicFrameEditor({ frames, layout, defaultAnimation, subParagraphs, onF
       case 'magazine-7': return 8;
       case 'magazine-8': return 2;
       case 'magazine-9': return 8;
+      case 'diagonal-left': return 2;
+      case 'diagonal-right': return 2;
+      case 'diagonal-split': return 2;
+      case 'triangle-top': return 3;
+      case 'triangle-bottom': return 3;
+      case 'triangle-left': return 3;
+      case 'triangle-right': return 3;
+      case 'parallelogram-2': return 2;
+      case 'parallelogram-3': return 3;
+      case 'zigzag-3': return 3;
+      case 'diamond-center': return 5;
+      case 'chevron-2': return 2;
+      case 'chevron-3': return 3;
       default: return 3;
     }
   };
