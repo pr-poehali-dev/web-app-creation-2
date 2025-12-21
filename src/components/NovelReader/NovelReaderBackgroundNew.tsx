@@ -283,6 +283,7 @@ function NovelReaderBackgroundNew({
         {/* Группированные комикс-фреймы (новая система) */}
         {comicGroupData && showComicFrames && (
           <div 
+            key={`comic-group-${currentParagraph.comicGroupId}`}
             className="absolute inset-0 flex items-center justify-center p-4 md:p-8 z-30 transition-all duration-300 ease-in-out"
             style={{ 
               opacity: actualIsContentHidden ? 0 : 1,
@@ -291,6 +292,7 @@ function NovelReaderBackgroundNew({
           >
             <div className="w-full h-full max-w-4xl">
               <ComicFrameReader
+                key={`comic-group-reader-${currentParagraph.comicGroupId}`}
                 paragraph={{
                   ...currentParagraph,
                   comicFrames: comicGroupData.frames,
@@ -298,7 +300,7 @@ function NovelReaderBackgroundNew({
                 } as TextParagraph | DialogueParagraph}
                 currentSubParagraphIndex={undefined}
                 layout={comicGroupData.layout}
-                isTyping={isTyping}
+                isTyping={false}
                 isRetrospective={isRetrospective}
                 pastelColor={effectivePastelColor}
                 isComicGroup={true}
