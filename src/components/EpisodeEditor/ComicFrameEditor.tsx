@@ -33,8 +33,7 @@ const LAYOUT_OPTIONS = [
   ]},
   { group: 'Диагональные', items: [
     { value: 'diagonal-left', label: '◥◤ Диагональ ←' },
-    { value: 'diagonal-right', label: '◤◥ Диагональ →' },
-    { value: 'diagonal-split', label: '⧄ Диагональный разрез' }
+    { value: 'diagonal-right', label: '◤◥ Диагональ →' }
   ]},
   { group: 'Треугольники', items: [
     { value: 'triangle-top', label: '▲ Треугольник ↑' },
@@ -42,15 +41,14 @@ const LAYOUT_OPTIONS = [
     { value: 'triangle-left', label: '◀ Треугольник ←' },
     { value: 'triangle-right', label: '▶ Треугольник →' }
   ]},
-  { group: 'Наклонные', items: [
-    { value: 'parallelogram-2', label: '▱▱ Параллелограммы 2' },
-    { value: 'parallelogram-3', label: '▱▱▱ Параллелограммы 3' },
-    { value: 'zigzag-3', label: '⚡ Зигзаг' },
-    { value: 'chevron-2', label: '⌃⌃ Шеврон 2' },
-    { value: 'chevron-3', label: '⌃⌃⌃ Шеврон 3' }
-  ]},
-  { group: 'Фигурные', items: [
-    { value: 'diamond-center', label: '◇ Ромб в центре' }
+  { group: 'Круглые', items: [
+    { value: 'circle-2-left', label: '●●▫ 2 круга ←' },
+    { value: 'circle-2-right', label: '▫●● 2 круга →' },
+    { value: 'circle-3-row', label: '●●● 3 круга в ряд' },
+    { value: 'circle-4-corners', label: '● Круги по углам' },
+    { value: 'circle-duo-large', label: '●● 2 больших круга' },
+    { value: 'circle-trio-overlap', label: '●●● Перекрытие' },
+    { value: 'circle-scatter-5', label: '● 5 кругов рассыпью' }
   ]}
 ] as const;
 
@@ -123,17 +121,17 @@ function ComicFrameEditor({ frames, layout, defaultAnimation, subParagraphs, onF
       case 'magazine-9': return 8;
       case 'diagonal-left': return 2;
       case 'diagonal-right': return 2;
-      case 'diagonal-split': return 2;
       case 'triangle-top': return 3;
       case 'triangle-bottom': return 3;
       case 'triangle-left': return 3;
       case 'triangle-right': return 3;
-      case 'parallelogram-2': return 2;
-      case 'parallelogram-3': return 3;
-      case 'zigzag-3': return 3;
-      case 'diamond-center': return 5;
-      case 'chevron-2': return 2;
-      case 'chevron-3': return 3;
+      case 'circle-2-left': return 3;
+      case 'circle-2-right': return 3;
+      case 'circle-3-row': return 3;
+      case 'circle-4-corners': return 5;
+      case 'circle-duo-large': return 2;
+      case 'circle-trio-overlap': return 3;
+      case 'circle-scatter-5': return 5;
       default: return 3;
     }
   };
