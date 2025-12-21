@@ -10,9 +10,21 @@ interface AdminLoginProps {
 }
 
 function AdminLogin({ onSuccess, onCancel }: AdminLoginProps) {
-  const handleEnter = () => {
-    localStorage.setItem('adminAuth', 'true');
-    onSuccess();
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    const ADMIN_PASSWORD = localStorage.getItem('adminPassword') || 'admin123';
+    
+    if (password === ADMIN_PASSWORD) {
+      localStorage.setItem('adminAuth', 'true');
+      onSuccess();
+    } else {
+      setError('Неверный пароль');
+      setPassword('');
+    }
   };
 
   return (
@@ -25,19 +37,40 @@ function AdminLogin({ onSuccess, onCancel }: AdminLoginProps) {
           </Button>
         </div>
 
-        <div className="space-y-4">
-          <p className="text-muted-foreground text-sm">
-            Нажмите кнопку ниже для входа в режим редактирования
-          </p>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <Label htmlFor="password" className="text-foreground">Пароль</Label>
+            <Input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setError('');
+              }}
+              placeholder="Введите пароль"
+              className="mt-1"
+              autoFocus
+            />
+            {error && (
+              <p className="text-destructive text-sm mt-1">{error}</p>
+            )}
+          </div>
 
           <div className="flex gap-2">
-            <Button onClick={handleEnter} className="flex-1">
+            <Button type="submit" className="flex-1">
               Войти
             </Button>
             <Button type="button" variant="outline" onClick={onCancel} className="flex-1">
               Отмена
             </Button>
           </div>
+        </form>
+
+        <div className="mt-4 p-3 bg-muted rounded-md">
+          <p className="text-xs text-muted-foreground">
+            💡 Пароль по умолчанию: <code className="bg-background px-1 py-0.5 rounded">admin123</code>
+          </p>
         </div>
       </div>
     </div>

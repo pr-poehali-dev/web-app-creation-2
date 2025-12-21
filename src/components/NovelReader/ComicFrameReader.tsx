@@ -12,11 +12,24 @@ interface ComicFrameReaderProps {
   pastelColor?: string; // Пастельный цвет для ретроспективы
 }
 
+const BRUSH_MASKS = [
+  'https://cdn.poehali.dev/files/brush-mask-1.png',
+  'https://cdn.poehali.dev/files/brush-mask-2.png',
+  'https://cdn.poehali.dev/files/brush-mask-3.png',
+  'https://cdn.poehali.dev/files/brush-mask-4.png',
+  'https://cdn.poehali.dev/files/brush-mask-5.png',
+  'https://cdn.poehali.dev/files/brush-mask-6.png',
+  'https://cdn.poehali.dev/files/brush-mask-7.png',
+  'https://cdn.poehali.dev/files/brush-mask-8.png',
+];
+
 export default function ComicFrameReader({ paragraph, currentSubParagraphIndex, layout, isTyping, isRetrospective = false, pastelColor }: ComicFrameReaderProps) {
   const [activeFrames, setActiveFrames] = useState<ComicFrame[]>([]);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [imageAspectRatios, setImageAspectRatios] = useState<Map<string, number>>(new Map());
   const [showFrames, setShowFrames] = useState(false);
+  const [brushMasks, setBrushMasks] = useState<string[]>([]);
+  const [masksLoaded, setMasksLoaded] = useState<Set<string>>(new Set());
 
   // Показываем фреймы только после завершения печати текста
   useEffect(() => {
@@ -68,6 +81,28 @@ export default function ComicFrameReader({ paragraph, currentSubParagraphIndex, 
       setActiveFrames(defaultFrames);
     }
   }, [currentSubParagraphIndex, paragraph.comicFrames, paragraph.subParagraphs, showFrames]);
+
+  useEffect(() => {
+    if (isRetrospective && activeFrames.length > 0) {
+      const masks = activeFrames.map((_, index) => BRUSH_MASKS[index % BRUSH_MASKS.length]);
+      setBrushMasks(masks);
+      
+      // Предзагрузка масок
+      masks.forEach(maskUrl => {
+        const img = new Image();
+        img.onload = () => {
+          setMasksLoaded(prev => new Set(prev).add(maskUrl));
+        };
+        img.onerror = () => {
+          console.warn('Failed to load mask:', maskUrl);
+        };
+        img.src = maskUrl;
+      });
+    } else {
+      setBrushMasks([]);
+      setMasksLoaded(new Set());
+    }
+  }, [isRetrospective, activeFrames.length]);
 
   const handleImageLoad = (frameId: string, event: React.SyntheticEvent<HTMLImageElement>) => {
     const img = event.currentTarget;
@@ -146,22 +181,35 @@ export default function ComicFrameReader({ paragraph, currentSubParagraphIndex, 
                 setSelectedImage(frame.url);
               }}
             >
-              <div className="relative w-full h-full">
+              <div 
+                className="relative w-full h-full" 
+                style={isRetrospective && brushMasks[index] && masksLoaded.has(brushMasks[index]) ? {
+                  WebkitMaskImage: `url(${brushMasks[index]})`,
+                  WebkitMaskSize: 'cover',
+                  WebkitMaskPosition: 'center',
+                  WebkitMaskRepeat: 'no-repeat',
+                  maskImage: `url(${brushMasks[index]})`,
+                  maskSize: 'cover',
+                  maskPosition: 'center',
+                  maskRepeat: 'no-repeat'
+                } : undefined}
+              >
                 <img 
                   src={frame.url} 
                   alt={frame.alt || ''} 
                   onLoad={(e) => handleImageLoad(frame.id, e)}
-                  className="w-full h-full rounded-lg min-w-0"
+                  className="w-full h-full min-w-0"
                   style={{
                     objectFit: frame.objectFit || 'cover',
                     objectPosition: frame.objectPosition || 'center',
                     filter: isRetrospective ? 'saturate(1.2) brightness(1.05) contrast(0.95)' : 'none',
-                    transition: 'filter 1.2s ease-in-out'
+                    transition: 'filter 1.2s ease-in-out',
+                    borderRadius: isRetrospective ? '0' : '0.5rem'
                   }}
                 />
                 {isRetrospective && (
                   <div 
-                    className="absolute inset-0 rounded-lg pointer-events-none transition-opacity duration-1000"
+                    className="absolute inset-0 pointer-events-none transition-opacity duration-1000"
                     style={{
                       background: `radial-gradient(circle at center, ${
                         pastelColor === 'pink' ? 'rgba(255, 182, 193, 0.3)' :
