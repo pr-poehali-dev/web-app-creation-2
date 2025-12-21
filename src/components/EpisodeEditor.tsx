@@ -1,5 +1,5 @@
 import { useState, useCallback, memo, useRef, useEffect } from 'react';
-import { Episode, Paragraph, ParagraphType, Novel } from '@/types/novel';
+import { Episode, Paragraph, ParagraphType, Novel, PastelColor } from '@/types/novel';
 import EpisodeHeader from '@/components/EpisodeEditor/EpisodeHeader';
 import ParagraphTypeButtons from '@/components/EpisodeEditor/ParagraphTypeButtons';
 import ParagraphEditor from '@/components/EpisodeEditor/ParagraphEditor';
@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Icon from '@/components/ui/icon';
 
 interface EpisodeEditorProps {
@@ -197,6 +198,15 @@ function EpisodeEditor({ episode, novel, onUpdate, onNovelUpdate }: EpisodeEdito
     setSelectedParagraphs(new Set());
   }, [episode, onUpdate, selectedParagraphs]);
 
+  const handleBulkPastelColorChange = useCallback((color: PastelColor) => {
+    const newParagraphs = episode.paragraphs.map((para, index) => {
+      if (!selectedParagraphs.has(index)) return para;
+      return { ...para, pastelColor: color };
+    });
+    
+    onUpdate({ ...episode, paragraphs: newParagraphs });
+  }, [episode, onUpdate, selectedParagraphs]);
+
   return (
     <div className="space-y-4">
       <EpisodeHeader episode={episode} novel={novel} onUpdate={onUpdate} onNovelUpdate={onNovelUpdate} />
@@ -241,6 +251,23 @@ function EpisodeEditor({ episode, novel, onUpdate, onNovelUpdate }: EpisodeEdito
                 <Icon name="History" size={14} className="text-amber-600" />
                 <span className="text-xs">Ретроспект.</span>
               </Label>
+            </div>
+            <div className="border-r pr-2">
+              <Select onValueChange={(value) => handleBulkPastelColorChange(value as PastelColor)}>
+                <SelectTrigger className="h-8 w-32">
+                  <SelectValue placeholder="Оттенок" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="pink">🌸 Розовый</SelectItem>
+                  <SelectItem value="blue">💙 Голубой</SelectItem>
+                  <SelectItem value="peach">🍑 Персиковый</SelectItem>
+                  <SelectItem value="lavender">💜 Лавандовый</SelectItem>
+                  <SelectItem value="mint">🍃 Мятный</SelectItem>
+                  <SelectItem value="yellow">💛 Жёлтый</SelectItem>
+                  <SelectItem value="coral">🪸 Коралловый</SelectItem>
+                  <SelectItem value="sky">☁️ Небесный</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <Button
               size="sm"
