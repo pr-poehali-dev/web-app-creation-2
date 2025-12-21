@@ -169,6 +169,7 @@ export interface Episode {
   unlockedForAll?: boolean;
   timeframes?: ('present' | 'retrospective')[];
   shapeTransition?: ShapeTransitionType;
+  pastelColor?: PastelColor;
 }
 
 export interface LibraryItem {

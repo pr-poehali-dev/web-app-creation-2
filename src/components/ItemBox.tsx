@@ -14,9 +14,10 @@ interface ItemBoxProps {
   itemType?: 'collectible' | 'story';
   action?: 'gain' | 'lose';
   isRetrospective?: boolean;
+  pastelColor?: string;
 }
 
-function ItemBox({ name, description, imageUrl, skipTyping, onComplete, textSpeed = 50, isTopMerged = false, itemType = 'collectible', action = 'gain', isRetrospective = false }: ItemBoxProps) {
+function ItemBox({ name, description, imageUrl, skipTyping, onComplete, textSpeed = 50, isTopMerged = false, itemType = 'collectible', action = 'gain', isRetrospective = false, pastelColor }: ItemBoxProps) {
   const getBadgeText = () => {
     if (action === 'lose') return 'Потерян предмет';
     return 'Получен предмет';
@@ -27,14 +28,27 @@ function ItemBox({ name, description, imageUrl, skipTyping, onComplete, textSpee
     return 'bg-primary text-primary-foreground';
   };
 
+  const getPastelColor = (color?: string) => {
+    const colors = {
+      pink: 'rgba(255, 182, 193, 0.5)',
+      blue: 'rgba(173, 216, 230, 0.5)',
+      peach: 'rgba(255, 218, 185, 0.5)',
+      lavender: 'rgba(221, 160, 221, 0.5)',
+      mint: 'rgba(152, 255, 152, 0.5)',
+      yellow: 'rgba(255, 255, 153, 0.5)',
+      coral: 'rgba(255, 160, 122, 0.5)',
+      sky: 'rgba(135, 206, 235, 0.5)'
+    };
+    return colors[color as keyof typeof colors] || colors.pink;
+  };
+
   return (
     <Card className="bg-gradient-to-br from-card via-secondary/10 to-accent/20 backdrop-blur-sm border-0 shadow-2xl animate-scale-in max-w-md mx-auto rounded-xl md:rounded-2xl relative">
       <div 
         className="absolute inset-0 pointer-events-none rounded-xl md:rounded-2xl transition-all duration-1000 ease-in-out"
         style={{
           opacity: isRetrospective ? 1 : 0,
-          boxShadow: 'inset 0 0 60px 20px rgba(0, 0, 0, 0.4)',
-          background: 'radial-gradient(ellipse at center, transparent 30%, rgba(0, 0, 0, 0.3) 100%)'
+          background: `radial-gradient(circle at center, ${getPastelColor(pastelColor)} 0%, ${getPastelColor(pastelColor).replace('0.5', '0.2')} 50%, transparent 100%)`
         }}
       />
       <CardContent className={isTopMerged ? "p-3 md:p-4 lg:p-6 text-center" : "p-3 md:p-4 lg:p-8 text-center"}>

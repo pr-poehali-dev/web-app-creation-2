@@ -105,6 +105,7 @@ function NovelReaderBackgroundNew({
 
   const timeframes = currentParagraph.timeframes || currentEpisode.timeframes || ['present'];
   const isRetrospective = timeframes.includes('retrospective');
+  const effectivePastelColor = currentParagraph.pastelColor || currentEpisode.pastelColor;
 
   const getPastelColor = (color?: string) => {
     const colors = {
@@ -176,7 +177,7 @@ function NovelReaderBackgroundNew({
           className="absolute inset-0 transition-all duration-1000 ease-in-out"
           style={{ 
             background: isRetrospective 
-              ? `radial-gradient(circle at center, ${getPastelColor(currentParagraph.pastelColor)} 0%, ${getPastelColor(currentParagraph.pastelColor).replace('0.4', '0.15')} 60%, rgba(0, 0, 0, 0.3) 100%)`
+              ? `radial-gradient(circle at center, ${getPastelColor(effectivePastelColor)} 0%, ${getPastelColor(effectivePastelColor).replace('0.4', '0.15')} 60%, rgba(0, 0, 0, 0.3) 100%)`
               : 'rgba(0, 0, 0, 0.2)'
           }}
         />
@@ -212,7 +213,7 @@ function NovelReaderBackgroundNew({
                 layout={currentParagraph.frameLayout || 'single'}
                 isTyping={isTyping}
                 isRetrospective={isRetrospective}
-                pastelColor={currentParagraph.pastelColor}
+                pastelColor={effectivePastelColor}
               />
             </div>
           </div>

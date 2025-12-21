@@ -65,6 +65,8 @@ function NovelReaderContent({
     return colors[color as keyof typeof colors] || colors.pink;
   };
 
+  const effectivePastelColor = currentParagraph.pastelColor || currentEpisode.pastelColor;
+
   return (
     <>
       {currentParagraph.type === 'text' && (
@@ -75,7 +77,7 @@ function NovelReaderContent({
             className="absolute inset-0 pointer-events-none rounded-xl md:rounded-2xl transition-all duration-1000 ease-in-out"
             style={{
               opacity: isRetrospective ? 1 : 0,
-              background: `radial-gradient(circle at center, ${getPastelColor(currentParagraph.pastelColor)} 0%, ${getPastelColor(currentParagraph.pastelColor).replace('0.5', '0.2')} 50%, transparent 100%)`,
+              background: `radial-gradient(circle at center, ${getPastelColor(effectivePastelColor)} 0%, ${getPastelColor(effectivePastelColor).replace('0.5', '0.2')} 50%, transparent 100%)`,
               backdropFilter: isRetrospective ? 'saturate(1.2) brightness(1.05)' : 'none'
             }}
           />
@@ -121,7 +123,7 @@ function NovelReaderContent({
             fontFamily={novelFontStyle.fontFamily}
             isTopMerged={isTopMerged}
             isRetrospective={isRetrospective}
-            pastelColor={currentParagraph.pastelColor}
+            pastelColor={effectivePastelColor}
             shouldAnimate={!isSameCharacter}
             resetKey={paragraphKey}
             existingComment={profile.metCharacters?.find(
@@ -176,6 +178,7 @@ function NovelReaderContent({
           itemType={currentParagraph.itemType}
           action={currentParagraph.action}
           isRetrospective={isRetrospective}
+          pastelColor={effectivePastelColor}
         />
       )}
 

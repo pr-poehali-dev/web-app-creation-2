@@ -331,6 +331,33 @@ function EpisodeHeader({ episode, novel, onUpdate, onNovelUpdate }: EpisodeHeade
           </p>
         </div>
 
+        {episode.timeframes?.includes('retrospective') && (
+          <div>
+            <Label className="text-foreground">Оттенок ретроспективы для эпизода</Label>
+            <Select
+              value={episode.pastelColor || 'peach'}
+              onValueChange={(value) => onUpdate({ ...episode, pastelColor: value as any })}
+            >
+              <SelectTrigger className="mt-1">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="pink">🌸 Розовый</SelectItem>
+                <SelectItem value="blue">💙 Голубой</SelectItem>
+                <SelectItem value="peach">🍑 Персиковый</SelectItem>
+                <SelectItem value="lavender">💜 Лавандовый</SelectItem>
+                <SelectItem value="mint">🍃 Мятный</SelectItem>
+                <SelectItem value="yellow">💛 Жёлтый</SelectItem>
+                <SelectItem value="coral">🪸 Коралловый</SelectItem>
+                <SelectItem value="sky">☁️ Небесный</SelectItem>
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground mt-2">
+              Этот оттенок будет применён ко всем параграфам с ретроспективой в этом эпизоде (если у параграфа не задан свой цвет)
+            </p>
+          </div>
+        )}
+
         <div>
           <Label className="text-foreground">Фоновая музыка</Label>
           <div className="flex gap-2 mt-2">
