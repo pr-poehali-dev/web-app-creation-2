@@ -79,32 +79,22 @@ function NovelReaderEffects({
     
     
     if (bgUrl !== backgroundImage) {
-      const episodeChanged = previousEpisodeIdRef.current !== null && previousEpisodeIdRef.current !== currentEpisodeId;
-      const isFirstParagraph = currentParagraphIndex === 0;
-      
       setBackgroundObjectFit(bgObjectFit);
       setBackgroundObjectPosition(bgObjectPosition);
       
-      if (episodeChanged && !isFirstParagraph) {
-        setBackgroundImage(bgUrl);
-        setPreviousBackgroundImage(null);
-        setIsBackgroundChanging(false);
+      setPreviousBackgroundImage(backgroundImage);
+      setBackgroundImage(bgUrl);
+      setIsBackgroundChanging(true);
+      setNewImageReady(false);
+      
+      setTimeout(() => {
         setNewImageReady(true);
-      } else {
-        setPreviousBackgroundImage(backgroundImage);
-        setBackgroundImage(bgUrl);
-        setIsBackgroundChanging(true);
-        setNewImageReady(false);
-        
-        setTimeout(() => {
-          setNewImageReady(true);
-        }, 400);
-        
-        setTimeout(() => {
-          setIsBackgroundChanging(false);
-          setPreviousBackgroundImage(null);
-        }, 2800);
-      }
+      }, 400);
+      
+      setTimeout(() => {
+        setIsBackgroundChanging(false);
+        setPreviousBackgroundImage(null);
+      }, 2800);
     }
     
     previousEpisodeIdRef.current = currentEpisodeId;
