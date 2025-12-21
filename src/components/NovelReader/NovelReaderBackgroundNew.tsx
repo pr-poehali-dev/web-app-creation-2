@@ -109,33 +109,6 @@ function NovelReaderBackgroundNew({
     }
   }, [isBackgroundChanging]);
   
-  if (!backgroundImage) return null;
-
-  const timeframes = currentParagraph.timeframes || currentEpisode.timeframes || ['present'];
-  const isRetrospective = timeframes.includes('retrospective');
-  const effectivePastelColor = currentParagraph.pastelColor || currentEpisode.pastelColor;
-
-  const getPastelColor = (color?: string) => {
-    const colors = {
-      pink: 'rgba(255, 182, 193, 0.4)',
-      blue: 'rgba(173, 216, 230, 0.4)',
-      peach: 'rgba(255, 218, 185, 0.4)',
-      lavender: 'rgba(221, 160, 221, 0.4)',
-      mint: 'rgba(152, 255, 152, 0.4)',
-      yellow: 'rgba(255, 255, 153, 0.4)',
-      coral: 'rgba(255, 160, 122, 0.4)',
-      sky: 'rgba(135, 206, 235, 0.4)'
-    };
-    return colors[color as keyof typeof colors] || colors.pink;
-  };
-
-  const getFilterStyle = (baseFilter: string) => {
-    const contrastAmount = isRetrospective ? 0.95 : 1;
-    const brightnessAmount = isRetrospective ? 1.05 : 1;
-    const saturationAmount = isRetrospective ? 1.2 : 1;
-    return `${baseFilter} contrast(${contrastAmount}) brightness(${brightnessAmount}) saturate(${saturationAmount})`;
-  };
-
   // Логика для группированных комикс-параграфов с накоплением фреймов
   const comicGroupData = useMemo(() => {
     if (!currentParagraph.comicGroupId) return null;
@@ -169,6 +142,33 @@ function NovelReaderBackgroundNew({
       allFrames: firstParagraph.comicFrames
     };
   }, [currentParagraph.comicGroupId, currentParagraph.comicGroupIndex, currentEpisode.paragraphs]);
+  
+  if (!backgroundImage) return null;
+
+  const timeframes = currentParagraph.timeframes || currentEpisode.timeframes || ['present'];
+  const isRetrospective = timeframes.includes('retrospective');
+  const effectivePastelColor = currentParagraph.pastelColor || currentEpisode.pastelColor;
+
+  const getPastelColor = (color?: string) => {
+    const colors = {
+      pink: 'rgba(255, 182, 193, 0.4)',
+      blue: 'rgba(173, 216, 230, 0.4)',
+      peach: 'rgba(255, 218, 185, 0.4)',
+      lavender: 'rgba(221, 160, 221, 0.4)',
+      mint: 'rgba(152, 255, 152, 0.4)',
+      yellow: 'rgba(255, 255, 153, 0.4)',
+      coral: 'rgba(255, 160, 122, 0.4)',
+      sky: 'rgba(135, 206, 235, 0.4)'
+    };
+    return colors[color as keyof typeof colors] || colors.pink;
+  };
+
+  const getFilterStyle = (baseFilter: string) => {
+    const contrastAmount = isRetrospective ? 0.95 : 1;
+    const brightnessAmount = isRetrospective ? 1.05 : 1;
+    const saturationAmount = isRetrospective ? 1.2 : 1;
+    return `${baseFilter} contrast(${contrastAmount}) brightness(${brightnessAmount}) saturate(${saturationAmount})`;
+  };
   
   // Старая логика для обратной совместимости
   const hasComicFrames = !comicGroupData && 
