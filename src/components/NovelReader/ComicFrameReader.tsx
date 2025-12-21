@@ -44,13 +44,21 @@ export default function ComicFrameReader({ paragraph, currentSubParagraphIndex, 
   }, [isTyping]);
 
   useEffect(() => {
+    console.log('[ComicFrameReader] Effect triggered', {
+      isComicGroup,
+      totalFrames: paragraph.comicFrames?.length || 0,
+      showFrames
+    });
+    
     if (!paragraph.comicFrames || paragraph.comicFrames.length === 0) {
+      console.log('[ComicFrameReader] No frames, clearing');
       setActiveFrames([]);
       return;
     }
 
     // Для комикс-групп фреймы уже отфильтрованы родителем, показываем все
     if (isComicGroup) {
+      console.log('[ComicFrameReader] Comic group mode, setting all frames:', paragraph.comicFrames.length);
       setActiveFrames(paragraph.comicFrames);
       return;
     }
@@ -163,7 +171,12 @@ export default function ComicFrameReader({ paragraph, currentSubParagraphIndex, 
   };
 
   // Не показываем фреймы, если текст еще печатается или если нет активных фреймов
-  if (!showFrames || activeFrames.length === 0) return null;
+  console.log('[ComicFrameReader] Render check', { showFrames, activeFramesCount: activeFrames.length });
+  
+  if (!showFrames || activeFrames.length === 0) {
+    console.log('[ComicFrameReader] Not rendering - showFrames:', showFrames, 'activeFrames:', activeFrames.length);
+    return null;
+  }
 
   const frameAspectRatios = activeFrames.map(frame => imageAspectRatios.get(frame.id) || 1);
   const defaultAnimation = paragraph.frameAnimation;
