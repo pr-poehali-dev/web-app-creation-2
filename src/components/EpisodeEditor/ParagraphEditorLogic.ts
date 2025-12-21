@@ -90,6 +90,16 @@ export function createParagraphEditorHandlers(
           alt: paragraph.type === 'background' ? paragraph.alt : undefined
         };
         break;
+      case 'comic':
+        newParagraph = {
+          id,
+          type: 'comic',
+          frames: paragraph.type === 'comic' ? paragraph.frames : [],
+          layout: paragraph.type === 'comic' ? paragraph.layout : 'single',
+          spanCount: paragraph.type === 'comic' ? paragraph.spanCount : 1,
+          persistAcrossParagraphs: paragraph.type === 'comic' ? paragraph.persistAcrossParagraphs : false
+        };
+        break;
       default:
         return;
     }

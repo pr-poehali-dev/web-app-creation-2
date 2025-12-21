@@ -4,6 +4,7 @@ import DialogueEditor from './Editors/DialogueEditor';
 import ChoiceEditor from './Editors/ChoiceEditor';
 import ItemEditor from './Editors/ItemEditor';
 import ImageEditor from './Editors/ImageEditor';
+import ComicEditor from './Editors/ComicEditor';
 import { ParagraphEditorHandlers } from './ParagraphEditorLogic';
 
 interface ParagraphEditorContentProps {
@@ -109,6 +110,14 @@ function ParagraphEditorContent({
           handleMobileImageUrl={() => handlers.handleMobileImageUrl('background')}
           handleMobileImageUpload={() => handlers.handleMobileImageUpload('background')}
           label="Фоновое изображение"
+        />
+      )}
+
+      {paragraph.type === 'comic' && (
+        <ComicEditor
+          paragraph={paragraph}
+          index={index}
+          onUpdate={onUpdate}
         />
       )}
     </div>
