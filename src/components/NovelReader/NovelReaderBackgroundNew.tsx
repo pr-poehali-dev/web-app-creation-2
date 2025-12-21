@@ -157,7 +157,7 @@ function NovelReaderBackgroundNew({
     <div className="fixed inset-0 flex flex-col lg:flex-row overflow-hidden">
       {/* Верхняя/Левая часть - фоновое изображение */}
       <div className="h-[calc(100vh-280px)] lg:h-screen lg:w-1/2 relative overflow-hidden flex-shrink-0">
-        {previousBackgroundImage && (
+        {previousBackgroundImage && previousBackgroundImage !== backgroundImage && (
           <img
             src={previousBackgroundImage}
             alt=""
@@ -181,8 +181,8 @@ function NovelReaderBackgroundNew({
           style={{ 
             objectFit: backgroundObjectFit,
             objectPosition: backgroundObjectPosition,
-            opacity: !newImageReady ? 0 : 1,
-            filter: getFilterStyle(!newImageReady ? 'blur(16px)' : 'blur(0px)'),
+            opacity: (previousBackgroundImage && !newImageReady) ? 0 : 1,
+            filter: getFilterStyle((previousBackgroundImage && !newImageReady) ? 'blur(16px)' : 'blur(0px)'),
             transition: 'opacity 2.4s ease-in-out, filter 2.4s ease-in-out',
             willChange: 'opacity, filter',
             zIndex: 0

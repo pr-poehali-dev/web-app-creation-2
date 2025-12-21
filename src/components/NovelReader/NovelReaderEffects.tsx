@@ -56,7 +56,6 @@ function NovelReaderEffects({
   setBackgroundObjectPosition
 }: NovelReaderEffectsProps) {
   const previousEpisodeIdRef = useRef<string | null>(null);
-  const activeBackgroundRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!currentEpisode) return;
@@ -81,22 +80,17 @@ function NovelReaderEffects({
     
     if (bgUrl !== backgroundImage) {
       console.log('[NovelReader] Background changing:', {
-        from: activeBackgroundRef.current,
+        from: backgroundImage,
         to: bgUrl,
-        paragraphIndex: currentParagraphIndex,
-        currentBackgroundState: backgroundImage
+        paragraphIndex: currentParagraphIndex
       });
       
       setBackgroundObjectFit(bgObjectFit);
       setBackgroundObjectPosition(bgObjectPosition);
       
-      // Сохраняем РЕАЛЬНО ВИДИМЫЙ фон (из ref), а не тот что в state
-      setPreviousBackgroundImage(activeBackgroundRef.current);
+      // Простая логика: текущий фон становится предыдущим
+      setPreviousBackgroundImage(backgroundImage);
       setBackgroundImage(bgUrl);
-      
-      // СРАЗУ обновляем ref - новый фон теперь активный (даже если анимация еще идет)
-      activeBackgroundRef.current = bgUrl;
-      
       setIsBackgroundChanging(true);
       setNewImageReady(false);
       
@@ -111,6 +105,8 @@ function NovelReaderEffects({
       setTimeout(() => {
         console.log('[NovelReader] Background transition complete');
         setIsBackgroundChanging(false);
+        // Очищаем предыдущий фон после завершения анимации
+        setPreviousBackgroundImage(null);
       }, 2800);
     }
     
