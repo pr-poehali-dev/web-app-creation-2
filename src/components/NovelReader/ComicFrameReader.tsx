@@ -188,15 +188,21 @@ export default function ComicFrameReader({ paragraph, currentSubParagraphIndex, 
           const animClass = getAnimationClass(frame.animation, defaultAnimation);
           const hasAnimation = animClass !== '';
           
+          // Проверяем флаг видимости для комикс-групп
+          const isFrameVisible = '_isVisible' in frame ? (frame as any)._isVisible : true;
+          
           return (
             <div 
               key={frame.id} 
-              className={`w-full h-full cursor-pointer min-w-0 ${animClass}`}
+              className={`w-full h-full min-w-0 ${animClass} ${isFrameVisible ? 'cursor-pointer' : ''}`}
               style={{ 
                 animationDelay: hasAnimation ? `${index * 0.2}s` : undefined,
-                opacity: hasAnimation ? 0 : 1
+                opacity: isFrameVisible ? (hasAnimation ? 0 : 1) : 0,
+                pointerEvents: isFrameVisible ? 'auto' : 'none',
+                transition: isFrameVisible && !hasAnimation ? 'opacity 0.6s ease-in-out' : undefined
               }}
               onClick={(e) => {
+                if (!isFrameVisible) return;
                 e.stopPropagation();
                 setSelectedImage(frame.url);
               }}

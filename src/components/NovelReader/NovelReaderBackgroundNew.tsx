@@ -157,20 +157,22 @@ function NovelReaderBackgroundNew({
     
     console.log('[ComicGroup] Group:', groupId, 'Current index:', currentGroupIndex, 'Max seen:', newMaxIndex);
     
-    // Показываем все фреймы до максимального индекса (накопление)
-    const visibleFrames = firstParagraph.comicFrames.filter(frame => {
+    // Добавляем к каждому фрейму информацию о видимости
+    const framesWithVisibility = firstParagraph.comicFrames.map(frame => {
       const triggerIndex = frame.paragraphTrigger ?? 0;
       const isVisible = triggerIndex <= newMaxIndex;
       console.log('[ComicGroup] Frame:', frame.id, 'trigger:', triggerIndex, 'visible:', isVisible);
-      return isVisible;
+      return {
+        ...frame,
+        _isVisible: isVisible
+      };
     });
     
-    console.log('[ComicGroup] Total frames:', firstParagraph.comicFrames.length, 'Visible:', visibleFrames.length);
+    console.log('[ComicGroup] Total frames:', firstParagraph.comicFrames.length);
     
     return {
-      frames: visibleFrames,
-      layout: firstParagraph.frameLayout || 'horizontal-3' as const,
-      allFrames: firstParagraph.comicFrames
+      frames: framesWithVisibility,
+      layout: firstParagraph.frameLayout || 'horizontal-3' as const
     };
   }, [currentParagraph.comicGroupId, currentParagraph.comicGroupIndex, currentEpisode.paragraphs]);
   
