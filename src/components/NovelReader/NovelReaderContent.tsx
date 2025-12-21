@@ -161,6 +161,7 @@ function NovelReaderContent({
             })}
             novel={novel}
             onChoice={handleChoice}
+            isChoiceMade={profile.madeChoicesInParagraphs?.includes(paragraphKey)}
           />
         </div>
       )}

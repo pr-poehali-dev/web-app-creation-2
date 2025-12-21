@@ -17,9 +17,10 @@ interface ChoiceBoxProps {
   }[];
   novel: Novel;
   onChoice: (choiceId: string, pathId: string | undefined, oneTime: boolean | undefined, nextEpisodeId?: string, nextParagraphIndex?: number) => void;
+  isChoiceMade?: boolean; // Был ли уже сделан выбор в этом параграфе
 }
 
-function ChoiceBox({ question, options, novel, onChoice }: ChoiceBoxProps) {
+function ChoiceBox({ question, options, novel, onChoice, isChoiceMade = false }: ChoiceBoxProps) {
   return (
     <Card className="bg-card/95 backdrop-blur-sm border-0 shadow-2xl animate-scale-in rounded-xl md:rounded-2xl">
       <CardContent className="p-3 md:p-6 lg:p-10">
@@ -33,11 +34,14 @@ function ChoiceBox({ question, options, novel, onChoice }: ChoiceBoxProps) {
                 <Button
                   variant="outline"
                   size="lg"
-                  className="w-full text-xs md:text-sm lg:text-base py-3 md:py-4 lg:py-6 rounded-xl md:rounded-2xl border-2 hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all hover:scale-[1.02] hover:shadow-xl animate-fade-in text-foreground font-semibold"
+                  disabled={isChoiceMade}
+                  className="w-full text-xs md:text-sm lg:text-base py-3 md:py-4 lg:py-6 rounded-xl md:rounded-2xl border-2 hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all hover:scale-[1.02] hover:shadow-xl animate-fade-in text-foreground font-semibold disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                   style={{ animationDelay: `${index * 100}ms` }}
                   onClick={(e) => {
                     e.stopPropagation();
-                    onChoice(option.id, option.activatesPath, option.oneTime, option.nextEpisodeId, option.nextParagraphIndex);
+                    if (!isChoiceMade) {
+                      onChoice(option.id, option.activatesPath, option.oneTime, option.nextEpisodeId, option.nextParagraphIndex);
+                    }
                   }}
                 >
                   {option.text}

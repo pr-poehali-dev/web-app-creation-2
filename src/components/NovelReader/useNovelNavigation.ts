@@ -153,6 +153,19 @@ export function useNovelNavigation({
   }, [currentParagraphIndex, currentEpisodeId, currentEpisode, onProfileUpdate]);
 
   const handleChoice = useCallback((choiceId: string, pathId: string | undefined, oneTime: boolean | undefined, nextEpisodeId?: string, nextParagraphIndex?: number) => {
+    // Отмечаем параграф как "выбор уже сделан"
+    const paragraphId = `${currentEpisodeId}-${currentParagraphIndex}`;
+    onProfileUpdate(prev => {
+      const madeChoicesInParagraphs = prev.madeChoicesInParagraphs || [];
+      if (!madeChoicesInParagraphs.includes(paragraphId)) {
+        return {
+          ...prev,
+          madeChoicesInParagraphs: [...madeChoicesInParagraphs, paragraphId]
+        };
+      }
+      return prev;
+    });
+    
     // Отмечаем выбор как использованный если он одноразовый
     if (oneTime) {
       onProfileUpdate(prev => {

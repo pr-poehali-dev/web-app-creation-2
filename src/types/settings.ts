@@ -51,6 +51,7 @@ export interface UserProfile {
   usedChoices: string[];
   activePaths: string[];
   pathChoices: { [pathId: string]: string[] };
+  madeChoicesInParagraphs: string[]; // ID параграфов где уже был сделан выбор
 }
 
 export interface ReadProgress {
@@ -84,5 +85,6 @@ export const defaultProfile: UserProfile = {
   readParagraphs: [],
   usedChoices: [],
   activePaths: [],
-  pathChoices: {}
+  pathChoices: {},
+  madeChoicesInParagraphs: []
 };
