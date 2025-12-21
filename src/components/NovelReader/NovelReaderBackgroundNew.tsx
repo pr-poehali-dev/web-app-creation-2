@@ -167,6 +167,7 @@ function NovelReaderBackgroundNew({
               opacity: newImageReady ? 0 : 1,
               filter: getFilterStyle(newImageReady ? 'blur(16px)' : 'blur(0px)'),
               transition: 'opacity 2.4s ease-in-out, filter 2.4s ease-in-out',
+              willChange: 'opacity, filter',
               zIndex: 1
             }}
           />
@@ -181,6 +182,8 @@ function NovelReaderBackgroundNew({
             opacity: !newImageReady ? 0 : 1,
             filter: getFilterStyle(!newImageReady ? 'blur(16px)' : 'blur(0px)'),
             transition: 'opacity 2.4s ease-in-out, filter 2.4s ease-in-out',
+            willChange: 'opacity, filter',
+            border: isBackgroundChanging ? '5px solid red' : 'none',
             zIndex: 0
           }}
         />
