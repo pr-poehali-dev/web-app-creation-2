@@ -170,6 +170,7 @@ export interface Episode {
   timeframes?: ('present' | 'retrospective')[];
   shapeTransition?: ShapeTransitionType;
   pastelColor?: PastelColor;
+  pathNextEpisodes?: { [pathId: string]: string };
 }
 
 export interface LibraryItem {

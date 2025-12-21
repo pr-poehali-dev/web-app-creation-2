@@ -83,13 +83,28 @@ export function useNovelNavigation({
       }));
     } else {
       // Переход к следующему эпизоду
-      const nextEpisodeId = currentEpisode.nextEpisodeId;
-      const nextParagraphIdx = currentEpisode.nextParagraphIndex || 0;
+      let targetEpisodeId: string | undefined;
+      let targetParagraphIdx = 0;
       
-      // Если nextEpisodeId не указан, пробуем следующий по порядку
-      let targetEpisodeId = nextEpisodeId;
-      let targetParagraphIdx = nextParagraphIdx;
+      // Проверяем, есть ли путь-специфичные переходы
+      if (currentEpisode.pathNextEpisodes && profile.activePaths?.length > 0) {
+        // Ищем первый активный путь игрока, для которого задан следующий эпизод
+        for (const pathId of profile.activePaths) {
+          if (currentEpisode.pathNextEpisodes[pathId]) {
+            targetEpisodeId = currentEpisode.pathNextEpisodes[pathId];
+            targetParagraphIdx = 0;
+            break;
+          }
+        }
+      }
       
+      // Если не нашли путь-специфичный переход, используем обычный nextEpisodeId
+      if (!targetEpisodeId) {
+        targetEpisodeId = currentEpisode.nextEpisodeId;
+        targetParagraphIdx = currentEpisode.nextParagraphIndex || 0;
+      }
+      
+      // Если и его нет, пробуем следующий по порядку
       if (!targetEpisodeId) {
         const currentIndex = novel.episodes.findIndex(ep => ep.id === currentEpisodeId);
         if (currentIndex >= 0 && currentIndex < novel.episodes.length - 1) {
