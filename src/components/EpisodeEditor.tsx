@@ -232,6 +232,18 @@ function EpisodeEditor({ episode, novel, onUpdate, onNovelUpdate }: EpisodeEdito
     setBulkEditMode(false);
   }, [episode, onUpdate, selectedParagraphs]);
 
+  const handleUngroupComic = useCallback((groupId: string) => {
+    const newParagraphs = episode.paragraphs.map(para => {
+      if (para.comicGroupId !== groupId) return para;
+      
+      // Удаляем все поля, связанные с группой
+      const { comicGroupId, comicGroupIndex, comicFrames, frameLayout, ...rest } = para;
+      return rest as Paragraph;
+    });
+    
+    onUpdate({ ...episode, paragraphs: newParagraphs });
+  }, [episode, onUpdate]);
+
   return (
     <div className="space-y-4">
       <EpisodeHeader episode={episode} novel={novel} onUpdate={onUpdate} onNovelUpdate={onNovelUpdate} />
@@ -353,6 +365,7 @@ function EpisodeEditor({ episode, novel, onUpdate, onNovelUpdate }: EpisodeEdito
                     onToggleInsert={handleToggleInsert}
                     onToggleMerge={handleToggleMerge}
                     onNovelUpdate={onNovelUpdate}
+                    onUngroupComic={handleUngroupComic}
                     isBulkEditMode={bulkEditMode}
                     isSelected={isSelected}
                     selectedCount={selectedParagraphs.size}

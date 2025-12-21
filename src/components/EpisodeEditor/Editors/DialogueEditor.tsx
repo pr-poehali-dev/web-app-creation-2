@@ -1,5 +1,5 @@
-import { useState, memo, useRef, useEffect, useCallback } from 'react';
-import { DialogueParagraph, Novel } from '@/types/novel';
+import { useState, memo, useRef, useEffect, useCallback, useMemo } from 'react';
+import { DialogueParagraph, Novel, Episode } from '@/types/novel';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -15,6 +15,7 @@ interface DialogueEditorProps {
   paragraph: DialogueParagraph;
   index: number;
   novel: Novel;
+  episode?: Episode;
   imageUrl: string;
   setImageUrl: (url: string) => void;
   onUpdate: (index: number, updatedParagraph: DialogueParagraph) => void;
@@ -26,7 +27,8 @@ interface DialogueEditorProps {
 function DialogueEditor({ 
   paragraph, 
   index, 
-  novel, 
+  novel,
+  episode, 
   imageUrl, 
   setImageUrl, 
   onUpdate, 
@@ -37,6 +39,12 @@ function DialogueEditor({
   const [localText, setLocalText] = useState(paragraph.text);
   const debounceTimerRef = useRef<NodeJS.Timeout>();
   const paragraphRef = useRef(paragraph);
+  
+  // Вычисляем размер комикс-группы
+  const comicGroupSize = useMemo(() => {
+    if (!paragraph.comicGroupId || !episode) return undefined;
+    return episode.paragraphs.filter(p => p.comicGroupId === paragraph.comicGroupId).length;
+  }, [paragraph.comicGroupId, episode]);
 
   useEffect(() => {
     paragraphRef.current = paragraph;
@@ -221,28 +229,62 @@ function DialogueEditor({
           }
         />
 
-        <ComicFrameEditor
-          frames={paragraph.comicFrames || []}
-          layout={paragraph.frameLayout || 'horizontal-3'}
-          defaultAnimation={paragraph.frameAnimation}
-          subParagraphs={paragraph.subParagraphs}
-          onFramesChange={(frames) =>
-            onUpdate(index, { ...paragraph, comicFrames: frames.length > 0 ? frames : undefined })
-          }
-          onLayoutChange={(layout) =>
-            onUpdate(index, { ...paragraph, frameLayout: layout })
-          }
-          onAnimationChange={(animation) =>
-            onUpdate(index, { ...paragraph, frameAnimation: animation })
-          }
-          onBothChange={(layout, frames) =>
-            onUpdate(index, { 
-              ...paragraph, 
-              frameLayout: layout, 
-              comicFrames: frames.length > 0 ? frames : undefined 
-            })
-          }
-        />
+        {paragraph.comicGroupIndex === 0 && (
+          <div className="p-3 border rounded-lg bg-primary/5">
+            <div className="flex items-center gap-2 mb-3">
+              <Icon name="Film" size={16} className="text-primary" />
+              <span className="text-sm font-semibold">Настройка комикс-группы</span>
+            </div>
+            <ComicFrameEditor
+              frames={paragraph.comicFrames || []}
+              layout={paragraph.frameLayout || 'horizontal-3'}
+              defaultAnimation={paragraph.frameAnimation}
+              subParagraphs={paragraph.subParagraphs}
+              comicGroupSize={comicGroupSize}
+              onFramesChange={(frames) =>
+                onUpdate(index, { ...paragraph, comicFrames: frames.length > 0 ? frames : undefined })
+              }
+              onLayoutChange={(layout) =>
+                onUpdate(index, { ...paragraph, frameLayout: layout })
+              }
+              onAnimationChange={(animation) =>
+                onUpdate(index, { ...paragraph, frameAnimation: animation })
+              }
+              onBothChange={(layout, frames) =>
+                onUpdate(index, { 
+                  ...paragraph, 
+                  frameLayout: layout, 
+                  comicFrames: frames.length > 0 ? frames : undefined 
+                })
+              }
+            />
+          </div>
+        )}
+        
+        {!paragraph.comicGroupId && (
+          <ComicFrameEditor
+            frames={paragraph.comicFrames || []}
+            layout={paragraph.frameLayout || 'horizontal-3'}
+            defaultAnimation={paragraph.frameAnimation}
+            subParagraphs={paragraph.subParagraphs}
+            onFramesChange={(frames) =>
+              onUpdate(index, { ...paragraph, comicFrames: frames.length > 0 ? frames : undefined })
+            }
+            onLayoutChange={(layout) =>
+              onUpdate(index, { ...paragraph, frameLayout: layout })
+            }
+            onAnimationChange={(animation) =>
+              onUpdate(index, { ...paragraph, frameAnimation: animation })
+            }
+            onBothChange={(layout, frames) =>
+              onUpdate(index, { 
+                ...paragraph, 
+                frameLayout: layout, 
+                comicFrames: frames.length > 0 ? frames : undefined 
+              })
+            }
+          />
+        )}
       </div>
     </div>
   );

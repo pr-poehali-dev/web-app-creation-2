@@ -1,7 +1,7 @@
-import { useCallback, useRef, useEffect, memo, useState } from 'react';
+import { useCallback, useRef, useEffect, memo, useState, useMemo } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { TextParagraph } from '@/types/novel';
+import { TextParagraph, Episode } from '@/types/novel';
 import SubParagraphsEditor from '../SubParagraphsEditor';
 import ComicFrameEditor from '../ComicFrameEditor';
 import Icon from '@/components/ui/icon';
@@ -10,13 +10,20 @@ import equal from 'fast-deep-equal';
 interface TextEditorProps {
   paragraph: TextParagraph;
   index: number;
+  episode?: Episode;
   onUpdate: (index: number, updatedParagraph: TextParagraph) => void;
 }
 
-function TextEditor({ paragraph, index, onUpdate }: TextEditorProps) {
+function TextEditor({ paragraph, index, episode, onUpdate }: TextEditorProps) {
   const paragraphRef = useRef(paragraph);
   const [localContent, setLocalContent] = useState(paragraph.content);
   const debounceTimerRef = useRef<NodeJS.Timeout>();
+  
+  // Вычисляем размер комикс-группы
+  const comicGroupSize = useMemo(() => {
+    if (!paragraph.comicGroupId || !episode) return undefined;
+    return episode.paragraphs.filter(p => p.comicGroupId === paragraph.comicGroupId).length;
+  }, [paragraph.comicGroupId, episode]);
   
   useEffect(() => {
     paragraphRef.current = paragraph;
@@ -91,7 +98,7 @@ function TextEditor({ paragraph, index, onUpdate }: TextEditorProps) {
             layout={paragraph.frameLayout || 'horizontal-3'}
             defaultAnimation={paragraph.frameAnimation}
             subParagraphs={paragraph.subParagraphs}
-            comicGroupSize={undefined}
+            comicGroupSize={comicGroupSize}
             onFramesChange={handleFramesChange}
             onLayoutChange={handleLayoutChange}
             onAnimationChange={handleAnimationChange}

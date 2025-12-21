@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback, memo } from 'react';
-import { Paragraph, Novel } from '@/types/novel';
+import { Paragraph, Novel, Episode } from '@/types/novel';
 import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { createParagraphEditorHandlers } from './ParagraphEditorLogic';
 import ParagraphEditorHeader from './ParagraphEditorHeader';
 import ParagraphEditorContent from './ParagraphEditorContent';
@@ -19,6 +20,7 @@ interface ParagraphEditorProps {
   onToggleInsert: (index: number) => void;
   onToggleMerge: (index: number) => void;
   onNovelUpdate: (novel: Novel) => void;
+  onUngroupComic?: (groupId: string) => void;
   isBulkEditMode?: boolean;
   isSelected?: boolean;
   selectedCount?: number;
@@ -36,6 +38,7 @@ function ParagraphEditor({
   onToggleInsert,
   onToggleMerge,
   onNovelUpdate,
+  onUngroupComic,
   isBulkEditMode = false,
   isSelected = false,
   selectedCount = 0
@@ -65,14 +68,30 @@ function ParagraphEditor({
   const groupBorderClass = isInComicGroup 
     ? 'border-l-4 border-l-primary/50' 
     : '';
+  
+  // Находим текущий эпизод
+  const currentEpisode = novel.episodes.find(ep => ep.id === episodeId);
 
   return (
     <Card className={`animate-fade-in ${isBulkEditMode && isSelected ? 'ring-2 ring-primary' : ''} ${groupBorderClass}`}>
       {isInComicGroup && (
-        <div className="bg-primary/10 px-4 py-1 text-xs flex items-center gap-2">
-          <Icon name="Film" size={12} className="text-primary" />
-          <span className="font-medium">Комикс-группа</span>
-          <span className="text-muted-foreground">Параграф {(paragraph.comicGroupIndex || 0) + 1}</span>
+        <div className="bg-primary/10 px-4 py-1 text-xs flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <Icon name="Film" size={12} className="text-primary" />
+            <span className="font-medium">Комикс-группа</span>
+            <span className="text-muted-foreground">Параграф {(paragraph.comicGroupIndex || 0) + 1}</span>
+          </div>
+          {onUngroupComic && paragraph.comicGroupId && (
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => onUngroupComic(paragraph.comicGroupId!)}
+              className="h-6 px-2 text-[10px] hover:bg-destructive/10 hover:text-destructive"
+            >
+              <Icon name="Unlink" size={10} className="mr-1" />
+              Разгруппировать
+            </Button>
+          )}
         </div>
       )}
       <CardContent className="p-4">
@@ -100,6 +119,7 @@ function ParagraphEditor({
             paragraph={paragraph}
             index={index}
             novel={novel}
+            episode={currentEpisode}
             imageUrl={imageUrl}
             setImageUrl={setImageUrl}
             mobileImageUrl={mobileImageUrl}

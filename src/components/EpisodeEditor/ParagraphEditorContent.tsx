@@ -1,4 +1,4 @@
-import { Paragraph, Novel } from '@/types/novel';
+import { Paragraph, Novel, Episode } from '@/types/novel';
 import TextEditor from './Editors/TextEditor';
 import DialogueEditor from './Editors/DialogueEditor';
 import ChoiceEditor from './Editors/ChoiceEditor';
@@ -11,6 +11,7 @@ interface ParagraphEditorContentProps {
   paragraph: Paragraph;
   index: number;
   novel: Novel;
+  episode?: Episode;
   imageUrl: string;
   setImageUrl: (url: string) => void;
   mobileImageUrl: string;
@@ -23,6 +24,7 @@ function ParagraphEditorContent({
   paragraph,
   index,
   novel,
+  episode,
   imageUrl,
   setImageUrl,
   mobileImageUrl,
@@ -36,6 +38,7 @@ function ParagraphEditorContent({
         <TextEditor
           paragraph={paragraph}
           index={index}
+          episode={episode}
           onUpdate={onUpdate}
         />
       )}
@@ -44,6 +47,7 @@ function ParagraphEditorContent({
         <DialogueEditor
           paragraph={paragraph}
           index={index}
+          episode={episode}
           imageUrl={imageUrl}
           setImageUrl={setImageUrl}
           novel={novel}
