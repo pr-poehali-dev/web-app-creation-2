@@ -283,6 +283,7 @@ function NovelReaderBackgroundNew({
                 isTyping={isTyping}
                 isRetrospective={isRetrospective}
                 pastelColor={effectivePastelColor}
+                isComicGroup={true}
               />
             </div>
           </div>

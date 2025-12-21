@@ -10,6 +10,7 @@ interface ComicFrameReaderProps {
   isTyping: boolean; // Флаг печати текста
   isRetrospective?: boolean; // Флаг времени прошлого
   pastelColor?: string; // Пастельный цвет для ретроспективы
+  isComicGroup?: boolean; // Флаг комикс-группы (фреймы уже отфильтрованы)
 }
 
 const BRUSH_MASKS = [
@@ -23,7 +24,7 @@ const BRUSH_MASKS = [
   'https://cdn.poehali.dev/files/brush-mask-8.png',
 ];
 
-export default function ComicFrameReader({ paragraph, currentSubParagraphIndex, layout, isTyping, isRetrospective = false, pastelColor }: ComicFrameReaderProps) {
+export default function ComicFrameReader({ paragraph, currentSubParagraphIndex, layout, isTyping, isRetrospective = false, pastelColor, isComicGroup = false }: ComicFrameReaderProps) {
   const [activeFrames, setActiveFrames] = useState<ComicFrame[]>([]);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [imageAspectRatios, setImageAspectRatios] = useState<Map<string, number>>(new Map());
@@ -48,6 +49,12 @@ export default function ComicFrameReader({ paragraph, currentSubParagraphIndex, 
       return;
     }
 
+    // Для комикс-групп фреймы уже отфильтрованы родителем, показываем все
+    if (isComicGroup) {
+      setActiveFrames(paragraph.comicFrames);
+      return;
+    }
+
     // Если есть подпараграфы, показываем фреймы по индексу
     if (paragraph.subParagraphs && paragraph.subParagraphs.length > 0 && currentSubParagraphIndex !== undefined) {
       // Индекс 0 = основной текст (показываем только фреймы без триггера)
@@ -58,7 +65,7 @@ export default function ComicFrameReader({ paragraph, currentSubParagraphIndex, 
         const defaultFrames = paragraph.comicFrames.filter(frame => !frame.subParagraphTrigger);
         setActiveFrames(defaultFrames);
       } else {
-        // Показываем подпараграфы - собираем ID всех подпараграфов до текущего
+        // Показываем подпараграфы - собираем ID всех подпараграфов до текущего (включительно)
         const subParagraphIdsUpToNow = paragraph.subParagraphs
           .slice(0, currentSubParagraphIndex)
           .map(sp => sp.id);
@@ -80,7 +87,7 @@ export default function ComicFrameReader({ paragraph, currentSubParagraphIndex, 
       const defaultFrames = paragraph.comicFrames.filter(frame => !frame.subParagraphTrigger);
       setActiveFrames(defaultFrames);
     }
-  }, [currentSubParagraphIndex, paragraph.comicFrames, paragraph.subParagraphs, showFrames]);
+  }, [currentSubParagraphIndex, paragraph.comicFrames, paragraph.subParagraphs, showFrames, isComicGroup]);
 
   useEffect(() => {
     if (isRetrospective && activeFrames.length > 0) {
