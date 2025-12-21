@@ -150,7 +150,7 @@ function NovelReaderContent({
       })()}
 
       {currentParagraph.type === 'choice' && (
-        <div className="w-full max-w-2xl ml-0 md:ml-16">
+        <div className="w-full max-w-md mx-auto">
           <ChoiceBox
             question={currentParagraph.question}
             options={currentParagraph.options.filter(opt => {
