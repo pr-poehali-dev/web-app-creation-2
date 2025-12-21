@@ -137,7 +137,7 @@ function NovelReaderEffects({
     if (currentParagraph?.type === 'background') {
       const timer = setTimeout(() => {
         goToNextParagraph();
-      }, 2900);
+      }, 3200);
       return () => clearTimeout(timer);
     }
   }, [currentParagraph, goToNextParagraph]);

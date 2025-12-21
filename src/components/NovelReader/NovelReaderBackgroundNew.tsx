@@ -138,8 +138,13 @@ function NovelReaderBackgroundNew({
                                  currentParagraph.type === 'dialogue' || 
                                  currentParagraph.type === 'choice');
   
-  // Условие показа контента: либо всё готово, либо это первый текстовый параграф
-  const shouldShowContent = (!isBackgroundChanging && newImageReady) || isFirstTextParagraph;
+  // Если предыдущий параграф был background, ждём завершения анимации
+  const wasBackgroundParagraph = previousParagraph?.type === 'background';
+  
+  // Условие показа контента
+  const shouldShowContent = wasBackgroundParagraph 
+    ? (!isBackgroundChanging && newImageReady)  // После background - только когда анимация готова
+    : ((!isBackgroundChanging && newImageReady) || isFirstTextParagraph);  // Обычный случай
 
   console.log('[NovelReaderBackgroundNew] Render:', {
     backgroundImage,
