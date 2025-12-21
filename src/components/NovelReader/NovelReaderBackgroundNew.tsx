@@ -130,11 +130,17 @@ function NovelReaderBackgroundNew({
     const newMaxIndex = Math.max(prevMaxIndex, currentGroupIndex);
     maxGroupIndexSeen.current.set(groupId, newMaxIndex);
     
+    console.log('[ComicGroup] Group:', groupId, 'Current index:', currentGroupIndex, 'Max seen:', newMaxIndex);
+    
     // Показываем все фреймы до максимального индекса (накопление)
     const visibleFrames = firstParagraph.comicFrames.filter(frame => {
       const triggerIndex = frame.paragraphTrigger ?? 0;
-      return triggerIndex <= newMaxIndex;
+      const isVisible = triggerIndex <= newMaxIndex;
+      console.log('[ComicGroup] Frame:', frame.id, 'trigger:', triggerIndex, 'visible:', isVisible);
+      return isVisible;
     });
+    
+    console.log('[ComicGroup] Total frames:', firstParagraph.comicFrames.length, 'Visible:', visibleFrames.length);
     
     return {
       frames: visibleFrames,
