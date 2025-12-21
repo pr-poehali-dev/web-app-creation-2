@@ -10,8 +10,8 @@ export const parseMarkdownToEpisode = (markdown: string, episodeId: string): Epi
   paragraphs.push({
     id: `p${Date.now()}_bg`,
     type: 'background',
-    backgroundUrl: ''
-  });
+    url: 'https://cdn.poehali.dev/files/result (39)_1.png'
+  } as any);
   
   let i = 0;
   let consecutiveEmptyLines = 0;
