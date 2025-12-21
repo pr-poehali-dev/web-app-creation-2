@@ -48,6 +48,9 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
   const [backgroundObjectPosition, setBackgroundObjectPosition] = useState<string>('center');
   
   const previousParagraphIndexRef = useRef<number>(currentParagraphIndex);
+  
+  // Отслеживаем максимальный индекс параграфа в комикс-группах для накопления фреймов
+  const maxGroupIndexSeenRef = useRef<Map<string, number>>(new Map());
 
   const {
     isParagraphAccessible,
@@ -214,6 +217,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
           previousParagraph={previousParagraph}
           isContentHidden={isContentHidden}
           onToggleContentVisibility={onToggleContentVisibility}
+          maxGroupIndexSeenRef={maxGroupIndexSeenRef}
         />
     </div>
   );

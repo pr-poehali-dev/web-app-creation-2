@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, MutableRefObject } from 'react';
 import { Novel, Episode, Paragraph, TextParagraph, DialogueParagraph, ComicParagraph } from '@/types/novel';
 import { UserSettings, UserProfile } from '@/types/settings';
 import { Button } from '@/components/ui/button';
@@ -38,6 +38,7 @@ interface NovelReaderBackgroundNewProps {
   onToggleContentVisibility?: () => void;
   backgroundObjectFit: 'cover' | 'contain' | 'fill';
   backgroundObjectPosition: string;
+  maxGroupIndexSeenRef: MutableRefObject<Map<string, number>>;
 }
 
 function NovelReaderBackgroundNew({
@@ -67,16 +68,14 @@ function NovelReaderBackgroundNew({
   isContentHidden: externalIsContentHidden,
   onToggleContentVisibility,
   backgroundObjectFit,
-  backgroundObjectPosition
+  backgroundObjectPosition,
+  maxGroupIndexSeenRef
 }: NovelReaderBackgroundNewProps) {
   const [isContentHidden, setIsContentHidden] = useState(false);
   const [wasHidden, setWasHidden] = useState(false);
   
   const actualIsContentHidden = externalIsContentHidden !== undefined ? externalIsContentHidden : isContentHidden;
   const [showComicFrames, setShowComicFrames] = useState(false);
-  
-  // Отслеживаем максимальный индекс параграфа в группе для накопления фреймов
-  const maxGroupIndexSeen = useRef<Map<string, number>>(new Map());
   
   useEffect(() => {
     setWasHidden(false);
@@ -94,8 +93,8 @@ function NovelReaderBackgroundNew({
   
   // Сбрасываем накопленные фреймы при смене эпизода
   useEffect(() => {
-    maxGroupIndexSeen.current.clear();
-  }, [currentEpisode.id]);
+    maxGroupIndexSeenRef.current.clear();
+  }, [currentEpisode.id, maxGroupIndexSeenRef]);
   
   useEffect(() => {
     if (isBackgroundChanging) {
@@ -126,9 +125,9 @@ function NovelReaderBackgroundNew({
     const groupId = currentParagraph.comicGroupId;
     
     // Обновляем максимальный индекс, который мы видели для этой группы
-    const prevMaxIndex = maxGroupIndexSeen.current.get(groupId) ?? -1;
+    const prevMaxIndex = maxGroupIndexSeenRef.current.get(groupId) ?? -1;
     const newMaxIndex = Math.max(prevMaxIndex, currentGroupIndex);
-    maxGroupIndexSeen.current.set(groupId, newMaxIndex);
+    maxGroupIndexSeenRef.current.set(groupId, newMaxIndex);
     
     console.log('[ComicGroup] Group:', groupId, 'Current index:', currentGroupIndex, 'Max seen:', newMaxIndex);
     
