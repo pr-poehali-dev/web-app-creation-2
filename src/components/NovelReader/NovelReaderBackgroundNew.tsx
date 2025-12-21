@@ -76,15 +76,28 @@ function NovelReaderBackgroundNew({
   
   const actualIsContentHidden = externalIsContentHidden !== undefined ? externalIsContentHidden : isContentHidden;
   const [showComicFrames, setShowComicFrames] = useState(false);
-  const previousGroupIdRef = useRef<string | undefined>(undefined);
+  const previousParagraphKeyRef = useRef<string>(paragraphKey);
   
+  // Проверяем, меняется ли комикс-группа при смене параграфа
   useEffect(() => {
     setWasHidden(false);
     setIsContentHidden(false);
     
-    // Не сбрасываем showComicFrames если остаемся в той же комикс-группе
+    // Получаем предыдущий параграф из episode
+    const prevIndex = parseInt(previousParagraphKeyRef.current.split('-')[1]);
+    const prevParagraph = currentEpisode.paragraphs[prevIndex];
+    
+    // Проверяем, остались ли мы в той же комикс-группе
     const isSameGroup = currentParagraph.comicGroupId && 
-                       currentParagraph.comicGroupId === previousGroupIdRef.current;
+                       prevParagraph?.comicGroupId === currentParagraph.comicGroupId;
+    
+    console.log('[ShowFrames] Paragraph change:', {
+      prev: previousParagraphKeyRef.current,
+      current: paragraphKey,
+      prevGroup: prevParagraph?.comicGroupId,
+      currentGroup: currentParagraph.comicGroupId,
+      isSameGroup
+    });
     
     if (!isSameGroup) {
       setShowComicFrames(false);
@@ -95,14 +108,14 @@ function NovelReaderBackgroundNew({
         }
       }, 1300);
       
+      previousParagraphKeyRef.current = paragraphKey;
       return () => clearTimeout(timer);
     } else {
       // В той же группе - фреймы остаются видимыми
       setShowComicFrames(true);
+      previousParagraphKeyRef.current = paragraphKey;
     }
-    
-    previousGroupIdRef.current = currentParagraph.comicGroupId;
-  }, [paragraphKey, currentParagraph.comicGroupId, isBackgroundChanging]);
+  }, [paragraphKey, currentParagraph.comicGroupId, currentEpisode.paragraphs, isBackgroundChanging]);
   
   // Сбрасываем накопленные фреймы при смене эпизода
   useEffect(() => {
