@@ -35,11 +35,11 @@ const LAYOUT_OPTIONS = [
     { value: 'diagonal-left', label: '◥◤ Диагональ ←' },
     { value: 'diagonal-right', label: '◤◥ Диагональ →' }
   ]},
-  { group: 'Треугольники', items: [
-    { value: 'triangle-top', label: '▲ Треугольник ↑' },
-    { value: 'triangle-bottom', label: '▼ Треугольник ↓' },
-    { value: 'triangle-left', label: '◀ Треугольник ←' },
-    { value: 'triangle-right', label: '▶ Треугольник →' }
+  { group: 'Ступени', items: [
+    { value: 'triangle-top', label: '⬆️ Ступени вверх' },
+    { value: 'triangle-bottom', label: '⬇️ Ступени вниз' },
+    { value: 'triangle-left', label: '⬅️ Ступени влево' },
+    { value: 'triangle-right', label: '➡️ Ступени вправо' }
   ]}
 ] as const;
 
