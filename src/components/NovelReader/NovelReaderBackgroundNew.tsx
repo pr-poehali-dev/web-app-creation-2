@@ -173,8 +173,8 @@ function NovelReaderBackgroundNew({
             backgroundImage: `url("${backgroundImage}")`,
             backgroundSize: backgroundObjectFit,
             backgroundPosition: backgroundObjectPosition,
-            opacity: isBackgroundChanging && !newImageReady ? 0 : 1,
-            filter: getFilterStyle(isBackgroundChanging && !newImageReady ? 'blur(16px)' : 'blur(0px)'),
+            opacity: !newImageReady ? 0 : 1,
+            filter: getFilterStyle(!newImageReady ? 'blur(16px)' : 'blur(0px)'),
             transition: 'opacity 2.4s ease-in-out, filter 2.4s ease-in-out',
             zIndex: 0
           }}
