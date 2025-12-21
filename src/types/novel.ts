@@ -136,6 +136,8 @@ export interface BackgroundParagraph extends BaseParagraph {
   mobileUrl?: string;
   alt?: string;
   shapeTransition?: ShapeTransitionType;
+  objectPosition?: string;
+  objectFit?: 'cover' | 'contain' | 'fill';
 }
 
 export type Paragraph = 

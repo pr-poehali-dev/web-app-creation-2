@@ -36,6 +36,8 @@ interface NovelReaderBackgroundNewProps {
   goToPreviousSubParagraph: () => boolean;
   isContentHidden?: boolean;
   onToggleContentVisibility?: () => void;
+  backgroundObjectFit: 'cover' | 'contain' | 'fill';
+  backgroundObjectPosition: string;
 }
 
 function NovelReaderBackgroundNew({
@@ -63,7 +65,9 @@ function NovelReaderBackgroundNew({
   goToNextSubParagraph,
   goToPreviousSubParagraph,
   isContentHidden: externalIsContentHidden,
-  onToggleContentVisibility
+  onToggleContentVisibility,
+  backgroundObjectFit,
+  backgroundObjectPosition
 }: NovelReaderBackgroundNewProps) {
   const [isContentHidden, setIsContentHidden] = useState(false);
   const [wasHidden, setWasHidden] = useState(false);
@@ -142,9 +146,11 @@ function NovelReaderBackgroundNew({
       <div className="h-[calc(100vh-280px)] lg:h-screen lg:w-1/2 relative overflow-hidden flex-shrink-0">
         {previousBackgroundImage && (
           <div 
-            className="absolute inset-0 bg-cover bg-center"
+            className="absolute inset-0"
             style={{ 
               backgroundImage: `url(${previousBackgroundImage})`,
+              backgroundSize: backgroundObjectFit,
+              backgroundPosition: backgroundObjectPosition,
               opacity: newImageReady ? 0 : 1,
               filter: getFilterStyle(newImageReady ? 'blur(16px)' : 'blur(0px)'),
               transition: 'opacity 2.4s ease-in-out, filter 2.4s ease-in-out',
@@ -154,9 +160,11 @@ function NovelReaderBackgroundNew({
         )}
         
         <div 
-          className="absolute inset-0 bg-cover bg-center"
+          className="absolute inset-0"
           style={{ 
             backgroundImage: `url("${backgroundImage}")`,
+            backgroundSize: backgroundObjectFit,
+            backgroundPosition: backgroundObjectPosition,
             opacity: previousBackgroundImage && !newImageReady ? 0 : 1,
             filter: getFilterStyle(previousBackgroundImage && !newImageReady ? 'blur(16px)' : 'blur(0px)'),
             transition: previousBackgroundImage ? 'opacity 2.4s ease-in-out, filter 2.4s ease-in-out' : 'filter 1.2s ease-in-out',

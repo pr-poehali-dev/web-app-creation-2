@@ -44,6 +44,8 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
   const [previousBackgroundImage, setPreviousBackgroundImage] = useState<string | null>(null);
   const [isBackgroundChanging, setIsBackgroundChanging] = useState(false);
   const [newImageReady, setNewImageReady] = useState(false);
+  const [backgroundObjectFit, setBackgroundObjectFit] = useState<'cover' | 'contain' | 'fill'>('cover');
+  const [backgroundObjectPosition, setBackgroundObjectPosition] = useState<string>('center');
   
   const previousParagraphIndexRef = useRef<number>(currentParagraphIndex);
 
@@ -168,6 +170,8 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
         currentSubParagraphIndex={currentSubParagraphIndex}
         goToNextSubParagraph={goToNextSubParagraph}
         goToPreviousSubParagraph={goToPreviousSubParagraph}
+        setBackgroundObjectFit={setBackgroundObjectFit}
+        setBackgroundObjectPosition={setBackgroundObjectPosition}
       />
 
       {currentEpisode.backgroundMusic && (
@@ -200,6 +204,8 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
           goToNextParagraph={goToNextParagraph}
           existingBookmark={existingBookmark}
           currentSubParagraphIndex={currentSubParagraphIndex}
+          backgroundObjectFit={backgroundObjectFit}
+          backgroundObjectPosition={backgroundObjectPosition}
           setCurrentSubParagraphIndex={setCurrentSubParagraphIndex}
           goToNextSubParagraph={goToNextSubParagraph}
           goToPreviousSubParagraph={goToPreviousSubParagraph}

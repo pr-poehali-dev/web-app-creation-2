@@ -25,6 +25,8 @@ interface NovelReaderEffectsProps {
   currentSubParagraphIndex?: number;
   goToNextSubParagraph?: () => boolean;
   goToPreviousSubParagraph?: () => boolean;
+  setBackgroundObjectFit: (value: 'cover' | 'contain' | 'fill') => void;
+  setBackgroundObjectPosition: (value: string) => void;
 }
 
 function NovelReaderEffects({
@@ -49,7 +51,9 @@ function NovelReaderEffects({
   isLastSubParagraph,
   currentSubParagraphIndex,
   goToNextSubParagraph,
-  goToPreviousSubParagraph
+  goToPreviousSubParagraph,
+  setBackgroundObjectFit,
+  setBackgroundObjectPosition
 }: NovelReaderEffectsProps) {
   const previousEpisodeIdRef = useRef<string | null>(null);
 
@@ -59,11 +63,16 @@ function NovelReaderEffects({
     const isMobile = window.matchMedia('(max-width: 767px)').matches;
     
     let bgUrl: string | null = null;
+    let bgObjectFit: 'cover' | 'contain' | 'fill' = 'cover';
+    let bgObjectPosition = 'center';
+    
     for (let i = currentParagraphIndex; i >= 0; i--) {
       const p = currentEpisode.paragraphs[i];
       if (p.type === 'background') {
         const selectedUrl = (isMobile && p.mobileUrl) ? p.mobileUrl : p.url;
         bgUrl = selectedUrl || null;
+        bgObjectFit = p.objectFit || 'cover';
+        bgObjectPosition = p.objectPosition || 'center';
         break;
       }
     }
@@ -72,6 +81,9 @@ function NovelReaderEffects({
     if (bgUrl !== backgroundImage) {
       const episodeChanged = previousEpisodeIdRef.current !== null && previousEpisodeIdRef.current !== currentEpisodeId;
       const isFirstParagraph = currentParagraphIndex === 0;
+      
+      setBackgroundObjectFit(bgObjectFit);
+      setBackgroundObjectPosition(bgObjectPosition);
       
       if (episodeChanged && !isFirstParagraph) {
         setBackgroundImage(bgUrl);

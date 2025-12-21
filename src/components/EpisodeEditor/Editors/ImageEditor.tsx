@@ -88,23 +88,61 @@ function ImageEditor({
           className="text-foreground"
         />
         {paragraph.type === 'background' && (
-          <Select
-            value={paragraph.shapeTransition || 'organic'}
-            onValueChange={(value: ShapeTransitionType) =>
-              onUpdate(index, { ...paragraph, shapeTransition: value })
-            }
-          >
-            <SelectTrigger className="w-[140px]">
-              <SelectValue placeholder="Форма" />
-            </SelectTrigger>
-            <SelectContent>
-              {shapeTypes.map((shape) => (
-                <SelectItem key={shape.value} value={shape.value}>
-                  {shape.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <>
+            <Select
+              value={paragraph.shapeTransition || 'organic'}
+              onValueChange={(value: ShapeTransitionType) =>
+                onUpdate(index, { ...paragraph, shapeTransition: value })
+              }
+            >
+              <SelectTrigger className="w-[140px]">
+                <SelectValue placeholder="Форма" />
+              </SelectTrigger>
+              <SelectContent>
+                {shapeTypes.map((shape) => (
+                  <SelectItem key={shape.value} value={shape.value}>
+                    {shape.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select
+              value={paragraph.objectFit || 'cover'}
+              onValueChange={(value: 'cover' | 'contain' | 'fill') =>
+                onUpdate(index, { ...paragraph, objectFit: value })
+              }
+            >
+              <SelectTrigger className="w-[130px]">
+                <SelectValue placeholder="Размер" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="cover">Заполнить</SelectItem>
+                <SelectItem value="contain">Вписать</SelectItem>
+                <SelectItem value="fill">Растянуть</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select
+              value={paragraph.objectPosition || 'center'}
+              onValueChange={(value: string) =>
+                onUpdate(index, { ...paragraph, objectPosition: value })
+              }
+            >
+              <SelectTrigger className="w-[130px]">
+                <SelectValue placeholder="Позиция" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="center">По центру</SelectItem>
+                <SelectItem value="top">Сверху</SelectItem>
+                <SelectItem value="bottom">Снизу</SelectItem>
+                <SelectItem value="left">Слева</SelectItem>
+                <SelectItem value="right">Справа</SelectItem>
+                <SelectItem value="top left">Сверху слева</SelectItem>
+                <SelectItem value="top right">Сверху справа</SelectItem>
+                <SelectItem value="bottom left">Снизу слева</SelectItem>
+                <SelectItem value="bottom right">Снизу справа</SelectItem>
+              </SelectContent>
+            </Select>
+          </>
         )}
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
           <DialogTrigger asChild>
