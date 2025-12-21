@@ -91,7 +91,7 @@ function TextEditor({ paragraph, index, onUpdate }: TextEditorProps) {
             layout={paragraph.frameLayout || 'horizontal-3'}
             defaultAnimation={paragraph.frameAnimation}
             subParagraphs={paragraph.subParagraphs}
-            comicGroupSize={paragraph.comicGroupId ? undefined : undefined} {/* TODO: передать размер группы */}
+            comicGroupSize={undefined}
             onFramesChange={handleFramesChange}
             onLayoutChange={handleLayoutChange}
             onAnimationChange={handleAnimationChange}
