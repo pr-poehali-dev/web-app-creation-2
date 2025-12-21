@@ -108,6 +108,7 @@ export interface ImageParagraph extends BaseParagraph {
 export interface ChoiceParagraph extends BaseParagraph {
   type: 'choice';
   question: string;
+  lockAfterChoice?: boolean; // Блокировать все варианты после первого выбора
   options: {
     id: string;
     text: string;
