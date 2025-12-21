@@ -29,6 +29,7 @@ export default function ComicFrameReader({ paragraph, currentSubParagraphIndex, 
   const [imageAspectRatios, setImageAspectRatios] = useState<Map<string, number>>(new Map());
   const [showFrames, setShowFrames] = useState(false);
   const [brushMasks, setBrushMasks] = useState<string[]>([]);
+  const [masksLoaded, setMasksLoaded] = useState<Set<string>>(new Set());
 
   // Показываем фреймы только после завершения печати текста
   useEffect(() => {
@@ -85,8 +86,21 @@ export default function ComicFrameReader({ paragraph, currentSubParagraphIndex, 
     if (isRetrospective && activeFrames.length > 0) {
       const masks = activeFrames.map((_, index) => BRUSH_MASKS[index % BRUSH_MASKS.length]);
       setBrushMasks(masks);
+      
+      // Предзагрузка масок
+      masks.forEach(maskUrl => {
+        const img = new Image();
+        img.onload = () => {
+          setMasksLoaded(prev => new Set(prev).add(maskUrl));
+        };
+        img.onerror = () => {
+          console.warn('Failed to load mask:', maskUrl);
+        };
+        img.src = maskUrl;
+      });
     } else {
       setBrushMasks([]);
+      setMasksLoaded(new Set());
     }
   }, [isRetrospective, activeFrames.length]);
 
@@ -169,7 +183,7 @@ export default function ComicFrameReader({ paragraph, currentSubParagraphIndex, 
             >
               <div 
                 className="relative w-full h-full" 
-                style={isRetrospective && brushMasks[index] ? {
+                style={isRetrospective && brushMasks[index] && masksLoaded.has(brushMasks[index]) ? {
                   WebkitMaskImage: `url(${brushMasks[index]})`,
                   WebkitMaskSize: 'cover',
                   WebkitMaskPosition: 'center',
