@@ -128,11 +128,42 @@ function NovelReaderBackgroundNew({
     return `${baseFilter} contrast(${contrastAmount}) brightness(${brightnessAmount}) saturate(${saturationAmount})`;
   };
 
-  const hasComicFrames = (currentParagraph.type === 'text' || currentParagraph.type === 'dialogue') && 
+  // Логика для группированных комикс-параграфов
+  const getComicGroupData = () => {
+    if (!currentParagraph.comicGroupId) return null;
+    
+    // Находим все параграфы в группе
+    const groupParagraphs = currentEpisode.paragraphs.filter(
+      p => p.comicGroupId === currentParagraph.comicGroupId
+    );
+    
+    // Находим первый параграф группы (у него хранятся фреймы)
+    const firstParagraph = groupParagraphs.find(p => p.comicGroupIndex === 0);
+    if (!firstParagraph || !firstParagraph.comicFrames) return null;
+    
+    // Фильтруем фреймы, которые должны быть видны на текущем параграфе
+    const currentGroupIndex = currentParagraph.comicGroupIndex || 0;
+    const visibleFrames = firstParagraph.comicFrames.filter(frame => {
+      const triggerIndex = frame.paragraphTrigger ?? 0;
+      return triggerIndex <= currentGroupIndex;
+    });
+    
+    return {
+      frames: visibleFrames,
+      layout: firstParagraph.frameLayout || 'horizontal-3' as const,
+      allFrames: firstParagraph.comicFrames
+    };
+  };
+
+  const comicGroupData = getComicGroupData();
+  
+  // Старая логика для обратной совместимости
+  const hasComicFrames = !comicGroupData && 
+                         (currentParagraph.type === 'text' || currentParagraph.type === 'dialogue') && 
                          currentParagraph.comicFrames && 
                          currentParagraph.comicFrames.length > 0;
 
-  // Проверяем активный комикс-параграф
+  // Проверяем активный комикс-параграф (старая система)
   const getActiveComicParagraph = (): ComicParagraph | null => {
     if (!currentEpisode) return null;
     
@@ -140,7 +171,6 @@ function NovelReaderBackgroundNew({
       const p = currentEpisode.paragraphs[i];
       if (p.type === 'comic' && p.persistAcrossParagraphs) {
         const spanCount = p.spanCount || 1;
-        // Проверяем, что текущий параграф входит в диапазон комикса
         if (currentParagraphIndex >= i && currentParagraphIndex < i + spanCount) {
           return p;
         }
@@ -232,8 +262,34 @@ function NovelReaderBackgroundNew({
           </div>
         )}
         
-        {/* Comic frames поверх фона */}
-        {hasComicFrames && showComicFrames && (
+        {/* Группированные комикс-фреймы (новая система) */}
+        {comicGroupData && showComicFrames && (
+          <div 
+            className="absolute inset-0 flex items-center justify-center p-4 md:p-8 z-30 transition-all duration-300 ease-in-out"
+            style={{ 
+              opacity: actualIsContentHidden ? 0 : 1,
+              pointerEvents: actualIsContentHidden ? 'none' : 'auto'
+            }}
+          >
+            <div className="w-full h-full max-w-4xl">
+              <ComicFrameReader
+                paragraph={{
+                  ...currentParagraph,
+                  comicFrames: comicGroupData.frames,
+                  frameLayout: comicGroupData.layout
+                } as TextParagraph | DialogueParagraph}
+                currentSubParagraphIndex={undefined}
+                layout={comicGroupData.layout}
+                isTyping={isTyping}
+                isRetrospective={isRetrospective}
+                pastelColor={effectivePastelColor}
+              />
+            </div>
+          </div>
+        )}
+        
+        {/* Comic frames поверх фона (старая система) */}
+        {hasComicFrames && showComicFrames && !comicGroupData && (
           <div 
             className="absolute inset-0 flex items-center justify-center p-4 md:p-8 z-30 transition-all duration-300 ease-in-out"
             style={{ 
@@ -254,8 +310,8 @@ function NovelReaderBackgroundNew({
           </div>
         )}
         
-        {/* Отдельные комикс-параграфы */}
-        {activeComicParagraph && showComicFrames && (
+        {/* Отдельные комикс-параграфы (старая система) */}
+        {activeComicParagraph && showComicFrames && !comicGroupData && (
           <div 
             className="absolute inset-0 flex items-center justify-center p-4 md:p-8 z-30 transition-all duration-300 ease-in-out"
             style={{ 

@@ -73,6 +73,7 @@ export interface ComicFrame {
   mobileUrl?: string;
   alt?: string;
   subParagraphTrigger?: string; // ID подпараграфа, при котором показывается этот фрейм
+  paragraphTrigger?: number; // Индекс параграфа в группе (0, 1, 2...), на котором появляется фрейм
   animation?: FrameAnimationType; // Тип анимации появления
   objectPosition?: string; // CSS object-position (например: 'center', 'top', 'left', '50% 30%')
   objectFit?: 'cover' | 'contain' | 'fill'; // CSS object-fit
@@ -87,6 +88,8 @@ export interface BaseParagraph {
   comicFrames?: ComicFrame[]; // Фреймы комикса для текстового параграфа
   frameLayout?: MergeLayoutType; // Раскладка фреймов
   frameAnimation?: FrameAnimationType; // Общая анимация для всех фреймов
+  comicGroupId?: string; // ID группы комикса (одинаковый для всех параграфов в группе)
+  comicGroupIndex?: number; // Индекс параграфа внутри группы комикса (0, 1, 2...)
   timeframes?: ('present' | 'retrospective')[];
   pastelColor?: PastelColor; // Цвет для ретроспективы
   requiredPaths?: string[];

@@ -11,11 +11,12 @@ interface ComicFrameItemProps {
   frame: ComicFrame;
   index: number;
   subParagraphs?: SubParagraph[];
+  comicGroupSize?: number; // Количество параграфов в комикс-группе
   onUpdate: (index: number, updates: Partial<ComicFrame>) => void;
   onRemove: (index: number) => void;
 }
 
-function ComicFrameItem({ frame, index, subParagraphs, onUpdate, onRemove }: ComicFrameItemProps) {
+function ComicFrameItem({ frame, index, subParagraphs, comicGroupSize, onUpdate, onRemove }: ComicFrameItemProps) {
   const [previewOpen, setPreviewOpen] = useState(false);
   
   return (
@@ -41,6 +42,28 @@ function ComicFrameItem({ frame, index, subParagraphs, onUpdate, onRemove }: Com
           className="h-8 text-xs"
         />
       </div>
+
+      {/* Триггер для группированных параграфов */}
+      {comicGroupSize && comicGroupSize > 1 && (
+        <div className="space-y-1">
+          <Label className="text-xs text-muted-foreground">Появляется на параграфе №</Label>
+          <Select 
+            value={String(frame.paragraphTrigger ?? 0)} 
+            onValueChange={(v) => onUpdate(index, { paragraphTrigger: parseInt(v) })}
+          >
+            <SelectTrigger className="h-8 text-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {Array.from({ length: comicGroupSize }, (_, i) => (
+                <SelectItem key={i} value={String(i)}>
+                  Параграф {i + 1}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
 
       <div className="space-y-1">
         <Label className="text-xs text-muted-foreground">Триггер (подпараграф для показа)</Label>

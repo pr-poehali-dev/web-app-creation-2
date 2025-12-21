@@ -48,13 +48,14 @@ interface ComicFrameEditorProps {
   layout: MergeLayoutType;
   defaultAnimation?: FrameAnimationType;
   subParagraphs?: SubParagraph[]; // Список подпараграфов для выбора триггера
+  comicGroupSize?: number; // Количество параграфов в комикс-группе
   onFramesChange: (frames: ComicFrame[]) => void;
   onLayoutChange: (layout: MergeLayoutType) => void;
   onAnimationChange?: (animation: FrameAnimationType) => void;
   onBothChange?: (layout: MergeLayoutType, frames: ComicFrame[]) => void;
 }
 
-function ComicFrameEditor({ frames, layout, defaultAnimation, subParagraphs, onFramesChange, onLayoutChange, onAnimationChange, onBothChange }: ComicFrameEditorProps) {
+function ComicFrameEditor({ frames, layout, defaultAnimation, subParagraphs, comicGroupSize, onFramesChange, onLayoutChange, onAnimationChange, onBothChange }: ComicFrameEditorProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const framesRef = useRef(frames);
   
@@ -387,6 +388,7 @@ function ComicFrameEditor({ frames, layout, defaultAnimation, subParagraphs, onF
               frame={frame}
               index={index}
               subParagraphs={subParagraphs}
+              comicGroupSize={comicGroupSize}
               onUpdate={updateFrame}
               onRemove={removeFrame}
             />

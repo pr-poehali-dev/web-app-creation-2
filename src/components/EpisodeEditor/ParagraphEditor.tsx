@@ -4,6 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { createParagraphEditorHandlers } from './ParagraphEditorLogic';
 import ParagraphEditorHeader from './ParagraphEditorHeader';
 import ParagraphEditorContent from './ParagraphEditorContent';
+import Icon from '@/components/ui/icon';
 import equal from 'fast-deep-equal';
 
 interface ParagraphEditorProps {
@@ -59,8 +60,21 @@ function ParagraphEditor({
     [paragraph, index, novel, imageUrl, mobileImageUrl, onUpdate, onNovelUpdate]
   );
 
+  const isInComicGroup = !!paragraph.comicGroupId;
+  const isFirstInGroup = isInComicGroup && paragraph.comicGroupIndex === 0;
+  const groupBorderClass = isInComicGroup 
+    ? 'border-l-4 border-l-primary/50' 
+    : '';
+
   return (
-    <Card className={`animate-fade-in ${isBulkEditMode && isSelected ? 'ring-2 ring-primary' : ''}`}>
+    <Card className={`animate-fade-in ${isBulkEditMode && isSelected ? 'ring-2 ring-primary' : ''} ${groupBorderClass}`}>
+      {isInComicGroup && (
+        <div className="bg-primary/10 px-4 py-1 text-xs flex items-center gap-2">
+          <Icon name="Film" size={12} className="text-primary" />
+          <span className="font-medium">Комикс-группа</span>
+          <span className="text-muted-foreground">Параграф {(paragraph.comicGroupIndex || 0) + 1}</span>
+        </div>
+      )}
       <CardContent className="p-4">
         <ParagraphEditorHeader
           paragraph={paragraph}

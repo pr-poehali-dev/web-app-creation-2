@@ -207,6 +207,31 @@ function EpisodeEditor({ episode, novel, onUpdate, onNovelUpdate }: EpisodeEdito
     onUpdate({ ...episode, paragraphs: newParagraphs });
   }, [episode, onUpdate, selectedParagraphs]);
 
+  const handleCreateComicGroup = useCallback(() => {
+    if (selectedParagraphs.size < 2) return;
+    
+    const selectedIndices = Array.from(selectedParagraphs).sort((a, b) => a - b);
+    const groupId = `comic-group-${Date.now()}`;
+    
+    const newParagraphs = episode.paragraphs.map((para, index) => {
+      const groupIndex = selectedIndices.indexOf(index);
+      if (groupIndex === -1) return para;
+      
+      return {
+        ...para,
+        comicGroupId: groupId,
+        comicGroupIndex: groupIndex,
+        // Создаём пустой массив фреймов только для первого параграфа
+        comicFrames: groupIndex === 0 ? [] : undefined,
+        frameLayout: groupIndex === 0 ? 'horizontal-3' as const : undefined
+      };
+    });
+    
+    onUpdate({ ...episode, paragraphs: newParagraphs });
+    setSelectedParagraphs(new Set());
+    setBulkEditMode(false);
+  }, [episode, onUpdate, selectedParagraphs]);
+
   return (
     <div className="space-y-4">
       <EpisodeHeader episode={episode} novel={novel} onUpdate={onUpdate} onNovelUpdate={onNovelUpdate} />
@@ -269,6 +294,15 @@ function EpisodeEditor({ episode, novel, onUpdate, onNovelUpdate }: EpisodeEdito
                 </SelectContent>
               </Select>
             </div>
+            <Button
+              size="sm"
+              variant="default"
+              onClick={handleCreateComicGroup}
+              disabled={selectedParagraphs.size < 2}
+            >
+              <Icon name="Film" size={14} className="mr-1" />
+              Объединить в комикс
+            </Button>
             <Button
               size="sm"
               variant="destructive"

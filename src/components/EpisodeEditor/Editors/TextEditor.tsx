@@ -4,6 +4,7 @@ import { Label } from '@/components/ui/label';
 import { TextParagraph } from '@/types/novel';
 import SubParagraphsEditor from '../SubParagraphsEditor';
 import ComicFrameEditor from '../ComicFrameEditor';
+import Icon from '@/components/ui/icon';
 import equal from 'fast-deep-equal';
 
 interface TextEditorProps {
@@ -79,16 +80,38 @@ function TextEditor({ paragraph, index, onUpdate }: TextEditorProps) {
         onSubParagraphsChange={handleSubParagraphsChange}
       />
 
-      <ComicFrameEditor
-        frames={paragraph.comicFrames || []}
-        layout={paragraph.frameLayout || 'horizontal-3'}
-        defaultAnimation={paragraph.frameAnimation}
-        subParagraphs={paragraph.subParagraphs}
-        onFramesChange={handleFramesChange}
-        onLayoutChange={handleLayoutChange}
-        onAnimationChange={handleAnimationChange}
-        onBothChange={handleBothChange}
-      />
+      {paragraph.comicGroupIndex === 0 && (
+        <div className="p-3 border rounded-lg bg-primary/5">
+          <div className="flex items-center gap-2 mb-3">
+            <Icon name="Film" size={16} className="text-primary" />
+            <span className="text-sm font-semibold">Настройка комикс-группы</span>
+          </div>
+          <ComicFrameEditor
+            frames={paragraph.comicFrames || []}
+            layout={paragraph.frameLayout || 'horizontal-3'}
+            defaultAnimation={paragraph.frameAnimation}
+            subParagraphs={paragraph.subParagraphs}
+            comicGroupSize={paragraph.comicGroupId ? undefined : undefined} {/* TODO: передать размер группы */}
+            onFramesChange={handleFramesChange}
+            onLayoutChange={handleLayoutChange}
+            onAnimationChange={handleAnimationChange}
+            onBothChange={handleBothChange}
+          />
+        </div>
+      )}
+
+      {!paragraph.comicGroupId && (
+        <ComicFrameEditor
+          frames={paragraph.comicFrames || []}
+          layout={paragraph.frameLayout || 'horizontal-3'}
+          defaultAnimation={paragraph.frameAnimation}
+          subParagraphs={paragraph.subParagraphs}
+          onFramesChange={handleFramesChange}
+          onLayoutChange={handleLayoutChange}
+          onAnimationChange={handleAnimationChange}
+          onBothChange={handleBothChange}
+        />
+      )}
     </div>
   );
 }
