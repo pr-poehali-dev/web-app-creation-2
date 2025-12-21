@@ -93,6 +93,10 @@ function NovelReaderEffects({
       // Сохраняем РЕАЛЬНО ВИДИМЫЙ фон (из ref), а не тот что в state
       setPreviousBackgroundImage(activeBackgroundRef.current);
       setBackgroundImage(bgUrl);
+      
+      // СРАЗУ обновляем ref - новый фон теперь активный (даже если анимация еще идет)
+      activeBackgroundRef.current = bgUrl;
+      
       setIsBackgroundChanging(true);
       setNewImageReady(false);
       
@@ -107,8 +111,6 @@ function NovelReaderEffects({
       setTimeout(() => {
         console.log('[NovelReader] Background transition complete');
         setIsBackgroundChanging(false);
-        // Обновляем ref - теперь новый фон стал активным
-        activeBackgroundRef.current = bgUrl;
       }, 2800);
     }
     
