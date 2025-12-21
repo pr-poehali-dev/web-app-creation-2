@@ -79,6 +79,13 @@ function NovelReaderEffects({
     
     
     if (bgUrl !== backgroundImage) {
+      console.log('[NovelReader] Background changing:', {
+        from: backgroundImage,
+        to: bgUrl,
+        paragraphIndex: currentParagraphIndex,
+        hasPrevious: !!backgroundImage
+      });
+      
       setBackgroundObjectFit(bgObjectFit);
       setBackgroundObjectPosition(bgObjectPosition);
       
@@ -88,10 +95,12 @@ function NovelReaderEffects({
       setNewImageReady(false);
       
       setTimeout(() => {
+        console.log('[NovelReader] Background ready');
         setNewImageReady(true);
       }, 400);
       
       setTimeout(() => {
+        console.log('[NovelReader] Background transition complete');
         setIsBackgroundChanging(false);
         setPreviousBackgroundImage(null);
       }, 2800);

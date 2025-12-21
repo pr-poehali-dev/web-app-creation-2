@@ -141,6 +141,13 @@ function NovelReaderBackgroundNew({
   // Условие показа контента: либо всё готово, либо это первый текстовый параграф
   const shouldShowContent = (!isBackgroundChanging && newImageReady) || isFirstTextParagraph;
 
+  console.log('[NovelReaderBackgroundNew] Render:', {
+    backgroundImage,
+    previousBackgroundImage,
+    newImageReady,
+    isBackgroundChanging
+  });
+
   return (
     <div className="fixed inset-0 flex flex-col lg:flex-row overflow-hidden">
       {/* Верхняя/Левая часть - фоновое изображение */}
@@ -166,9 +173,9 @@ function NovelReaderBackgroundNew({
             backgroundImage: `url("${backgroundImage}")`,
             backgroundSize: backgroundObjectFit,
             backgroundPosition: backgroundObjectPosition,
-            opacity: previousBackgroundImage && !newImageReady ? 0 : 1,
-            filter: getFilterStyle(previousBackgroundImage && !newImageReady ? 'blur(16px)' : 'blur(0px)'),
-            transition: previousBackgroundImage ? 'opacity 2.4s ease-in-out, filter 2.4s ease-in-out' : 'filter 1.2s ease-in-out',
+            opacity: isBackgroundChanging && !newImageReady ? 0 : 1,
+            filter: getFilterStyle(isBackgroundChanging && !newImageReady ? 'blur(16px)' : 'blur(0px)'),
+            transition: 'opacity 2.4s ease-in-out, filter 2.4s ease-in-out',
             zIndex: 0
           }}
         />
