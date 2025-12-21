@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { Novel, Episode, Paragraph, TextParagraph, DialogueParagraph, ComicParagraph } from '@/types/novel';
 import { UserSettings, UserProfile } from '@/types/settings';
 import { Button } from '@/components/ui/button';
@@ -75,6 +75,9 @@ function NovelReaderBackgroundNew({
   const actualIsContentHidden = externalIsContentHidden !== undefined ? externalIsContentHidden : isContentHidden;
   const [showComicFrames, setShowComicFrames] = useState(false);
   
+  // Отслеживаем максимальный индекс параграфа в группе для накопления фреймов
+  const maxGroupIndexSeen = useRef<Map<string, number>>(new Map());
+  
   useEffect(() => {
     setWasHidden(false);
     setIsContentHidden(false);
@@ -88,6 +91,11 @@ function NovelReaderBackgroundNew({
     
     return () => clearTimeout(timer);
   }, [paragraphKey]);
+  
+  // Сбрасываем накопленные фреймы при смене эпизода
+  useEffect(() => {
+    maxGroupIndexSeen.current.clear();
+  }, [currentEpisode.id]);
   
   useEffect(() => {
     if (isBackgroundChanging) {
@@ -128,8 +136,8 @@ function NovelReaderBackgroundNew({
     return `${baseFilter} contrast(${contrastAmount}) brightness(${brightnessAmount}) saturate(${saturationAmount})`;
   };
 
-  // Логика для группированных комикс-параграфов
-  const getComicGroupData = () => {
+  // Логика для группированных комикс-параграфов с накоплением фреймов
+  const comicGroupData = useMemo(() => {
     if (!currentParagraph.comicGroupId) return null;
     
     // Находим все параграфы в группе
@@ -141,11 +149,18 @@ function NovelReaderBackgroundNew({
     const firstParagraph = groupParagraphs.find(p => p.comicGroupIndex === 0);
     if (!firstParagraph || !firstParagraph.comicFrames) return null;
     
-    // Фильтруем фреймы, которые должны быть видны на текущем параграфе
     const currentGroupIndex = currentParagraph.comicGroupIndex || 0;
+    const groupId = currentParagraph.comicGroupId;
+    
+    // Обновляем максимальный индекс, который мы видели для этой группы
+    const prevMaxIndex = maxGroupIndexSeen.current.get(groupId) ?? -1;
+    const newMaxIndex = Math.max(prevMaxIndex, currentGroupIndex);
+    maxGroupIndexSeen.current.set(groupId, newMaxIndex);
+    
+    // Показываем все фреймы до максимального индекса (накопление)
     const visibleFrames = firstParagraph.comicFrames.filter(frame => {
       const triggerIndex = frame.paragraphTrigger ?? 0;
-      return triggerIndex <= currentGroupIndex;
+      return triggerIndex <= newMaxIndex;
     });
     
     return {
@@ -153,9 +168,7 @@ function NovelReaderBackgroundNew({
       layout: firstParagraph.frameLayout || 'horizontal-3' as const,
       allFrames: firstParagraph.comicFrames
     };
-  };
-
-  const comicGroupData = getComicGroupData();
+  }, [currentParagraph.comicGroupId, currentParagraph.comicGroupIndex, currentEpisode.paragraphs]);
   
   // Старая логика для обратной совместимости
   const hasComicFrames = !comicGroupData && 
