@@ -127,27 +127,6 @@ export default function MergedParagraphsLayout({ layout, children, aspectRatios 
       case 'triangle-right':
         return 'grid grid-cols-2 grid-rows-2 gap-2';
       
-      case 'circle-2-left':
-        return 'grid grid-cols-[1fr_1fr_2fr] grid-rows-2 gap-3';
-      
-      case 'circle-2-right':
-        return 'grid grid-cols-[2fr_1fr_1fr] grid-rows-2 gap-3';
-      
-      case 'circle-3-row':
-        return 'flex flex-row items-center justify-center gap-4';
-      
-      case 'circle-4-corners':
-        return 'grid grid-cols-3 grid-rows-3 gap-3';
-      
-      case 'circle-duo-large':
-        return 'flex flex-row items-center justify-center gap-6';
-      
-      case 'circle-trio-overlap':
-        return 'grid grid-cols-5 grid-rows-3 gap-0';
-      
-      case 'circle-scatter-5':
-        return 'grid grid-cols-5 grid-rows-5 gap-2';
-      
       default:
         return 'grid grid-cols-3 gap-4';
     }
@@ -345,46 +324,12 @@ export default function MergedParagraphsLayout({ layout, children, aspectRatios 
         if (index === 2) return 'col-start-2 row-start-1 row-span-2';
         return '';
       
-      case 'circle-2-left':
-        if (index === 0) return 'col-start-1 row-start-1 rounded-full aspect-square';
-        if (index === 1) return 'col-start-2 row-start-2 rounded-full aspect-square';
-        if (index === 2) return 'col-start-3 row-start-1 row-span-2';
-        return '';
-      
-      case 'circle-2-right':
-        if (index === 0) return 'col-start-1 row-start-1 row-span-2';
-        if (index === 1) return 'col-start-2 row-start-1 rounded-full aspect-square';
-        if (index === 2) return 'col-start-3 row-start-2 rounded-full aspect-square';
-        return '';
-      
-      case 'circle-4-corners':
-        if (index === 0) return 'col-start-2 row-start-2 rounded-lg';
-        if (index === 1) return 'col-start-1 row-start-1 rounded-full aspect-square';
-        if (index === 2) return 'col-start-3 row-start-1 rounded-full aspect-square';
-        if (index === 3) return 'col-start-1 row-start-3 rounded-full aspect-square';
-        if (index === 4) return 'col-start-3 row-start-3 rounded-full aspect-square';
-        return '';
-      
-      case 'circle-trio-overlap':
-        if (index === 0) return 'col-start-1 col-span-2 row-start-1 row-span-2 rounded-full aspect-square z-30';
-        if (index === 1) return 'col-start-2 col-span-2 row-start-2 row-span-2 rounded-full aspect-square z-20';
-        if (index === 2) return 'col-start-3 col-span-2 row-start-1 row-span-2 rounded-full aspect-square z-10';
-        return '';
-      
-      case 'circle-scatter-5':
-        if (index === 0) return 'col-start-1 col-span-2 row-start-1 row-span-2 rounded-full aspect-square';
-        if (index === 1) return 'col-start-4 col-span-2 row-start-2 row-span-2 rounded-full aspect-square';
-        if (index === 2) return 'col-start-2 col-span-1 row-start-3 row-span-1 rounded-full aspect-square';
-        if (index === 3) return 'col-start-1 col-span-2 row-start-4 row-span-2 rounded-full aspect-square';
-        if (index === 4) return 'col-start-4 col-span-2 row-start-4 row-span-2 rounded-full aspect-square';
-        return '';
-      
       default:
         return '';
     }
   };
 
-  const isFlexLayout = ['single', 'horizontal-2', 'horizontal-3', 'horizontal-4', 'vertical-2', 'vertical-3', 'vertical-4', 'sandwich', 'filmstrip', 'circle-3-row', 'circle-duo-large'].includes(layout);
+  const isFlexLayout = ['single', 'horizontal-2', 'horizontal-3', 'horizontal-4', 'vertical-2', 'vertical-3', 'vertical-4', 'sandwich', 'filmstrip'].includes(layout);
 
   const isVerticalLayout = ['vertical-2', 'vertical-3', 'vertical-4'].includes(layout);
 

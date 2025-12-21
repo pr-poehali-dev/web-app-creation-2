@@ -39,14 +39,7 @@ export type MergeLayoutType =
   | 'triangle-top' // треугольник сверху (3 фрейма)
   | 'triangle-bottom' // треугольник снизу (3 фрейма)
   | 'triangle-left' // треугольник слева (3 фрейма)
-  | 'triangle-right' // треугольник справа (3 фрейма)
-  | 'circle-2-left' // 2 круга слева + текст
-  | 'circle-2-right' // 2 круга справа + текст
-  | 'circle-3-row' // 3 круга в ряд
-  | 'circle-4-corners' // 4 круга по углам + центр
-  | 'circle-duo-large' // 2 больших круга
-  | 'circle-trio-overlap' // 3 перекрывающихся круга
-  | 'circle-scatter-5'; // 5 кругов разного размера
+  | 'triangle-right'; // треугольник справа (3 фрейма)
 
 export type FrameAnimationType = 
   | 'fade' // Плавное появление

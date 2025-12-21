@@ -40,15 +40,6 @@ const LAYOUT_OPTIONS = [
     { value: 'triangle-bottom', label: '▼ Треугольник ↓' },
     { value: 'triangle-left', label: '◀ Треугольник ←' },
     { value: 'triangle-right', label: '▶ Треугольник →' }
-  ]},
-  { group: 'Круглые', items: [
-    { value: 'circle-2-left', label: '●●▫ 2 круга ←' },
-    { value: 'circle-2-right', label: '▫●● 2 круга →' },
-    { value: 'circle-3-row', label: '●●● 3 круга в ряд' },
-    { value: 'circle-4-corners', label: '● Круги по углам' },
-    { value: 'circle-duo-large', label: '●● 2 больших круга' },
-    { value: 'circle-trio-overlap', label: '●●● Перекрытие' },
-    { value: 'circle-scatter-5', label: '● 5 кругов рассыпью' }
   ]}
 ] as const;
 
@@ -125,13 +116,6 @@ function ComicFrameEditor({ frames, layout, defaultAnimation, subParagraphs, onF
       case 'triangle-bottom': return 3;
       case 'triangle-left': return 3;
       case 'triangle-right': return 3;
-      case 'circle-2-left': return 3;
-      case 'circle-2-right': return 3;
-      case 'circle-3-row': return 3;
-      case 'circle-4-corners': return 5;
-      case 'circle-duo-large': return 2;
-      case 'circle-trio-overlap': return 3;
-      case 'circle-scatter-5': return 5;
       default: return 3;
     }
   };
