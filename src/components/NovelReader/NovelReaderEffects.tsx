@@ -75,6 +75,18 @@ function NovelReaderEffects({
         bgObjectPosition = p.objectPosition || 'center';
         break;
       }
+      // Комикс-параграфы могут перекрывать фон
+      if (p.type === 'comic' && p.persistAcrossParagraphs) {
+        // Если комикс растягивается на несколько параграфов, используем первый фрейм
+        if (p.frames && p.frames.length > 0) {
+          const firstFrame = p.frames[0];
+          const selectedUrl = (isMobile && firstFrame.mobileUrl) ? firstFrame.mobileUrl : firstFrame.url;
+          bgUrl = selectedUrl || null;
+          bgObjectFit = firstFrame.objectFit || 'cover';
+          bgObjectPosition = firstFrame.objectPosition || 'center';
+          break;
+        }
+      }
     }
     
     
@@ -144,6 +156,7 @@ function NovelReaderEffects({
       }, 3200);
       return () => clearTimeout(timer);
     }
+    // Для комикс-параграфов автопереход не нужен, они отображаются вместе с текстом
   }, [currentParagraph, goToNextParagraph]);
 
   useEffect(() => {

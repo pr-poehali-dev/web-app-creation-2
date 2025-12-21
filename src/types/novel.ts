@@ -1,4 +1,4 @@
-export type ParagraphType = 'text' | 'image' | 'choice' | 'item' | 'dialogue' | 'background';
+export type ParagraphType = 'text' | 'image' | 'choice' | 'item' | 'dialogue' | 'background' | 'comic';
 
 export type MergeLayoutType = 
   | 'single' // 1 фрейм на весь экран
@@ -147,13 +147,22 @@ export interface BackgroundParagraph extends BaseParagraph {
   objectFit?: 'cover' | 'contain' | 'fill';
 }
 
+export interface ComicParagraph extends BaseParagraph {
+  type: 'comic';
+  frames: ComicFrame[]; // Фреймы комикса
+  layout?: MergeLayoutType; // Раскладка фреймов
+  spanCount?: number; // Количество текстовых параграфов, на которые растягивается комикс
+  persistAcrossParagraphs?: boolean; // Сохранять ли фон при переходе между параграфами
+}
+
 export type Paragraph = 
   | TextParagraph 
   | ImageParagraph 
   | ChoiceParagraph 
   | ItemParagraph 
   | DialogueParagraph
-  | BackgroundParagraph;
+  | BackgroundParagraph
+  | ComicParagraph;
 
 export type ShapeTransitionType = 'wave' | 'diagonal' | 'organic' | 'curved' | 'liquid' | 'triangle' | 'hexagon' | 'arc' | 'stairs' | 'zigzag' | 'rounded' | 'sharp' | 'double-wave';
 

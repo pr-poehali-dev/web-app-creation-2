@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Novel, Episode, Paragraph, TextParagraph, DialogueParagraph } from '@/types/novel';
+import { Novel, Episode, Paragraph, TextParagraph, DialogueParagraph, ComicParagraph } from '@/types/novel';
 import { UserSettings, UserProfile } from '@/types/settings';
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
@@ -132,6 +132,25 @@ function NovelReaderBackgroundNew({
                          currentParagraph.comicFrames && 
                          currentParagraph.comicFrames.length > 0;
 
+  // Проверяем активный комикс-параграф
+  const getActiveComicParagraph = (): ComicParagraph | null => {
+    if (!currentEpisode) return null;
+    
+    for (let i = currentParagraphIndex; i >= 0; i--) {
+      const p = currentEpisode.paragraphs[i];
+      if (p.type === 'comic' && p.persistAcrossParagraphs) {
+        const spanCount = p.spanCount || 1;
+        // Проверяем, что текущий параграф входит в диапазон комикса
+        if (currentParagraphIndex >= i && currentParagraphIndex < i + spanCount) {
+          return p;
+        }
+      }
+    }
+    return null;
+  };
+
+  const activeComicParagraph = getActiveComicParagraph();
+
   // Проверяем, это первый текстовый параграф после фона
   const isFirstTextParagraph = currentParagraphIndex <= 1 && 
                                 (currentParagraph.type === 'text' || 
@@ -235,6 +254,32 @@ function NovelReaderBackgroundNew({
           </div>
         )}
         
+        {/* Отдельные комикс-параграфы */}
+        {activeComicParagraph && showComicFrames && (
+          <div 
+            className="absolute inset-0 flex items-center justify-center p-4 md:p-8 z-30 transition-all duration-300 ease-in-out"
+            style={{ 
+              opacity: actualIsContentHidden ? 0 : 1,
+              pointerEvents: actualIsContentHidden ? 'none' : 'auto'
+            }}
+          >
+            <div className="w-full h-full max-w-4xl">
+              <ComicFrameReader
+                paragraph={{
+                  ...activeComicParagraph,
+                  comicFrames: activeComicParagraph.frames,
+                  frameLayout: activeComicParagraph.layout
+                } as TextParagraph | DialogueParagraph}
+                currentSubParagraphIndex={undefined}
+                layout={activeComicParagraph.layout || 'single'}
+                isTyping={isTyping}
+                isRetrospective={isRetrospective}
+                pastelColor={effectivePastelColor}
+              />
+            </div>
+          </div>
+        )}
+        
         {/* Плавный градиент-переход */}
         <div className="absolute bottom-0 left-0 right-0 h-80 lg:h-full lg:top-0 lg:right-0 lg:left-auto lg:bottom-auto lg:w-64 pointer-events-none z-10">
           <div className="w-full h-full bg-gradient-to-b lg:bg-gradient-to-r from-transparent via-[#151d28]/50 to-[#151d28]" />
@@ -264,7 +309,7 @@ function NovelReaderBackgroundNew({
           <Icon name={actualIsContentHidden ? 'Eye' : 'EyeOff'} size={20} className="text-white" />
         </Button>
         
-        {currentParagraph.type !== 'background' && shouldShowContent && (
+        {currentParagraph.type !== 'background' && currentParagraph.type !== 'comic' && shouldShowContent && (
           <>
             <div className="absolute bottom-12 md:bottom-8 lg:top-1/2 lg:-translate-y-1/2 left-0 right-0 z-10 px-5 md:px-8">
             <div className="w-full max-w-3xl mx-auto flex flex-col items-center justify-center">
