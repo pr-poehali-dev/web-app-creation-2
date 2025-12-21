@@ -94,10 +94,13 @@ function NovelReaderEffects({
       setIsBackgroundChanging(true);
       setNewImageReady(false);
       
-      setTimeout(() => {
-        console.log('[NovelReader] Background ready');
-        setNewImageReady(true);
-      }, 400);
+      // Даём браузеру 2 фрейма чтобы зафиксировать начальное состояние opacity: 0
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          console.log('[NovelReader] Background ready - starting transition');
+          setNewImageReady(true);
+        });
+      });
       
       setTimeout(() => {
         console.log('[NovelReader] Background transition complete');
