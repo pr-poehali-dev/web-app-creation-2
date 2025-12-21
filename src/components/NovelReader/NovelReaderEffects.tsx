@@ -89,6 +89,7 @@ function NovelReaderEffects({
       setBackgroundObjectFit(bgObjectFit);
       setBackgroundObjectPosition(bgObjectPosition);
       
+      // Сохраняем текущий фон как предыдущий (не очищаем его, он перезапишется при следующем переходе)
       setPreviousBackgroundImage(backgroundImage);
       setBackgroundImage(bgUrl);
       setIsBackgroundChanging(true);
@@ -105,7 +106,7 @@ function NovelReaderEffects({
       setTimeout(() => {
         console.log('[NovelReader] Background transition complete');
         setIsBackgroundChanging(false);
-        setPreviousBackgroundImage(null);
+        // НЕ очищаем previousBackgroundImage - он нужен для следующего перехода!
       }, 2800);
     }
     
