@@ -167,16 +167,19 @@ export default function ComicFrameReader({ paragraph, currentSubParagraphIndex, 
                 setSelectedImage(frame.url);
               }}
             >
-              <div className="relative w-full h-full" style={{
-                WebkitMaskImage: isRetrospective && brushMasks[index] ? `url(${brushMasks[index]})` : undefined,
-                WebkitMaskSize: 'cover',
-                WebkitMaskPosition: 'center',
-                WebkitMaskRepeat: 'no-repeat',
-                maskImage: isRetrospective && brushMasks[index] ? `url(${brushMasks[index]})` : undefined,
-                maskSize: 'cover',
-                maskPosition: 'center',
-                maskRepeat: 'no-repeat'
-              }}>
+              <div 
+                className="relative w-full h-full" 
+                style={isRetrospective && brushMasks[index] ? {
+                  WebkitMaskImage: `url(${brushMasks[index]})`,
+                  WebkitMaskSize: 'cover',
+                  WebkitMaskPosition: 'center',
+                  WebkitMaskRepeat: 'no-repeat',
+                  maskImage: `url(${brushMasks[index]})`,
+                  maskSize: 'cover',
+                  maskPosition: 'center',
+                  maskRepeat: 'no-repeat'
+                } : undefined}
+              >
                 <img 
                   src={frame.url} 
                   alt={frame.alt || ''} 
