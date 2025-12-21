@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, MutableRefObject } from 'react';
+import { useState, useEffect, useMemo, useRef, MutableRefObject } from 'react';
 import { Novel, Episode, Paragraph, TextParagraph, DialogueParagraph, ComicParagraph } from '@/types/novel';
 import { UserSettings, UserProfile } from '@/types/settings';
 import { Button } from '@/components/ui/button';
@@ -76,20 +76,33 @@ function NovelReaderBackgroundNew({
   
   const actualIsContentHidden = externalIsContentHidden !== undefined ? externalIsContentHidden : isContentHidden;
   const [showComicFrames, setShowComicFrames] = useState(false);
+  const previousGroupIdRef = useRef<string | undefined>(undefined);
   
   useEffect(() => {
     setWasHidden(false);
     setIsContentHidden(false);
-    setShowComicFrames(false);
     
-    const timer = setTimeout(() => {
-      if (!isBackgroundChanging) {
-        setShowComicFrames(true);
-      }
-    }, 1300);
+    // Не сбрасываем showComicFrames если остаемся в той же комикс-группе
+    const isSameGroup = currentParagraph.comicGroupId && 
+                       currentParagraph.comicGroupId === previousGroupIdRef.current;
     
-    return () => clearTimeout(timer);
-  }, [paragraphKey]);
+    if (!isSameGroup) {
+      setShowComicFrames(false);
+      
+      const timer = setTimeout(() => {
+        if (!isBackgroundChanging) {
+          setShowComicFrames(true);
+        }
+      }, 1300);
+      
+      return () => clearTimeout(timer);
+    } else {
+      // В той же группе - фреймы остаются видимыми
+      setShowComicFrames(true);
+    }
+    
+    previousGroupIdRef.current = currentParagraph.comicGroupId;
+  }, [paragraphKey, currentParagraph.comicGroupId, isBackgroundChanging]);
   
   // Сбрасываем накопленные фреймы при смене эпизода
   useEffect(() => {
