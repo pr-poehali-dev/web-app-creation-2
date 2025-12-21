@@ -156,7 +156,7 @@ function NovelReaderBackgroundNew({
   return (
     <div className="fixed inset-0 flex flex-col lg:flex-row overflow-hidden">
       {/* Верхняя/Левая часть - фоновое изображение */}
-      <div className="h-[calc(100vh-280px)] lg:h-screen lg:w-1/2 relative overflow-hidden flex-shrink-0">
+      <div className="h-[40vh] lg:h-screen lg:w-1/2 relative overflow-hidden flex-shrink-0">
         {previousBackgroundImage && previousBackgroundImage !== backgroundImage && (
           <img
             src={previousBackgroundImage}
