@@ -95,11 +95,11 @@ function EpisodesVisualization({
             </defs>
           </svg>
 
-          {novel.episodes.map((episode) => {
+          {novel.episodes.map((episode, idx) => {
             const connections = getConnectionsForEpisode(episode.id);
-            const episodePaths = episode.requiredPaths?.map(pathId => 
-              novel.paths?.find(p => p.id === pathId)
-            ).filter(Boolean) || [];
+            const episodePaths = episode.requiredPaths
+              ?.map(pathId => novel.paths?.find(p => p.id === pathId))
+              .filter((p): p is NonNullable<typeof p> => p !== undefined) || [];
             
             return (
               <div
@@ -109,34 +109,35 @@ function EpisodesVisualization({
                   left: `${episode.position.x * scale + offset.x}px`,
                   top: `${episode.position.y * scale + offset.y}px`,
                   transform: `scale(${scale})`,
-                  transformOrigin: 'top left'
+                  transformOrigin: 'top left',
+                  padding: '8px'
                 }}
                 onMouseDown={(e) => handleEpisodeDragStart(episode.id, e)}
               >
                 <Card 
-                  className={`w-52 p-4 shadow-lg transition-all mb-6 ${
+                  className={`w-56 p-4 shadow-lg transition-all ${
                     episode.id === novel.currentEpisodeId 
                       ? 'border-primary border-2 bg-primary/10' 
                       : 'bg-card hover:shadow-xl'
                   }`}
                 >
-                  <div className="flex items-start justify-between mb-2">
-                    <h3 className="font-bold truncate flex-1">{episode.title}</h3>
+                  <div className="flex items-start justify-between gap-2 mb-2">
+                    <h3 className="font-bold text-sm flex-1 line-clamp-1">{episode.title}</h3>
                     {episodePaths.length > 0 && (
-                      <div className="flex gap-1 ml-2">
+                      <div className="flex gap-1 flex-shrink-0">
                         {episodePaths.map((path) => (
                           <div
-                            key={path!.id}
-                            className="w-3 h-3 rounded-full flex-shrink-0"
-                            style={{ backgroundColor: path!.color }}
-                            title={path!.name}
+                            key={path.id}
+                            className="w-3 h-3 rounded-full"
+                            style={{ backgroundColor: path.color || '#888' }}
+                            title={path.name}
                           />
                         ))}
                       </div>
                     )}
                   </div>
                   {episode.shortDescription && (
-                    <p className="text-xs text-muted-foreground mb-2 line-clamp-2">
+                    <p className="text-xs text-muted-foreground mb-2 line-clamp-2 leading-relaxed">
                       {episode.shortDescription}
                     </p>
                   )}
