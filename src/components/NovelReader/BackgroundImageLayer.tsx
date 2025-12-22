@@ -67,10 +67,9 @@ function BackgroundImageLayer({
         style={{ 
           objectFit: backgroundObjectFit,
           objectPosition: backgroundObjectPosition,
-          opacity: (previousBackgroundImage && !imageLoaded) ? 0 : 1,
-          filter: getFilterStyle((previousBackgroundImage && !imageLoaded) ? 'blur(16px)' : 'blur(0px)'),
-          transition: 'opacity 2.4s ease-in-out, filter 2.4s ease-in-out',
-          willChange: 'opacity, filter',
+          opacity: !imageLoaded ? 0 : 1,
+          transition: 'opacity 2.4s ease-in-out',
+          willChange: 'opacity',
           zIndex: 3
         }}
       />
