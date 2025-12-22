@@ -235,12 +235,16 @@ function NovelReaderBackgroundNew({
           previousBackgroundImage={previousBackgroundImage}
           imageLoaded={imageLoaded}
           onImageLoad={() => {
-            console.log('[NovelReaderBackgroundNew] onImageLoad callback');
-            setImageLoaded(true);
-            if (imageLoadTimeoutRef.current) {
-              clearTimeout(imageLoadTimeoutRef.current);
-              imageLoadTimeoutRef.current = null;
-            }
+            console.log('[NovelReaderBackgroundNew] onImageLoad callback - delaying');
+            // Задержка чтобы CSS transition успел начаться
+            setTimeout(() => {
+              console.log('[NovelReaderBackgroundNew] Setting imageLoaded=true after delay');
+              setImageLoaded(true);
+              if (imageLoadTimeoutRef.current) {
+                clearTimeout(imageLoadTimeoutRef.current);
+                imageLoadTimeoutRef.current = null;
+              }
+            }, 50);
           }}
           backgroundObjectFit={backgroundObjectFit}
           backgroundObjectPosition={backgroundObjectPosition}
