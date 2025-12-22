@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 interface BackgroundImageLayerProps {
   backgroundImage: string;
@@ -26,7 +26,33 @@ function BackgroundImageLayer({
   getPastelColor
 }: BackgroundImageLayerProps) {
   const showTransition = previousBackgroundImage && previousBackgroundImage !== backgroundImage;
-  const imgRef = React.useRef<HTMLImageElement>(null);
+  const imgRef = useRef<HTMLImageElement>(null);
+  const [internalTransitionActive, setInternalTransitionActive] = useState(false);
+  const currentBgRef = useRef(backgroundImage);
+  
+  // Управляем внутренним состоянием перехода
+  useEffect(() => {
+    if (showTransition && backgroundImage !== currentBgRef.current) {
+      console.log('[BackgroundImageLayer] Starting transition from', currentBgRef.current, 'to', backgroundImage);
+      setInternalTransitionActive(false);
+      currentBgRef.current = backgroundImage;
+    } else if (!showTransition) {
+      setInternalTransitionActive(false);
+      currentBgRef.current = backgroundImage;
+    }
+  }, [backgroundImage, showTransition]);
+  
+  // Активируем переход когда imageLoaded становится true
+  useEffect(() => {
+    if (imageLoaded && showTransition && !internalTransitionActive) {
+      console.log('[BackgroundImageLayer] Activating transition via RAF');
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setInternalTransitionActive(true);
+        });
+      });
+    }
+  }, [imageLoaded, showTransition, internalTransitionActive]);
   
   return (
     <>
@@ -39,8 +65,8 @@ function BackgroundImageLayer({
             style={{ 
               objectFit: backgroundObjectFit,
               objectPosition: backgroundObjectPosition,
-              opacity: imageLoaded ? 0 : 1,
-              filter: getFilterStyle(imageLoaded ? 'blur(20px)' : 'blur(0px)'),
+              opacity: internalTransitionActive ? 0 : 1,
+              filter: getFilterStyle(internalTransitionActive ? 'blur(20px)' : 'blur(0px)'),
               zIndex: 1
             }}
           />
@@ -50,7 +76,7 @@ function BackgroundImageLayer({
               background: isRetrospective 
                 ? `radial-gradient(circle at center, ${getPastelColor(effectivePastelColor)} 0%, ${getPastelColor(effectivePastelColor).replace('0.4', '0.15')} 60%, rgba(0, 0, 0, 0.3) 100%)`
                 : 'rgba(0, 0, 0, 0.2)',
-              opacity: imageLoaded ? 0 : 1,
+              opacity: internalTransitionActive ? 0 : 1,
               zIndex: 2
             }}
           />
@@ -64,22 +90,12 @@ function BackgroundImageLayer({
         className="absolute inset-0 w-full h-full transition-opacity duration-[2500ms] ease-in-out"
         onLoad={() => {
           console.log('[BackgroundImageLayer] Image loaded:', backgroundImage);
-          
-          // Используем двойной RAF чтобы гарантировать что браузер применил opacity:0
-          if (showTransition) {
-            requestAnimationFrame(() => {
-              requestAnimationFrame(() => {
-                onImageLoad();
-              });
-            });
-          } else {
-            onImageLoad();
-          }
+          onImageLoad();
         }}
         style={{ 
           objectFit: backgroundObjectFit,
           objectPosition: backgroundObjectPosition,
-          opacity: (showTransition && !imageLoaded) ? 0 : 1,
+          opacity: (showTransition && !internalTransitionActive) ? 0 : 1,
           zIndex: 3
         }}
       />
