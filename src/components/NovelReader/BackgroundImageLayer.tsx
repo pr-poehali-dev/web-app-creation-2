@@ -1,10 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 interface BackgroundImageLayerProps {
   backgroundImage: string;
   previousBackgroundImage: string | null;
-  imageLoaded: boolean;
-  onImageLoad: () => void;
   backgroundObjectFit: 'cover' | 'contain' | 'fill';
   backgroundObjectPosition: string;
   isRetrospective: boolean;
@@ -16,8 +14,6 @@ interface BackgroundImageLayerProps {
 function BackgroundImageLayer({
   backgroundImage,
   previousBackgroundImage,
-  imageLoaded,
-  onImageLoad,
   backgroundObjectFit,
   backgroundObjectPosition,
   isRetrospective,
@@ -25,36 +21,54 @@ function BackgroundImageLayer({
   getFilterStyle,
   getPastelColor
 }: BackgroundImageLayerProps) {
-  const [animate, setAnimate] = useState(false);
+  const [transitionState, setTransitionState] = useState<'idle' | 'loading' | 'ready' | 'animating'>('idle');
   const showTransition = previousBackgroundImage && previousBackgroundImage !== backgroundImage;
+  const preloadedRef = useRef<string | null>(null);
   
+  // Предзагрузка нового изображения
   useEffect(() => {
-    if (showTransition && imageLoaded) {
-      // Запускаем анимацию
-      setAnimate(true);
+    if (showTransition && backgroundImage !== preloadedRef.current) {
+      setTransitionState('loading');
       
-      // Сбрасываем после завершения
-      const timer = setTimeout(() => {
-        setAnimate(false);
-      }, 2100);
-      
-      return () => clearTimeout(timer);
+      const img = new Image();
+      img.onload = () => {
+        preloadedRef.current = backgroundImage;
+        setTransitionState('ready');
+        
+        // Даём 2 фрейма на установку начального состояния
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            setTransitionState('animating');
+          });
+        });
+      };
+      img.onerror = () => {
+        setTransitionState('animating');
+      };
+      img.src = backgroundImage;
+    } else if (!showTransition) {
+      setTransitionState('idle');
+      preloadedRef.current = backgroundImage;
     }
-  }, [showTransition, imageLoaded]);
+  }, [backgroundImage, showTransition]);
+  
+  const isAnimating = transitionState === 'animating';
+  const showNewImage = transitionState === 'ready' || transitionState === 'animating' || !showTransition;
   
   return (
     <>
       {/* Старое изображение */}
       {showTransition && (
         <>
-          <div
+          <img
+            src={previousBackgroundImage}
+            alt=""
             className="absolute inset-0 w-full h-full"
             style={{ 
-              backgroundImage: `url(${previousBackgroundImage})`,
-              backgroundSize: backgroundObjectFit,
-              backgroundPosition: backgroundObjectPosition,
-              opacity: animate ? 0 : 1,
-              filter: animate ? 'blur(20px)' : 'blur(0px)',
+              objectFit: backgroundObjectFit,
+              objectPosition: backgroundObjectPosition,
+              opacity: isAnimating ? 0 : 1,
+              filter: isAnimating ? 'blur(20px)' : 'blur(0px)',
               transition: 'opacity 2s ease-in-out, filter 2s ease-in-out',
               zIndex: 1
             }}
@@ -65,7 +79,7 @@ function BackgroundImageLayer({
               background: isRetrospective 
                 ? `radial-gradient(circle at center, ${getPastelColor(effectivePastelColor)} 0%, ${getPastelColor(effectivePastelColor).replace('0.4', '0.15')} 60%, rgba(0, 0, 0, 0.3) 100%)`
                 : 'rgba(0, 0, 0, 0.2)',
-              opacity: animate ? 0 : 1,
+              opacity: isAnimating ? 0 : 1,
               transition: 'opacity 2s ease-in-out',
               zIndex: 2
             }}
@@ -74,24 +88,20 @@ function BackgroundImageLayer({
       )}
       
       {/* Новое изображение */}
-      <div
-        className="absolute inset-0 w-full h-full"
-        style={{ 
-          backgroundImage: `url(${backgroundImage})`,
-          backgroundSize: backgroundObjectFit,
-          backgroundPosition: backgroundObjectPosition,
-          opacity: (showTransition && !animate) ? 0 : 1,
-          transition: 'opacity 2s ease-in-out',
-          zIndex: 3
-        }}
-      >
-        <img 
-          src={backgroundImage} 
-          alt="" 
-          onLoad={onImageLoad}
-          style={{ display: 'none' }}
+      {showNewImage && (
+        <img
+          src={backgroundImage}
+          alt=""
+          className="absolute inset-0 w-full h-full"
+          style={{ 
+            objectFit: backgroundObjectFit,
+            objectPosition: backgroundObjectPosition,
+            opacity: (showTransition && !isAnimating) ? 0 : 1,
+            transition: 'opacity 2s ease-in-out',
+            zIndex: 3
+          }}
         />
-      </div>
+      )}
 
       {/* Оверлей */}
       <div 

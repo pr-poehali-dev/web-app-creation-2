@@ -68,16 +68,7 @@ function NovelReaderBackgroundNew({
   const [showComicFrames, setShowComicFrames] = useState(false);
   const previousParagraphKeyRef = useRef<string>(paragraphKey);
   
-  const [imageLoaded, setImageLoaded] = useState(true);
-  const currentImageUrlRef = useRef<string | null>(null);
-  
-  useEffect(() => {
-    if (backgroundImage !== currentImageUrlRef.current) {
-      console.log('[NovelReaderBG] Background changed, resetting imageLoaded');
-      setImageLoaded(false);
-      currentImageUrlRef.current = backgroundImage;
-    }
-  }, [backgroundImage]);
+
   
   useEffect(() => {
     setWasHidden(false);
@@ -202,15 +193,8 @@ function NovelReaderBackgroundNew({
   const wasBackgroundParagraph = previousParagraph?.type === 'background';
   
   const shouldShowContent = wasBackgroundParagraph 
-    ? (!isBackgroundChanging && imageLoaded)
-    : ((!isBackgroundChanging && imageLoaded) || isFirstTextParagraph);
-
-  console.log('[NovelReaderBackgroundNew] Render:', {
-    backgroundImage,
-    previousBackgroundImage,
-    newImageReady,
-    isBackgroundChanging
-  });
+    ? !isBackgroundChanging
+    : (!isBackgroundChanging || isFirstTextParagraph);
 
   return (
     <div className="fixed inset-0 flex flex-col lg:flex-row overflow-hidden">
@@ -218,10 +202,6 @@ function NovelReaderBackgroundNew({
         <BackgroundImageLayer
           backgroundImage={backgroundImage}
           previousBackgroundImage={previousBackgroundImage}
-          imageLoaded={imageLoaded}
-          onImageLoad={() => {
-            setImageLoaded(true);
-          }}
           backgroundObjectFit={backgroundObjectFit}
           backgroundObjectPosition={backgroundObjectPosition}
           isRetrospective={isRetrospective}
