@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+
 interface BackgroundImageLayerProps {
   backgroundImage: string;
   previousBackgroundImage: string | null;
@@ -23,22 +25,36 @@ function BackgroundImageLayer({
   getFilterStyle,
   getPastelColor
 }: BackgroundImageLayerProps) {
+  const [animate, setAnimate] = useState(false);
   const showTransition = previousBackgroundImage && previousBackgroundImage !== backgroundImage;
+  
+  useEffect(() => {
+    if (showTransition && imageLoaded) {
+      // Запускаем анимацию
+      setAnimate(true);
+      
+      // Сбрасываем после завершения
+      const timer = setTimeout(() => {
+        setAnimate(false);
+      }, 2100);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [showTransition, imageLoaded]);
   
   return (
     <>
-      {/* Старое изображение - плавно исчезает */}
+      {/* Старое изображение */}
       {showTransition && (
         <>
-          <img
-            src={previousBackgroundImage}
-            alt=""
+          <div
             className="absolute inset-0 w-full h-full"
             style={{ 
-              objectFit: backgroundObjectFit,
-              objectPosition: backgroundObjectPosition,
-              opacity: imageLoaded ? 0 : 1,
-              filter: getFilterStyle(imageLoaded ? 'blur(20px)' : 'blur(0px)'),
+              backgroundImage: `url(${previousBackgroundImage})`,
+              backgroundSize: backgroundObjectFit,
+              backgroundPosition: backgroundObjectPosition,
+              opacity: animate ? 0 : 1,
+              filter: animate ? 'blur(20px)' : 'blur(0px)',
               transition: 'opacity 2s ease-in-out, filter 2s ease-in-out',
               zIndex: 1
             }}
@@ -49,7 +65,7 @@ function BackgroundImageLayer({
               background: isRetrospective 
                 ? `radial-gradient(circle at center, ${getPastelColor(effectivePastelColor)} 0%, ${getPastelColor(effectivePastelColor).replace('0.4', '0.15')} 60%, rgba(0, 0, 0, 0.3) 100%)`
                 : 'rgba(0, 0, 0, 0.2)',
-              opacity: imageLoaded ? 0 : 1,
+              opacity: animate ? 0 : 1,
               transition: 'opacity 2s ease-in-out',
               zIndex: 2
             }}
@@ -57,22 +73,27 @@ function BackgroundImageLayer({
         </>
       )}
       
-      {/* Новое изображение - плавно появляется */}
-      <img
-        src={backgroundImage || ''}
-        alt=""
+      {/* Новое изображение */}
+      <div
         className="absolute inset-0 w-full h-full"
-        onLoad={onImageLoad}
         style={{ 
-          objectFit: backgroundObjectFit,
-          objectPosition: backgroundObjectPosition,
-          opacity: (showTransition && !imageLoaded) ? 0 : 1,
+          backgroundImage: `url(${backgroundImage})`,
+          backgroundSize: backgroundObjectFit,
+          backgroundPosition: backgroundObjectPosition,
+          opacity: (showTransition && !animate) ? 0 : 1,
           transition: 'opacity 2s ease-in-out',
           zIndex: 3
         }}
-      />
+      >
+        <img 
+          src={backgroundImage} 
+          alt="" 
+          onLoad={onImageLoad}
+          style={{ display: 'none' }}
+        />
+      </div>
 
-      {/* Постоянный оверлей для ретроспективы */}
+      {/* Оверлей */}
       <div 
         className="absolute inset-0 transition-all duration-1000 ease-in-out"
         style={{ 
