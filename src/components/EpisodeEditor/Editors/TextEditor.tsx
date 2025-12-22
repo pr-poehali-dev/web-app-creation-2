@@ -94,18 +94,6 @@ function TextEditor({ paragraph, index, episode, onUpdate }: TextEditorProps) {
           />
         </div>
       )}
-
-      {!paragraph.comicGroupId && (
-        <ComicFrameEditor
-          frames={paragraph.comicFrames || []}
-          layout={paragraph.frameLayout || 'horizontal-3'}
-          defaultAnimation={paragraph.frameAnimation}
-          onFramesChange={handleFramesChange}
-          onLayoutChange={handleLayoutChange}
-          onAnimationChange={handleAnimationChange}
-          onBothChange={handleBothChange}
-        />
-      )}
     </div>
   );
 }

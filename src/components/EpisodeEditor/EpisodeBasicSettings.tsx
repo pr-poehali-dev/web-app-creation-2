@@ -1,7 +1,7 @@
-import { Episode, Novel, ShapeTransitionType } from '@/types/novel';
+import { Episode, Novel } from '@/types/novel';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 
 interface EpisodeBasicSettingsProps {
@@ -19,34 +19,16 @@ function EpisodeBasicSettings({ episode, novel, onUpdate }: EpisodeBasicSettings
       </div>
 
       <div>
-        <Label className="text-foreground">Фигурный переход</Label>
-        <Select
-          value={episode.shapeTransition || 'organic'}
-          onValueChange={(value: ShapeTransitionType) =>
-            onUpdate({ ...episode, shapeTransition: value })
-          }
-        >
-          <SelectTrigger className="text-foreground">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="wave">🌊 Волна</SelectItem>
-            <SelectItem value="diagonal">📐 Диагональ</SelectItem>
-            <SelectItem value="organic">🍃 Органика</SelectItem>
-            <SelectItem value="curved">🌙 Изгиб</SelectItem>
-            <SelectItem value="liquid">💧 Жидкость</SelectItem>
-            <SelectItem value="triangle">▲ Треугольник</SelectItem>
-            <SelectItem value="hexagon">⬡ Шестиугольник</SelectItem>
-            <SelectItem value="arc">⌒ Арка</SelectItem>
-            <SelectItem value="stairs">📊 Лестница</SelectItem>
-            <SelectItem value="zigzag">⚡ Зигзаг</SelectItem>
-            <SelectItem value="rounded">◉ Округлая</SelectItem>
-            <SelectItem value="sharp">◆ Острая</SelectItem>
-            <SelectItem value="double-wave">〰️ Двойная волна</SelectItem>
-          </SelectContent>
-        </Select>
+        <Label className="text-foreground">Краткое описание</Label>
+        <Textarea
+          placeholder="Краткое описание эпизода (видно только в редакторе)"
+          value={episode.shortDescription || ''}
+          onChange={(e) => onUpdate({ ...episode, shortDescription: e.target.value || undefined })}
+          rows={2}
+          className="text-foreground mt-1"
+        />
         <p className="text-xs text-muted-foreground mt-1">
-          Анимированная форма перехода между экранами
+          Описание отображается только на карточке эпизода в редакторе
         </p>
       </div>
 

@@ -10,7 +10,6 @@ interface BackgroundContentOverlayProps {
   currentParagraph: Paragraph;
   comicGroupData: ComicGroupData | null;
   showComicFrames: boolean;
-  hasComicFrames: boolean;
   actualIsContentHidden: boolean;
   isTyping: boolean;
   isRetrospective: boolean;
@@ -22,7 +21,6 @@ function BackgroundContentOverlay({
   currentParagraph,
   comicGroupData,
   showComicFrames,
-  hasComicFrames,
   actualIsContentHidden,
   isTyping,
   isRetrospective,
@@ -68,26 +66,6 @@ function BackgroundContentOverlay({
               isRetrospective={isRetrospective}
               pastelColor={effectivePastelColor}
               isComicGroup={true}
-            />
-          </div>
-        </div>
-      )}
-      
-      {hasComicFrames && showComicFrames && !comicGroupData && (
-        <div 
-          className="absolute inset-0 flex items-center justify-center p-4 md:p-8 z-30 transition-all duration-300 ease-in-out"
-          style={{ 
-            opacity: actualIsContentHidden ? 0 : 1,
-            pointerEvents: actualIsContentHidden ? 'none' : 'auto'
-          }}
-        >
-          <div className="w-full h-full max-w-4xl">
-            <ComicFrameReader
-              paragraph={currentParagraph as TextParagraph | DialogueParagraph}
-              layout={currentParagraph.frameLayout || 'single'}
-              isTyping={isTyping}
-              isRetrospective={isRetrospective}
-              pastelColor={effectivePastelColor}
             />
           </div>
         </div>

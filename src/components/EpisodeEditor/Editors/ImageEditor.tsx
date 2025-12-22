@@ -1,6 +1,6 @@
 import { useState, memo } from 'react';
 import equal from 'fast-deep-equal';
-import { ImageParagraph, BackgroundParagraph, ShapeTransitionType } from '@/types/novel';
+import { ImageParagraph, BackgroundParagraph } from '@/types/novel';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -60,21 +60,7 @@ function ImageEditor({
     setIsMobileOpen(false);
   };
 
-  const shapeTypes: { value: ShapeTransitionType; label: string }[] = [
-    { value: 'wave', label: 'Волна' },
-    { value: 'diagonal', label: 'Диагональ' },
-    { value: 'organic', label: 'Органика' },
-    { value: 'curved', label: 'Изгибы' },
-    { value: 'liquid', label: 'Жидкость' },
-    { value: 'triangle', label: 'Треугольники' },
-    { value: 'hexagon', label: 'Шестиугольники' },
-    { value: 'arc', label: 'Дуга' },
-    { value: 'stairs', label: 'Ступеньки' },
-    { value: 'zigzag', label: 'Зигзаг' },
-    { value: 'rounded', label: 'Округлая' },
-    { value: 'sharp', label: 'Острая' },
-    { value: 'double-wave', label: 'Двойная волна' }
-  ];
+
 
   return (
     <div className="space-y-2">
@@ -89,23 +75,6 @@ function ImageEditor({
         />
         {paragraph.type === 'background' && (
           <>
-            <Select
-              value={paragraph.shapeTransition || 'organic'}
-              onValueChange={(value: ShapeTransitionType) =>
-                onUpdate(index, { ...paragraph, shapeTransition: value })
-              }
-            >
-              <SelectTrigger className="w-[140px]">
-                <SelectValue placeholder="Форма" />
-              </SelectTrigger>
-              <SelectContent>
-                {shapeTypes.map((shape) => (
-                  <SelectItem key={shape.value} value={shape.value}>
-                    {shape.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
             <Select
               value={paragraph.objectFit || 'cover'}
               onValueChange={(value: 'cover' | 'contain' | 'fill') =>

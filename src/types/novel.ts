@@ -79,9 +79,9 @@ export interface BaseParagraph {
   id: string;
   type: ParagraphType;
   order?: number;
-  comicFrames?: ComicFrame[]; // Фреймы комикса для текстового параграфа
-  frameLayout?: MergeLayoutType; // Раскладка фреймов
-  frameAnimation?: FrameAnimationType; // Общая анимация для всех фреймов
+  comicFrames?: ComicFrame[]; // Фреймы комикса (только для comicGroupIndex === 0)
+  frameLayout?: MergeLayoutType; // Раскладка фреймов (только для comicGroupIndex === 0)
+  frameAnimation?: FrameAnimationType; // Общая анимация (только для comicGroupIndex === 0)
   comicGroupId?: string; // ID группы комикса (одинаковый для всех параграфов в группе)
   comicGroupIndex?: number; // Индекс параграфа внутри группы комикса (0, 1, 2...)
   timeframes?: ('present' | 'retrospective')[];
@@ -153,6 +153,7 @@ export type Paragraph =
 export interface Episode {
   id: string;
   title: string;
+  shortDescription?: string;
   paragraphs: Paragraph[];
   position: { x: number; y: number };
   backgroundMusic?: string;
@@ -162,7 +163,6 @@ export interface Episode {
   requiredPaths?: string[];
   unlockedForAll?: boolean;
   timeframes?: ('present' | 'retrospective')[];
-  shapeTransition?: ShapeTransitionType;
   pastelColor?: PastelColor;
   pathNextEpisodes?: { [pathId: string]: string };
 }
@@ -242,8 +242,4 @@ export interface Novel {
     profile?: string;
     settings?: string;
   };
-  homeShapeTransition?: ShapeTransitionType;
-  episodesShapeTransition?: ShapeTransitionType;
-  profileShapeTransition?: ShapeTransitionType;
-  settingsShapeTransition?: ShapeTransitionType;
 }

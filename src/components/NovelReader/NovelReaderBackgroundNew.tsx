@@ -192,11 +192,6 @@ function NovelReaderBackgroundNew({
     const saturationAmount = isRetrospective ? 1.2 : 1;
     return `${baseFilter} contrast(${contrastAmount}) brightness(${brightnessAmount}) saturate(${saturationAmount})`;
   };
-  
-  const hasComicFrames = !comicGroupData && 
-                         (currentParagraph.type === 'text' || currentParagraph.type === 'dialogue') && 
-                         currentParagraph.comicFrames && 
-                         currentParagraph.comicFrames.length > 0;
 
   const isFirstTextParagraph = currentParagraphIndex <= 1 && 
                                 (currentParagraph.type === 'text' || 
@@ -238,7 +233,6 @@ function NovelReaderBackgroundNew({
           currentParagraph={currentParagraph}
           comicGroupData={comicGroupData}
           showComicFrames={showComicFrames}
-          hasComicFrames={hasComicFrames}
           actualIsContentHidden={actualIsContentHidden}
           isTyping={isTyping}
           isRetrospective={isRetrospective}

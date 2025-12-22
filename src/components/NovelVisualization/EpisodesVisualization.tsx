@@ -97,6 +97,9 @@ function EpisodesVisualization({
 
           {novel.episodes.map((episode) => {
             const connections = getConnectionsForEpisode(episode.id);
+            const episodePaths = episode.requiredPaths?.map(pathId => 
+              novel.paths?.find(p => p.id === pathId)
+            ).filter(Boolean) || [];
             
             return (
               <div
@@ -111,13 +114,32 @@ function EpisodesVisualization({
                 onMouseDown={(e) => handleEpisodeDragStart(episode.id, e)}
               >
                 <Card 
-                  className={`w-48 p-4 shadow-lg transition-all ${
+                  className={`w-52 p-4 shadow-lg transition-all mb-6 ${
                     episode.id === novel.currentEpisodeId 
                       ? 'border-primary border-2 bg-primary/10' 
                       : 'bg-card hover:shadow-xl'
                   }`}
                 >
-                  <h3 className="font-bold mb-2 truncate">{episode.title}</h3>
+                  <div className="flex items-start justify-between mb-2">
+                    <h3 className="font-bold truncate flex-1">{episode.title}</h3>
+                    {episodePaths.length > 0 && (
+                      <div className="flex gap-1 ml-2">
+                        {episodePaths.map((path) => (
+                          <div
+                            key={path!.id}
+                            className="w-3 h-3 rounded-full flex-shrink-0"
+                            style={{ backgroundColor: path!.color }}
+                            title={path!.name}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  {episode.shortDescription && (
+                    <p className="text-xs text-muted-foreground mb-2 line-clamp-2">
+                      {episode.shortDescription}
+                    </p>
+                  )}
                   <p className="text-xs text-muted-foreground">
                     {episode.paragraphs.length} параграфов
                   </p>
