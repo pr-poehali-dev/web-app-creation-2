@@ -67,14 +67,24 @@ function NovelReaderBackgroundNew({
   const previousParagraphKeyRef = useRef<string>(paragraphKey);
   
   const [imageLoaded, setImageLoaded] = useState(true);
+  const [transitionReady, setTransitionReady] = useState(true);
   const currentImageUrlRef = useRef<string | null>(null);
   const imageLoadTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   useEffect(() => {
     if (backgroundImage !== currentImageUrlRef.current) {
-      console.log('[BackgroundLoad] New image, resetting imageLoaded:', backgroundImage);
+      console.log('[BackgroundLoad] New image, resetting states:', backgroundImage);
       setImageLoaded(false);
+      setTransitionReady(false);
       currentImageUrlRef.current = backgroundImage;
+      
+      // Даём браузеру время зафиксировать opacity: 0
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          console.log('[BackgroundLoad] Transition ready, can start fade-in');
+          setTransitionReady(true);
+        });
+      });
       
       // Страховочный таймер на случай если onLoad не сработает
       if (imageLoadTimeoutRef.current) {
@@ -233,20 +243,14 @@ function NovelReaderBackgroundNew({
         <BackgroundImageLayer
           backgroundImage={backgroundImage}
           previousBackgroundImage={previousBackgroundImage}
-          imageLoaded={imageLoaded}
+          imageLoaded={imageLoaded && transitionReady}
           onImageLoad={() => {
-            console.log('[NovelReaderBackgroundNew] onImageLoad callback - delaying imageLoaded=true');
-            // Задержка для гарантии плавного перехода даже если изображение в кеше
-            requestAnimationFrame(() => {
-              requestAnimationFrame(() => {
-                console.log('[NovelReaderBackgroundNew] Setting imageLoaded=true');
-                setImageLoaded(true);
-                if (imageLoadTimeoutRef.current) {
-                  clearTimeout(imageLoadTimeoutRef.current);
-                  imageLoadTimeoutRef.current = null;
-                }
-              });
-            });
+            console.log('[NovelReaderBackgroundNew] onImageLoad callback');
+            setImageLoaded(true);
+            if (imageLoadTimeoutRef.current) {
+              clearTimeout(imageLoadTimeoutRef.current);
+              imageLoadTimeoutRef.current = null;
+            }
           }}
           backgroundObjectFit={backgroundObjectFit}
           backgroundObjectPosition={backgroundObjectPosition}
