@@ -25,43 +25,62 @@ function BackgroundImageLayer({
   getFilterStyle,
   getPastelColor
 }: BackgroundImageLayerProps) {
-  const showTransition = previousBackgroundImage && previousBackgroundImage !== backgroundImage;
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const prevBgRef = useRef(backgroundImage);
-  
-  // Сбрасываем переход при смене backgroundImage
+  const [currentImage, setCurrentImage] = useState(backgroundImage);
+  const [oldImage, setOldImage] = useState<string | null>(null);
+  const [fadeOut, setFadeOut] = useState(false);
+  const isFirstRender = useRef(true);
+
   useEffect(() => {
-    if (backgroundImage !== prevBgRef.current) {
-      console.log('[BackgroundImageLayer] Image changed, resetting transition');
-      setIsTransitioning(false);
-      prevBgRef.current = backgroundImage;
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
     }
-  }, [backgroundImage]);
-  
-  // Запускаем переход когда изображение загружено
+
+    if (backgroundImage !== currentImage) {
+      console.log('[BackgroundImageLayer] Starting transition from', currentImage, 'to', backgroundImage);
+      
+      // Сохраняем старое изображение
+      setOldImage(currentImage);
+      setFadeOut(false);
+      
+      // Обновляем текущее
+      setCurrentImage(backgroundImage);
+    }
+  }, [backgroundImage, currentImage]);
+
   useEffect(() => {
-    if (showTransition && imageLoaded && !isTransitioning) {
-      console.log('[BackgroundImageLayer] Image loaded, starting transition after delay');
+    if (oldImage && imageLoaded && !fadeOut) {
+      console.log('[BackgroundImageLayer] New image loaded, fading out old');
+      
+      // Небольшая задержка перед началом fade
       const timer = setTimeout(() => {
-        setIsTransitioning(true);
-      }, 100);
+        setFadeOut(true);
+        
+        // Удаляем старое изображение после завершения перехода
+        setTimeout(() => {
+          setOldImage(null);
+          setFadeOut(false);
+        }, 2500);
+      }, 50);
+      
       return () => clearTimeout(timer);
     }
-  }, [showTransition, imageLoaded, isTransitioning]);
-  
+  }, [oldImage, imageLoaded, fadeOut]);
+
   return (
     <>
-      {showTransition && (
+      {/* Старое изображение - исчезает */}
+      {oldImage && (
         <>
           <img
-            src={previousBackgroundImage}
+            src={oldImage}
             alt=""
             className="absolute inset-0 w-full h-full transition-all duration-[2500ms] ease-in-out"
             style={{ 
               objectFit: backgroundObjectFit,
               objectPosition: backgroundObjectPosition,
-              opacity: isTransitioning ? 0 : 1,
-              filter: getFilterStyle(isTransitioning ? 'blur(20px)' : 'blur(0px)'),
+              opacity: fadeOut ? 0 : 1,
+              filter: getFilterStyle(fadeOut ? 'blur(20px)' : 'blur(0px)'),
               zIndex: 1
             }}
           />
@@ -71,29 +90,31 @@ function BackgroundImageLayer({
               background: isRetrospective 
                 ? `radial-gradient(circle at center, ${getPastelColor(effectivePastelColor)} 0%, ${getPastelColor(effectivePastelColor).replace('0.4', '0.15')} 60%, rgba(0, 0, 0, 0.3) 100%)`
                 : 'rgba(0, 0, 0, 0.2)',
-              opacity: isTransitioning ? 0 : 1,
+              opacity: fadeOut ? 0 : 1,
               zIndex: 2
             }}
           />
         </>
       )}
       
+      {/* Новое изображение - появляется */}
       <img
-        src={backgroundImage || ''}
+        src={currentImage}
         alt=""
         className="absolute inset-0 w-full h-full transition-opacity duration-[2500ms] ease-in-out"
         onLoad={() => {
-          console.log('[BackgroundImageLayer] Image loaded:', backgroundImage);
+          console.log('[BackgroundImageLayer] Image onLoad:', currentImage);
           onImageLoad();
         }}
         style={{ 
           objectFit: backgroundObjectFit,
           objectPosition: backgroundObjectPosition,
-          opacity: (showTransition && !isTransitioning) ? 0 : 1,
+          opacity: (oldImage && !fadeOut) ? 0 : 1,
           zIndex: 3
         }}
       />
 
+      {/* Постоянный оверлей */}
       <div 
         className="absolute inset-0 transition-all duration-1000 ease-in-out"
         style={{ 
