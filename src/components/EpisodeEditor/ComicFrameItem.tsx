@@ -126,6 +126,45 @@ function ComicFrameItem({ frame, index, subParagraphs, comicGroupSize, onUpdate,
         </Select>
       </div>
 
+      {/* Звуковой эффект для фрейма */}
+      {comicGroupSize && comicGroupSize > 1 && (
+        <>
+          <div className="space-y-1 pt-2 border-t border-border/50">
+            <Label className="text-xs text-muted-foreground flex items-center gap-1">
+              <Icon name="Volume2" size={12} />
+              Звуковой эффект
+            </Label>
+            <Input
+              value={frame.soundEffect || ''}
+              onChange={(e) => onUpdate(index, { soundEffect: e.target.value || undefined })}
+              placeholder="https://..."
+              className="h-8 text-xs"
+            />
+          </div>
+          
+          {frame.soundEffect && (
+            <div className="space-y-1">
+              <Label className="text-xs text-muted-foreground">Проиграть звук на параграфе №</Label>
+              <Select 
+                value={String(frame.soundTrigger ?? 0)} 
+                onValueChange={(v) => onUpdate(index, { soundTrigger: parseInt(v) })}
+              >
+                <SelectTrigger className="h-8 text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {Array.from({ length: comicGroupSize }, (_, i) => (
+                    <SelectItem key={i} value={String(i)}>
+                      Параграф {i + 1}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+        </>
+      )}
+
       {frame.url && (
         <div className="space-y-2 pt-2 border-t border-border/50">
           <Label className="text-xs font-semibold">Позиционирование картинки</Label>

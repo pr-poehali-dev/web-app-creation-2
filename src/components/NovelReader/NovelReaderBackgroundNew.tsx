@@ -238,6 +238,7 @@ function NovelReaderBackgroundNew({
           isRetrospective={isRetrospective}
           effectivePastelColor={effectivePastelColor}
           getFilterStyle={getFilterStyle}
+          currentGroupIndex={currentParagraph.comicGroupIndex}
         />
         
         <div className="absolute bottom-0 left-0 right-0 h-80 lg:h-full lg:top-0 lg:right-0 lg:left-auto lg:bottom-auto lg:w-64 pointer-events-none z-10">
