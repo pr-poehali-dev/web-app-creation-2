@@ -13,7 +13,6 @@ interface NovelReaderEffectsProps {
   setBackgroundImage: (url: string | null) => void;
   setPreviousBackgroundImage: (url: string | null) => void;
   setIsBackgroundChanging: (value: boolean) => void;
-  setNewImageReady: (value: boolean) => void;
   isTyping: boolean;
   setIsTyping: (value: boolean) => void;
   setSkipTyping: (value: boolean) => void;
@@ -40,7 +39,6 @@ function NovelReaderEffects({
   setBackgroundImage,
   setPreviousBackgroundImage,
   setIsBackgroundChanging,
-  setNewImageReady,
   isTyping,
   setIsTyping,
   setSkipTyping,
@@ -100,24 +98,13 @@ function NovelReaderEffects({
       setBackgroundObjectFit(bgObjectFit);
       setBackgroundObjectPosition(bgObjectPosition);
       
-      // Простая логика: текущий фон становится предыдущим
       setPreviousBackgroundImage(backgroundImage);
       setBackgroundImage(bgUrl);
       setIsBackgroundChanging(true);
-      setNewImageReady(false);
-      
-      // Даём браузеру 2 фрейма чтобы зафиксировать начальное состояние opacity: 0
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          console.log('[NovelReader] Background ready - starting transition');
-          setNewImageReady(true);
-        });
-      });
       
       setTimeout(() => {
         console.log('[NovelReader] Background transition complete');
         setIsBackgroundChanging(false);
-        // Очищаем предыдущий фон после завершения анимации
         setPreviousBackgroundImage(null);
       }, 2800);
     }

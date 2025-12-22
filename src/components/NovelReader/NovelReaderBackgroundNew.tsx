@@ -8,7 +8,6 @@ import TextContentPanel from './TextContentPanel';
 interface NovelReaderBackgroundNewProps {
   backgroundImage: string | null;
   previousBackgroundImage: string | null;
-  newImageReady: boolean;
   isBackgroundChanging: boolean;
   currentParagraph: Paragraph;
   currentEpisode: Episode;
@@ -38,7 +37,6 @@ interface NovelReaderBackgroundNewProps {
 function NovelReaderBackgroundNew({
   backgroundImage,
   previousBackgroundImage,
-  newImageReady,
   isBackgroundChanging,
   currentParagraph,
   currentEpisode,
@@ -207,8 +205,8 @@ function NovelReaderBackgroundNew({
   console.log('[NovelReaderBackgroundNew] Render:', {
     backgroundImage,
     previousBackgroundImage,
-    newImageReady,
-    isBackgroundChanging
+    isBackgroundChanging,
+    imageLoaded
   });
 
   return (
