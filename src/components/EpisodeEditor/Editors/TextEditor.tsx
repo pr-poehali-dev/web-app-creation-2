@@ -41,14 +41,6 @@ function TextEditor({ paragraph, index, episode, onUpdate }: TextEditorProps) {
     onUpdate(index, { ...paragraphRef.current, frameAnimation: animation });
   }, [index, onUpdate]);
 
-  const handleSoundChange = useCallback((soundEffect?: string, soundTrigger?: number) => {
-    onUpdate(index, { 
-      ...paragraphRef.current, 
-      soundEffect,
-      soundTrigger
-    });
-  }, [index, onUpdate]);
-
   const handleBothChange = useCallback((layout: any, frames: any[]) => {
     const current = paragraphRef.current;
     onUpdate(index, { 
@@ -95,13 +87,10 @@ function TextEditor({ paragraph, index, episode, onUpdate }: TextEditorProps) {
             layout={paragraph.frameLayout || 'horizontal-3'}
             defaultAnimation={paragraph.frameAnimation}
             comicGroupSize={comicGroupSize}
-            soundEffect={paragraph.soundEffect}
-            soundTrigger={paragraph.soundTrigger}
             onFramesChange={handleFramesChange}
             onLayoutChange={handleLayoutChange}
             onAnimationChange={handleAnimationChange}
             onBothChange={handleBothChange}
-            onSoundChange={handleSoundChange}
           />
         </div>
       )}
