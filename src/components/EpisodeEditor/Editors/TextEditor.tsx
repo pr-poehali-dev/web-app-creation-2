@@ -2,7 +2,6 @@ import { useCallback, useRef, useEffect, memo, useState, useMemo } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { TextParagraph, Episode } from '@/types/novel';
-import SubParagraphsEditor from '../SubParagraphsEditor';
 import ComicFrameEditor from '../ComicFrameEditor';
 import Icon from '@/components/ui/icon';
 import equal from 'fast-deep-equal';
@@ -47,14 +46,9 @@ function TextEditor({ paragraph, index, episode, onUpdate }: TextEditorProps) {
     onUpdate(index, { 
       ...current,
       content: current.content, // Явно сохраняем текущий контент
-      subParagraphs: current.subParagraphs, // Явно сохраняем подпараграфы
       frameLayout: layout, 
       comicFrames: frames.length > 0 ? frames : undefined 
     });
-  }, [index, onUpdate]);
-
-  const handleSubParagraphsChange = useCallback((subParagraphs: any[]) => {
-    onUpdate(index, { ...paragraphRef.current, subParagraphs: subParagraphs.length > 0 ? subParagraphs : undefined });
   }, [index, onUpdate]);
 
   const handleContentChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -82,11 +76,6 @@ function TextEditor({ paragraph, index, episode, onUpdate }: TextEditorProps) {
         💡 Подсказка: используйте <code className="bg-secondary px-1 rounded">[слово|подсказка]</code> для интерактивных подсказок
       </p>
 
-      <SubParagraphsEditor
-        subParagraphs={paragraph.subParagraphs || []}
-        onSubParagraphsChange={handleSubParagraphsChange}
-      />
-
       {paragraph.comicGroupIndex === 0 && (
         <div className="p-3 border rounded-lg bg-primary/5">
           <div className="flex items-center gap-2 mb-3">
@@ -97,7 +86,6 @@ function TextEditor({ paragraph, index, episode, onUpdate }: TextEditorProps) {
             frames={paragraph.comicFrames || []}
             layout={paragraph.frameLayout || 'horizontal-3'}
             defaultAnimation={paragraph.frameAnimation}
-            subParagraphs={paragraph.subParagraphs}
             comicGroupSize={comicGroupSize}
             onFramesChange={handleFramesChange}
             onLayoutChange={handleLayoutChange}
@@ -112,7 +100,6 @@ function TextEditor({ paragraph, index, episode, onUpdate }: TextEditorProps) {
           frames={paragraph.comicFrames || []}
           layout={paragraph.frameLayout || 'horizontal-3'}
           defaultAnimation={paragraph.frameAnimation}
-          subParagraphs={paragraph.subParagraphs}
           onFramesChange={handleFramesChange}
           onLayoutChange={handleLayoutChange}
           onAnimationChange={handleAnimationChange}

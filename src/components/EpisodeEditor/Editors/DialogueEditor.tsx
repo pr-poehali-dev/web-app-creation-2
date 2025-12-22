@@ -7,7 +7,6 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import Icon from '@/components/ui/icon';
-import SubParagraphsEditor from '../SubParagraphsEditor';
 import ComicFrameEditor from '../ComicFrameEditor';
 import equal from 'fast-deep-equal';
 
@@ -222,13 +221,6 @@ function DialogueEditor({
           💡 Подсказка: используйте <code className="bg-secondary px-1 rounded">[слово|подсказка]</code> для интерактивных подсказок
         </p>
 
-        <SubParagraphsEditor
-          subParagraphs={paragraph.subParagraphs || []}
-          onSubParagraphsChange={(subParagraphs) =>
-            onUpdate(index, { ...paragraph, subParagraphs: subParagraphs.length > 0 ? subParagraphs : undefined })
-          }
-        />
-
         {paragraph.comicGroupIndex === 0 && (
           <div className="p-3 border rounded-lg bg-primary/5">
             <div className="flex items-center gap-2 mb-3">
@@ -239,7 +231,6 @@ function DialogueEditor({
               frames={paragraph.comicFrames || []}
               layout={paragraph.frameLayout || 'horizontal-3'}
               defaultAnimation={paragraph.frameAnimation}
-              subParagraphs={paragraph.subParagraphs}
               comicGroupSize={comicGroupSize}
               onFramesChange={(frames) =>
                 onUpdate(index, { ...paragraph, comicFrames: frames.length > 0 ? frames : undefined })
@@ -266,7 +257,6 @@ function DialogueEditor({
             frames={paragraph.comicFrames || []}
             layout={paragraph.frameLayout || 'horizontal-3'}
             defaultAnimation={paragraph.frameAnimation}
-            subParagraphs={paragraph.subParagraphs}
             onFramesChange={(frames) =>
               onUpdate(index, { ...paragraph, comicFrames: frames.length > 0 ? frames : undefined })
             }
