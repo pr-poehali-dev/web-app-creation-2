@@ -101,6 +101,15 @@ function EpisodesVisualization({
               ?.map(pathId => novel.paths?.find(p => p.id === pathId))
               .filter((p): p is NonNullable<typeof p> => p !== undefined) || [];
             
+            console.log('[EpisodesVisualization] Episode:', {
+              id: episode.id,
+              title: episode.title,
+              shortDescription: episode.shortDescription,
+              requiredPaths: episode.requiredPaths,
+              episodePaths,
+              allPaths: novel.paths
+            });
+            
             return (
               <div
                 key={episode.id}
