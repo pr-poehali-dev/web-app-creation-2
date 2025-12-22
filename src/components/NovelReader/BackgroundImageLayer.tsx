@@ -23,33 +23,31 @@ function BackgroundImageLayer({
   getFilterStyle,
   getPastelColor
 }: BackgroundImageLayerProps) {
+  const showTransition = previousBackgroundImage && previousBackgroundImage !== backgroundImage;
+  
   return (
     <>
-      {previousBackgroundImage && previousBackgroundImage !== backgroundImage && (
+      {showTransition && (
         <>
           <img
             src={previousBackgroundImage}
             alt=""
-            className="absolute inset-0 w-full h-full"
+            className="absolute inset-0 w-full h-full transition-all duration-[2500ms] ease-in-out"
             style={{ 
               objectFit: backgroundObjectFit,
               objectPosition: backgroundObjectPosition,
               opacity: imageLoaded ? 0 : 1,
-              filter: getFilterStyle(imageLoaded ? 'blur(16px)' : 'blur(0px)'),
-              transition: 'opacity 2.5s ease-in-out 0.1s, filter 2.5s ease-in-out 0.1s',
-              willChange: 'opacity, filter',
+              filter: getFilterStyle(imageLoaded ? 'blur(20px)' : 'blur(0px)'),
               zIndex: 1
             }}
           />
           <div 
-            className="absolute inset-0"
+            className="absolute inset-0 transition-opacity duration-[2500ms] ease-in-out"
             style={{ 
               background: isRetrospective 
                 ? `radial-gradient(circle at center, ${getPastelColor(effectivePastelColor)} 0%, ${getPastelColor(effectivePastelColor).replace('0.4', '0.15')} 60%, rgba(0, 0, 0, 0.3) 100%)`
                 : 'rgba(0, 0, 0, 0.2)',
               opacity: imageLoaded ? 0 : 1,
-              transition: 'opacity 2.5s ease-in-out 0.1s',
-              willChange: 'opacity',
               zIndex: 2
             }}
           />
@@ -59,7 +57,7 @@ function BackgroundImageLayer({
       <img
         src={backgroundImage || ''}
         alt=""
-        className="absolute inset-0 w-full h-full"
+        className="absolute inset-0 w-full h-full transition-opacity duration-[2500ms] ease-in-out"
         onLoad={() => {
           console.log('[BackgroundImageLayer] Image loaded:', backgroundImage);
           onImageLoad();
@@ -67,9 +65,7 @@ function BackgroundImageLayer({
         style={{ 
           objectFit: backgroundObjectFit,
           objectPosition: backgroundObjectPosition,
-          opacity: !imageLoaded ? 0 : 1,
-          transition: 'opacity 2.5s ease-in-out 0.1s',
-          willChange: 'opacity',
+          opacity: (showTransition && !imageLoaded) ? 0 : 1,
           zIndex: 3
         }}
       />
