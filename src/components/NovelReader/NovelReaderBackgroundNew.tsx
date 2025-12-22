@@ -78,6 +78,18 @@ function NovelReaderBackgroundNew({
   const [showComicFrames, setShowComicFrames] = useState(false);
   const previousParagraphKeyRef = useRef<string>(paragraphKey);
   
+  // Локальный стейт для отслеживания реальной загрузки изображения
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const currentImageUrlRef = useRef<string | null>(null);
+  
+  // Сбрасываем загрузку при смене фона
+  useEffect(() => {
+    if (backgroundImage !== currentImageUrlRef.current) {
+      setImageLoaded(false);
+      currentImageUrlRef.current = backgroundImage;
+    }
+  }, [backgroundImage]);
+  
   // Проверяем, меняется ли комикс-группа при смене параграфа
   useEffect(() => {
     setWasHidden(false);
@@ -238,8 +250,8 @@ function NovelReaderBackgroundNew({
   
   // Условие показа контента
   const shouldShowContent = wasBackgroundParagraph 
-    ? (!isBackgroundChanging && newImageReady)  // После background - только когда анимация готова
-    : ((!isBackgroundChanging && newImageReady) || isFirstTextParagraph);  // Обычный случай
+    ? (!isBackgroundChanging && imageLoaded)  // После background - только когда изображение загружено
+    : ((!isBackgroundChanging && imageLoaded) || isFirstTextParagraph);  // Обычный случай
 
   console.log('[NovelReaderBackgroundNew] Render:', {
     backgroundImage,
@@ -260,8 +272,8 @@ function NovelReaderBackgroundNew({
             style={{ 
               objectFit: backgroundObjectFit,
               objectPosition: backgroundObjectPosition,
-              opacity: newImageReady ? 0 : 1,
-              filter: getFilterStyle(newImageReady ? 'blur(16px)' : 'blur(0px)'),
+              opacity: imageLoaded ? 0 : 1,
+              filter: getFilterStyle(imageLoaded ? 'blur(16px)' : 'blur(0px)'),
               transition: 'opacity 2.4s ease-in-out, filter 2.4s ease-in-out',
               willChange: 'opacity, filter',
               zIndex: 1
@@ -273,11 +285,15 @@ function NovelReaderBackgroundNew({
           src={backgroundImage || ''}
           alt=""
           className="absolute inset-0 w-full h-full"
+          onLoad={() => {
+            console.log('[NovelReaderBG] Image loaded:', backgroundImage);
+            setImageLoaded(true);
+          }}
           style={{ 
             objectFit: backgroundObjectFit,
             objectPosition: backgroundObjectPosition,
-            opacity: (previousBackgroundImage && !newImageReady) ? 0 : 1,
-            filter: getFilterStyle((previousBackgroundImage && !newImageReady) ? 'blur(16px)' : 'blur(0px)'),
+            opacity: (previousBackgroundImage && !imageLoaded) ? 0 : 1,
+            filter: getFilterStyle((previousBackgroundImage && !imageLoaded) ? 'blur(16px)' : 'blur(0px)'),
             transition: 'opacity 2.4s ease-in-out, filter 2.4s ease-in-out',
             willChange: 'opacity, filter',
             zIndex: 0
