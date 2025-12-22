@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 interface BackgroundImageLayerProps {
   backgroundImage: string;
@@ -27,14 +27,24 @@ function BackgroundImageLayer({
 }: BackgroundImageLayerProps) {
   const showTransition = previousBackgroundImage && previousBackgroundImage !== backgroundImage;
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const prevBgRef = useRef(backgroundImage);
   
+  // Сбрасываем переход при смене backgroundImage
+  useEffect(() => {
+    if (backgroundImage !== prevBgRef.current) {
+      console.log('[BackgroundImageLayer] Image changed, resetting transition');
+      setIsTransitioning(false);
+      prevBgRef.current = backgroundImage;
+    }
+  }, [backgroundImage]);
+  
+  // Запускаем переход когда изображение загружено
   useEffect(() => {
     if (showTransition && imageLoaded && !isTransitioning) {
-      console.log('[BackgroundImageLayer] Starting transition');
-      // Небольшая задержка чтобы браузер успел отрендерить начальное состояние
+      console.log('[BackgroundImageLayer] Image loaded, starting transition after delay');
       const timer = setTimeout(() => {
         setIsTransitioning(true);
-      }, 50);
+      }, 100);
       return () => clearTimeout(timer);
     }
   }, [showTransition, imageLoaded, isTransitioning]);

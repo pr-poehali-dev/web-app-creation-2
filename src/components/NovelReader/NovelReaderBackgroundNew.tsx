@@ -239,7 +239,6 @@ function NovelReaderBackgroundNew({
     <div className="fixed inset-0 flex flex-col lg:flex-row overflow-hidden">
       <div className="h-[60vh] lg:h-screen lg:w-1/2 relative overflow-hidden flex-shrink-0">
         <BackgroundImageLayer
-          key={`${backgroundImage}-${previousBackgroundImage}`}
           backgroundImage={backgroundImage}
           previousBackgroundImage={previousBackgroundImage}
           imageLoaded={imageLoaded}
