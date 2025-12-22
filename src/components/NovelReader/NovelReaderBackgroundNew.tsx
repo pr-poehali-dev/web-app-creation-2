@@ -66,30 +66,32 @@ function NovelReaderBackgroundNew({
   const [showComicFrames, setShowComicFrames] = useState(false);
   const previousParagraphKeyRef = useRef<string>(paragraphKey);
   
-  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(true);
   const currentImageUrlRef = useRef<string | null>(null);
+  const imageLoadTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   useEffect(() => {
     if (backgroundImage !== currentImageUrlRef.current) {
+      console.log('[BackgroundLoad] New image, resetting imageLoaded:', backgroundImage);
       setImageLoaded(false);
       currentImageUrlRef.current = backgroundImage;
       
-      // Предзагружаем изображение
-      if (backgroundImage) {
-        const img = new Image();
-        img.onload = () => {
-          console.log('[BackgroundPreload] Image preloaded:', backgroundImage);
-          setImageLoaded(true);
-        };
-        img.onerror = () => {
-          console.error('[BackgroundPreload] Failed to preload:', backgroundImage);
-          setImageLoaded(true); // Всё равно показываем
-        };
-        img.src = backgroundImage;
-      } else {
-        setImageLoaded(true);
+      // Страховочный таймер на случай если onLoad не сработает
+      if (imageLoadTimeoutRef.current) {
+        clearTimeout(imageLoadTimeoutRef.current);
       }
+      
+      imageLoadTimeoutRef.current = setTimeout(() => {
+        console.log('[BackgroundLoad] Timeout - forcing imageLoaded=true');
+        setImageLoaded(true);
+      }, 1000);
     }
+    
+    return () => {
+      if (imageLoadTimeoutRef.current) {
+        clearTimeout(imageLoadTimeoutRef.current);
+      }
+    };
   }, [backgroundImage]);
   
   useEffect(() => {
@@ -232,6 +234,14 @@ function NovelReaderBackgroundNew({
           backgroundImage={backgroundImage}
           previousBackgroundImage={previousBackgroundImage}
           imageLoaded={imageLoaded}
+          onImageLoad={() => {
+            console.log('[NovelReaderBackgroundNew] onImageLoad callback');
+            setImageLoaded(true);
+            if (imageLoadTimeoutRef.current) {
+              clearTimeout(imageLoadTimeoutRef.current);
+              imageLoadTimeoutRef.current = null;
+            }
+          }}
           backgroundObjectFit={backgroundObjectFit}
           backgroundObjectPosition={backgroundObjectPosition}
           isRetrospective={isRetrospective}
