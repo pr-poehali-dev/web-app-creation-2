@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 
 interface BackgroundImageLayerProps {
   backgroundImage: string;
@@ -26,78 +26,42 @@ function BackgroundImageLayer({
   getPastelColor
 }: BackgroundImageLayerProps) {
   const showTransition = previousBackgroundImage && previousBackgroundImage !== backgroundImage;
-  const newImgRef = useRef<HTMLImageElement>(null);
-  const oldImgRef = useRef<HTMLImageElement>(null);
-  const overlayRef = useRef<HTMLDivElement>(null);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   
-  // Управление transition при загрузке изображения
   useEffect(() => {
-    const newImg = newImgRef.current;
-    const oldImg = oldImgRef.current;
-    const overlay = overlayRef.current;
-    
-    if (!newImg) return;
-    
-    if (showTransition && oldImg && overlay) {
-      if (!imageLoaded) {
-        // Начальное состояние: старое видно, новое скрыто
-        console.log('[BackgroundImageLayer] Setting initial state');
-        newImg.style.transition = 'none';
-        oldImg.style.transition = 'none';
-        overlay.style.transition = 'none';
-        
-        newImg.style.opacity = '0';
-        oldImg.style.opacity = '1';
-        overlay.style.opacity = '1';
-        oldImg.style.filter = 'blur(0px)';
-        
-        // Принудительный reflow
-        void newImg.offsetHeight;
-        
-        // Включаем transitions обратно
-        newImg.style.transition = '';
-        oldImg.style.transition = '';
-        overlay.style.transition = '';
-      } else {
-        // Запускаем переход когда изображение загружено
-        console.log('[BackgroundImageLayer] Starting transition');
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            newImg.style.opacity = '1';
-            oldImg.style.opacity = '0';
-            overlay.style.opacity = '0';
-            oldImg.style.filter = 'blur(20px)';
-          });
-        });
-      }
-    } else if (!showTransition) {
-      // Нет перехода - сразу показываем
-      newImg.style.opacity = '1';
+    if (showTransition && imageLoaded && !isTransitioning) {
+      console.log('[BackgroundImageLayer] Starting transition');
+      // Небольшая задержка чтобы браузер успел отрендерить начальное состояние
+      const timer = setTimeout(() => {
+        setIsTransitioning(true);
+      }, 50);
+      return () => clearTimeout(timer);
     }
-  }, [imageLoaded, showTransition]);
+  }, [showTransition, imageLoaded, isTransitioning]);
   
   return (
     <>
       {showTransition && (
         <>
           <img
-            ref={oldImgRef}
             src={previousBackgroundImage}
             alt=""
             className="absolute inset-0 w-full h-full transition-all duration-[2500ms] ease-in-out"
             style={{ 
               objectFit: backgroundObjectFit,
               objectPosition: backgroundObjectPosition,
+              opacity: isTransitioning ? 0 : 1,
+              filter: getFilterStyle(isTransitioning ? 'blur(20px)' : 'blur(0px)'),
               zIndex: 1
             }}
           />
           <div 
-            ref={overlayRef}
             className="absolute inset-0 transition-opacity duration-[2500ms] ease-in-out"
             style={{ 
               background: isRetrospective 
                 ? `radial-gradient(circle at center, ${getPastelColor(effectivePastelColor)} 0%, ${getPastelColor(effectivePastelColor).replace('0.4', '0.15')} 60%, rgba(0, 0, 0, 0.3) 100%)`
                 : 'rgba(0, 0, 0, 0.2)',
+              opacity: isTransitioning ? 0 : 1,
               zIndex: 2
             }}
           />
@@ -105,7 +69,6 @@ function BackgroundImageLayer({
       )}
       
       <img
-        ref={newImgRef}
         src={backgroundImage || ''}
         alt=""
         className="absolute inset-0 w-full h-full transition-opacity duration-[2500ms] ease-in-out"
@@ -116,6 +79,7 @@ function BackgroundImageLayer({
         style={{ 
           objectFit: backgroundObjectFit,
           objectPosition: backgroundObjectPosition,
+          opacity: (showTransition && !isTransitioning) ? 0 : 1,
           zIndex: 3
         }}
       />
