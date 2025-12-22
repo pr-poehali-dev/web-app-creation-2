@@ -106,7 +106,7 @@ function NovelReaderEffects({
         console.log('[NovelReader] Background transition complete');
         setIsBackgroundChanging(false);
         setPreviousBackgroundImage(null);
-      }, 2800);
+      }, 3000);
     }
     
     previousEpisodeIdRef.current = currentEpisodeId;

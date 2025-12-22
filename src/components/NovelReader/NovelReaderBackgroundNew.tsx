@@ -67,24 +67,14 @@ function NovelReaderBackgroundNew({
   const previousParagraphKeyRef = useRef<string>(paragraphKey);
   
   const [imageLoaded, setImageLoaded] = useState(true);
-  const [transitionReady, setTransitionReady] = useState(true);
   const currentImageUrlRef = useRef<string | null>(null);
   const imageLoadTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   useEffect(() => {
     if (backgroundImage !== currentImageUrlRef.current) {
-      console.log('[BackgroundLoad] New image, resetting states:', backgroundImage);
+      console.log('[BackgroundLoad] New image, resetting imageLoaded:', backgroundImage);
       setImageLoaded(false);
-      setTransitionReady(false);
       currentImageUrlRef.current = backgroundImage;
-      
-      // Даём браузеру время зафиксировать opacity: 0
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          console.log('[BackgroundLoad] Transition ready, can start fade-in');
-          setTransitionReady(true);
-        });
-      });
       
       // Страховочный таймер на случай если onLoad не сработает
       if (imageLoadTimeoutRef.current) {
@@ -94,7 +84,7 @@ function NovelReaderBackgroundNew({
       imageLoadTimeoutRef.current = setTimeout(() => {
         console.log('[BackgroundLoad] Timeout - forcing imageLoaded=true');
         setImageLoaded(true);
-      }, 1000);
+      }, 1500);
     }
     
     return () => {
@@ -243,7 +233,7 @@ function NovelReaderBackgroundNew({
         <BackgroundImageLayer
           backgroundImage={backgroundImage}
           previousBackgroundImage={previousBackgroundImage}
-          imageLoaded={imageLoaded && transitionReady}
+          imageLoaded={imageLoaded}
           onImageLoad={() => {
             console.log('[NovelReaderBackgroundNew] onImageLoad callback');
             setImageLoaded(true);

@@ -36,7 +36,7 @@ function BackgroundImageLayer({
               objectPosition: backgroundObjectPosition,
               opacity: imageLoaded ? 0 : 1,
               filter: getFilterStyle(imageLoaded ? 'blur(16px)' : 'blur(0px)'),
-              transition: 'opacity 2.4s ease-in-out, filter 2.4s ease-in-out',
+              transition: 'opacity 2.5s ease-in-out 0.1s, filter 2.5s ease-in-out 0.1s',
               willChange: 'opacity, filter',
               zIndex: 1
             }}
@@ -48,7 +48,7 @@ function BackgroundImageLayer({
                 ? `radial-gradient(circle at center, ${getPastelColor(effectivePastelColor)} 0%, ${getPastelColor(effectivePastelColor).replace('0.4', '0.15')} 60%, rgba(0, 0, 0, 0.3) 100%)`
                 : 'rgba(0, 0, 0, 0.2)',
               opacity: imageLoaded ? 0 : 1,
-              transition: 'opacity 2.4s ease-in-out',
+              transition: 'opacity 2.5s ease-in-out 0.1s',
               willChange: 'opacity',
               zIndex: 2
             }}
@@ -68,7 +68,7 @@ function BackgroundImageLayer({
           objectFit: backgroundObjectFit,
           objectPosition: backgroundObjectPosition,
           opacity: !imageLoaded ? 0 : 1,
-          transition: 'opacity 2.4s ease-in-out',
+          transition: 'opacity 2.5s ease-in-out 0.1s',
           willChange: 'opacity',
           zIndex: 3
         }}
