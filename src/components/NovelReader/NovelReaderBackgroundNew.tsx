@@ -73,7 +73,15 @@ function NovelReaderBackgroundNew({
   useEffect(() => {
     if (backgroundImage !== currentImageUrlRef.current) {
       console.log('[BackgroundLoad] New image, resetting imageLoaded:', backgroundImage);
-      setImageLoaded(false);
+      
+      // Только если есть previousBackgroundImage, сбрасываем в false для перехода
+      if (previousBackgroundImage && previousBackgroundImage !== backgroundImage) {
+        setImageLoaded(false);
+      } else {
+        // Если нет предыдущего фона, сразу считаем загруженным
+        setImageLoaded(true);
+      }
+      
       currentImageUrlRef.current = backgroundImage;
       
       // Страховочный таймер на случай если onLoad не сработает
@@ -92,7 +100,7 @@ function NovelReaderBackgroundNew({
         clearTimeout(imageLoadTimeoutRef.current);
       }
     };
-  }, [backgroundImage]);
+  }, [backgroundImage, previousBackgroundImage]);
   
   useEffect(() => {
     setWasHidden(false);
@@ -235,16 +243,12 @@ function NovelReaderBackgroundNew({
           previousBackgroundImage={previousBackgroundImage}
           imageLoaded={imageLoaded}
           onImageLoad={() => {
-            console.log('[NovelReaderBackgroundNew] onImageLoad callback - delaying');
-            // Задержка чтобы CSS transition успел начаться
-            setTimeout(() => {
-              console.log('[NovelReaderBackgroundNew] Setting imageLoaded=true after delay');
-              setImageLoaded(true);
-              if (imageLoadTimeoutRef.current) {
-                clearTimeout(imageLoadTimeoutRef.current);
-                imageLoadTimeoutRef.current = null;
-              }
-            }, 50);
+            console.log('[NovelReaderBackgroundNew] onImageLoad callback');
+            setImageLoaded(true);
+            if (imageLoadTimeoutRef.current) {
+              clearTimeout(imageLoadTimeoutRef.current);
+              imageLoadTimeoutRef.current = null;
+            }
           }}
           backgroundObjectFit={backgroundObjectFit}
           backgroundObjectPosition={backgroundObjectPosition}
