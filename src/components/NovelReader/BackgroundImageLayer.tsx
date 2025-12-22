@@ -2,7 +2,6 @@ interface BackgroundImageLayerProps {
   backgroundImage: string;
   previousBackgroundImage: string | null;
   imageLoaded: boolean;
-  onImageLoad: () => void;
   backgroundObjectFit: 'cover' | 'contain' | 'fill';
   backgroundObjectPosition: string;
   isRetrospective: boolean;
@@ -15,7 +14,6 @@ function BackgroundImageLayer({
   backgroundImage,
   previousBackgroundImage,
   imageLoaded,
-  onImageLoad,
   backgroundObjectFit,
   backgroundObjectPosition,
   isRetrospective,
@@ -60,10 +58,6 @@ function BackgroundImageLayer({
         src={backgroundImage || ''}
         alt=""
         className="absolute inset-0 w-full h-full"
-        onLoad={() => {
-          console.log('[NovelReaderBG] Image loaded:', backgroundImage);
-          onImageLoad();
-        }}
         style={{ 
           objectFit: backgroundObjectFit,
           objectPosition: backgroundObjectPosition,

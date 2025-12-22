@@ -73,6 +73,22 @@ function NovelReaderBackgroundNew({
     if (backgroundImage !== currentImageUrlRef.current) {
       setImageLoaded(false);
       currentImageUrlRef.current = backgroundImage;
+      
+      // Предзагружаем изображение
+      if (backgroundImage) {
+        const img = new Image();
+        img.onload = () => {
+          console.log('[BackgroundPreload] Image preloaded:', backgroundImage);
+          setImageLoaded(true);
+        };
+        img.onerror = () => {
+          console.error('[BackgroundPreload] Failed to preload:', backgroundImage);
+          setImageLoaded(true); // Всё равно показываем
+        };
+        img.src = backgroundImage;
+      } else {
+        setImageLoaded(true);
+      }
     }
   }, [backgroundImage]);
   
@@ -216,9 +232,6 @@ function NovelReaderBackgroundNew({
           backgroundImage={backgroundImage}
           previousBackgroundImage={previousBackgroundImage}
           imageLoaded={imageLoaded}
-          onImageLoad={() => {
-            setImageLoaded(true);
-          }}
           backgroundObjectFit={backgroundObjectFit}
           backgroundObjectPosition={backgroundObjectPosition}
           isRetrospective={isRetrospective}
