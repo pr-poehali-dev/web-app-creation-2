@@ -101,15 +101,6 @@ function EpisodesVisualization({
               ?.map(pathId => novel.paths?.find(p => p.id === pathId))
               .filter((p): p is NonNullable<typeof p> => p !== undefined) || [];
             
-            console.log('[EpisodesVisualization] Episode:', {
-              id: episode.id,
-              title: episode.title,
-              shortDescription: episode.shortDescription,
-              requiredPaths: episode.requiredPaths,
-              episodePaths,
-              allPaths: novel.paths
-            });
-            
             return (
               <div
                 key={episode.id}
@@ -117,27 +108,27 @@ function EpisodesVisualization({
                 style={{
                   left: `${episode.position.x * scale + offset.x}px`,
                   top: `${episode.position.y * scale + offset.y}px`,
-                  transform: `scale(${scale})`,
-                  transformOrigin: 'top left',
-                  padding: '8px'
+                  transformOrigin: 'top left'
                 }}
                 onMouseDown={(e) => handleEpisodeDragStart(episode.id, e)}
               >
                 <Card 
-                  className={`w-56 p-4 shadow-lg transition-all ${
+                  className={`w-56 p-4 shadow-lg transition-all m-2 ${
                     episode.id === novel.currentEpisodeId 
                       ? 'border-primary border-2 bg-primary/10' 
                       : 'bg-card hover:shadow-xl'
                   }`}
                 >
                   <div className="flex items-start justify-between gap-2 mb-2">
-                    <h3 className="font-bold text-sm flex-1 line-clamp-1">{episode.title}</h3>
+                    <h3 className="font-bold text-sm flex-1 line-clamp-1" title={episode.title}>
+                      {episode.title}
+                    </h3>
                     {episodePaths.length > 0 && (
                       <div className="flex gap-1 flex-shrink-0">
                         {episodePaths.map((path) => (
                           <div
                             key={path.id}
-                            className="w-3 h-3 rounded-full"
+                            className="w-3 h-3 rounded-full flex-shrink-0"
                             style={{ backgroundColor: path.color || '#888' }}
                             title={path.name}
                           />
