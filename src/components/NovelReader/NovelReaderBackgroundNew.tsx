@@ -8,6 +8,7 @@ import TextContentPanel from './TextContentPanel';
 interface NovelReaderBackgroundNewProps {
   backgroundImage: string | null;
   previousBackgroundImage: string | null;
+  newImageReady: boolean;
   isBackgroundChanging: boolean;
   currentParagraph: Paragraph;
   currentEpisode: Episode;
@@ -37,6 +38,7 @@ interface NovelReaderBackgroundNewProps {
 function NovelReaderBackgroundNew({
   backgroundImage,
   previousBackgroundImage,
+  newImageReady,
   isBackgroundChanging,
   currentParagraph,
   currentEpisode,
@@ -66,41 +68,15 @@ function NovelReaderBackgroundNew({
   const [showComicFrames, setShowComicFrames] = useState(false);
   const previousParagraphKeyRef = useRef<string>(paragraphKey);
   
-  const [imageLoaded, setImageLoaded] = useState(true);
+  const [imageLoaded, setImageLoaded] = useState(false);
   const currentImageUrlRef = useRef<string | null>(null);
-  const imageLoadTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   useEffect(() => {
     if (backgroundImage !== currentImageUrlRef.current) {
-      console.log('[BackgroundLoad] New image, resetting imageLoaded:', backgroundImage);
-      
-      // Только если есть previousBackgroundImage, сбрасываем в false для перехода
-      if (previousBackgroundImage && previousBackgroundImage !== backgroundImage) {
-        setImageLoaded(false);
-      } else {
-        // Если нет предыдущего фона, сразу считаем загруженным
-        setImageLoaded(true);
-      }
-      
+      setImageLoaded(false);
       currentImageUrlRef.current = backgroundImage;
-      
-      // Страховочный таймер на случай если onLoad не сработает
-      if (imageLoadTimeoutRef.current) {
-        clearTimeout(imageLoadTimeoutRef.current);
-      }
-      
-      imageLoadTimeoutRef.current = setTimeout(() => {
-        console.log('[BackgroundLoad] Timeout - forcing imageLoaded=true');
-        setImageLoaded(true);
-      }, 1500);
     }
-    
-    return () => {
-      if (imageLoadTimeoutRef.current) {
-        clearTimeout(imageLoadTimeoutRef.current);
-      }
-    };
-  }, [backgroundImage, previousBackgroundImage]);
+  }, [backgroundImage]);
   
   useEffect(() => {
     setWasHidden(false);
@@ -231,8 +207,8 @@ function NovelReaderBackgroundNew({
   console.log('[NovelReaderBackgroundNew] Render:', {
     backgroundImage,
     previousBackgroundImage,
-    isBackgroundChanging,
-    imageLoaded
+    newImageReady,
+    isBackgroundChanging
   });
 
   return (
@@ -243,12 +219,7 @@ function NovelReaderBackgroundNew({
           previousBackgroundImage={previousBackgroundImage}
           imageLoaded={imageLoaded}
           onImageLoad={() => {
-            console.log('[NovelReaderBackgroundNew] onImageLoad callback');
             setImageLoaded(true);
-            if (imageLoadTimeoutRef.current) {
-              clearTimeout(imageLoadTimeoutRef.current);
-              imageLoadTimeoutRef.current = null;
-            }
           }}
           backgroundObjectFit={backgroundObjectFit}
           backgroundObjectPosition={backgroundObjectPosition}

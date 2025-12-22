@@ -1,5 +1,3 @@
-import { useState, useEffect, useRef } from 'react';
-
 interface BackgroundImageLayerProps {
   backgroundImage: string;
   previousBackgroundImage: string | null;
@@ -25,96 +23,58 @@ function BackgroundImageLayer({
   getFilterStyle,
   getPastelColor
 }: BackgroundImageLayerProps) {
-  const [currentImage, setCurrentImage] = useState(backgroundImage);
-  const [oldImage, setOldImage] = useState<string | null>(null);
-  const [fadeOut, setFadeOut] = useState(false);
-  const isFirstRender = useRef(true);
-
-  useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
-
-    if (backgroundImage !== currentImage) {
-      console.log('[BackgroundImageLayer] Starting transition from', currentImage, 'to', backgroundImage);
-      
-      // Сохраняем старое изображение
-      setOldImage(currentImage);
-      setFadeOut(false);
-      
-      // Обновляем текущее
-      setCurrentImage(backgroundImage);
-    }
-  }, [backgroundImage, currentImage]);
-
-  useEffect(() => {
-    if (oldImage && imageLoaded && !fadeOut) {
-      console.log('[BackgroundImageLayer] New image loaded, fading out old');
-      
-      // Небольшая задержка перед началом fade
-      const timer = setTimeout(() => {
-        setFadeOut(true);
-        
-        // Удаляем старое изображение после завершения перехода
-        setTimeout(() => {
-          setOldImage(null);
-          setFadeOut(false);
-        }, 2500);
-      }, 50);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [oldImage, imageLoaded, fadeOut]);
-
   return (
     <>
-      {/* Старое изображение - исчезает */}
-      {oldImage && (
+      {previousBackgroundImage && previousBackgroundImage !== backgroundImage && (
         <>
           <img
-            src={oldImage}
+            src={previousBackgroundImage}
             alt=""
-            className="absolute inset-0 w-full h-full transition-all duration-[2500ms] ease-in-out"
+            className="absolute inset-0 w-full h-full"
             style={{ 
               objectFit: backgroundObjectFit,
               objectPosition: backgroundObjectPosition,
-              opacity: fadeOut ? 0 : 1,
-              filter: getFilterStyle(fadeOut ? 'blur(20px)' : 'blur(0px)'),
+              opacity: imageLoaded ? 0 : 1,
+              filter: getFilterStyle(imageLoaded ? 'blur(16px)' : 'blur(0px)'),
+              transition: 'opacity 2.4s ease-in-out, filter 2.4s ease-in-out',
+              willChange: 'opacity, filter',
               zIndex: 1
             }}
           />
           <div 
-            className="absolute inset-0 transition-opacity duration-[2500ms] ease-in-out"
+            className="absolute inset-0"
             style={{ 
               background: isRetrospective 
                 ? `radial-gradient(circle at center, ${getPastelColor(effectivePastelColor)} 0%, ${getPastelColor(effectivePastelColor).replace('0.4', '0.15')} 60%, rgba(0, 0, 0, 0.3) 100%)`
                 : 'rgba(0, 0, 0, 0.2)',
-              opacity: fadeOut ? 0 : 1,
+              opacity: imageLoaded ? 0 : 1,
+              transition: 'opacity 2.4s ease-in-out',
+              willChange: 'opacity',
               zIndex: 2
             }}
           />
         </>
       )}
       
-      {/* Новое изображение - появляется */}
       <img
-        src={currentImage}
+        src={backgroundImage || ''}
         alt=""
-        className="absolute inset-0 w-full h-full transition-opacity duration-[2500ms] ease-in-out"
+        className="absolute inset-0 w-full h-full"
         onLoad={() => {
-          console.log('[BackgroundImageLayer] Image onLoad:', currentImage);
+          console.log('[NovelReaderBG] Image loaded:', backgroundImage);
           onImageLoad();
         }}
         style={{ 
           objectFit: backgroundObjectFit,
           objectPosition: backgroundObjectPosition,
-          opacity: (oldImage && !fadeOut) ? 0 : 1,
+          opacity: (previousBackgroundImage && !imageLoaded) ? 0 : 1,
+          filter: getFilterStyle((previousBackgroundImage && !imageLoaded) ? 'blur(16px)' : 'blur(0px)'),
+          transition: 'opacity 2.4s ease-in-out, filter 2.4s ease-in-out',
+          willChange: 'opacity, filter',
           zIndex: 3
         }}
       />
 
-      {/* Постоянный оверлей */}
       <div 
         className="absolute inset-0 transition-all duration-1000 ease-in-out"
         style={{ 

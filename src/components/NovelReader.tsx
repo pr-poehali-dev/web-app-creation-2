@@ -43,6 +43,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
   const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
   const [previousBackgroundImage, setPreviousBackgroundImage] = useState<string | null>(null);
   const [isBackgroundChanging, setIsBackgroundChanging] = useState(false);
+  const [newImageReady, setNewImageReady] = useState(false);
   const [backgroundObjectFit, setBackgroundObjectFit] = useState<'cover' | 'contain' | 'fill'>('cover');
   const [backgroundObjectPosition, setBackgroundObjectPosition] = useState<string>('center');
   
@@ -160,6 +161,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
         setBackgroundImage={setBackgroundImage}
         setPreviousBackgroundImage={setPreviousBackgroundImage}
         setIsBackgroundChanging={setIsBackgroundChanging}
+        setNewImageReady={setNewImageReady}
         isTyping={isTyping}
         setIsTyping={setIsTyping}
         setSkipTyping={setSkipTyping}
@@ -187,6 +189,7 @@ function NovelReader({ novel, settings, profile, onUpdate, onProfileUpdate, curr
       <NovelReaderBackgroundNew
           backgroundImage={backgroundImage}
           previousBackgroundImage={previousBackgroundImage}
+          newImageReady={newImageReady}
           isBackgroundChanging={isBackgroundChanging}
           currentParagraph={currentParagraph}
           currentEpisode={currentEpisode}
