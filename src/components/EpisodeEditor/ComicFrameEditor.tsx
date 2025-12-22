@@ -49,13 +49,16 @@ interface ComicFrameEditorProps {
   defaultAnimation?: FrameAnimationType;
   subParagraphs?: SubParagraph[]; // Список подпараграфов для выбора триггера
   comicGroupSize?: number; // Количество параграфов в комикс-группе
+  soundEffect?: string; // Звуковой эффект для группы
+  soundTrigger?: number; // Триггер звука (индекс параграфа)
   onFramesChange: (frames: ComicFrame[]) => void;
   onLayoutChange: (layout: MergeLayoutType) => void;
   onAnimationChange?: (animation: FrameAnimationType) => void;
   onBothChange?: (layout: MergeLayoutType, frames: ComicFrame[]) => void;
+  onSoundChange?: (soundEffect?: string, soundTrigger?: number) => void;
 }
 
-function ComicFrameEditor({ frames, layout, defaultAnimation, subParagraphs, comicGroupSize, onFramesChange, onLayoutChange, onAnimationChange, onBothChange }: ComicFrameEditorProps) {
+function ComicFrameEditor({ frames, layout, defaultAnimation, subParagraphs, comicGroupSize, soundEffect, soundTrigger, onFramesChange, onLayoutChange, onAnimationChange, onBothChange, onSoundChange }: ComicFrameEditorProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const framesRef = useRef(frames);
   
@@ -357,6 +360,47 @@ function ComicFrameEditor({ frames, layout, defaultAnimation, subParagraphs, com
             </div>
           )}
         </div>
+        
+        {/* Звуковой эффект для группы параграфов */}
+        {comicGroupSize && comicGroupSize > 1 && onSoundChange && (
+          <div className="p-2 border border-border/50 rounded bg-secondary/5 space-y-2">
+            <div className="flex items-center gap-2 mb-2">
+              <Icon name="Volume2" size={14} className="text-primary" />
+              <Label className="text-xs font-medium">Звук для группы</Label>
+            </div>
+            <div className="space-y-2">
+              <div>
+                <Label className="text-xs text-muted-foreground mb-1 block">URL звукового эффекта</Label>
+                <Input
+                  value={soundEffect || ''}
+                  onChange={(e) => onSoundChange(e.target.value || undefined, soundTrigger)}
+                  placeholder="https://..."
+                  className="h-8 text-xs"
+                />
+              </div>
+              {soundEffect && (
+                <div>
+                  <Label className="text-xs text-muted-foreground mb-1 block">Проиграть на параграфе №</Label>
+                  <Select
+                    value={String(soundTrigger ?? 0)}
+                    onValueChange={(v) => onSoundChange(soundEffect, parseInt(v))}
+                  >
+                    <SelectTrigger className="h-8 text-xs">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Array.from({ length: comicGroupSize }, (_, i) => (
+                        <SelectItem key={i} value={String(i)}>
+                          Параграф {i + 1}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       {isExpanded && (

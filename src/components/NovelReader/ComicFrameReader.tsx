@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { TextParagraph, DialogueParagraph, ComicFrame, MergeLayoutType, FrameAnimationType } from '@/types/novel';
 import MergedParagraphsLayout from './MergedParagraphsLayout';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
@@ -11,6 +11,7 @@ interface ComicFrameReaderProps {
   isRetrospective?: boolean; // Флаг времени прошлого
   pastelColor?: string; // Пастельный цвет для ретроспективы
   isComicGroup?: boolean; // Флаг комикс-группы (фреймы уже отфильтрованы)
+  currentGroupIndex?: number; // Текущий индекс параграфа в комикс-группе
 }
 
 const BRUSH_MASKS = [
@@ -24,13 +25,15 @@ const BRUSH_MASKS = [
   'https://cdn.poehali.dev/files/brush-mask-8.png',
 ];
 
-export default function ComicFrameReader({ paragraph, currentSubParagraphIndex, layout, isTyping, isRetrospective = false, pastelColor, isComicGroup = false }: ComicFrameReaderProps) {
+export default function ComicFrameReader({ paragraph, currentSubParagraphIndex, layout, isTyping, isRetrospective = false, pastelColor, isComicGroup = false, currentGroupIndex = 0 }: ComicFrameReaderProps) {
   const [activeFrames, setActiveFrames] = useState<ComicFrame[]>([]);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [imageAspectRatios, setImageAspectRatios] = useState<Map<string, number>>(new Map());
   const [showFrames, setShowFrames] = useState(false);
   const [brushMasks, setBrushMasks] = useState<string[]>([]);
   const [masksLoaded, setMasksLoaded] = useState<Set<string>>(new Set());
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const playedSoundsRef = useRef<Set<string>>(new Set());
 
   // Показываем фреймы только после завершения печати текста
   useEffect(() => {
@@ -118,6 +121,62 @@ export default function ComicFrameReader({ paragraph, currentSubParagraphIndex, 
       setMasksLoaded(new Set());
     }
   }, [isRetrospective, activeFrames.length]);
+
+  // Воспроизведение звуков при смене параграфа в комикс-группе
+  useEffect(() => {
+    if (!isComicGroup) return;
+
+    // Звук всей группы параграфов (если есть)
+    if (paragraph.soundEffect && paragraph.soundTrigger === currentGroupIndex) {
+      const soundKey = `paragraph-${paragraph.id}-${currentGroupIndex}`;
+      
+      if (!playedSoundsRef.current.has(soundKey)) {
+        playedSoundsRef.current.add(soundKey);
+        
+        if (audioRef.current) {
+          audioRef.current.pause();
+        }
+        
+        const audio = new Audio(paragraph.soundEffect);
+        audio.volume = 0.7;
+        audioRef.current = audio;
+        
+        audio.play().catch(err => {
+          console.warn('Failed to play paragraph sound effect:', err);
+        });
+      }
+    }
+
+    // Звуки отдельных фреймов
+    if (paragraph.comicFrames) {
+      paragraph.comicFrames.forEach(frame => {
+        if (frame.soundEffect && frame.soundTrigger === currentGroupIndex) {
+          const soundKey = `frame-${frame.id}-${currentGroupIndex}`;
+          
+          if (!playedSoundsRef.current.has(soundKey)) {
+            playedSoundsRef.current.add(soundKey);
+            
+            if (audioRef.current) {
+              audioRef.current.pause();
+            }
+            
+            const audio = new Audio(frame.soundEffect);
+            audio.volume = 0.7;
+            audioRef.current = audio;
+            
+            audio.play().catch(err => {
+              console.warn('Failed to play frame sound effect:', err);
+            });
+          }
+        }
+      });
+    }
+  }, [currentGroupIndex, isComicGroup, paragraph.soundEffect, paragraph.soundTrigger, paragraph.comicFrames, paragraph.id]);
+
+  // Сброс проигранных звуков при смене параграфа
+  useEffect(() => {
+    playedSoundsRef.current.clear();
+  }, [paragraph.id]);
 
   const handleImageLoad = (frameId: string, event: React.SyntheticEvent<HTMLImageElement>) => {
     const img = event.currentTarget;
