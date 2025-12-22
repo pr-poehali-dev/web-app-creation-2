@@ -35,6 +35,7 @@ const EpisodeCard = memo(({
   bulkEditEpisodes, 
   selectedEpisodes, 
   totalEpisodes,
+  novel,
   onSelectEpisode, 
   onToggleEpisodeSelect, 
   onMoveEpisode, 
@@ -46,14 +47,20 @@ const EpisodeCard = memo(({
   bulkEditEpisodes: boolean;
   selectedEpisodes: Set<string>;
   totalEpisodes: number;
+  novel: Novel;
   onSelectEpisode: (id: string) => void;
   onToggleEpisodeSelect: (id: string) => void;
   onMoveEpisode: (id: string, dir: 'up' | 'down') => void;
   onDeleteEpisode: (id: string) => void;
-}) => (
+}) => {
+  const episodePaths = episode.requiredPaths
+    ?.map(pathId => novel.paths?.find(p => p.id === pathId))
+    .filter((p): p is NonNullable<typeof p> => p !== undefined) || [];
+  
+  return (
   <div 
     key={episode.id}
-    className={`relative p-4 rounded-lg cursor-pointer transition-all ${
+    className={`relative p-4 mb-2 rounded-lg cursor-pointer transition-all ${
       episode.id === selectedEpisodeId 
         ? 'bg-primary text-primary-foreground shadow-md' 
         : 'bg-card hover:bg-secondary/50 text-card-foreground'
@@ -75,9 +82,28 @@ const EpisodeCard = memo(({
           />
         )}
         <div className="flex-1 min-w-0">
-          <p className={`font-semibold text-sm mb-1 ${episode.id === selectedEpisodeId ? 'text-slate-50' : 'text-slate-100'} truncate`}>
-            {episode.title}
-          </p>
+          <div className="flex items-start justify-between gap-2 mb-1">
+            <p className={`font-semibold text-sm ${episode.id === selectedEpisodeId ? 'text-slate-50' : 'text-slate-100'} truncate flex-1`}>
+              {episode.title}
+            </p>
+            {episodePaths.length > 0 && (
+              <div className="flex gap-1 flex-shrink-0">
+                {episodePaths.map((path) => (
+                  <div
+                    key={path.id}
+                    className="w-3 h-3 rounded-full flex-shrink-0"
+                    style={{ backgroundColor: path.color || '#888' }}
+                    title={path.name}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+          {episode.shortDescription && (
+            <p className="text-[11px] text-slate-300 mb-1 line-clamp-2 leading-snug opacity-80">
+              {episode.shortDescription}
+            </p>
+          )}
           <div className="flex flex-wrap gap-1">
             {episode.timeframes?.includes('present') && (
               <span className="text-[10px] px-1.5 py-0.5 bg-blue-500/20 text-blue-400 rounded">
@@ -89,12 +115,6 @@ const EpisodeCard = memo(({
               <span className="text-[10px] px-1.5 py-0.5 bg-amber-500/20 text-amber-400 rounded">
                 <Icon name="History" size={10} className="inline mr-0.5" />
                 Воспоминание
-              </span>
-            )}
-            {episode.requiredPaths && episode.requiredPaths.length > 0 && (
-              <span className="text-[10px] px-1.5 py-0.5 bg-purple-500/20 text-purple-400 rounded">
-                <Icon name="GitBranch" size={10} className="inline mr-0.5" />
-                {episode.requiredPaths.length}
               </span>
             )}
           </div>
@@ -147,20 +167,24 @@ const EpisodeCard = memo(({
       {episode.paragraphs.length} параграфов
     </p>
   </div>
-), (prev, next) => (
+);
+}, (prev, next) => (
   prev.episode.id === next.episode.id &&
   prev.episode.title === next.episode.title &&
+  prev.episode.shortDescription === next.episode.shortDescription &&
   prev.episode.paragraphs.length === next.episode.paragraphs.length &&
   prev.selectedEpisodeId === next.selectedEpisodeId &&
   prev.bulkEditEpisodes === next.bulkEditEpisodes &&
   prev.selectedEpisodes.has(prev.episode.id) === next.selectedEpisodes.has(next.episode.id) &&
   prev.selectedEpisodes.size === next.selectedEpisodes.size &&
   prev.idx === next.idx &&
-  prev.totalEpisodes === next.totalEpisodes
+  prev.totalEpisodes === next.totalEpisodes &&
+  JSON.stringify(prev.episode.requiredPaths) === JSON.stringify(next.episode.requiredPaths)
 ));
 
 const EpisodeList = memo(({ 
   episodes, 
+  novel,
   selectedEpisodeId, 
   bulkEditEpisodes, 
   selectedEpisodes, 
@@ -170,6 +194,7 @@ const EpisodeList = memo(({
   onDeleteEpisode 
 }: {
   episodes: Episode[];
+  novel: Novel;
   selectedEpisodeId: string | null;
   bulkEditEpisodes: boolean;
   selectedEpisodes: Set<string>;
@@ -220,6 +245,7 @@ const EpisodeList = memo(({
                   bulkEditEpisodes={bulkEditEpisodes}
                   selectedEpisodes={selectedEpisodes}
                   totalEpisodes={episodes.length}
+                  novel={novel}
                   onSelectEpisode={onSelectEpisode}
                   onToggleEpisodeSelect={onToggleEpisodeSelect}
                   onMoveEpisode={onMoveEpisode}
@@ -349,6 +375,7 @@ function EpisodeEditorTab({
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         <EpisodeList
           episodes={novel.episodes}
+          novel={novel}
           selectedEpisodeId={selectedEpisodeId}
           bulkEditEpisodes={bulkEditEpisodes}
           selectedEpisodes={selectedEpisodes}
