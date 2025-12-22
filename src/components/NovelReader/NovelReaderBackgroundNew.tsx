@@ -68,11 +68,12 @@ function NovelReaderBackgroundNew({
   const [showComicFrames, setShowComicFrames] = useState(false);
   const previousParagraphKeyRef = useRef<string>(paragraphKey);
   
-  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(true);
   const currentImageUrlRef = useRef<string | null>(null);
   
   useEffect(() => {
     if (backgroundImage !== currentImageUrlRef.current) {
+      console.log('[NovelReaderBG] Background changed, resetting imageLoaded');
       setImageLoaded(false);
       currentImageUrlRef.current = backgroundImage;
     }
