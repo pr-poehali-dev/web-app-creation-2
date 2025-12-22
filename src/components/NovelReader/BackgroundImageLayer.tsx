@@ -30,17 +30,22 @@ function BackgroundImageLayer({
   const oldImgRef = useRef<HTMLImageElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   
-  // Принудительный reflow для запуска transition
+  // Управление transition при загрузке изображения
   useEffect(() => {
-    if (showTransition && imageLoaded) {
-      console.log('[BackgroundImageLayer] Forcing transition with reflow');
-      
-      const newImg = newImgRef.current;
-      const oldImg = oldImgRef.current;
-      const overlay = overlayRef.current;
-      
-      if (newImg && oldImg && overlay) {
-        // Сначала устанавливаем начальные значения
+    const newImg = newImgRef.current;
+    const oldImg = oldImgRef.current;
+    const overlay = overlayRef.current;
+    
+    if (!newImg) return;
+    
+    if (showTransition && oldImg && overlay) {
+      if (!imageLoaded) {
+        // Начальное состояние: старое видно, новое скрыто
+        console.log('[BackgroundImageLayer] Setting initial state');
+        newImg.style.transition = 'none';
+        oldImg.style.transition = 'none';
+        overlay.style.transition = 'none';
+        
         newImg.style.opacity = '0';
         oldImg.style.opacity = '1';
         overlay.style.opacity = '1';
@@ -48,17 +53,26 @@ function BackgroundImageLayer({
         
         // Принудительный reflow
         void newImg.offsetHeight;
-        void oldImg.offsetHeight;
-        void overlay.offsetHeight;
         
-        // Запускаем transition через RAF
+        // Включаем transitions обратно
+        newImg.style.transition = '';
+        oldImg.style.transition = '';
+        overlay.style.transition = '';
+      } else {
+        // Запускаем переход когда изображение загружено
+        console.log('[BackgroundImageLayer] Starting transition');
         requestAnimationFrame(() => {
-          newImg.style.opacity = '1';
-          oldImg.style.opacity = '0';
-          overlay.style.opacity = '0';
-          oldImg.style.filter = 'blur(20px)';
+          requestAnimationFrame(() => {
+            newImg.style.opacity = '1';
+            oldImg.style.opacity = '0';
+            overlay.style.opacity = '0';
+            oldImg.style.filter = 'blur(20px)';
+          });
         });
       }
+    } else if (!showTransition) {
+      // Нет перехода - сразу показываем
+      newImg.style.opacity = '1';
     }
   }, [imageLoaded, showTransition]);
   
@@ -74,8 +88,6 @@ function BackgroundImageLayer({
             style={{ 
               objectFit: backgroundObjectFit,
               objectPosition: backgroundObjectPosition,
-              opacity: 1,
-              filter: 'blur(0px)',
               zIndex: 1
             }}
           />
@@ -86,7 +98,6 @@ function BackgroundImageLayer({
               background: isRetrospective 
                 ? `radial-gradient(circle at center, ${getPastelColor(effectivePastelColor)} 0%, ${getPastelColor(effectivePastelColor).replace('0.4', '0.15')} 60%, rgba(0, 0, 0, 0.3) 100%)`
                 : 'rgba(0, 0, 0, 0.2)',
-              opacity: 1,
               zIndex: 2
             }}
           />
@@ -105,7 +116,6 @@ function BackgroundImageLayer({
         style={{ 
           objectFit: backgroundObjectFit,
           objectPosition: backgroundObjectPosition,
-          opacity: showTransition ? 0 : 1,
           zIndex: 3
         }}
       />
