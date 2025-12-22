@@ -1,3 +1,5 @@
+import React from 'react';
+
 interface BackgroundImageLayerProps {
   backgroundImage: string;
   previousBackgroundImage: string | null;
@@ -24,6 +26,7 @@ function BackgroundImageLayer({
   getPastelColor
 }: BackgroundImageLayerProps) {
   const showTransition = previousBackgroundImage && previousBackgroundImage !== backgroundImage;
+  const imgRef = React.useRef<HTMLImageElement>(null);
   
   return (
     <>
@@ -55,12 +58,23 @@ function BackgroundImageLayer({
       )}
       
       <img
+        ref={imgRef}
         src={backgroundImage || ''}
         alt=""
         className="absolute inset-0 w-full h-full transition-opacity duration-[2500ms] ease-in-out"
         onLoad={() => {
           console.log('[BackgroundImageLayer] Image loaded:', backgroundImage);
-          onImageLoad();
+          
+          // Используем двойной RAF чтобы гарантировать что браузер применил opacity:0
+          if (showTransition) {
+            requestAnimationFrame(() => {
+              requestAnimationFrame(() => {
+                onImageLoad();
+              });
+            });
+          } else {
+            onImageLoad();
+          }
         }}
         style={{ 
           objectFit: backgroundObjectFit,
