@@ -77,7 +77,7 @@ function NovelReaderContent({
             className="absolute inset-0 pointer-events-none rounded-xl md:rounded-2xl transition-all duration-1000 ease-in-out"
             style={{
               opacity: isRetrospective ? 1 : 0,
-              background: `radial-gradient(circle at center, ${getPastelColor(effectivePastelColor)} 0%, ${getPastelColor(effectivePastelColor).replace('0.5', '0.2')} 50%, transparent 100%)`,
+              background: getPastelColor(effectivePastelColor),
               backdropFilter: isRetrospective ? 'saturate(1.2) brightness(1.05)' : 'none'
             }}
           />
