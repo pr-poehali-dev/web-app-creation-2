@@ -6,23 +6,15 @@ interface ComicGroupData {
   layout: 'single' | 'horizontal-2' | 'horizontal-3' | 'vertical-2' | 'grid-4';
 }
 
-interface ActiveComicParagraph {
-  frames: any[];
-  layout: 'single' | 'horizontal-2' | 'horizontal-3' | 'vertical-2' | 'grid-4';
-  [key: string]: any;
-}
-
 interface BackgroundContentOverlayProps {
   currentParagraph: Paragraph;
   comicGroupData: ComicGroupData | null;
   showComicFrames: boolean;
   hasComicFrames: boolean;
-  activeComicParagraph: ActiveComicParagraph | null;
   actualIsContentHidden: boolean;
   isTyping: boolean;
   isRetrospective: boolean;
   effectivePastelColor?: string;
-  currentSubParagraphIndex: number;
   getFilterStyle: (baseFilter: string) => string;
 }
 
@@ -31,12 +23,10 @@ function BackgroundContentOverlay({
   comicGroupData,
   showComicFrames,
   hasComicFrames,
-  activeComicParagraph,
   actualIsContentHidden,
   isTyping,
   isRetrospective,
   effectivePastelColor,
-  currentSubParagraphIndex,
   getFilterStyle
 }: BackgroundContentOverlayProps) {
   return (
@@ -94,33 +84,7 @@ function BackgroundContentOverlay({
           <div className="w-full h-full max-w-4xl">
             <ComicFrameReader
               paragraph={currentParagraph as TextParagraph | DialogueParagraph}
-              currentSubParagraphIndex={currentParagraph.subParagraphs && currentParagraph.subParagraphs.length > 0 ? currentSubParagraphIndex : undefined}
               layout={currentParagraph.frameLayout || 'single'}
-              isTyping={isTyping}
-              isRetrospective={isRetrospective}
-              pastelColor={effectivePastelColor}
-            />
-          </div>
-        </div>
-      )}
-      
-      {activeComicParagraph && showComicFrames && !comicGroupData && (
-        <div 
-          className="absolute inset-0 flex items-center justify-center p-4 md:p-8 z-30 transition-all duration-300 ease-in-out"
-          style={{ 
-            opacity: actualIsContentHidden ? 0 : 1,
-            pointerEvents: actualIsContentHidden ? 'none' : 'auto'
-          }}
-        >
-          <div className="w-full h-full max-w-4xl">
-            <ComicFrameReader
-              paragraph={{
-                ...activeComicParagraph,
-                comicFrames: activeComicParagraph.frames,
-                frameLayout: activeComicParagraph.layout
-              } as TextParagraph | DialogueParagraph}
-              currentSubParagraphIndex={undefined}
-              layout={activeComicParagraph.layout || 'single'}
               isTyping={isTyping}
               isRetrospective={isRetrospective}
               pastelColor={effectivePastelColor}

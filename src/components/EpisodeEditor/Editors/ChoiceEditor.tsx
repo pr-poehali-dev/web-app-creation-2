@@ -34,6 +34,21 @@ function ChoiceEditor({
         }
         className="text-foreground"
       />
+      
+      <div className="flex items-center mb-2">
+        <label className="flex items-center gap-2 cursor-pointer text-sm">
+          <input
+            type="checkbox"
+            checked={paragraph.oneTime || false}
+            onChange={(e) => {
+              onUpdate(index, { ...paragraph, oneTime: e.target.checked });
+            }}
+            className="rounded"
+          />
+          Весь выбор одноразовый
+        </label>
+      </div>
+      
       <div className="flex gap-2 mb-3">
         <Select
           value="manual"

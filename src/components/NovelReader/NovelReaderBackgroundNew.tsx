@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef, MutableRefObject } from 'react';
-import { Novel, Episode, Paragraph, ComicParagraph } from '@/types/novel';
+import { Novel, Episode, Paragraph } from '@/types/novel';
 import { UserSettings, UserProfile } from '@/types/settings';
 import BackgroundImageLayer from './BackgroundImageLayer';
 import BackgroundContentOverlay from './BackgroundContentOverlay';
@@ -28,10 +28,6 @@ interface NovelReaderBackgroundNewProps {
   handleAddBookmark: (comment: string) => void;
   handleRemoveBookmark: () => void;
   previousParagraph?: Paragraph;
-  currentSubParagraphIndex: number;
-  setCurrentSubParagraphIndex: (index: number) => void;
-  goToNextSubParagraph: () => boolean;
-  goToPreviousSubParagraph: () => boolean;
   isContentHidden?: boolean;
   onToggleContentVisibility?: () => void;
   backgroundObjectFit: 'cover' | 'contain' | 'fill';
@@ -59,10 +55,6 @@ function NovelReaderBackgroundNew({
   goToPreviousParagraph,
   goToNextParagraph,
   previousParagraph,
-  currentSubParagraphIndex,
-  setCurrentSubParagraphIndex,
-  goToNextSubParagraph,
-  goToPreviousSubParagraph,
   isContentHidden: externalIsContentHidden,
   onToggleContentVisibility,
   backgroundObjectFit,
@@ -206,23 +198,6 @@ function NovelReaderBackgroundNew({
                          currentParagraph.comicFrames && 
                          currentParagraph.comicFrames.length > 0;
 
-  const getActiveComicParagraph = (): ComicParagraph | null => {
-    if (!currentEpisode) return null;
-    
-    for (let i = currentParagraphIndex; i >= 0; i--) {
-      const p = currentEpisode.paragraphs[i];
-      if (p.type === 'comic' && p.persistAcrossParagraphs) {
-        const spanCount = p.spanCount || 1;
-        if (currentParagraphIndex >= i && currentParagraphIndex < i + spanCount) {
-          return p;
-        }
-      }
-    }
-    return null;
-  };
-
-  const activeComicParagraph = getActiveComicParagraph();
-
   const isFirstTextParagraph = currentParagraphIndex <= 1 && 
                                 (currentParagraph.type === 'text' || 
                                  currentParagraph.type === 'dialogue' || 
@@ -264,12 +239,10 @@ function NovelReaderBackgroundNew({
           comicGroupData={comicGroupData}
           showComicFrames={showComicFrames}
           hasComicFrames={hasComicFrames}
-          activeComicParagraph={activeComicParagraph}
           actualIsContentHidden={actualIsContentHidden}
           isTyping={isTyping}
           isRetrospective={isRetrospective}
           effectivePastelColor={effectivePastelColor}
-          currentSubParagraphIndex={currentSubParagraphIndex}
           getFilterStyle={getFilterStyle}
         />
         
@@ -292,11 +265,8 @@ function NovelReaderBackgroundNew({
         onProfileUpdate={onProfileUpdate}
         paragraphKey={paragraphKey}
         previousParagraph={previousParagraph}
-        currentSubParagraphIndex={currentSubParagraphIndex}
         goToPreviousParagraph={goToPreviousParagraph}
         goToNextParagraph={goToNextParagraph}
-        goToNextSubParagraph={goToNextSubParagraph}
-        goToPreviousSubParagraph={goToPreviousSubParagraph}
         actualIsContentHidden={actualIsContentHidden}
         setWasHidden={setWasHidden}
         onToggleContentVisibility={onToggleContentVisibility}

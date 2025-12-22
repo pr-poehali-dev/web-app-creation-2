@@ -1,4 +1,4 @@
-export type ParagraphType = 'text' | 'image' | 'choice' | 'item' | 'dialogue' | 'background' | 'comic';
+export type ParagraphType = 'text' | 'image' | 'choice' | 'item' | 'dialogue' | 'background';
 
 export type MergeLayoutType = 
   | 'single' // 1 фрейм на весь экран
@@ -61,18 +61,12 @@ export type FrameAnimationType =
   | 'wave' // Волна
   | 'none'; // Без анимации
 
-export interface SubParagraph {
-  id: string;
-  text: string;
-}
-
 export interface ComicFrame {
   id: string;
   type: 'image' | 'background';
   url: string;
   mobileUrl?: string;
   alt?: string;
-  subParagraphTrigger?: string; // ID подпараграфа, при котором показывается этот фрейм
   paragraphTrigger?: number; // Индекс параграфа в группе (0, 1, 2...), на котором появляется фрейм
   animation?: FrameAnimationType; // Тип анимации появления
   objectPosition?: string; // CSS object-position (например: 'center', 'top', 'left', '50% 30%')
@@ -98,7 +92,6 @@ export interface BaseParagraph {
 export interface TextParagraph extends BaseParagraph {
   type: 'text';
   content: string;
-  subParagraphs?: SubParagraph[]; // Подпараграфы внутри текста
 }
 
 export interface ImageParagraph extends BaseParagraph {
@@ -112,6 +105,7 @@ export interface ChoiceParagraph extends BaseParagraph {
   type: 'choice';
   question: string;
   lockAfterChoice?: boolean; // Блокировать все варианты после первого выбора
+  oneTime?: boolean; // Весь выбор одноразовый
   options: {
     id: string;
     text: string;
@@ -137,7 +131,6 @@ export interface DialogueParagraph extends BaseParagraph {
   characterName: string;
   characterImage?: string;
   text: string;
-  subParagraphs?: SubParagraph[]; // Подпараграфы внутри диалога
 }
 
 export interface BackgroundParagraph extends BaseParagraph {
@@ -145,17 +138,8 @@ export interface BackgroundParagraph extends BaseParagraph {
   url: string;
   mobileUrl?: string;
   alt?: string;
-  shapeTransition?: ShapeTransitionType;
   objectPosition?: string;
   objectFit?: 'cover' | 'contain' | 'fill';
-}
-
-export interface ComicParagraph extends BaseParagraph {
-  type: 'comic';
-  frames: ComicFrame[]; // Фреймы комикса
-  layout?: MergeLayoutType; // Раскладка фреймов
-  spanCount?: number; // Количество текстовых параграфов, на которые растягивается комикс
-  persistAcrossParagraphs?: boolean; // Сохранять ли фон при переходе между параграфами
 }
 
 export type Paragraph = 
@@ -164,10 +148,7 @@ export type Paragraph =
   | ChoiceParagraph 
   | ItemParagraph 
   | DialogueParagraph
-  | BackgroundParagraph
-  | ComicParagraph;
-
-export type ShapeTransitionType = 'wave' | 'diagonal' | 'organic' | 'curved' | 'liquid' | 'triangle' | 'hexagon' | 'arc' | 'stairs' | 'zigzag' | 'rounded' | 'sharp' | 'double-wave';
+  | BackgroundParagraph;
 
 export interface Episode {
   id: string;
