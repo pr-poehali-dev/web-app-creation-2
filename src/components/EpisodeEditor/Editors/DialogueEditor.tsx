@@ -232,8 +232,6 @@ function DialogueEditor({
               layout={paragraph.frameLayout || 'horizontal-3'}
               defaultAnimation={paragraph.frameAnimation}
               comicGroupSize={comicGroupSize}
-              soundEffect={paragraph.soundEffect}
-              soundTrigger={paragraph.soundTrigger}
               onFramesChange={(frames) =>
                 onUpdate(index, { ...paragraph, comicFrames: frames.length > 0 ? frames : undefined })
               }
@@ -249,9 +247,6 @@ function DialogueEditor({
                   frameLayout: layout, 
                   comicFrames: frames.length > 0 ? frames : undefined 
                 })
-              }
-              onSoundChange={(soundEffect, soundTrigger) =>
-                onUpdate(index, { ...paragraph, soundEffect, soundTrigger })
               }
             />
           </div>

@@ -71,8 +71,6 @@ export interface ComicFrame {
   animation?: FrameAnimationType; // Тип анимации появления
   objectPosition?: string; // CSS object-position (например: 'center', 'top', 'left', '50% 30%')
   objectFit?: 'cover' | 'contain' | 'fill'; // CSS object-fit
-  soundEffect?: string; // URL звукового эффекта
-  soundTrigger?: number; // Индекс параграфа в группе (0, 1, 2...), на котором проигрывается звук
 }
 
 export type PastelColor = 'pink' | 'blue' | 'peach' | 'lavender' | 'mint' | 'yellow' | 'coral' | 'sky';
@@ -86,8 +84,6 @@ export interface BaseParagraph {
   frameAnimation?: FrameAnimationType; // Общая анимация (только для comicGroupIndex === 0)
   comicGroupId?: string; // ID группы комикса (одинаковый для всех параграфов в группе)
   comicGroupIndex?: number; // Индекс параграфа внутри группы комикса (0, 1, 2...)
-  soundEffect?: string; // URL звукового эффекта для группы параграфов (только для comicGroupIndex === 0)
-  soundTrigger?: number; // Индекс параграфа в группе (0, 1, 2...), на котором проигрывается звук
   timeframes?: ('present' | 'retrospective')[];
   pastelColor?: PastelColor; // Цвет для ретроспективы
   requiredPaths?: string[];

@@ -15,7 +15,6 @@ interface BackgroundContentOverlayProps {
   isRetrospective: boolean;
   effectivePastelColor?: string;
   getFilterStyle: (baseFilter: string) => string;
-  currentGroupIndex?: number;
 }
 
 function BackgroundContentOverlay({
@@ -26,8 +25,7 @@ function BackgroundContentOverlay({
   isTyping,
   isRetrospective,
   effectivePastelColor,
-  getFilterStyle,
-  currentGroupIndex
+  getFilterStyle
 }: BackgroundContentOverlayProps) {
   return (
     <>
@@ -68,7 +66,6 @@ function BackgroundContentOverlay({
               isRetrospective={isRetrospective}
               pastelColor={effectivePastelColor}
               isComicGroup={true}
-              currentGroupIndex={currentGroupIndex}
             />
           </div>
         </div>
