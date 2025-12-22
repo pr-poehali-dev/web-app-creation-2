@@ -235,12 +235,18 @@ function NovelReaderBackgroundNew({
           previousBackgroundImage={previousBackgroundImage}
           imageLoaded={imageLoaded}
           onImageLoad={() => {
-            console.log('[NovelReaderBackgroundNew] onImageLoad callback');
-            setImageLoaded(true);
-            if (imageLoadTimeoutRef.current) {
-              clearTimeout(imageLoadTimeoutRef.current);
-              imageLoadTimeoutRef.current = null;
-            }
+            console.log('[NovelReaderBackgroundNew] onImageLoad callback - delaying imageLoaded=true');
+            // Задержка для гарантии плавного перехода даже если изображение в кеше
+            requestAnimationFrame(() => {
+              requestAnimationFrame(() => {
+                console.log('[NovelReaderBackgroundNew] Setting imageLoaded=true');
+                setImageLoaded(true);
+                if (imageLoadTimeoutRef.current) {
+                  clearTimeout(imageLoadTimeoutRef.current);
+                  imageLoadTimeoutRef.current = null;
+                }
+              });
+            });
           }}
           backgroundObjectFit={backgroundObjectFit}
           backgroundObjectPosition={backgroundObjectPosition}
