@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 interface BackgroundImageLayerProps {
   backgroundImage: string;
@@ -26,57 +26,67 @@ function BackgroundImageLayer({
   getPastelColor
 }: BackgroundImageLayerProps) {
   const showTransition = previousBackgroundImage && previousBackgroundImage !== backgroundImage;
-  const imgRef = useRef<HTMLImageElement>(null);
-  const [internalTransitionActive, setInternalTransitionActive] = useState(false);
-  const currentBgRef = useRef(backgroundImage);
+  const newImgRef = useRef<HTMLImageElement>(null);
+  const oldImgRef = useRef<HTMLImageElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
   
-  // Управляем внутренним состоянием перехода
+  // Принудительный reflow для запуска transition
   useEffect(() => {
-    if (showTransition && backgroundImage !== currentBgRef.current) {
-      console.log('[BackgroundImageLayer] Starting transition from', currentBgRef.current, 'to', backgroundImage);
-      setInternalTransitionActive(false);
-      currentBgRef.current = backgroundImage;
-    } else if (!showTransition) {
-      setInternalTransitionActive(false);
-      currentBgRef.current = backgroundImage;
-    }
-  }, [backgroundImage, showTransition]);
-  
-  // Активируем переход когда imageLoaded становится true
-  useEffect(() => {
-    if (imageLoaded && showTransition && !internalTransitionActive) {
-      console.log('[BackgroundImageLayer] Activating transition via RAF');
-      requestAnimationFrame(() => {
+    if (showTransition && imageLoaded) {
+      console.log('[BackgroundImageLayer] Forcing transition with reflow');
+      
+      const newImg = newImgRef.current;
+      const oldImg = oldImgRef.current;
+      const overlay = overlayRef.current;
+      
+      if (newImg && oldImg && overlay) {
+        // Сначала устанавливаем начальные значения
+        newImg.style.opacity = '0';
+        oldImg.style.opacity = '1';
+        overlay.style.opacity = '1';
+        oldImg.style.filter = 'blur(0px)';
+        
+        // Принудительный reflow
+        void newImg.offsetHeight;
+        void oldImg.offsetHeight;
+        void overlay.offsetHeight;
+        
+        // Запускаем transition через RAF
         requestAnimationFrame(() => {
-          setInternalTransitionActive(true);
+          newImg.style.opacity = '1';
+          oldImg.style.opacity = '0';
+          overlay.style.opacity = '0';
+          oldImg.style.filter = 'blur(20px)';
         });
-      });
+      }
     }
-  }, [imageLoaded, showTransition, internalTransitionActive]);
+  }, [imageLoaded, showTransition]);
   
   return (
     <>
       {showTransition && (
         <>
           <img
+            ref={oldImgRef}
             src={previousBackgroundImage}
             alt=""
             className="absolute inset-0 w-full h-full transition-all duration-[2500ms] ease-in-out"
             style={{ 
               objectFit: backgroundObjectFit,
               objectPosition: backgroundObjectPosition,
-              opacity: internalTransitionActive ? 0 : 1,
-              filter: getFilterStyle(internalTransitionActive ? 'blur(20px)' : 'blur(0px)'),
+              opacity: 1,
+              filter: 'blur(0px)',
               zIndex: 1
             }}
           />
           <div 
+            ref={overlayRef}
             className="absolute inset-0 transition-opacity duration-[2500ms] ease-in-out"
             style={{ 
               background: isRetrospective 
                 ? `radial-gradient(circle at center, ${getPastelColor(effectivePastelColor)} 0%, ${getPastelColor(effectivePastelColor).replace('0.4', '0.15')} 60%, rgba(0, 0, 0, 0.3) 100%)`
                 : 'rgba(0, 0, 0, 0.2)',
-              opacity: internalTransitionActive ? 0 : 1,
+              opacity: 1,
               zIndex: 2
             }}
           />
@@ -84,7 +94,7 @@ function BackgroundImageLayer({
       )}
       
       <img
-        ref={imgRef}
+        ref={newImgRef}
         src={backgroundImage || ''}
         alt=""
         className="absolute inset-0 w-full h-full transition-opacity duration-[2500ms] ease-in-out"
@@ -95,7 +105,7 @@ function BackgroundImageLayer({
         style={{ 
           objectFit: backgroundObjectFit,
           objectPosition: backgroundObjectPosition,
-          opacity: (showTransition && !internalTransitionActive) ? 0 : 1,
+          opacity: showTransition ? 0 : 1,
           zIndex: 3
         }}
       />
