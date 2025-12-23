@@ -200,25 +200,41 @@ function VisualEditor({ novel, onSave, onClose }: VisualEditorProps) {
       </div>
 
       <div className="flex flex-1 overflow-hidden">
-        <div className="flex-1 relative">
+        <div className="flex flex-1 lg:flex-row">
           <div
-            className="absolute inset-0 bg-cover bg-center transition-all duration-500"
+            className="flex-1 relative bg-cover bg-center transition-all duration-500"
             style={{
               backgroundImage: currentBackground
                 ? `url(${(currentBackground as any).url})`
-                : 'none',
+                : 'linear-gradient(to bottom, #1a1a2e, #0f0f1e)',
               backgroundPosition:
                 (currentBackground as any)?.objectPosition || 'center',
             }}
           >
-            <div className="absolute inset-0 flex items-center justify-center p-8">
+            {selectedParagraph?.type === 'background' && (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="text-center text-white">
+                  <div className="bg-black/50 backdrop-blur-sm rounded-lg p-8 inline-block">
+                    <Icon name="Image" size={48} className="mx-auto mb-4 opacity-50" />
+                    <p className="text-lg">Фоновое изображение</p>
+                    <p className="text-sm text-muted-foreground mt-2">
+                      Откройте панель справа для редактирования
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="flex-1 relative overflow-y-auto" style={{ backgroundColor: '#151d28' }}>
+            <div className="min-h-full flex items-center justify-center p-8">
               {selectedParagraph && selectedParagraph.type !== 'background' && (
-                <Card className="max-w-2xl w-full p-8 bg-card/90 backdrop-blur-sm shadow-2xl">
+                <Card 
+                  className="max-w-2xl w-full p-8 bg-card/90 backdrop-blur-sm shadow-2xl cursor-pointer hover:ring-2 hover:ring-primary transition-all"
+                  onClick={() => setShowPropertiesPanel(true)}
+                >
                   {selectedParagraph.type === 'text' && (
-                    <div
-                      className="prose prose-invert max-w-none cursor-pointer hover:ring-2 hover:ring-primary rounded p-2"
-                      onClick={() => setShowPropertiesPanel(true)}
-                    >
+                    <div className="prose prose-invert max-w-none">
                       <p className="text-lg whitespace-pre-wrap">
                         {(selectedParagraph as any).content}
                       </p>
@@ -226,10 +242,7 @@ function VisualEditor({ novel, onSave, onClose }: VisualEditorProps) {
                   )}
 
                   {selectedParagraph.type === 'dialogue' && (
-                    <div
-                      className="space-y-4 cursor-pointer hover:ring-2 hover:ring-primary rounded p-2"
-                      onClick={() => setShowPropertiesPanel(true)}
-                    >
+                    <div className="space-y-4">
                       {(selectedParagraph as any).characterImage && (
                         <img
                           src={(selectedParagraph as any).characterImage}
@@ -249,10 +262,7 @@ function VisualEditor({ novel, onSave, onClose }: VisualEditorProps) {
                   )}
 
                   {selectedParagraph.type === 'choice' && (
-                    <div
-                      className="space-y-4 cursor-pointer hover:ring-2 hover:ring-primary rounded p-2"
-                      onClick={() => setShowPropertiesPanel(true)}
-                    >
+                    <div className="space-y-4">
                       <p className="text-xl font-semibold text-center">
                         {(selectedParagraph as any).question}
                       </p>
@@ -273,10 +283,7 @@ function VisualEditor({ novel, onSave, onClose }: VisualEditorProps) {
                   )}
 
                   {selectedParagraph.type === 'item' && (
-                    <div
-                      className="text-center space-y-4 cursor-pointer hover:ring-2 hover:ring-primary rounded p-2"
-                      onClick={() => setShowPropertiesPanel(true)}
-                    >
+                    <div className="text-center space-y-4">
                       {(selectedParagraph as any).imageUrl && (
                         <img
                           src={(selectedParagraph as any).imageUrl}
@@ -294,10 +301,7 @@ function VisualEditor({ novel, onSave, onClose }: VisualEditorProps) {
                   )}
 
                   {selectedParagraph.type === 'image' && (
-                    <div
-                      className="cursor-pointer hover:ring-2 hover:ring-primary rounded p-2"
-                      onClick={() => setShowPropertiesPanel(true)}
-                    >
+                    <div>
                       <img
                         src={(selectedParagraph as any).url}
                         alt="Image"
@@ -309,14 +313,10 @@ function VisualEditor({ novel, onSave, onClose }: VisualEditorProps) {
               )}
 
               {selectedParagraph?.type === 'background' && (
-                <div className="text-center text-white">
-                  <div className="bg-black/50 backdrop-blur-sm rounded-lg p-8 inline-block">
-                    <Icon name="Image" size={48} className="mx-auto mb-4 opacity-50" />
-                    <p className="text-lg">Фоновое изображение</p>
-                    <p className="text-sm text-muted-foreground mt-2">
-                      Кликните на панель справа для редактирования
-                    </p>
-                  </div>
+                <div className="text-center text-muted-foreground">
+                  <Icon name="FileText" size={48} className="mx-auto mb-4 opacity-20" />
+                  <p>Это фоновый слайд</p>
+                  <p className="text-sm mt-2">Текст появится на следующих слайдах</p>
                 </div>
               )}
             </div>
