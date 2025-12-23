@@ -23,6 +23,7 @@ interface VisualEditorProps {
 interface EditorElement {
   id: string;
   type: 'text' | 'image' | 'shape' | 'comicFrame';
+  panel: 'left' | 'right';
   x: number;
   y: number;
   width: number;
@@ -49,7 +50,8 @@ function VisualEditor({ novel, onSave, onClose }: VisualEditorProps) {
   const [isResizing, setIsResizing] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [initialElementState, setInitialElementState] = useState<{ x: number; y: number; width: number; height: number } | null>(null);
-  const canvasRef = useRef<HTMLDivElement>(null);
+  const leftCanvasRef = useRef<HTMLDivElement>(null);
+  const rightCanvasRef = useRef<HTMLDivElement>(null);
 
   const selectedEpisode = novel.episodes[selectedEpisodeIndex];
   const selectedParagraph = selectedEpisode?.paragraphs[selectedParagraphIndex];
@@ -61,13 +63,14 @@ function VisualEditor({ novel, onSave, onClose }: VisualEditorProps) {
     
     const loadedElements: EditorElement[] = [];
     
-    // Загружаем комикс-фреймы если есть
+    // Загружаем комикс-фреймы на левую панель
     if (selectedParagraph.comicFrames && selectedParagraph.comicFrames.length > 0) {
       selectedParagraph.comicFrames.forEach((frame, idx) => {
         if (frame.url) {
           loadedElements.push({
             id: frame.id,
             type: 'comicFrame',
+            panel: 'left',
             x: 50 + idx * 220,
             y: 50,
             width: 200,
@@ -80,13 +83,14 @@ function VisualEditor({ novel, onSave, onClose }: VisualEditorProps) {
       });
     }
     
-    // Загружаем текстовый контент
+    // Загружаем текстовый контент на правую панель
     if (selectedParagraph.type === 'text' && (selectedParagraph as any).content) {
       loadedElements.push({
         id: `text-${selectedParagraph.id}`,
         type: 'text',
+        panel: 'right',
         x: 50,
-        y: loadedElements.length > 0 ? 300 : 100,
+        y: 250,
         width: 600,
         height: 150,
         content: (selectedParagraph as any).content,
@@ -97,14 +101,15 @@ function VisualEditor({ novel, onSave, onClose }: VisualEditorProps) {
       });
     }
     
-    // Загружаем диалог
+    // Загружаем диалог на правую панель
     if (selectedParagraph.type === 'dialogue') {
       const dialogue = selectedParagraph as any;
       loadedElements.push({
         id: `dialogue-${selectedParagraph.id}`,
         type: 'text',
+        panel: 'right',
         x: 50,
-        y: loadedElements.length > 0 ? 300 : 100,
+        y: 250,
         width: 600,
         height: 200,
         content: `${dialogue.characterName}\n\n${dialogue.text}`,
@@ -119,7 +124,8 @@ function VisualEditor({ novel, onSave, onClose }: VisualEditorProps) {
         loadedElements.push({
           id: `char-img-${selectedParagraph.id}`,
           type: 'image',
-          x: 300,
+          panel: 'right',
+          x: 250,
           y: 50,
           width: 150,
           height: 150,
@@ -157,10 +163,11 @@ function VisualEditor({ novel, onSave, onClose }: VisualEditorProps) {
     onSave({ ...novel, episodes: updatedEpisodes });
   };
 
-  const addElement = (type: EditorElement['type']) => {
+  const addElement = (type: EditorElement['type'], panel: 'left' | 'right' = 'right') => {
     const newElement: EditorElement = {
       id: `element-${Date.now()}`,
       type,
+      panel,
       x: 100,
       y: 100,
       width: type === 'text' ? 300 : 200,
@@ -430,46 +437,43 @@ function VisualEditor({ novel, onSave, onClose }: VisualEditorProps) {
       <div className="flex flex-1 overflow-hidden">
         {/* Toolbar */}
         <div className="w-20 bg-background border-r flex flex-col items-center py-4 gap-2">
+          <div className="text-xs text-muted-foreground mb-2">Текст</div>
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => addElement('text')}
-            title="Текст"
+            onClick={() => addElement('text', 'right')}
+            title="Текст на правую панель"
           >
             <Icon name="Type" size={20} />
           </Button>
+          
+          <div className="h-px w-12 bg-border my-2" />
+          <div className="text-xs text-muted-foreground mb-2">Фон</div>
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => addElement('comicFrame')}
-            title="Комикс-фрейм"
+            onClick={() => addElement('comicFrame', 'left')}
+            title="Фрейм на левую панель"
           >
             <Icon name="Image" size={20} />
           </Button>
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => addElement('shape')}
-            title="Фигура"
+            onClick={() => addElement('shape', 'left')}
+            title="Фигура на левую панель"
           >
             <Icon name="Square" size={20} />
           </Button>
+          
           <div className="h-px w-12 bg-border my-2" />
           <Button
             variant="ghost"
             size="icon"
             onClick={() => addParagraph('text')}
-            title="Новый слайд: Текст"
+            title="Новый слайд"
           >
             <Icon name="FilePlus" size={20} />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => addParagraph('background')}
-            title="Новый слайд: Фон"
-          >
-            <Icon name="ImagePlus" size={20} />
           </Button>
         </div>
 
@@ -477,25 +481,31 @@ function VisualEditor({ novel, onSave, onClose }: VisualEditorProps) {
         <div className="flex-1 overflow-auto p-8 bg-[#0a0f14]">
           <div className="max-w-7xl mx-auto">
             <div
-              ref={canvasRef}
-              className="relative bg-[#151d28] rounded-lg shadow-2xl overflow-hidden"
+              className="relative rounded-lg shadow-2xl overflow-hidden flex"
               style={{
-                width: '1200px',
-                height: '675px',
-                backgroundImage: currentBackground
-                  ? `url(${(currentBackground as any).url})`
-                  : 'linear-gradient(to bottom, #1a1a2e, #0f0f1e)',
-                backgroundSize: 'cover',
-                backgroundPosition: (currentBackground as any)?.objectPosition || 'center',
+                width: '1400px',
+                height: '700px',
               }}
               onMouseMove={handleMouseMove}
               onMouseUp={handleMouseUp}
               onMouseLeave={handleMouseUp}
-              onClick={() => setSelectedElementId(null)}
             >
-              {elements
-                .sort((a, b) => (a.zIndex || 0) - (b.zIndex || 0))
-                .map((element) => {
+              {/* Left Panel - Background */}
+              <div
+                ref={leftCanvasRef}
+                className="relative flex-1 bg-cover bg-center"
+                style={{
+                  backgroundImage: currentBackground
+                    ? `url(${(currentBackground as any).url})`
+                    : 'linear-gradient(to bottom, #1a1a2e, #0f0f1e)',
+                  backgroundPosition: (currentBackground as any)?.objectPosition || 'center',
+                }}
+                onClick={() => setSelectedElementId(null)}
+              >
+                {elements
+                  .filter(el => el.panel === 'left')
+                  .sort((a, b) => (a.zIndex || 0) - (b.zIndex || 0))
+                  .map((element) => {
                   const isSelected = element.id === selectedElementId;
                   
                   return (
@@ -602,6 +612,125 @@ function VisualEditor({ novel, onSave, onClose }: VisualEditorProps) {
                     </div>
                   );
                 })}
+              </div>
+
+              {/* Right Panel - Text Content */}
+              <div
+                ref={rightCanvasRef}
+                className="relative flex-1 bg-[#151d28]"
+                onClick={() => setSelectedElementId(null)}
+              >
+                {elements
+                  .filter(el => el.panel === 'right')
+                  .sort((a, b) => (a.zIndex || 0) - (b.zIndex || 0))
+                  .map((element) => {
+                  const isSelected = element.id === selectedElementId;
+                  
+                  return (
+                    <div
+                      key={element.id}
+                      className={`absolute cursor-move ${
+                        isSelected ? 'ring-2 ring-primary' : ''
+                      }`}
+                      style={{
+                        left: element.x,
+                        top: element.y,
+                        width: element.width,
+                        height: element.height,
+                        zIndex: element.zIndex || 0,
+                      }}
+                      onMouseDown={(e) => handleMouseDown(e, element.id)}
+                    >
+                      {element.type === 'text' && (
+                        <div
+                          className="w-full h-full p-4 overflow-auto"
+                          style={{
+                            fontSize: element.fontSize,
+                            textAlign: element.textAlign,
+                            fontWeight: element.fontWeight,
+                            color: element.color,
+                            whiteSpace: 'pre-wrap',
+                          }}
+                        >
+                          {element.content}
+                        </div>
+                      )}
+
+                      {(element.type === 'image' || element.type === 'comicFrame') && (
+                        <img
+                          src={element.imageUrl}
+                          alt=""
+                          className="w-full h-full object-cover"
+                          style={{
+                            borderRadius: element.borderRadius,
+                          }}
+                        />
+                      )}
+
+                      {element.type === 'shape' && (
+                        <div
+                          className="w-full h-full"
+                          style={{
+                            backgroundColor: element.backgroundColor,
+                            borderRadius:
+                              element.shapeType === 'circle'
+                                ? '50%'
+                                : element.borderRadius,
+                          }}
+                        />
+                      )}
+
+                      {isSelected && (
+                        <>
+                          <div
+                            className="absolute -bottom-2 -right-2 w-4 h-4 bg-primary rounded-full cursor-se-resize"
+                            onMouseDown={(e) => handleMouseDown(e, element.id, true)}
+                          />
+                          <div className="absolute -top-8 left-0 bg-background/90 backdrop-blur px-2 py-1 rounded text-xs flex gap-1">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                updateElement(element.id, {
+                                  zIndex: Math.max(0, (element.zIndex || 0) - 1),
+                                });
+                              }}
+                            >
+                              <Icon name="ArrowDown" size={12} />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                updateElement(element.id, {
+                                  zIndex: (element.zIndex || 0) + 1,
+                                });
+                              }}
+                            >
+                              <Icon name="ArrowUp" size={12} />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6 text-destructive"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                deleteElement(element.id);
+                              }}
+                            >
+                              <Icon name="Trash2" size={12} />
+                            </Button>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
 
             {/* Navigation */}
