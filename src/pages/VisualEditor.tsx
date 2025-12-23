@@ -219,11 +219,22 @@ function VisualEditor({ novel, onSave, onClose }: VisualEditorProps) {
             {hasComicFrames && selectedParagraph.comicFrames && selectedParagraph.comicFrames.length > 0 && (
               <div className="absolute inset-0">
                 <MergedParagraphsLayout
-                  frames={selectedParagraph.comicFrames.filter(f => f.url)}
                   layout={selectedParagraph.frameLayout || 'single'}
-                  isRetrospective={false}
-                  pastelColor={undefined}
-                />
+                >
+                  {selectedParagraph.comicFrames.filter(f => f.url).map((frame) => (
+                    <div key={frame.id} className="w-full h-full">
+                      <img
+                        src={frame.url}
+                        alt={frame.alt || ''}
+                        className="w-full h-full object-cover"
+                        style={{
+                          objectFit: frame.objectFit || 'cover',
+                          objectPosition: frame.objectPosition || 'center',
+                        }}
+                      />
+                    </div>
+                  ))}
+                </MergedParagraphsLayout>
               </div>
             )}
 
