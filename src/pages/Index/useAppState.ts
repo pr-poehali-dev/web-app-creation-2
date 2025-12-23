@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Novel } from '@/types/novel';
 import { UserSettings, UserProfile, defaultSettings, defaultProfile } from '@/types/settings';
 
-export type View = 'home' | 'reader' | 'admin' | 'episodes' | 'profile' | 'settings' | 'editor';
+export type View = 'home' | 'reader' | 'admin' | 'episodes' | 'profile' | 'settings';
 
 export function useAppState() {
   const [novel, setNovel] = useState<Novel | null>(null);

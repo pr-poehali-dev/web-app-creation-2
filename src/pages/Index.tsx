@@ -7,7 +7,6 @@ import NavigationMenu from '@/components/NavigationMenu';
 import ParagraphsDialog from '@/components/ParagraphsDialog';
 import HomePage from '@/components/HomePage';
 import AdminLogin from '@/components/AdminLogin';
-import EpisodeEditor from './EpisodeEditor';
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
 import { useAppState } from './Index/useAppState';
@@ -95,19 +94,6 @@ function Index() {
           <p className="text-foreground">Новелла не загружена</p>
         </div>
       </div>
-    );
-  }
-
-  if (activeView === 'editor') {
-    return (
-      <EpisodeEditor
-        novel={novel}
-        onSave={(updatedNovel) => {
-          handleNovelUpdate(updatedNovel);
-          setActiveView('reader');
-        }}
-        onClose={() => setActiveView('reader')}
-      />
     );
   }
 
