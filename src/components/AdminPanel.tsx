@@ -7,7 +7,7 @@ import LibraryManager from './LibraryManager';
 import HomePageEditor from './HomePageEditor';
 import PathsManager from './PathsManager';
 import BulkImportDialog from './BulkImportDialog';
-import EpisodeEditor from '@/pages/EpisodeEditor';
+import VisualEditor from '@/pages/VisualEditor';
 import BackgroundImagesEditor from './BackgroundImagesEditor';
 import AdminPanelHeader from './AdminPanel/AdminPanelHeader';
 import EpisodeEditorTab from './AdminPanel/EpisodeEditorTab';
@@ -242,13 +242,11 @@ function AdminPanel({ novel, onUpdate, onLogout }: AdminPanelProps) {
           </TabsContent>
 
           <TabsContent value="visual">
-            <div className="fixed inset-0 z-50 bg-background">
-              <EpisodeEditor
-                novel={novel}
-                onSave={onUpdate}
-                onClose={() => setActiveTab('editor')}
-              />
-            </div>
+            <VisualEditor
+              novel={novel}
+              onSave={onUpdate}
+              onClose={() => setActiveTab('editor')}
+            />
           </TabsContent>
 
           <TabsContent value="editor" className="space-y-6">
