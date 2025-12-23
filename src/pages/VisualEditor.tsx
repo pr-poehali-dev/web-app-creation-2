@@ -216,10 +216,10 @@ function VisualEditor({ novel, onSave, onClose }: VisualEditorProps) {
                 (currentBackground as any)?.objectPosition || 'center',
             }}
           >
-            {hasComicFrames && selectedParagraph.comicFrames && (
+            {hasComicFrames && selectedParagraph.comicFrames && selectedParagraph.comicFrames.length > 0 && (
               <div className="absolute inset-0">
                 <MergedParagraphsLayout
-                  frames={selectedParagraph.comicFrames}
+                  frames={selectedParagraph.comicFrames.filter(f => f.url)}
                   layout={selectedParagraph.frameLayout || 'single'}
                   isRetrospective={false}
                   pastelColor={undefined}
