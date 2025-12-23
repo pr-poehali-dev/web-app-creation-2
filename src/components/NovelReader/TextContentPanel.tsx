@@ -76,7 +76,7 @@ function TextContentPanel({
       
       {currentParagraph.type !== 'background' && shouldShowContent && (
         <>
-          <div className="absolute bottom-12 md:bottom-8 lg:top-1/2 lg:-translate-y-1/2 left-0 right-0 z-10 px-5 md:px-8">
+          <div className="absolute bottom-12 md:bottom-8 lg:top-1/2 lg:-translate-y-1/2 left-0 right-0 z-10 px-5 md:px-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
           <div className="w-full max-w-3xl mx-auto flex flex-col items-center justify-center">
             {currentParagraph.type !== 'choice' && (
               <div className="flex justify-between items-center mb-2 gap-2">
