@@ -13,6 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import MergedParagraphsLayout from '@/components/NovelReader/MergedParagraphsLayout';
 
 interface VisualEditorProps {
   novel: Novel;
@@ -140,6 +141,8 @@ function VisualEditor({ novel, onSave, onClose }: VisualEditorProps) {
     return null;
   })();
 
+  const hasComicFrames = selectedParagraph?.comicFrames && selectedParagraph.comicFrames.length > 0;
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'ArrowRight') {
@@ -204,14 +207,27 @@ function VisualEditor({ novel, onSave, onClose }: VisualEditorProps) {
           <div
             className="flex-1 relative bg-cover bg-center transition-all duration-500"
             style={{
-              backgroundImage: currentBackground
+              backgroundImage: !hasComicFrames && currentBackground
                 ? `url(${(currentBackground as any).url})`
-                : 'linear-gradient(to bottom, #1a1a2e, #0f0f1e)',
+                : !hasComicFrames 
+                  ? 'linear-gradient(to bottom, #1a1a2e, #0f0f1e)'
+                  : 'none',
               backgroundPosition:
                 (currentBackground as any)?.objectPosition || 'center',
             }}
           >
-            {selectedParagraph?.type === 'background' && (
+            {hasComicFrames && selectedParagraph.comicFrames && (
+              <div className="absolute inset-0">
+                <MergedParagraphsLayout
+                  frames={selectedParagraph.comicFrames}
+                  layout={selectedParagraph.frameLayout || 'single'}
+                  isRetrospective={false}
+                  pastelColor={undefined}
+                />
+              </div>
+            )}
+
+            {!hasComicFrames && selectedParagraph?.type === 'background' && (
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-center text-white">
                   <div className="bg-black/50 backdrop-blur-sm rounded-lg p-8 inline-block">
@@ -422,6 +438,88 @@ function VisualEditor({ novel, onSave, onClose }: VisualEditorProps) {
                       <Icon name="Trash2" size={16} />
                     </Button>
                   </div>
+
+                  {(selectedParagraph.type === 'text' || selectedParagraph.type === 'dialogue') && (
+                    <>
+                      <div>
+                        <label className="text-sm font-medium mb-2 block">
+                          Комикс-фреймы
+                        </label>
+                        <div className="space-y-2">
+                          {(selectedParagraph.comicFrames || []).map((frame, idx) => (
+                            <div key={idx} className="flex gap-2 items-center">
+                              <Input
+                                value={frame.url}
+                                onChange={(e) => {
+                                  const newFrames = [...(selectedParagraph.comicFrames || [])];
+                                  newFrames[idx] = { ...newFrames[idx], url: e.target.value };
+                                  updateParagraph({ comicFrames: newFrames });
+                                }}
+                                placeholder="URL изображения"
+                                className="flex-1"
+                              />
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => {
+                                  const newFrames = [...(selectedParagraph.comicFrames || [])];
+                                  newFrames.splice(idx, 1);
+                                  updateParagraph({ comicFrames: newFrames });
+                                }}
+                              >
+                                <Icon name="X" size={14} />
+                              </Button>
+                            </div>
+                          ))}
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="w-full"
+                            onClick={() => {
+                              const newFrames = [
+                                ...(selectedParagraph.comicFrames || []),
+                                {
+                                  id: `frame-${Date.now()}`,
+                                  type: 'image' as const,
+                                  url: '',
+                                },
+                              ];
+                              updateParagraph({ comicFrames: newFrames });
+                            }}
+                          >
+                            <Icon name="Plus" size={14} className="mr-2" />
+                            Добавить фрейм
+                          </Button>
+                        </div>
+                      </div>
+
+                      {hasComicFrames && (
+                        <div>
+                          <label className="text-sm font-medium mb-2 block">
+                            Раскладка фреймов
+                          </label>
+                          <Select
+                            value={selectedParagraph.frameLayout || 'single'}
+                            onValueChange={(value) =>
+                              updateParagraph({ frameLayout: value as any })
+                            }
+                          >
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="single">1 фрейм</SelectItem>
+                              <SelectItem value="horizontal-2">2 в ряд</SelectItem>
+                              <SelectItem value="horizontal-3">3 в ряд</SelectItem>
+                              <SelectItem value="vertical-2">2 вертикально</SelectItem>
+                              <SelectItem value="grid-2x2">Сетка 2x2</SelectItem>
+                              <SelectItem value="grid-3x3">Сетка 3x3</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
+                    </>
+                  )}
 
                   {selectedParagraph.type === 'text' && (
                     <div>
