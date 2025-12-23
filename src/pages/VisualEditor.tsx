@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Novel, Episode, Paragraph } from '@/types/novel';
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
@@ -13,7 +13,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import MergedParagraphsLayout from '@/components/NovelReader/MergedParagraphsLayout';
 
 interface VisualEditorProps {
   novel: Novel;
@@ -21,13 +20,119 @@ interface VisualEditorProps {
   onClose: () => void;
 }
 
+interface EditorElement {
+  id: string;
+  type: 'text' | 'image' | 'shape' | 'comicFrame';
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  content?: string;
+  imageUrl?: string;
+  backgroundColor?: string;
+  borderRadius?: number;
+  fontSize?: number;
+  textAlign?: 'left' | 'center' | 'right';
+  fontWeight?: 'normal' | 'bold';
+  color?: string;
+  shapeType?: 'rectangle' | 'circle' | 'rounded';
+  zIndex?: number;
+}
+
 function VisualEditor({ novel, onSave, onClose }: VisualEditorProps) {
   const [selectedEpisodeIndex, setSelectedEpisodeIndex] = useState(0);
   const [selectedParagraphIndex, setSelectedParagraphIndex] = useState(0);
   const [showPropertiesPanel, setShowPropertiesPanel] = useState(true);
+  const [elements, setElements] = useState<EditorElement[]>([]);
+  const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [isResizing, setIsResizing] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [initialElementState, setInitialElementState] = useState<{ x: number; y: number; width: number; height: number } | null>(null);
+  const canvasRef = useRef<HTMLDivElement>(null);
 
   const selectedEpisode = novel.episodes[selectedEpisodeIndex];
   const selectedParagraph = selectedEpisode?.paragraphs[selectedParagraphIndex];
+  const selectedElement = elements.find(el => el.id === selectedElementId);
+
+  // Загрузка элементов из параграфа
+  useEffect(() => {
+    if (!selectedParagraph) return;
+    
+    const loadedElements: EditorElement[] = [];
+    
+    // Загружаем комикс-фреймы если есть
+    if (selectedParagraph.comicFrames && selectedParagraph.comicFrames.length > 0) {
+      selectedParagraph.comicFrames.forEach((frame, idx) => {
+        if (frame.url) {
+          loadedElements.push({
+            id: frame.id,
+            type: 'comicFrame',
+            x: 50 + idx * 220,
+            y: 50,
+            width: 200,
+            height: 200,
+            imageUrl: frame.url,
+            borderRadius: 8,
+            zIndex: idx
+          });
+        }
+      });
+    }
+    
+    // Загружаем текстовый контент
+    if (selectedParagraph.type === 'text' && (selectedParagraph as any).content) {
+      loadedElements.push({
+        id: `text-${selectedParagraph.id}`,
+        type: 'text',
+        x: 50,
+        y: loadedElements.length > 0 ? 300 : 100,
+        width: 600,
+        height: 150,
+        content: (selectedParagraph as any).content,
+        fontSize: 18,
+        textAlign: 'left',
+        color: '#ffffff',
+        zIndex: 100
+      });
+    }
+    
+    // Загружаем диалог
+    if (selectedParagraph.type === 'dialogue') {
+      const dialogue = selectedParagraph as any;
+      loadedElements.push({
+        id: `dialogue-${selectedParagraph.id}`,
+        type: 'text',
+        x: 50,
+        y: loadedElements.length > 0 ? 300 : 100,
+        width: 600,
+        height: 200,
+        content: `${dialogue.characterName}\n\n${dialogue.text}`,
+        fontSize: 18,
+        textAlign: 'center',
+        fontWeight: 'bold',
+        color: '#ffffff',
+        zIndex: 100
+      });
+      
+      if (dialogue.characterImage) {
+        loadedElements.push({
+          id: `char-img-${selectedParagraph.id}`,
+          type: 'image',
+          x: 300,
+          y: 50,
+          width: 150,
+          height: 150,
+          imageUrl: dialogue.characterImage,
+          borderRadius: 75,
+          zIndex: 101
+        });
+      }
+    }
+    
+    setElements(loadedElements);
+    setSelectedElementId(null);
+  }, [selectedParagraphIndex, selectedEpisodeIndex]);
 
   const goToNextParagraph = () => {
     if (!selectedEpisode) return;
@@ -50,6 +155,134 @@ function VisualEditor({ novel, onSave, onClose }: VisualEditorProps) {
       ...updates,
     };
     onSave({ ...novel, episodes: updatedEpisodes });
+  };
+
+  const addElement = (type: EditorElement['type']) => {
+    const newElement: EditorElement = {
+      id: `element-${Date.now()}`,
+      type,
+      x: 100,
+      y: 100,
+      width: type === 'text' ? 300 : 200,
+      height: type === 'text' ? 100 : 200,
+      zIndex: elements.length,
+    };
+
+    if (type === 'text') {
+      newElement.content = 'Новый текст';
+      newElement.fontSize = 18;
+      newElement.textAlign = 'left';
+      newElement.color = '#ffffff';
+    } else if (type === 'shape') {
+      newElement.backgroundColor = '#3b82f6';
+      newElement.shapeType = 'rectangle';
+      newElement.borderRadius = 8;
+    } else if (type === 'image' || type === 'comicFrame') {
+      newElement.imageUrl = 'https://cdn.poehali.dev/files/How to create Picture wheel morph transition in PowerPoint.jpg';
+      newElement.borderRadius = 8;
+    }
+
+    setElements([...elements, newElement]);
+    setSelectedElementId(newElement.id);
+  };
+
+  const updateElement = (id: string, updates: Partial<EditorElement>) => {
+    setElements(elements.map(el => el.id === id ? { ...el, ...updates } : el));
+  };
+
+  const deleteElement = (id: string) => {
+    setElements(elements.filter(el => el.id !== id));
+    if (selectedElementId === id) {
+      setSelectedElementId(null);
+    }
+  };
+
+  const handleMouseDown = (e: React.MouseEvent, elementId: string, isResize = false) => {
+    e.stopPropagation();
+    const element = elements.find(el => el.id === elementId);
+    if (!element) return;
+
+    setSelectedElementId(elementId);
+    
+    if (isResize) {
+      setIsResizing(true);
+    } else {
+      setIsDragging(true);
+    }
+    
+    setDragStart({ x: e.clientX, y: e.clientY });
+    setInitialElementState({
+      x: element.x,
+      y: element.y,
+      width: element.width,
+      height: element.height
+    });
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging && !isResizing) return;
+    if (!selectedElementId || !initialElementState) return;
+
+    const deltaX = e.clientX - dragStart.x;
+    const deltaY = e.clientY - dragStart.y;
+
+    if (isDragging) {
+      updateElement(selectedElementId, {
+        x: initialElementState.x + deltaX,
+        y: initialElementState.y + deltaY,
+      });
+    } else if (isResizing) {
+      updateElement(selectedElementId, {
+        width: Math.max(50, initialElementState.width + deltaX),
+        height: Math.max(50, initialElementState.height + deltaY),
+      });
+    }
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+    setIsResizing(false);
+    setInitialElementState(null);
+  };
+
+  const saveToNovel = () => {
+    if (!selectedParagraph) return;
+
+    // Сохраняем комикс-фреймы
+    const comicFrameElements = elements.filter(el => el.type === 'comicFrame' || el.type === 'image');
+    const comicFrames = comicFrameElements.map(el => ({
+      id: el.id,
+      type: 'image' as const,
+      url: el.imageUrl || '',
+      objectFit: 'cover' as const,
+      objectPosition: 'center'
+    }));
+
+    // Сохраняем текстовый контент
+    const textElements = elements.filter(el => el.type === 'text');
+    let textContent = '';
+    
+    if (textElements.length > 0) {
+      textContent = textElements.map(el => el.content).join('\n\n');
+    }
+
+    const updates: any = {};
+    
+    if (comicFrames.length > 0) {
+      updates.comicFrames = comicFrames;
+    }
+    
+    if (selectedParagraph.type === 'text') {
+      updates.content = textContent;
+    } else if (selectedParagraph.type === 'dialogue') {
+      const lines = textContent.split('\n').filter(l => l.trim());
+      if (lines.length > 0) {
+        updates.characterName = lines[0];
+        updates.text = lines.slice(1).join('\n');
+      }
+    }
+
+    updateParagraph(updates);
   };
 
   const addParagraph = (type: Paragraph['type']) => {
@@ -93,18 +326,6 @@ function VisualEditor({ novel, onSave, onClose }: VisualEditorProps) {
           ],
         };
         break;
-      case 'item':
-        newParagraph = {
-          ...baseParagraph,
-          type: 'item',
-          name: 'Предмет',
-          description: 'Описание',
-          itemType: 'collectible',
-        };
-        break;
-      case 'image':
-        newParagraph = { ...baseParagraph, type: 'image', url: '' };
-        break;
       default:
         return;
     }
@@ -141,20 +362,20 @@ function VisualEditor({ novel, onSave, onClose }: VisualEditorProps) {
     return null;
   })();
 
-  const hasComicFrames = selectedParagraph?.comicFrames && selectedParagraph.comicFrames.length > 0;
-
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'ArrowRight') {
         goToNextParagraph();
       } else if (e.key === 'ArrowLeft') {
         goToPreviousParagraph();
+      } else if (e.key === 'Delete' && selectedElementId) {
+        deleteElement(selectedElementId);
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedParagraphIndex, selectedEpisode]);
+  }, [selectedParagraphIndex, selectedEpisode, selectedElementId]);
 
   return (
     <div className="fixed inset-0 bg-[#151d28] z-50 flex flex-col">
@@ -195,522 +416,457 @@ function VisualEditor({ novel, onSave, onClose }: VisualEditorProps) {
               size={16}
             />
           </Button>
-          <Button onClick={() => onSave(novel)} size="sm">
+          <Button onClick={saveToNovel} size="sm" variant="default">
             <Icon name="Save" size={16} className="mr-2" />
+            Применить
+          </Button>
+          <Button onClick={() => onSave(novel)} size="sm">
+            <Icon name="Check" size={16} className="mr-2" />
             Сохранить
           </Button>
         </div>
       </div>
 
       <div className="flex flex-1 overflow-hidden">
-        <div className="flex flex-1 lg:flex-row">
-          <div
-            className="flex-1 relative bg-cover bg-center transition-all duration-500"
-            style={{
-              backgroundImage: !hasComicFrames && currentBackground
-                ? `url(${(currentBackground as any).url})`
-                : !hasComicFrames 
-                  ? 'linear-gradient(to bottom, #1a1a2e, #0f0f1e)'
-                  : 'none',
-              backgroundPosition:
-                (currentBackground as any)?.objectPosition || 'center',
-            }}
+        {/* Toolbar */}
+        <div className="w-20 bg-background border-r flex flex-col items-center py-4 gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => addElement('text')}
+            title="Текст"
           >
-            {hasComicFrames && selectedParagraph.comicFrames && selectedParagraph.comicFrames.length > 0 && (
-              <div className="absolute inset-0">
-                <MergedParagraphsLayout
-                  layout={selectedParagraph.frameLayout || 'single'}
-                >
-                  {selectedParagraph.comicFrames.filter(f => f.url).map((frame) => (
-                    <div key={frame.id} className="w-full h-full">
-                      <img
-                        src={frame.url}
-                        alt={frame.alt || ''}
-                        className="w-full h-full object-cover"
-                        style={{
-                          objectFit: frame.objectFit || 'cover',
-                          objectPosition: frame.objectPosition || 'center',
-                        }}
-                      />
-                    </div>
-                  ))}
-                </MergedParagraphsLayout>
-              </div>
-            )}
+            <Icon name="Type" size={20} />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => addElement('comicFrame')}
+            title="Комикс-фрейм"
+          >
+            <Icon name="Image" size={20} />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => addElement('shape')}
+            title="Фигура"
+          >
+            <Icon name="Square" size={20} />
+          </Button>
+          <div className="h-px w-12 bg-border my-2" />
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => addParagraph('text')}
+            title="Новый слайд: Текст"
+          >
+            <Icon name="FilePlus" size={20} />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => addParagraph('background')}
+            title="Новый слайд: Фон"
+          >
+            <Icon name="ImagePlus" size={20} />
+          </Button>
+        </div>
 
-            {!hasComicFrames && selectedParagraph?.type === 'background' && (
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center text-white">
-                  <div className="bg-black/50 backdrop-blur-sm rounded-lg p-8 inline-block">
-                    <Icon name="Image" size={48} className="mx-auto mb-4 opacity-50" />
-                    <p className="text-lg">Фоновое изображение</p>
-                    <p className="text-sm text-muted-foreground mt-2">
-                      Откройте панель справа для редактирования
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
+        {/* Canvas */}
+        <div className="flex-1 overflow-auto p-8 bg-[#0a0f14]">
+          <div className="max-w-7xl mx-auto">
+            <div
+              ref={canvasRef}
+              className="relative bg-[#151d28] rounded-lg shadow-2xl overflow-hidden"
+              style={{
+                width: '1200px',
+                height: '675px',
+                backgroundImage: currentBackground
+                  ? `url(${(currentBackground as any).url})`
+                  : 'linear-gradient(to bottom, #1a1a2e, #0f0f1e)',
+                backgroundSize: 'cover',
+                backgroundPosition: (currentBackground as any)?.objectPosition || 'center',
+              }}
+              onMouseMove={handleMouseMove}
+              onMouseUp={handleMouseUp}
+              onMouseLeave={handleMouseUp}
+              onClick={() => setSelectedElementId(null)}
+            >
+              {elements
+                .sort((a, b) => (a.zIndex || 0) - (b.zIndex || 0))
+                .map((element) => {
+                  const isSelected = element.id === selectedElementId;
+                  
+                  return (
+                    <div
+                      key={element.id}
+                      className={`absolute cursor-move ${
+                        isSelected ? 'ring-2 ring-primary' : ''
+                      }`}
+                      style={{
+                        left: element.x,
+                        top: element.y,
+                        width: element.width,
+                        height: element.height,
+                        zIndex: element.zIndex || 0,
+                      }}
+                      onMouseDown={(e) => handleMouseDown(e, element.id)}
+                    >
+                      {element.type === 'text' && (
+                        <div
+                          className="w-full h-full p-4 overflow-auto"
+                          style={{
+                            fontSize: element.fontSize,
+                            textAlign: element.textAlign,
+                            fontWeight: element.fontWeight,
+                            color: element.color,
+                            whiteSpace: 'pre-wrap',
+                          }}
+                        >
+                          {element.content}
+                        </div>
+                      )}
 
-          <div className="flex-1 relative overflow-y-auto" style={{ backgroundColor: '#151d28' }}>
-            <div className="min-h-full flex items-center justify-center p-8">
-              {selectedParagraph && selectedParagraph.type !== 'background' && (
-                <Card 
-                  className="max-w-2xl w-full p-8 bg-card/90 backdrop-blur-sm shadow-2xl cursor-pointer hover:ring-2 hover:ring-primary transition-all"
-                  onClick={() => setShowPropertiesPanel(true)}
-                >
-                  {selectedParagraph.type === 'text' && (
-                    <div className="prose prose-invert max-w-none">
-                      <p className="text-lg whitespace-pre-wrap">
-                        {(selectedParagraph as any).content}
-                      </p>
-                    </div>
-                  )}
-
-                  {selectedParagraph.type === 'dialogue' && (
-                    <div className="space-y-4">
-                      {(selectedParagraph as any).characterImage && (
+                      {(element.type === 'image' || element.type === 'comicFrame') && (
                         <img
-                          src={(selectedParagraph as any).characterImage}
-                          alt={(selectedParagraph as any).characterName}
-                          className="w-24 h-24 rounded-full object-cover mx-auto border-4 border-primary"
+                          src={element.imageUrl}
+                          alt=""
+                          className="w-full h-full object-cover"
+                          style={{
+                            borderRadius: element.borderRadius,
+                          }}
                         />
                       )}
-                      <div className="text-center">
-                        <p className="font-bold text-xl text-primary">
-                          {(selectedParagraph as any).characterName}
-                        </p>
-                        <p className="mt-3 text-lg">
-                          {(selectedParagraph as any).text}
-                        </p>
-                      </div>
-                    </div>
-                  )}
 
-                  {selectedParagraph.type === 'choice' && (
-                    <div className="space-y-4">
-                      <p className="text-xl font-semibold text-center">
-                        {(selectedParagraph as any).question}
-                      </p>
-                      <div className="space-y-2 mt-4">
-                        {((selectedParagraph as any).options || []).map(
-                          (option: any) => (
+                      {element.type === 'shape' && (
+                        <div
+                          className="w-full h-full"
+                          style={{
+                            backgroundColor: element.backgroundColor,
+                            borderRadius:
+                              element.shapeType === 'circle'
+                                ? '50%'
+                                : element.borderRadius,
+                          }}
+                        />
+                      )}
+
+                      {isSelected && (
+                        <>
+                          <div
+                            className="absolute -bottom-2 -right-2 w-4 h-4 bg-primary rounded-full cursor-se-resize"
+                            onMouseDown={(e) => handleMouseDown(e, element.id, true)}
+                          />
+                          <div className="absolute -top-8 left-0 bg-background/90 backdrop-blur px-2 py-1 rounded text-xs flex gap-1">
                             <Button
-                              key={option.id}
-                              variant="outline"
-                              className="w-full text-left justify-start"
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                updateElement(element.id, {
+                                  zIndex: Math.max(0, (element.zIndex || 0) - 1),
+                                });
+                              }}
                             >
-                              {option.text}
+                              <Icon name="ArrowDown" size={12} />
                             </Button>
-                          )
-                        )}
-                      </div>
-                    </div>
-                  )}
-
-                  {selectedParagraph.type === 'item' && (
-                    <div className="text-center space-y-4">
-                      {(selectedParagraph as any).imageUrl && (
-                        <img
-                          src={(selectedParagraph as any).imageUrl}
-                          alt={(selectedParagraph as any).name}
-                          className="w-32 h-32 object-contain mx-auto"
-                        />
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                updateElement(element.id, {
+                                  zIndex: (element.zIndex || 0) + 1,
+                                });
+                              }}
+                            >
+                              <Icon name="ArrowUp" size={12} />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6 text-destructive"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                deleteElement(element.id);
+                              }}
+                            >
+                              <Icon name="Trash2" size={12} />
+                            </Button>
+                          </div>
+                        </>
                       )}
-                      <h3 className="text-2xl font-bold">
-                        {(selectedParagraph as any).name}
-                      </h3>
-                      <p className="text-muted-foreground">
-                        {(selectedParagraph as any).description}
-                      </p>
                     </div>
-                  )}
-
-                  {selectedParagraph.type === 'image' && (
-                    <div>
-                      <img
-                        src={(selectedParagraph as any).url}
-                        alt="Image"
-                        className="w-full rounded-lg"
-                      />
-                    </div>
-                  )}
-                </Card>
-              )}
-
-              {selectedParagraph?.type === 'background' && (
-                <div className="text-center text-muted-foreground">
-                  <Icon name="FileText" size={48} className="mx-auto mb-4 opacity-20" />
-                  <p>Это фоновый слайд</p>
-                  <p className="text-sm mt-2">Текст появится на следующих слайдах</p>
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-4 bg-background/90 backdrop-blur-sm rounded-full px-6 py-3 shadow-xl">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={goToPreviousParagraph}
-              disabled={selectedParagraphIndex === 0}
-            >
-              <Icon name="ChevronLeft" size={20} />
-            </Button>
-
-            <div className="flex items-center gap-2 min-w-[120px] justify-center">
-              <span className="text-sm font-medium">
-                {selectedParagraphIndex + 1} / {selectedEpisode?.paragraphs.length || 0}
-              </span>
+                  );
+                })}
             </div>
 
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={goToNextParagraph}
-              disabled={
-                !selectedEpisode ||
-                selectedParagraphIndex >= selectedEpisode.paragraphs.length - 1
-              }
-            >
-              <Icon name="ChevronRight" size={20} />
-            </Button>
+            {/* Navigation */}
+            <div className="flex items-center justify-center gap-4 mt-6">
+              <Button
+                variant="outline"
+                onClick={goToPreviousParagraph}
+                disabled={selectedParagraphIndex === 0}
+              >
+                <Icon name="ChevronLeft" size={20} className="mr-2" />
+                Предыдущий
+              </Button>
+
+              <div className="text-sm text-muted-foreground">
+                Слайд {selectedParagraphIndex + 1} из {selectedEpisode?.paragraphs.length || 0}
+              </div>
+
+              <Button
+                variant="outline"
+                onClick={goToNextParagraph}
+                disabled={
+                  !selectedEpisode ||
+                  selectedParagraphIndex >= selectedEpisode.paragraphs.length - 1
+                }
+              >
+                Следующий
+                <Icon name="ChevronRight" size={20} className="ml-2" />
+              </Button>
+            </div>
           </div>
         </div>
 
+        {/* Properties Panel */}
         {showPropertiesPanel && (
-          <div className="w-96 bg-background border-l flex flex-col">
+          <div className="w-80 bg-background border-l flex flex-col">
             <div className="p-4 border-b">
-              <h2 className="font-semibold mb-3">Добавить элемент</h2>
-              <div className="grid grid-cols-3 gap-2">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => addParagraph('text')}
-                  title="Текст"
-                >
-                  <Icon name="Type" size={16} />
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => addParagraph('dialogue')}
-                  title="Диалог"
-                >
-                  <Icon name="MessageSquare" size={16} />
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => addParagraph('background')}
-                  title="Фон"
-                >
-                  <Icon name="Image" size={16} />
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => addParagraph('choice')}
-                  title="Выбор"
-                >
-                  <Icon name="GitBranch" size={16} />
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => addParagraph('item')}
-                  title="Предмет"
-                >
-                  <Icon name="Package" size={16} />
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => addParagraph('image')}
-                  title="Изображение"
-                >
-                  <Icon name="FileImage" size={16} />
-                </Button>
-              </div>
+              <h2 className="font-semibold">Свойства</h2>
             </div>
 
             <ScrollArea className="flex-1">
-              {selectedParagraph && (
+              {selectedElement ? (
                 <div className="p-4 space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h3 className="font-semibold">Свойства</h3>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={deleteParagraph}
-                      className="text-destructive"
-                    >
-                      <Icon name="Trash2" size={16} />
-                    </Button>
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Тип</label>
+                    <div className="text-sm text-muted-foreground capitalize">
+                      {selectedElement.type === 'comicFrame' ? 'Комикс-фрейм' : selectedElement.type}
+                    </div>
                   </div>
 
-                  {(selectedParagraph.type === 'text' || selectedParagraph.type === 'dialogue') && (
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="text-sm font-medium mb-1 block">X</label>
+                      <Input
+                        type="number"
+                        value={Math.round(selectedElement.x)}
+                        onChange={(e) =>
+                          updateElement(selectedElement.id, { x: parseInt(e.target.value) || 0 })
+                        }
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium mb-1 block">Y</label>
+                      <Input
+                        type="number"
+                        value={Math.round(selectedElement.y)}
+                        onChange={(e) =>
+                          updateElement(selectedElement.id, { y: parseInt(e.target.value) || 0 })
+                        }
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="text-sm font-medium mb-1 block">Ширина</label>
+                      <Input
+                        type="number"
+                        value={Math.round(selectedElement.width)}
+                        onChange={(e) =>
+                          updateElement(selectedElement.id, {
+                            width: parseInt(e.target.value) || 50,
+                          })
+                        }
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium mb-1 block">Высота</label>
+                      <Input
+                        type="number"
+                        value={Math.round(selectedElement.height)}
+                        onChange={(e) =>
+                          updateElement(selectedElement.id, {
+                            height: parseInt(e.target.value) || 50,
+                          })
+                        }
+                      />
+                    </div>
+                  </div>
+
+                  {selectedElement.type === 'text' && (
                     <>
                       <div>
-                        <label className="text-sm font-medium mb-2 block">
-                          Комикс-фреймы
-                        </label>
-                        <div className="space-y-2">
-                          {(selectedParagraph.comicFrames || []).map((frame, idx) => (
-                            <div key={idx} className="flex gap-2 items-center">
-                              <Input
-                                value={frame.url}
-                                onChange={(e) => {
-                                  const newFrames = [...(selectedParagraph.comicFrames || [])];
-                                  newFrames[idx] = { ...newFrames[idx], url: e.target.value };
-                                  updateParagraph({ comicFrames: newFrames });
-                                }}
-                                placeholder="URL изображения"
-                                className="flex-1"
-                              />
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => {
-                                  const newFrames = [...(selectedParagraph.comicFrames || [])];
-                                  newFrames.splice(idx, 1);
-                                  updateParagraph({ comicFrames: newFrames });
-                                }}
-                              >
-                                <Icon name="X" size={14} />
-                              </Button>
-                            </div>
-                          ))}
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="w-full"
-                            onClick={() => {
-                              const newFrames = [
-                                ...(selectedParagraph.comicFrames || []),
-                                {
-                                  id: `frame-${Date.now()}`,
-                                  type: 'image' as const,
-                                  url: '',
-                                },
-                              ];
-                              updateParagraph({ comicFrames: newFrames });
-                            }}
-                          >
-                            <Icon name="Plus" size={14} className="mr-2" />
-                            Добавить фрейм
-                          </Button>
-                        </div>
+                        <label className="text-sm font-medium mb-2 block">Текст</label>
+                        <Textarea
+                          value={selectedElement.content || ''}
+                          onChange={(e) =>
+                            updateElement(selectedElement.id, { content: e.target.value })
+                          }
+                          rows={6}
+                        />
                       </div>
 
-                      {hasComicFrames && (
+                      <div>
+                        <label className="text-sm font-medium mb-2 block">Размер шрифта</label>
+                        <Input
+                          type="number"
+                          value={selectedElement.fontSize || 18}
+                          onChange={(e) =>
+                            updateElement(selectedElement.id, {
+                              fontSize: parseInt(e.target.value) || 18,
+                            })
+                          }
+                        />
+                      </div>
+
+                      <div>
+                        <label className="text-sm font-medium mb-2 block">Выравнивание</label>
+                        <Select
+                          value={selectedElement.textAlign || 'left'}
+                          onValueChange={(value: any) =>
+                            updateElement(selectedElement.id, { textAlign: value })
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="left">Слева</SelectItem>
+                            <SelectItem value="center">По центру</SelectItem>
+                            <SelectItem value="right">Справа</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div>
+                        <label className="text-sm font-medium mb-2 block">Цвет текста</label>
+                        <Input
+                          type="color"
+                          value={selectedElement.color || '#ffffff'}
+                          onChange={(e) =>
+                            updateElement(selectedElement.id, { color: e.target.value })
+                          }
+                        />
+                      </div>
+                    </>
+                  )}
+
+                  {(selectedElement.type === 'image' || selectedElement.type === 'comicFrame') && (
+                    <>
+                      <div>
+                        <label className="text-sm font-medium mb-2 block">URL изображения</label>
+                        <Input
+                          value={selectedElement.imageUrl || ''}
+                          onChange={(e) =>
+                            updateElement(selectedElement.id, { imageUrl: e.target.value })
+                          }
+                          placeholder="https://..."
+                        />
+                      </div>
+
+                      <div>
+                        <label className="text-sm font-medium mb-2 block">Скругление углов</label>
+                        <Input
+                          type="number"
+                          value={selectedElement.borderRadius || 0}
+                          onChange={(e) =>
+                            updateElement(selectedElement.id, {
+                              borderRadius: parseInt(e.target.value) || 0,
+                            })
+                          }
+                        />
+                      </div>
+                    </>
+                  )}
+
+                  {selectedElement.type === 'shape' && (
+                    <>
+                      <div>
+                        <label className="text-sm font-medium mb-2 block">Тип фигуры</label>
+                        <Select
+                          value={selectedElement.shapeType || 'rectangle'}
+                          onValueChange={(value: any) =>
+                            updateElement(selectedElement.id, { shapeType: value })
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="rectangle">Прямоугольник</SelectItem>
+                            <SelectItem value="rounded">Скругленный</SelectItem>
+                            <SelectItem value="circle">Круг</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div>
+                        <label className="text-sm font-medium mb-2 block">Цвет фона</label>
+                        <Input
+                          type="color"
+                          value={selectedElement.backgroundColor || '#3b82f6'}
+                          onChange={(e) =>
+                            updateElement(selectedElement.id, { backgroundColor: e.target.value })
+                          }
+                        />
+                      </div>
+
+                      {selectedElement.shapeType !== 'circle' && (
                         <div>
-                          <label className="text-sm font-medium mb-2 block">
-                            Раскладка фреймов
-                          </label>
-                          <Select
-                            value={selectedParagraph.frameLayout || 'single'}
-                            onValueChange={(value) =>
-                              updateParagraph({ frameLayout: value as any })
+                          <label className="text-sm font-medium mb-2 block">Скругление углов</label>
+                          <Input
+                            type="number"
+                            value={selectedElement.borderRadius || 0}
+                            onChange={(e) =>
+                              updateElement(selectedElement.id, {
+                                borderRadius: parseInt(e.target.value) || 0,
+                              })
                             }
-                          >
-                            <SelectTrigger>
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="single">1 фрейм</SelectItem>
-                              <SelectItem value="horizontal-2">2 в ряд</SelectItem>
-                              <SelectItem value="horizontal-3">3 в ряд</SelectItem>
-                              <SelectItem value="vertical-2">2 вертикально</SelectItem>
-                              <SelectItem value="grid-2x2">Сетка 2x2</SelectItem>
-                              <SelectItem value="grid-3x3">Сетка 3x3</SelectItem>
-                            </SelectContent>
-                          </Select>
+                          />
                         </div>
                       )}
                     </>
                   )}
 
-                  {selectedParagraph.type === 'text' && (
+                  <Button
+                    variant="destructive"
+                    className="w-full"
+                    onClick={() => deleteElement(selectedElement.id)}
+                  >
+                    <Icon name="Trash2" size={16} className="mr-2" />
+                    Удалить элемент
+                  </Button>
+                </div>
+              ) : (
+                <div className="p-4 space-y-4">
+                  <div className="text-center text-muted-foreground py-8">
+                    <Icon name="MousePointerClick" size={48} className="mx-auto mb-4 opacity-20" />
+                    <p>Выберите элемент для редактирования</p>
+                    <p className="text-sm mt-2">или добавьте новый с панели слева</p>
+                  </div>
+
+                  {selectedParagraph && (
                     <div>
-                      <label className="text-sm font-medium mb-2 block">Текст</label>
-                      <Textarea
-                        value={(selectedParagraph as any).content}
-                        onChange={(e) => updateParagraph({ content: e.target.value })}
-                        rows={8}
-                        className="font-mono text-sm"
-                      />
-                    </div>
-                  )}
-
-                  {selectedParagraph.type === 'dialogue' && (
-                    <>
-                      <div>
-                        <label className="text-sm font-medium mb-2 block">
-                          Имя персонажа
-                        </label>
-                        <Input
-                          value={(selectedParagraph as any).characterName}
-                          onChange={(e) =>
-                            updateParagraph({ characterName: e.target.value })
-                          }
-                        />
+                      <h3 className="font-semibold mb-2">Слайд</h3>
+                      <div className="space-y-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-full"
+                          onClick={deleteParagraph}
+                        >
+                          <Icon name="Trash2" size={14} className="mr-2" />
+                          Удалить слайд
+                        </Button>
                       </div>
-                      <div>
-                        <label className="text-sm font-medium mb-2 block">Текст</label>
-                        <Textarea
-                          value={(selectedParagraph as any).text}
-                          onChange={(e) => updateParagraph({ text: e.target.value })}
-                          rows={6}
-                        />
-                      </div>
-                      <div>
-                        <label className="text-sm font-medium mb-2 block">
-                          URL изображения
-                        </label>
-                        <Input
-                          value={(selectedParagraph as any).characterImage || ''}
-                          onChange={(e) =>
-                            updateParagraph({ characterImage: e.target.value })
-                          }
-                          placeholder="https://..."
-                        />
-                      </div>
-                    </>
-                  )}
-
-                  {selectedParagraph.type === 'background' && (
-                    <>
-                      <div>
-                        <label className="text-sm font-medium mb-2 block">URL фона</label>
-                        <Input
-                          value={(selectedParagraph as any).url}
-                          onChange={(e) => updateParagraph({ url: e.target.value })}
-                          placeholder="https://..."
-                        />
-                      </div>
-                      <div>
-                        <label className="text-sm font-medium mb-2 block">
-                          Позиция (object-position)
-                        </label>
-                        <Input
-                          value={(selectedParagraph as any).objectPosition || 'center'}
-                          onChange={(e) =>
-                            updateParagraph({ objectPosition: e.target.value })
-                          }
-                          placeholder="center, top, 50% 30%"
-                        />
-                      </div>
-                    </>
-                  )}
-
-                  {selectedParagraph.type === 'choice' && (
-                    <>
-                      <div>
-                        <label className="text-sm font-medium mb-2 block">Вопрос</label>
-                        <Input
-                          value={(selectedParagraph as any).question}
-                          onChange={(e) => updateParagraph({ question: e.target.value })}
-                        />
-                      </div>
-                      <div>
-                        <label className="text-sm font-medium mb-2 block">Варианты</label>
-                        <div className="space-y-2">
-                          {((selectedParagraph as any).options || []).map(
-                            (option: any, idx: number) => (
-                              <div key={idx} className="flex gap-2">
-                                <Input
-                                  value={option.text}
-                                  onChange={(e) => {
-                                    const newOptions = [
-                                      ...(selectedParagraph as any).options,
-                                    ];
-                                    newOptions[idx] = {
-                                      ...newOptions[idx],
-                                      text: e.target.value,
-                                    };
-                                    updateParagraph({ options: newOptions });
-                                  }}
-                                />
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => {
-                                    const newOptions = [
-                                      ...(selectedParagraph as any).options,
-                                    ];
-                                    newOptions.splice(idx, 1);
-                                    updateParagraph({ options: newOptions });
-                                  }}
-                                >
-                                  <Icon name="X" size={14} />
-                                </Button>
-                              </div>
-                            )
-                          )}
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="w-full"
-                            onClick={() => {
-                              const newOptions = [
-                                ...(selectedParagraph as any).options,
-                                { id: `opt-${Date.now()}`, text: 'Новый вариант' },
-                              ];
-                              updateParagraph({ options: newOptions });
-                            }}
-                          >
-                            <Icon name="Plus" size={14} className="mr-2" />
-                            Добавить вариант
-                          </Button>
-                        </div>
-                      </div>
-                    </>
-                  )}
-
-                  {selectedParagraph.type === 'item' && (
-                    <>
-                      <div>
-                        <label className="text-sm font-medium mb-2 block">Название</label>
-                        <Input
-                          value={(selectedParagraph as any).name}
-                          onChange={(e) => updateParagraph({ name: e.target.value })}
-                        />
-                      </div>
-                      <div>
-                        <label className="text-sm font-medium mb-2 block">Описание</label>
-                        <Textarea
-                          value={(selectedParagraph as any).description}
-                          onChange={(e) =>
-                            updateParagraph({ description: e.target.value })
-                          }
-                          rows={4}
-                        />
-                      </div>
-                      <div>
-                        <label className="text-sm font-medium mb-2 block">
-                          URL изображения
-                        </label>
-                        <Input
-                          value={(selectedParagraph as any).imageUrl || ''}
-                          onChange={(e) => updateParagraph({ imageUrl: e.target.value })}
-                          placeholder="https://..."
-                        />
-                      </div>
-                    </>
-                  )}
-
-                  {selectedParagraph.type === 'image' && (
-                    <div>
-                      <label className="text-sm font-medium mb-2 block">
-                        URL изображения
-                      </label>
-                      <Input
-                        value={(selectedParagraph as any).url}
-                        onChange={(e) => updateParagraph({ url: e.target.value })}
-                        placeholder="https://..."
-                      />
                     </div>
                   )}
                 </div>
