@@ -4,7 +4,7 @@ import Icon from '@/components/ui/icon';
 import BookmarkButton from './BookmarkButton';
 import { Bookmark } from '@/types/settings';
 
-type View = 'home' | 'reader' | 'admin' | 'episodes' | 'profile' | 'settings';
+type View = 'home' | 'reader' | 'admin' | 'episodes' | 'profile' | 'settings' | 'editor';
 
 interface NavigationMenuProps {
   isAdmin: boolean;
@@ -113,18 +113,32 @@ function NavigationMenu({
         </Button>
         
         {isAdmin && (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="bg-card/50 backdrop-blur-sm hover:bg-card/80 text-white"
-            onClick={() => {
-              onAdminLogin();
-              setIsMenuOpen(false);
-            }}
-            title="Админ-панель"
-          >
-            <Icon name="Settings2" size={20} />
-          </Button>
+          <>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="bg-card/50 backdrop-blur-sm hover:bg-card/80 text-white"
+              onClick={() => {
+                onSetActiveView('editor');
+                setIsMenuOpen(false);
+              }}
+              title="Визуальный редактор"
+            >
+              <Icon name="Presentation" size={20} />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="bg-card/50 backdrop-blur-sm hover:bg-card/80 text-white"
+              onClick={() => {
+                onAdminLogin();
+                setIsMenuOpen(false);
+              }}
+              title="Админ-панель"
+            >
+              <Icon name="Settings2" size={20} />
+            </Button>
+          </>
         )}
       </div>
 
