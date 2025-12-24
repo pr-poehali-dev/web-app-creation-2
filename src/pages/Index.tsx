@@ -14,6 +14,7 @@ import { useNovelDatabase } from './Index/useNovelDatabase';
 import { useAppHandlers } from './Index/useAppHandlers';
 import { useAuth } from '@/hooks/useAuth';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 function Index() {
   const [showAdminLogin, setShowAdminLogin] = useState(false);
@@ -208,6 +209,17 @@ function Index() {
           >
             <Icon name="Settings" size={20} />
           </Button>
+          
+          <Link to="/scene-editor">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="bg-[#151d28] text-white backdrop-blur-sm hover:bg-[#1a2430]"
+              title="Scene Editor"
+            >
+              <Icon name="Sparkles" size={20} />
+            </Button>
+          </Link>
           
           <Button
             variant="ghost"
