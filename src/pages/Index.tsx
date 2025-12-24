@@ -210,7 +210,7 @@ function Index() {
             <Icon name="Settings" size={20} />
           </Button>
           
-          <Link to="/scene-editor">
+          <Link to="/scene-projects">
             <Button
               variant="ghost"
               size="icon"

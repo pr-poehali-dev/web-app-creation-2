@@ -7,6 +7,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import SceneEditorDemo from "./pages/SceneEditorDemo";
+import SceneProjects from "./pages/SceneProjects";
+import SceneEditorPage from "./pages/SceneEditorPage";
 
 const queryClient = new QueryClient();
 
@@ -19,6 +21,8 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/scene-editor" element={<SceneEditorDemo />} />
+          <Route path="/scene-projects" element={<SceneProjects />} />
+          <Route path="/scene-editor/:id" element={<SceneEditorPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

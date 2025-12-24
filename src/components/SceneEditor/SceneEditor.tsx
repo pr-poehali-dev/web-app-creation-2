@@ -12,6 +12,7 @@ import LayersPanel from './LayersPanel';
 import Timeline from './Timeline';
 import Canvas from './Canvas';
 import PropertiesPanel from './PropertiesPanel';
+import { downloadHTML } from '@/utils/exportToHTML';
 
 interface SceneEditorProps {
   project: SceneProject;
@@ -122,6 +123,28 @@ export default function SceneEditor({ project, onSave, onClose }: SceneEditorPro
     });
   };
 
+  const addScene = () => {
+    const newScene: Scene = {
+      id: `scene-${Date.now()}`,
+      name: `Сцена ${project.scenes.length + 1}`,
+      duration: 10,
+      layers: [],
+      animations: [],
+      audioTracks: [],
+      choices: [],
+      variables: {}
+    };
+
+    const updatedProject = {
+      ...project,
+      scenes: [...project.scenes, newScene],
+      currentSceneId: newScene.id
+    };
+    
+    onSave(updatedProject);
+    setCurrentScene(newScene);
+  };
+
   const selectedLayer = currentScene.layers.find(l => l.id === selectedLayerId);
 
   return (
@@ -160,6 +183,15 @@ export default function SceneEditor({ project, onSave, onClose }: SceneEditorPro
           <Button
             variant="ghost"
             size="icon"
+            onClick={addScene}
+            title="Добавить сцену"
+          >
+            <Icon name="Plus" size={20} />
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={() => setIsPlaying(!isPlaying)}
           >
             <Icon name={isPlaying ? 'Pause' : 'Play'} size={20} />
@@ -181,6 +213,11 @@ export default function SceneEditor({ project, onSave, onClose }: SceneEditorPro
             </span>
           </div>
 
+          <Button onClick={() => downloadHTML(project)} variant="outline">
+            <Icon name="Download" size={16} className="mr-2" />
+            Экспорт HTML
+          </Button>
+          
           <Button onClick={() => onSave(project)}>
             Сохранить
           </Button>

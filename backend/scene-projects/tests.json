@@ -1,0 +1,53 @@
+{
+  "tests": [
+    {
+      "name": "Get all projects",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 200,
+      "expectedBody": [
+        {
+          "id": "number",
+          "name": "string",
+          "created_at": "string",
+          "updated_at": "string"
+        }
+      ],
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Create new project",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "name": "Test Project",
+        "data": {
+          "id": "test-api-1",
+          "name": "Test Project API",
+          "scenes": [],
+          "globalVariables": {},
+          "currentSceneId": "",
+          "settings": {
+            "width": 1000,
+            "height": 600,
+            "backgroundColor": "#1a1a2e",
+            "defaultFontFamily": "Inter",
+            "accessibility": {
+              "enableKeyboardNav": true,
+              "enableAriaLabels": true
+            }
+          }
+        }
+      },
+      "expectedStatus": 201,
+      "expectedBody": {
+        "id": "number",
+        "name": "string",
+        "data": "object",
+        "created_at": "string",
+        "updated_at": "string"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
