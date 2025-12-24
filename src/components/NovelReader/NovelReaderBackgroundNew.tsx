@@ -66,6 +66,7 @@ function NovelReaderBackgroundNew({
   
   const actualIsContentHidden = externalIsContentHidden !== undefined ? externalIsContentHidden : isContentHidden;
   const [showComicFrames, setShowComicFrames] = useState(false);
+  const [showImageFrames, setShowImageFrames] = useState(false);
   const previousParagraphKeyRef = useRef<string>(paragraphKey);
   
 
@@ -77,18 +78,26 @@ function NovelReaderBackgroundNew({
     const prevIndex = parseInt(previousParagraphKeyRef.current.split('-')[1]);
     const prevParagraph = currentEpisode.paragraphs[prevIndex];
     
-    const isSameGroup = currentParagraph.comicGroupId && 
+    const isSameComicGroup = currentParagraph.comicGroupId && 
                        prevParagraph?.comicGroupId === currentParagraph.comicGroupId;
+    
+    const isSameImageGroup = currentParagraph.type === 'image' && 
+                       currentParagraph.imageGroupId && 
+                       prevParagraph?.type === 'image' &&
+                       prevParagraph?.imageGroupId === currentParagraph.imageGroupId;
     
     console.log('[ShowFrames] Paragraph change:', {
       prev: previousParagraphKeyRef.current,
       current: paragraphKey,
-      prevGroup: prevParagraph?.comicGroupId,
-      currentGroup: currentParagraph.comicGroupId,
-      isSameGroup
+      prevComicGroup: prevParagraph?.comicGroupId,
+      currentComicGroup: currentParagraph.comicGroupId,
+      prevImageGroup: prevParagraph?.type === 'image' ? prevParagraph.imageGroupId : undefined,
+      currentImageGroup: currentParagraph.type === 'image' ? currentParagraph.imageGroupId : undefined,
+      isSameComicGroup,
+      isSameImageGroup
     });
     
-    if (!isSameGroup) {
+    if (!isSameComicGroup) {
       setShowComicFrames(false);
       
       const timer = setTimeout(() => {
@@ -101,9 +110,24 @@ function NovelReaderBackgroundNew({
       return () => clearTimeout(timer);
     } else {
       setShowComicFrames(true);
+    }
+    
+    if (!isSameImageGroup) {
+      setShowImageFrames(false);
+      
+      const timer = setTimeout(() => {
+        if (!isBackgroundChanging) {
+          setShowImageFrames(true);
+        }
+      }, 1300);
+      
+      previousParagraphKeyRef.current = paragraphKey;
+      return () => clearTimeout(timer);
+    } else {
+      setShowImageFrames(true);
       previousParagraphKeyRef.current = paragraphKey;
     }
-  }, [paragraphKey, currentParagraph.comicGroupId, currentEpisode.paragraphs, isBackgroundChanging]);
+  }, [paragraphKey, currentParagraph.comicGroupId, currentParagraph.type, currentEpisode.paragraphs, isBackgroundChanging]);
   
   useEffect(() => {
     maxGroupIndexSeenRef.current.clear();
@@ -112,9 +136,11 @@ function NovelReaderBackgroundNew({
   useEffect(() => {
     if (isBackgroundChanging) {
       setShowComicFrames(false);
+      setShowImageFrames(false);
     } else {
       const timer = setTimeout(() => {
         setShowComicFrames(true);
+        setShowImageFrames(true);
       }, 1300);
       
       return () => clearTimeout(timer);
@@ -157,6 +183,43 @@ function NovelReaderBackgroundNew({
       layout: firstParagraph.frameLayout || 'horizontal-3' as const
     };
   }, [currentParagraph.comicGroupId, currentParagraph.comicGroupIndex, currentEpisode.paragraphs]);
+
+  const imageGroupData = useMemo(() => {
+    if (currentParagraph.type !== 'image' || !currentParagraph.imageGroupId) return null;
+    
+    const groupParagraphs = currentEpisode.paragraphs.filter(
+      p => p.type === 'image' && p.imageGroupId === currentParagraph.imageGroupId
+    );
+    
+    const firstParagraph = groupParagraphs.find(p => p.imageGroupIndex === 0);
+    if (!firstParagraph || !firstParagraph.imageFrames) return null;
+    
+    const currentGroupIndex = currentParagraph.imageGroupIndex || 0;
+    const groupId = currentParagraph.imageGroupId;
+    
+    const prevMaxIndex = maxGroupIndexSeenRef.current.get(`img-${groupId}`) ?? -1;
+    const newMaxIndex = Math.max(prevMaxIndex, currentGroupIndex);
+    maxGroupIndexSeenRef.current.set(`img-${groupId}`, newMaxIndex);
+    
+    console.log('[ImageGroup] Group:', groupId, 'Current index:', currentGroupIndex, 'Max seen:', newMaxIndex);
+    
+    const framesWithVisibility = firstParagraph.imageFrames.map(frame => {
+      const triggerIndex = frame.paragraphTrigger ?? 0;
+      const isVisible = triggerIndex <= newMaxIndex;
+      console.log('[ImageGroup] Frame:', frame.id, 'trigger:', triggerIndex, 'visible:', isVisible);
+      return {
+        ...frame,
+        _isVisible: isVisible
+      };
+    });
+    
+    console.log('[ImageGroup] Total frames:', firstParagraph.imageFrames.length);
+    
+    return {
+      frames: framesWithVisibility,
+      layout: firstParagraph.imageLayout || 'horizontal-3' as const
+    };
+  }, [currentParagraph.type, currentParagraph.imageGroupId, currentParagraph.imageGroupIndex, currentEpisode.paragraphs]);
   
   if (!backgroundImage) return null;
 
@@ -214,7 +277,9 @@ function NovelReaderBackgroundNew({
         <BackgroundContentOverlay
           currentParagraph={currentParagraph}
           comicGroupData={comicGroupData}
+          imageGroupData={imageGroupData}
           showComicFrames={showComicFrames}
+          showImageFrames={showImageFrames}
           actualIsContentHidden={actualIsContentHidden}
           isTyping={isTyping}
           isRetrospective={isRetrospective}

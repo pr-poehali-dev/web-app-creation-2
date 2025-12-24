@@ -6,10 +6,17 @@ interface ComicGroupData {
   layout: 'single' | 'horizontal-2' | 'horizontal-3' | 'vertical-2' | 'grid-4';
 }
 
+interface ImageGroupData {
+  frames: any[];
+  layout: 'single' | 'horizontal-2' | 'horizontal-3' | 'vertical-2' | 'grid-4';
+}
+
 interface BackgroundContentOverlayProps {
   currentParagraph: Paragraph;
   comicGroupData: ComicGroupData | null;
+  imageGroupData: ImageGroupData | null;
   showComicFrames: boolean;
+  showImageFrames: boolean;
   actualIsContentHidden: boolean;
   isTyping: boolean;
   isRetrospective: boolean;
@@ -20,7 +27,9 @@ interface BackgroundContentOverlayProps {
 function BackgroundContentOverlay({
   currentParagraph,
   comicGroupData,
+  imageGroupData,
   showComicFrames,
+  showImageFrames,
   actualIsContentHidden,
   isTyping,
   isRetrospective,
@@ -29,7 +38,7 @@ function BackgroundContentOverlay({
 }: BackgroundContentOverlayProps) {
   return (
     <>
-      {currentParagraph.type === 'image' && (
+      {currentParagraph.type === 'image' && !currentParagraph.imageGroupId && (
         <div className="absolute inset-0 flex items-center justify-center p-4 md:p-8 z-10">
           <img 
             src={currentParagraph.url}
@@ -67,6 +76,34 @@ function BackgroundContentOverlay({
               } as TextParagraph | DialogueParagraph}
               currentSubParagraphIndex={undefined}
               layout={comicGroupData.layout}
+              isTyping={false}
+              isRetrospective={isRetrospective}
+              pastelColor={effectivePastelColor}
+              isComicGroup={true}
+            />
+          </div>
+        </div>
+      )}
+
+      {imageGroupData && showImageFrames && currentParagraph.type === 'image' && (
+        <div 
+          key={`image-group-${currentParagraph.imageGroupId}`}
+          className="absolute inset-0 flex items-center justify-center p-4 md:p-8 z-30 transition-all duration-300 ease-in-out"
+          style={{ 
+            opacity: actualIsContentHidden ? 0 : 1,
+            pointerEvents: actualIsContentHidden ? 'none' : 'auto'
+          }}
+        >
+          <div className="w-full h-full max-w-4xl">
+            <ComicFrameReader
+              key={`image-group-reader-${currentParagraph.imageGroupId}`}
+              paragraph={{
+                ...currentParagraph,
+                comicFrames: imageGroupData.frames,
+                frameLayout: imageGroupData.layout
+              } as any}
+              currentSubParagraphIndex={undefined}
+              layout={imageGroupData.layout}
               isTyping={false}
               isRetrospective={isRetrospective}
               pastelColor={effectivePastelColor}

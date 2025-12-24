@@ -114,6 +114,10 @@ export interface ImageParagraph extends BaseParagraph {
     scale: number;
     rotate: number;
   };
+  imageFrames?: ComicFrame[]; // Несколько изображений в одной группе (только для imageGroupIndex === 0)
+  imageLayout?: MergeLayoutType; // Раскладка изображений (только для imageGroupIndex === 0)
+  imageGroupId?: string; // ID группы изображений (одинаковый для всех параграфов в группе)
+  imageGroupIndex?: number; // Индекс параграфа внутри группы изображений (0, 1, 2...)
 }
 
 export interface ChoiceParagraph extends BaseParagraph {

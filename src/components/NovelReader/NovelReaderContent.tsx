@@ -183,10 +183,27 @@ function NovelReaderContent({
         />
       )}
 
-      {/* ImageParagraph теперь отображается на левой стороне с фоном */}
-      {currentParagraph.type === 'image' && (
+      {currentParagraph.type === 'image' && !currentParagraph.imageGroupId && (
         <div className="bg-card/90 backdrop-blur-sm rounded-xl md:rounded-2xl shadow-xl border border-border p-6 text-center">
           <p className="text-foreground/60 italic">Изображение отображается слева</p>
+        </div>
+      )}
+
+      {currentParagraph.type === 'image' && currentParagraph.imageGroupId && (
+        <div className={`bg-card/90 backdrop-blur-sm rounded-xl md:rounded-2xl shadow-xl border border-border flex items-start relative w-full ${
+          isTopMerged ? 'p-12 md:p-16 lg:p-24 h-full justify-center' : 'p-4 md:p-6 lg:p-8 min-h-[10rem] md:min-h-[12rem]'
+        }`}>
+          <div 
+            className="absolute inset-0 pointer-events-none rounded-xl md:rounded-2xl transition-all duration-1000 ease-in-out"
+            style={{
+              opacity: isRetrospective ? 1 : 0,
+              background: getPastelColor(effectivePastelColor),
+              backdropFilter: isRetrospective ? 'saturate(1.2) brightness(1.05)' : 'none'
+            }}
+          />
+          <div className="text-foreground/60 italic text-center w-full">
+            {currentParagraph.alt || 'Изображения отображаются слева'}
+          </div>
         </div>
       )}
     </>
