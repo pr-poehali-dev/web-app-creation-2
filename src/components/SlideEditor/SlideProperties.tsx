@@ -45,21 +45,31 @@ export default function SlideProperties({ paragraph, onUpdate }: SlideProperties
   ];
 
   const updateFrame = (frameId: string, updates: Partial<ComicFrame>) => {
-    if (!paragraph.comicFrames) return;
-
-    onUpdate({
-      comicFrames: paragraph.comicFrames.map(f =>
-        f.id === frameId ? { ...f, ...updates } : f
-      )
-    });
+    if (paragraph.comicFrames) {
+      onUpdate({
+        comicFrames: paragraph.comicFrames.map(f =>
+          f.id === frameId ? { ...f, ...updates } : f
+        )
+      });
+    } else if (paragraph.type === 'image' && paragraph.imageFrames) {
+      onUpdate({
+        imageFrames: paragraph.imageFrames.map(f =>
+          f.id === frameId ? { ...f, ...updates } : f
+        )
+      });
+    }
   };
 
   const deleteFrame = (frameId: string) => {
-    if (!paragraph.comicFrames) return;
-
-    onUpdate({
-      comicFrames: paragraph.comicFrames.filter(f => f.id !== frameId)
-    });
+    if (paragraph.comicFrames) {
+      onUpdate({
+        comicFrames: paragraph.comicFrames.filter(f => f.id !== frameId)
+      });
+    } else if (paragraph.type === 'image' && paragraph.imageFrames) {
+      onUpdate({
+        imageFrames: paragraph.imageFrames.filter(f => f.id !== frameId)
+      });
+    }
   };
 
   return (
@@ -188,6 +198,30 @@ export default function SlideProperties({ paragraph, onUpdate }: SlideProperties
                       placeholder="Описание изображения"
                     />
                   </div>
+
+                  <div className="space-y-2 pt-4 border-t">
+                    <Label>ID группы изображений</Label>
+                    <Input
+                      value={paragraph.imageGroupId || ''}
+                      onChange={(e) => onUpdate({ imageGroupId: e.target.value })}
+                      placeholder="Оставьте пустым для одиночного изображения"
+                    />
+                  </div>
+
+                  {paragraph.imageGroupId && (
+                    <div className="space-y-2">
+                      <Label>Индекс в группе</Label>
+                      <Input
+                        type="number"
+                        value={paragraph.imageGroupIndex ?? 0}
+                        onChange={(e) => onUpdate({ imageGroupIndex: parseInt(e.target.value) || 0 })}
+                        placeholder="0, 1, 2..."
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Порядковый номер параграфа в группе (начинается с 0)
+                      </p>
+                    </div>
+                  )}
                 </>
               )}
 
@@ -214,15 +248,20 @@ export default function SlideProperties({ paragraph, onUpdate }: SlideProperties
             </TabsContent>
 
             <TabsContent value="frames" className="space-y-4 mt-4">
-              {paragraph.comicFrames && paragraph.comicFrames.length > 0 ? (
+              {((paragraph.comicFrames && paragraph.comicFrames.length > 0) || 
+                (paragraph.type === 'image' && paragraph.imageFrames && paragraph.imageFrames.length > 0)) ? (
                 <div className="space-y-4">
                   <div className="space-y-2 pb-4 border-b">
                     <Label>Раскладка фреймов</Label>
                     <Select
-                      value={paragraph.frameLayout || 'horizontal-3'}
-                      onValueChange={(value: MergeLayoutType) =>
-                        onUpdate({ frameLayout: value })
-                      }
+                      value={(paragraph.type === 'image' ? paragraph.imageLayout : paragraph.frameLayout) || 'horizontal-3'}
+                      onValueChange={(value: MergeLayoutType) => {
+                        if (paragraph.type === 'image') {
+                          onUpdate({ imageLayout: value });
+                        } else {
+                          onUpdate({ frameLayout: value });
+                        }
+                      }}
                     >
                       <SelectTrigger>
                         <SelectValue />
@@ -237,7 +276,7 @@ export default function SlideProperties({ paragraph, onUpdate }: SlideProperties
                     </Select>
                   </div>
 
-                  {paragraph.comicFrames.map((frame, index) => (
+                  {(paragraph.type === 'image' && paragraph.imageFrames ? paragraph.imageFrames : paragraph.comicFrames || []).map((frame, index) => (
                     <div
                       key={frame.id}
                       className="border rounded-lg p-3 space-y-3"
@@ -323,9 +362,36 @@ export default function SlideProperties({ paragraph, onUpdate }: SlideProperties
                   ))}
                 </div>
               ) : (
-                <p className="text-sm text-muted-foreground text-center py-8">
-                  Нет фреймов. Добавьте фрейм через канвас.
-                </p>
+                <div className="space-y-4">
+                  <p className="text-sm text-muted-foreground text-center py-4">
+                    Нет фреймов
+                  </p>
+                  
+                  {paragraph.type === 'image' && paragraph.imageGroupId && (
+                    <Button
+                      onClick={() => {
+                        const newFrame: ComicFrame = {
+                          id: `frame-${Date.now()}`,
+                          type: 'image',
+                          url: '',
+                          alt: `Изображение ${(paragraph.imageFrames?.length || 0) + 1}`,
+                          paragraphTrigger: paragraph.imageFrames?.length || 0,
+                          animation: 'fade',
+                          objectFit: 'cover',
+                          objectPosition: 'center'
+                        };
+                        
+                        onUpdate({
+                          imageFrames: [...(paragraph.imageFrames || []), newFrame]
+                        });
+                      }}
+                      className="w-full"
+                    >
+                      <Icon name="Plus" size={16} className="mr-2" />
+                      Добавить фрейм изображения
+                    </Button>
+                  )}
+                </div>
               )}
             </TabsContent>
 

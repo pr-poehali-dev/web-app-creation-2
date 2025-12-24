@@ -110,7 +110,7 @@ function TextContentPanel({
               </div>
             )}
             
-            {currentParagraph.type === 'image' ? null : (
+            {(currentParagraph.type === 'image' && !currentParagraph.imageGroupId) ? null : (
               <NovelReaderContent
                 currentParagraph={currentParagraph}
                 currentEpisode={currentEpisode}

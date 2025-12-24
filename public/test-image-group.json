@@ -1,0 +1,209 @@
+{
+  "title": "Тест груп зображень",
+  "description": "Демонстрація функції групування зображень",
+  "episodes": [
+    {
+      "id": "ep1",
+      "title": "Прогулянка парком",
+      "position": { "x": 0, "y": 0 },
+      "unlockedForAll": true,
+      "paragraphs": [
+        {
+          "id": "bg-1",
+          "type": "background",
+          "url": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&h=1080&fit=crop"
+        },
+        {
+          "id": "img-group-1",
+          "type": "image",
+          "imageGroupId": "park-photos",
+          "imageGroupIndex": 0,
+          "imageFrames": [
+            {
+              "id": "photo-1",
+              "type": "image",
+              "url": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&h=600&fit=crop",
+              "alt": "Старе дерево в парку",
+              "paragraphTrigger": 0,
+              "animation": "fade",
+              "objectFit": "cover",
+              "objectPosition": "center"
+            },
+            {
+              "id": "photo-2",
+              "type": "image",
+              "url": "https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=800&h=600&fit=crop",
+              "alt": "Красивий фонтан",
+              "paragraphTrigger": 1,
+              "animation": "slide-left",
+              "objectFit": "cover",
+              "objectPosition": "center"
+            },
+            {
+              "id": "photo-3",
+              "type": "image",
+              "url": "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=800&h=600&fit=crop",
+              "alt": "Затишна лавка",
+              "paragraphTrigger": 2,
+              "animation": "zoom",
+              "objectFit": "cover",
+              "objectPosition": "center"
+            }
+          ],
+          "imageLayout": "horizontal-3",
+          "alt": "Я зробив фото старого дерева біля входу."
+        },
+        {
+          "id": "text-1",
+          "type": "image",
+          "url": "",
+          "imageGroupId": "park-photos",
+          "imageGroupIndex": 1,
+          "alt": "Фонтан вражав своєю красою та грою води."
+        },
+        {
+          "id": "text-2",
+          "type": "image",
+          "url": "",
+          "imageGroupId": "park-photos",
+          "imageGroupIndex": 2,
+          "alt": "Я сів на стару дерев'яну лавку і замислився про життя."
+        },
+        {
+          "id": "text-end",
+          "type": "text",
+          "content": "Це було чудове спогад про той день у парку."
+        }
+      ]
+    },
+    {
+      "id": "ep2",
+      "title": "Різні розкладки",
+      "position": { "x": 300, "y": 0 },
+      "unlockedForAll": true,
+      "paragraphs": [
+        {
+          "id": "bg-2",
+          "type": "background",
+          "url": "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=1920&h=1080&fit=crop"
+        },
+        {
+          "id": "img-group-2",
+          "type": "image",
+          "imageGroupId": "city-photos",
+          "imageGroupIndex": 0,
+          "imageFrames": [
+            {
+              "id": "city-1",
+              "type": "image",
+              "url": "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=800&h=600&fit=crop",
+              "alt": "Міський пейзаж",
+              "paragraphTrigger": 0,
+              "animation": "fade"
+            },
+            {
+              "id": "city-2",
+              "type": "image",
+              "url": "https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=800&h=600&fit=crop",
+              "alt": "Старі вулиці",
+              "paragraphTrigger": 0,
+              "animation": "slide-up"
+            },
+            {
+              "id": "city-3",
+              "type": "image",
+              "url": "https://images.unsplash.com/photo-1514565131-fce0801e5785?w=800&h=600&fit=crop",
+              "alt": "Архітектура міста",
+              "paragraphTrigger": 1,
+              "animation": "slide-right"
+            },
+            {
+              "id": "city-4",
+              "type": "image",
+              "url": "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=800&h=600&fit=crop",
+              "alt": "Вечірні вогні",
+              "paragraphTrigger": 1,
+              "animation": "zoom"
+            }
+          ],
+          "imageLayout": "grid-2x2",
+          "alt": "Я почав збирати фото міста — спочатку зробив два знімки."
+        },
+        {
+          "id": "text-3",
+          "type": "image",
+          "url": "",
+          "imageGroupId": "city-photos",
+          "imageGroupIndex": 1,
+          "alt": "Потім додав ще два кадри, щоб завершити колекцію."
+        },
+        {
+          "id": "text-end-2",
+          "type": "text",
+          "content": "Тепер у мене є повна колекція міських фотографій!"
+        }
+      ]
+    },
+    {
+      "id": "ep3",
+      "title": "Magazine Layout",
+      "position": { "x": 150, "y": 200 },
+      "unlockedForAll": true,
+      "paragraphs": [
+        {
+          "id": "bg-3",
+          "type": "background",
+          "url": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&h=1080&fit=crop"
+        },
+        {
+          "id": "img-group-3",
+          "type": "image",
+          "imageGroupId": "magazine-photos",
+          "imageGroupIndex": 0,
+          "imageFrames": [
+            {
+              "id": "mag-1",
+              "type": "image",
+              "url": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=800&h=800&fit=crop",
+              "alt": "Портрет",
+              "paragraphTrigger": 0,
+              "animation": "fade",
+              "shape": "circle"
+            },
+            {
+              "id": "mag-2",
+              "type": "image",
+              "url": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&h=600&fit=crop",
+              "alt": "Деталі 1",
+              "paragraphTrigger": 0,
+              "animation": "slide-left"
+            },
+            {
+              "id": "mag-3",
+              "type": "image",
+              "url": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800&h=600&fit=crop",
+              "alt": "Деталі 2",
+              "paragraphTrigger": 1,
+              "animation": "slide-up"
+            }
+          ],
+          "imageLayout": "magazine-1",
+          "alt": "Створюємо журнальну розкладку — спочатку основне фото та одна деталь."
+        },
+        {
+          "id": "text-4",
+          "type": "image",
+          "url": "",
+          "imageGroupId": "magazine-photos",
+          "imageGroupIndex": 1,
+          "alt": "Додаємо останню деталь для завершення композиції."
+        }
+      ]
+    }
+  ],
+  "library": {
+    "items": [],
+    "characters": [],
+    "choices": []
+  }
+}
