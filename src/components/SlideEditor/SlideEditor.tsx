@@ -225,6 +225,7 @@ export default function SlideEditor({ novel, onUpdate, onClose }: SlideEditorPro
         <div className="flex-1 overflow-auto bg-[#0a0f14]">
           <SlideCanvas
             paragraph={currentParagraph}
+            episode={currentEpisode}
             zoom={zoom}
             onUpdate={updateParagraph}
           />
