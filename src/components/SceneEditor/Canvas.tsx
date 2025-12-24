@@ -27,18 +27,13 @@ export default function Canvas({
   const [isResizing, setIsResizing] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [initialState, setInitialState] = useState<Partial<Layer> | null>(null);
+  const [hasMoved, setHasMoved] = useState(false);
 
   const handleMouseDown = (e: React.MouseEvent, layer: Layer, resize = false) => {
     if (layer.locked) return;
     e.stopPropagation();
     
     onSelectLayer(layer.id);
-    
-    if (resize) {
-      setIsResizing(true);
-    } else {
-      setIsDragging(true);
-    }
     
     setDragStart({ x: e.clientX, y: e.clientY });
     setInitialState({
@@ -47,6 +42,13 @@ export default function Canvas({
       width: layer.width,
       height: layer.height
     });
+    setHasMoved(false);
+    
+    if (resize) {
+      setIsResizing(true);
+    } else {
+      setIsDragging(true);
+    }
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
@@ -56,12 +58,17 @@ export default function Canvas({
     const deltaX = (e.clientX - dragStart.x) / zoom;
     const deltaY = (e.clientY - dragStart.y) / zoom;
 
-    if (isDragging) {
+    const moved = Math.abs(deltaX) > 2 || Math.abs(deltaY) > 2;
+    if (moved) {
+      setHasMoved(true);
+    }
+
+    if (moved && isDragging) {
       onUpdateLayer(selectedLayerId, {
         x: (initialState.x || 0) + deltaX,
         y: (initialState.y || 0) + deltaY
       });
-    } else if (isResizing) {
+    } else if (moved && isResizing) {
       onUpdateLayer(selectedLayerId, {
         width: Math.max(20, (initialState.width || 100) + deltaX),
         height: Math.max(20, (initialState.height || 100) + deltaY)
@@ -73,6 +80,7 @@ export default function Canvas({
     setIsDragging(false);
     setIsResizing(false);
     setInitialState(null);
+    setHasMoved(false);
   };
 
   const sortedLayers = [...scene.layers].sort((a, b) => a.order - b.order);
