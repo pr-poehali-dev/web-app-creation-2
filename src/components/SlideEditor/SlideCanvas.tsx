@@ -149,7 +149,6 @@ export default function SlideCanvas({ paragraph, episode, zoom, onUpdate }: Slid
               currentParagraph={paragraph}
               currentEpisode={episode}
               currentParagraphIndex={0}
-              isTyping={false}
               novel={{ episodes: [episode], library: { items: [], characters: [], choices: [] }, title: '' }}
               settings={{
                 textSize: 'medium',
@@ -167,18 +166,20 @@ export default function SlideCanvas({ paragraph, episode, zoom, onUpdate }: Slid
                 bookmarks: [],
                 activePaths: []
               }}
-              skipTyping={false}
+              skipTyping={true}
+              wasHidden={false}
               handleTypingComplete={() => {}}
               handleChoice={() => {}}
               onProfileUpdate={() => {}}
               paragraphKey={`${episode.id}-0`}
               goToPreviousParagraph={() => {}}
               goToNextParagraph={() => {}}
-              existingBookmark={null}
-              handleAddBookmark={() => {}}
-              handleRemoveBookmark={() => {}}
-              isContentHidden={false}
+              actualIsContentHidden={false}
+              setWasHidden={() => {}}
               onToggleContentVisibility={() => {}}
+              setIsContentHidden={() => {}}
+              isContentHidden={false}
+              shouldShowContent={paragraph.type !== 'background'}
             />
 
             {/* Overlay для выделения */}
