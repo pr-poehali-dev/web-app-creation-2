@@ -106,6 +106,14 @@ export interface ImageParagraph extends BaseParagraph {
   url: string;
   mobileUrl?: string;
   alt?: string;
+  objectPosition?: string;
+  objectFit?: 'cover' | 'contain' | 'fill';
+  transform?: {
+    x: number;
+    y: number;
+    scale: number;
+    rotate: number;
+  };
 }
 
 export interface ChoiceParagraph extends BaseParagraph {

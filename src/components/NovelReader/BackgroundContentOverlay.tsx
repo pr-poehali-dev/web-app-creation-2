@@ -34,10 +34,15 @@ function BackgroundContentOverlay({
           <img 
             src={currentParagraph.url}
             alt={currentParagraph.alt || 'Изображение'}
-            className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl"
+            className="max-w-full max-h-full rounded-2xl shadow-2xl"
             style={{
               animation: 'fadeIn 0.8s ease-in-out',
-              filter: getFilterStyle('blur(0px)')
+              filter: getFilterStyle('blur(0px)'),
+              objectFit: currentParagraph.objectFit || 'contain',
+              objectPosition: currentParagraph.objectPosition || 'center',
+              transform: currentParagraph.transform 
+                ? `translate(${currentParagraph.transform.x}%, ${currentParagraph.transform.y}%) scale(${currentParagraph.transform.scale}) rotate(${currentParagraph.transform.rotate}deg)`
+                : undefined
             }}
           />
         </div>

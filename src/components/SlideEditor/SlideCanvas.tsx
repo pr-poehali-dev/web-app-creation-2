@@ -215,6 +215,17 @@ export default function SlideCanvas({ paragraph, episode, zoom, onUpdate }: Slid
             </Button>
           )}
 
+          {paragraph.type === 'image' && (
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={() => setIsEditingBackground(true)}
+            >
+              <Icon name="Edit2" size={16} className="mr-2" />
+              Редактировать изображение
+            </Button>
+          )}
+
           {(paragraph.type === 'text' || 
             paragraph.type === 'dialogue' || 
             paragraph.type === 'choice') && (
@@ -323,6 +334,20 @@ export default function SlideCanvas({ paragraph, episode, zoom, onUpdate }: Slid
 
       {/* Редактор фонового изображения */}
       {isEditingBackground && paragraph.type === 'background' && (
+        <ImageEditor
+          image={{
+            url: paragraph.url,
+            objectPosition: paragraph.objectPosition,
+            objectFit: paragraph.objectFit,
+            transform: paragraph.transform
+          }}
+          onUpdate={(updates) => onUpdate(updates)}
+          onClose={() => setIsEditingBackground(false)}
+        />
+      )}
+
+      {/* Редактор параграфа-изображения */}
+      {isEditingBackground && paragraph.type === 'image' && (
         <ImageEditor
           image={{
             url: paragraph.url,
