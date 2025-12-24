@@ -18,6 +18,8 @@ export default function SlideEditor({ novel, onUpdate, onClose }: SlideEditorPro
   );
   const [selectedParagraphIndex, setSelectedParagraphIndex] = useState<number>(0);
   const [zoom, setZoom] = useState(1);
+  const [showSlidesList, setShowSlidesList] = useState(true);
+  const [showProperties, setShowProperties] = useState(true);
 
   const currentEpisode = novel.episodes.find(ep => ep.id === selectedEpisodeId);
   const currentParagraph = currentEpisode?.paragraphs[selectedParagraphIndex];
@@ -137,29 +139,8 @@ export default function SlideEditor({ novel, onUpdate, onClose }: SlideEditorPro
             ))}
           </select>
 
-          <div className="flex items-center gap-2 px-3">
-            <Icon name="ZoomOut" size={16} />
-            <input
-              type="range"
-              min="0.5"
-              max="1.5"
-              step="0.1"
-              value={zoom}
-              onChange={(e) => setZoom(parseFloat(e.target.value))}
-              className="w-24"
-            />
-            <Icon name="ZoomIn" size={16} />
-            <span className="text-xs text-muted-foreground w-12">
-              {Math.round(zoom * 100)}%
-            </span>
-          </div>
-        </div>
-      </div>
+          <div className="h-6 w-px bg-border" />
 
-      {/* Main Content */}
-      <div className="flex-1 flex overflow-hidden">
-        {/* Toolbar */}
-        <div className="w-16 border-r flex flex-col items-center py-4 gap-2">
           <Button
             variant="ghost"
             size="icon"
@@ -201,7 +182,7 @@ export default function SlideEditor({ novel, onUpdate, onClose }: SlideEditorPro
             <Icon name="GitBranch" size={20} />
           </Button>
 
-          <div className="flex-1" />
+          <div className="h-6 w-px bg-border" />
 
           <Button
             variant="ghost"
@@ -212,14 +193,57 @@ export default function SlideEditor({ novel, onUpdate, onClose }: SlideEditorPro
           >
             <Icon name="Trash2" size={20} />
           </Button>
-        </div>
 
+          <div className="h-6 w-px bg-border" />
+
+          <div className="flex items-center gap-2 px-3">
+            <Icon name="ZoomOut" size={16} />
+            <input
+              type="range"
+              min="0.5"
+              max="1.5"
+              step="0.1"
+              value={zoom}
+              onChange={(e) => setZoom(parseFloat(e.target.value))}
+              className="w-24"
+            />
+            <Icon name="ZoomIn" size={16} />
+            <span className="text-xs text-muted-foreground w-12">
+              {Math.round(zoom * 100)}%
+            </span>
+          </div>
+
+          <div className="h-6 w-px bg-border" />
+
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setShowSlidesList(!showSlidesList)}
+            title={showSlidesList ? 'Скрыть список слайдов' : 'Показать список слайдов'}
+          >
+            <Icon name="PanelLeft" size={20} />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setShowProperties(!showProperties)}
+            title={showProperties ? 'Скрыть свойства' : 'Показать свойства'}
+          >
+            <Icon name="PanelRight" size={20} />
+          </Button>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 flex overflow-hidden">
         {/* Slides List */}
-        <SlidesList
-          episode={currentEpisode}
-          selectedIndex={selectedParagraphIndex}
-          onSelect={setSelectedParagraphIndex}
-        />
+        {showSlidesList && (
+          <SlidesList
+            episode={currentEpisode}
+            selectedIndex={selectedParagraphIndex}
+            onSelect={setSelectedParagraphIndex}
+          />
+        )}
 
         {/* Canvas */}
         <div className="flex-1 overflow-auto bg-[#0a0f14]">
@@ -232,7 +256,7 @@ export default function SlideEditor({ novel, onUpdate, onClose }: SlideEditorPro
         </div>
 
         {/* Properties Panel */}
-        {currentParagraph && (
+        {currentParagraph && showProperties && (
           <SlideProperties
             paragraph={currentParagraph}
             onUpdate={updateParagraph}

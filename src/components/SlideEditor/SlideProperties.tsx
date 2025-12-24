@@ -1,10 +1,12 @@
-import { Paragraph, FrameAnimationType, ComicFrame } from '@/types/novel';
+import { Paragraph, FrameAnimationType, ComicFrame, MergeLayoutType } from '@/types/novel';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
+import Icon from '@/components/ui/icon';
 
 interface SlidePropertiesProps {
   paragraph: Paragraph;
@@ -29,6 +31,19 @@ export default function SlideProperties({ paragraph, onUpdate }: SlideProperties
     { value: 'glitch', label: 'Глитч' }
   ];
 
+  const layouts: { value: MergeLayoutType; label: string }[] = [
+    { value: 'single', label: '1 кадр на весь экран' },
+    { value: 'horizontal-2', label: '2 кадра в ряд' },
+    { value: 'horizontal-3', label: '3 кадра в ряд' },
+    { value: 'horizontal-4', label: '4 кадра в ряд' },
+    { value: 'vertical-2', label: '2 кадра вертикально' },
+    { value: 'vertical-3', label: '3 кадра вертикально' },
+    { value: 'grid-2x2', label: 'Сетка 2×2' },
+    { value: 'grid-3x3', label: 'Сетка 3×3' },
+    { value: 'mosaic-left', label: 'Мозаика слева' },
+    { value: 'mosaic-right', label: 'Мозаика справа' }
+  ];
+
   const updateFrame = (frameId: string, updates: Partial<ComicFrame>) => {
     if (!paragraph.comicFrames) return;
 
@@ -36,6 +51,14 @@ export default function SlideProperties({ paragraph, onUpdate }: SlideProperties
       comicFrames: paragraph.comicFrames.map(f =>
         f.id === frameId ? { ...f, ...updates } : f
       )
+    });
+  };
+
+  const deleteFrame = (frameId: string) => {
+    if (!paragraph.comicFrames) return;
+
+    onUpdate({
+      comicFrames: paragraph.comicFrames.filter(f => f.id !== frameId)
     });
   };
 
@@ -193,14 +216,45 @@ export default function SlideProperties({ paragraph, onUpdate }: SlideProperties
             <TabsContent value="frames" className="space-y-4 mt-4">
               {paragraph.comicFrames && paragraph.comicFrames.length > 0 ? (
                 <div className="space-y-4">
+                  <div className="space-y-2 pb-4 border-b">
+                    <Label>Раскладка фреймов</Label>
+                    <Select
+                      value={paragraph.frameLayout || 'horizontal-3'}
+                      onValueChange={(value: MergeLayoutType) =>
+                        onUpdate({ frameLayout: value })
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {layouts.map((layout) => (
+                          <SelectItem key={layout.value} value={layout.value}>
+                            {layout.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
                   {paragraph.comicFrames.map((frame, index) => (
                     <div
                       key={frame.id}
                       className="border rounded-lg p-3 space-y-3"
                     >
-                      <h4 className="font-semibold text-sm">
-                        Фрейм #{index + 1}
-                      </h4>
+                      <div className="flex items-center justify-between">
+                        <h4 className="font-semibold text-sm">
+                          Фрейм #{index + 1}
+                        </h4>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-destructive"
+                          onClick={() => deleteFrame(frame.id)}
+                        >
+                          <Icon name="Trash2" size={16} />
+                        </Button>
+                      </div>
 
                       <div className="space-y-2">
                         <Label>URL изображения</Label>

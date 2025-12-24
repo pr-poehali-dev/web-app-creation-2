@@ -142,7 +142,7 @@ export default function SlideCanvas({ paragraph, episode, zoom, onUpdate }: Slid
 
           {/* Правая часть - текстовый контент (как в читалке) */}
           <div 
-            className="w-1/2 relative bg-[#151d28] cursor-pointer"
+            className="w-1/2 relative bg-[#151d28] cursor-pointer overflow-hidden"
             onClick={() => setSelectedElement('content')}
           >
             <TextContentPanel
@@ -232,17 +232,7 @@ export default function SlideCanvas({ paragraph, episode, zoom, onUpdate }: Slid
           )}
         </div>
 
-        {/* Подсказка */}
-        <div className="absolute bottom-4 left-4 bg-black/90 text-white text-xs rounded-lg p-3 z-50 max-w-xs">
-          <p className="font-semibold mb-1">💡 Редактор</p>
-          <p className="text-white/70">
-            Левая часть — визуал (фон + фреймы)
-            <br />
-            Правая часть — текстовый контент
-            <br />
-            Редактируйте через панель свойств справа →
-          </p>
-        </div>
+
       </div>
     </div>
   );
