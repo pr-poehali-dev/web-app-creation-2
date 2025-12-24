@@ -7,7 +7,7 @@ import LibraryManager from './LibraryManager';
 import HomePageEditor from './HomePageEditor';
 import PathsManager from './PathsManager';
 import BulkImportDialog from './BulkImportDialog';
-import VisualEditor from '@/pages/VisualEditor';
+
 import BackgroundImagesEditor from './BackgroundImagesEditor';
 import AdminPanelHeader from './AdminPanel/AdminPanelHeader';
 import EpisodeEditorTab from './AdminPanel/EpisodeEditorTab';
@@ -199,14 +199,10 @@ function AdminPanel({ novel, onUpdate, onLogout }: AdminPanelProps) {
 
       <div className="container mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full max-w-5xl grid-cols-8 mb-8">
+          <TabsList className="grid w-full max-w-5xl grid-cols-7 mb-8">
             <TabsTrigger value="home">
               <Icon name="Home" size={16} className="mr-2" />
               Главная
-            </TabsTrigger>
-            <TabsTrigger value="visual">
-              <Icon name="Presentation" size={16} className="mr-2" />
-              Слайды
             </TabsTrigger>
             <TabsTrigger value="editor">
               <Icon name="Edit" size={16} className="mr-2" />
@@ -238,14 +234,6 @@ function AdminPanel({ novel, onUpdate, onLogout }: AdminPanelProps) {
             <HomePageEditor 
               homePage={novel.homePage || { greeting: 'Добро пожаловать', news: [] }} 
               onUpdate={(homePage) => onUpdate({ ...novel, homePage })}
-            />
-          </TabsContent>
-
-          <TabsContent value="visual">
-            <VisualEditor
-              novel={novel}
-              onSave={onUpdate}
-              onClose={() => setActiveTab('editor')}
             />
           </TabsContent>
 
