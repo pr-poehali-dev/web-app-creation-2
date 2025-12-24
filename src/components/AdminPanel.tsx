@@ -7,6 +7,7 @@ import LibraryManager from './LibraryManager';
 import HomePageEditor from './HomePageEditor';
 import PathsManager from './PathsManager';
 import BulkImportDialog from './BulkImportDialog';
+import SlideEditor from './SlideEditor/SlideEditor';
 
 import BackgroundImagesEditor from './BackgroundImagesEditor';
 import AdminPanelHeader from './AdminPanel/AdminPanelHeader';
@@ -28,6 +29,7 @@ function AdminPanel({ novel, onUpdate, onLogout }: AdminPanelProps) {
   const [activeTab, setActiveTab] = useState('home');
   const [bulkEditEpisodes, setBulkEditEpisodes] = useState(false);
   const [selectedEpisodes, setSelectedEpisodes] = useState<Set<string>>(new Set());
+  const [showSlideEditor, setShowSlideEditor] = useState(false);
   const selectedEpisode = novel.episodes.find(ep => ep.id === selectedEpisodeId);
 
   const handleEpisodeClickFromVisualization = (episodeId: string) => {
@@ -193,9 +195,23 @@ function AdminPanel({ novel, onUpdate, onLogout }: AdminPanelProps) {
     if (!checked) setSelectedEpisodes(new Set());
   };
 
+  if (showSlideEditor) {
+    return (
+      <SlideEditor
+        novel={novel}
+        onUpdate={onUpdate}
+        onClose={() => setShowSlideEditor(false)}
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background dark">
-      <AdminPanelHeader novelTitle={novel.title} onLogout={onLogout} />
+      <AdminPanelHeader 
+        novelTitle={novel.title} 
+        onLogout={onLogout}
+        onOpenSlideEditor={() => setShowSlideEditor(true)}
+      />
 
       <div className="container mx-auto px-4 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">

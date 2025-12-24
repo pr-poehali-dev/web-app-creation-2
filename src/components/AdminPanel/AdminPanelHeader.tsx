@@ -4,9 +4,10 @@ import Icon from '@/components/ui/icon';
 interface AdminPanelHeaderProps {
   novelTitle: string;
   onLogout: () => void;
+  onOpenSlideEditor?: () => void;
 }
 
-function AdminPanelHeader({ novelTitle, onLogout }: AdminPanelHeaderProps) {
+function AdminPanelHeader({ novelTitle, onLogout, onOpenSlideEditor }: AdminPanelHeaderProps) {
   return (
     <header className="border-b border-border bg-card sticky top-0 z-10">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -14,10 +15,18 @@ function AdminPanelHeader({ novelTitle, onLogout }: AdminPanelHeaderProps) {
           <h1 className="text-2xl font-bold text-foreground">Админ-панель</h1>
           <p className="text-sm text-muted-foreground">{novelTitle}</p>
         </div>
-        <Button variant="outline" onClick={onLogout}>
-          <Icon name="LogOut" size={16} className="mr-2" />
-          Выйти
-        </Button>
+        <div className="flex items-center gap-2">
+          {onOpenSlideEditor && (
+            <Button variant="outline" onClick={onOpenSlideEditor}>
+              <Icon name="Presentation" size={16} className="mr-2" />
+              Редактор слайдов
+            </Button>
+          )}
+          <Button variant="outline" onClick={onLogout}>
+            <Icon name="LogOut" size={16} className="mr-2" />
+            Выйти
+          </Button>
+        </div>
       </div>
     </header>
   );
