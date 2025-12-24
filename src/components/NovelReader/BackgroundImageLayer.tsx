@@ -9,6 +9,12 @@ interface BackgroundImageLayerProps {
   effectivePastelColor?: string;
   getFilterStyle: (baseFilter: string) => string;
   getPastelColor: (color?: string) => string;
+  transform?: {
+    x: number;
+    y: number;
+    scale: number;
+    rotate: number;
+  };
 }
 
 function BackgroundImageLayer({
@@ -19,7 +25,8 @@ function BackgroundImageLayer({
   isRetrospective,
   effectivePastelColor,
   getFilterStyle,
-  getPastelColor
+  getPastelColor,
+  transform
 }: BackgroundImageLayerProps) {
   const [transitionState, setTransitionState] = useState<'idle' | 'loading' | 'ready' | 'animating'>('idle');
   const showTransition = previousBackgroundImage && previousBackgroundImage !== backgroundImage;
@@ -55,6 +62,10 @@ function BackgroundImageLayer({
   const isAnimating = transitionState === 'animating';
   const showNewImage = transitionState === 'ready' || transitionState === 'animating' || !showTransition;
   
+  const imageTransform = transform 
+    ? `translate(${transform.x}%, ${transform.y}%) scale(${transform.scale}) rotate(${transform.rotate}deg)`
+    : undefined;
+  
   return (
     <>
       {/* Старое изображение */}
@@ -70,7 +81,8 @@ function BackgroundImageLayer({
               opacity: isAnimating ? 0 : 1,
               filter: isAnimating ? 'blur(20px)' : 'blur(0px)',
               transition: 'opacity 2s ease-in-out, filter 2s ease-in-out',
-              zIndex: 1
+              zIndex: 1,
+              transform: imageTransform
             }}
           />
           <div 
@@ -98,7 +110,8 @@ function BackgroundImageLayer({
             objectPosition: backgroundObjectPosition,
             opacity: (showTransition && !isAnimating) ? 0 : 1,
             transition: 'opacity 2s ease-in-out',
-            zIndex: 3
+            zIndex: 3,
+            transform: imageTransform
           }}
         />
       )}

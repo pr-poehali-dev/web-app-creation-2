@@ -147,6 +147,12 @@ export interface BackgroundParagraph extends BaseParagraph {
   alt?: string;
   objectPosition?: string;
   objectFit?: 'cover' | 'contain' | 'fill';
+  transform?: {
+    x: number; // Смещение по X (в процентах, -50 до 50)
+    y: number; // Смещение по Y (в процентах, -50 до 50)
+    scale: number; // Масштаб (0.5 до 2)
+    rotate: number; // Поворот в градусах (0-360)
+  };
 }
 
 export type Paragraph = 

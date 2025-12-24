@@ -208,6 +208,7 @@ function NovelReaderBackgroundNew({
           effectivePastelColor={effectivePastelColor}
           getFilterStyle={getFilterStyle}
           getPastelColor={getPastelColor}
+          transform={currentParagraph.type === 'background' ? currentParagraph.transform : undefined}
         />
         
         <BackgroundContentOverlay

@@ -6,6 +6,7 @@ import TextContentPanel from '../NovelReader/TextContentPanel';
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
 import FrameEditor from './FrameEditor';
+import ImageEditor from './ImageEditor';
 import {
   Select,
   SelectContent,
@@ -24,6 +25,7 @@ interface SlideCanvasProps {
 export default function SlideCanvas({ paragraph, episode, zoom, onUpdate }: SlideCanvasProps) {
   const [selectedElement, setSelectedElement] = useState<'background' | 'frame' | 'content' | null>(null);
   const [editingFrameIndex, setEditingFrameIndex] = useState<number | null>(null);
+  const [isEditingBackground, setIsEditingBackground] = useState(false);
 
   if (!paragraph || !episode) {
     return (
@@ -114,6 +116,7 @@ export default function SlideCanvas({ paragraph, episode, zoom, onUpdate }: Slid
                   effectivePastelColor={effectivePastelColor}
                   getFilterStyle={getFilterStyle}
                   getPastelColor={getPastelColor}
+                  transform={paragraph.type === 'background' ? paragraph.transform : undefined}
                 />
                 
                 <BackgroundContentOverlay
@@ -205,13 +208,10 @@ export default function SlideCanvas({ paragraph, episode, zoom, onUpdate }: Slid
             <Button
               size="sm"
               variant="secondary"
-              onClick={() => {
-                const url = prompt('URL фона:', paragraph.url || '');
-                if (url !== null) onUpdate({ url });
-              }}
+              onClick={() => setIsEditingBackground(true)}
             >
-              <Icon name="Image" size={16} className="mr-2" />
-              Изменить фон
+              <Icon name="Edit2" size={16} className="mr-2" />
+              Редактировать фон
             </Button>
           )}
 
@@ -318,6 +318,20 @@ export default function SlideCanvas({ paragraph, episode, zoom, onUpdate }: Slid
             onUpdate({ comicFrames: updated });
           }}
           onClose={() => setEditingFrameIndex(null)}
+        />
+      )}
+
+      {/* Редактор фонового изображения */}
+      {isEditingBackground && paragraph.type === 'background' && (
+        <ImageEditor
+          image={{
+            url: paragraph.url,
+            objectPosition: paragraph.objectPosition,
+            objectFit: paragraph.objectFit,
+            transform: paragraph.transform
+          }}
+          onUpdate={(updates) => onUpdate(updates)}
+          onClose={() => setIsEditingBackground(false)}
         />
       )}
     </div>
