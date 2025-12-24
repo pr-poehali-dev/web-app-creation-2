@@ -26,6 +26,7 @@ interface TextContentPanelProps {
   setIsContentHidden: (value: boolean | ((prev: boolean) => boolean)) => void;
   isContentHidden: boolean;
   shouldShowContent: boolean;
+  isEditorMode?: boolean;
 }
 
 function TextContentPanel({
@@ -49,7 +50,8 @@ function TextContentPanel({
   onToggleContentVisibility,
   setIsContentHidden,
   isContentHidden,
-  shouldShowContent
+  shouldShowContent,
+  isEditorMode = false
 }: TextContentPanelProps) {
   return (
     <div className="flex-1 lg:h-screen w-full lg:w-1/2 relative overflow-y-auto" style={{ backgroundColor: '#151d28' }}>
@@ -77,8 +79,8 @@ function TextContentPanel({
       {currentParagraph.type !== 'background' && shouldShowContent && (
         <>
           <div className="absolute bottom-12 md:bottom-8 lg:top-1/2 lg:-translate-y-1/2 left-0 right-0 z-10 px-5 md:px-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <div className="w-full max-w-3xl mx-auto flex flex-col items-center justify-center">
-            {currentParagraph.type !== 'choice' && (
+          <div className={`w-full ${isEditorMode ? '' : 'max-w-3xl mx-auto'} flex flex-col items-center justify-center`}>
+            {currentParagraph.type !== 'choice' && !isEditorMode && (
               <div className="flex justify-between items-center mb-2 gap-2">
                 <Button
                   variant="ghost"

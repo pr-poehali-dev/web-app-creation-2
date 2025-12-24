@@ -180,6 +180,7 @@ export default function SlideCanvas({ paragraph, episode, zoom, onUpdate }: Slid
               setIsContentHidden={() => {}}
               isContentHidden={false}
               shouldShowContent={paragraph.type !== 'background'}
+              isEditorMode={true}
             />
 
             {/* Overlay для выделения */}
