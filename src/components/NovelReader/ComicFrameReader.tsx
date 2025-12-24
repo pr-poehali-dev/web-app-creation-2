@@ -230,7 +230,10 @@ export default function ComicFrameReader({ paragraph, currentSubParagraphIndex, 
                     objectPosition: frame.objectPosition || 'center',
                     filter: isRetrospective ? 'saturate(1.2) brightness(1.05) contrast(0.95)' : 'none',
                     transition: 'filter 1.2s ease-in-out',
-                    borderRadius: isRetrospective ? '0' : '0.5rem'
+                    borderRadius: frame.shape === 'circle' ? '50%' : (isRetrospective ? '0' : '0.5rem'),
+                    transform: frame.transform 
+                      ? `translate(${frame.transform.x}%, ${frame.transform.y}%) scale(${frame.transform.scale}) rotate(${frame.transform.rotate}deg)`
+                      : 'none'
                   }}
                 />
                 {isRetrospective && (

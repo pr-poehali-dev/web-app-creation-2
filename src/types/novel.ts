@@ -71,6 +71,13 @@ export interface ComicFrame {
   animation?: FrameAnimationType; // Тип анимации появления
   objectPosition?: string; // CSS object-position (например: 'center', 'top', 'left', '50% 30%')
   objectFit?: 'cover' | 'contain' | 'fill'; // CSS object-fit
+  shape?: 'square' | 'circle'; // Форма фрейма
+  transform?: {
+    x: number; // Смещение по X (в процентах, -50 до 50)
+    y: number; // Смещение по Y (в процентах, -50 до 50)
+    scale: number; // Масштаб (0.5 до 2)
+    rotate: number; // Поворот в градусах (0-360)
+  };
 }
 
 export type PastelColor = 'pink' | 'blue' | 'peach' | 'lavender' | 'mint' | 'yellow' | 'coral' | 'sky';

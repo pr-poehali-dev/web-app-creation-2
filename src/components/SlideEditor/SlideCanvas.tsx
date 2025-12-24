@@ -1,10 +1,18 @@
-import { Paragraph, Episode } from '@/types/novel';
+import { Paragraph, Episode, MergeLayoutType } from '@/types/novel';
 import { useState, useMemo } from 'react';
 import BackgroundImageLayer from '../NovelReader/BackgroundImageLayer';
 import BackgroundContentOverlay from '../NovelReader/BackgroundContentOverlay';
 import TextContentPanel from '../NovelReader/TextContentPanel';
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
+import FrameEditor from './FrameEditor';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 interface SlideCanvasProps {
   paragraph: Paragraph | undefined;
@@ -15,6 +23,7 @@ interface SlideCanvasProps {
 
 export default function SlideCanvas({ paragraph, episode, zoom, onUpdate }: SlideCanvasProps) {
   const [selectedElement, setSelectedElement] = useState<'background' | 'frame' | 'content' | null>(null);
+  const [editingFrameIndex, setEditingFrameIndex] = useState<number | null>(null);
 
   if (!paragraph || !episode) {
     return (
@@ -209,32 +218,108 @@ export default function SlideCanvas({ paragraph, episode, zoom, onUpdate }: Slid
           {(paragraph.type === 'text' || 
             paragraph.type === 'dialogue' || 
             paragraph.type === 'choice') && (
-            <Button
-              size="sm"
-              variant="secondary"
-              onClick={() => {
-                const newFrame = {
-                  id: `frame-${Date.now()}`,
-                  type: 'image' as const,
-                  url: '',
-                  objectPosition: 'center',
-                  objectFit: 'cover' as const,
-                  animation: 'fade' as const,
-                  paragraphTrigger: 0
-                };
-                onUpdate({
-                  comicFrames: [...(paragraph.comicFrames || []), newFrame]
-                });
-              }}
-            >
-              <Icon name="Plus" size={16} className="mr-2" />
-              Добавить фрейм
-            </Button>
+            <>
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={() => {
+                  const newFrame = {
+                    id: `frame-${Date.now()}`,
+                    type: 'image' as const,
+                    url: 'https://via.placeholder.com/600x400?text=New+Frame',
+                    objectPosition: 'center',
+                    objectFit: 'cover' as const,
+                    animation: 'fade' as const,
+                    paragraphTrigger: 0,
+                    shape: 'square' as const,
+                    transform: { x: 0, y: 0, scale: 1, rotate: 0 }
+                  };
+                  onUpdate({
+                    comicFrames: [...(paragraph.comicFrames || []), newFrame]
+                  });
+                }}
+              >
+                <Icon name="Plus" size={16} className="mr-2" />
+                Добавить фрейм
+              </Button>
+
+              {paragraph.comicFrames && paragraph.comicFrames.length > 0 && (
+                <Select
+                  value={paragraph.frameLayout || 'horizontal-3'}
+                  onValueChange={(value) => onUpdate({ frameLayout: value as MergeLayoutType })}
+                >
+                  <SelectTrigger className="w-[200px] h-9">
+                    <SelectValue placeholder="Макет" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="single">Один фрейм</SelectItem>
+                    <SelectItem value="horizontal-2">2 в ряд</SelectItem>
+                    <SelectItem value="horizontal-3">3 в ряд</SelectItem>
+                    <SelectItem value="horizontal-4">4 в ряд</SelectItem>
+                    <SelectItem value="vertical-2">2 вертикально</SelectItem>
+                    <SelectItem value="vertical-3">3 вертикально</SelectItem>
+                    <SelectItem value="grid-2x2">Сетка 2x2</SelectItem>
+                    <SelectItem value="grid-3x3">Сетка 3x3</SelectItem>
+                    <SelectItem value="mosaic-left">Мозаика слева</SelectItem>
+                    <SelectItem value="mosaic-right">Мозаика справа</SelectItem>
+                    <SelectItem value="magazine-1">Журнальный 1</SelectItem>
+                    <SelectItem value="magazine-2">Журнальный 2</SelectItem>
+                    <SelectItem value="center-large">Центр + углы</SelectItem>
+                    <SelectItem value="l-shape">L-форма</SelectItem>
+                    <SelectItem value="filmstrip">Кинолента</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+            </>
           )}
         </div>
 
-
+        {/* Список фреймов для редактирования */}
+        {paragraph.comicFrames && paragraph.comicFrames.length > 0 && (
+          <div className="absolute bottom-4 left-4 flex flex-col gap-2 z-50 max-w-xs">
+            <div className="bg-black/80 backdrop-blur-sm rounded-lg p-3 space-y-2">
+              <div className="text-xs text-white/60 font-medium mb-2">Фреймы ({paragraph.comicFrames.length})</div>
+              {paragraph.comicFrames.map((frame, index) => (
+                <div key={frame.id} className="flex gap-2">
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    onClick={() => setEditingFrameIndex(index)}
+                    className="flex-1 justify-start text-xs"
+                  >
+                    <Icon name="Edit2" size={14} className="mr-2" />
+                    Фрейм {index + 1}
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    onClick={() => {
+                      const updated = [...paragraph.comicFrames!];
+                      updated.splice(index, 1);
+                      onUpdate({ comicFrames: updated });
+                    }}
+                  >
+                    <Icon name="Trash2" size={14} />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
+
+      {/* Редактор фрейма */}
+      {editingFrameIndex !== null && paragraph.comicFrames && paragraph.comicFrames[editingFrameIndex] && (
+        <FrameEditor
+          frame={paragraph.comicFrames[editingFrameIndex]}
+          onUpdate={(updates) => {
+            const updated = [...paragraph.comicFrames!];
+            updated[editingFrameIndex] = { ...updated[editingFrameIndex], ...updates };
+            onUpdate({ comicFrames: updated });
+          }}
+          onClose={() => setEditingFrameIndex(null)}
+        />
+      )}
     </div>
   );
 }
