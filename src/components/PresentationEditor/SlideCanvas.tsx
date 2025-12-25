@@ -293,7 +293,7 @@ export function SlideCanvas({ onObjectSelect }: SlideCanvasProps) {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#f3f4f6'
+        backgroundColor: '#1a1a1a'
       }}
     >
       <div
@@ -301,17 +301,40 @@ export function SlideCanvas({ onObjectSelect }: SlideCanvasProps) {
           position: 'relative',
           width: width * zoom,
           height: height * zoom,
-          transform: `scale(${zoom})`,
-          transformOrigin: 'center',
-          ...getBackgroundStyle(),
-          boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
+          display: 'flex',
+          gap: '2px'
         }}
         onClick={() => selectObjects([])}
       >
-        {renderGrid()}
-        {currentSlide.objects
-          .sort((a, b) => a.zIndex - b.zIndex)
-          .map(obj => renderObject(obj))}
+        <div
+          style={{
+            flex: 1,
+            position: 'relative',
+            overflow: 'hidden',
+            ...getBackgroundStyle()
+          }}
+        >
+          {renderGrid()}
+          {currentSlide.objects
+            .filter(obj => obj.transform.x < width / 2)
+            .sort((a, b) => a.zIndex - b.zIndex)
+            .map(obj => renderObject(obj))}
+        </div>
+
+        <div
+          style={{
+            flex: 1,
+            position: 'relative',
+            overflow: 'hidden',
+            ...getBackgroundStyle()
+          }}
+        >
+          {renderGrid()}
+          {currentSlide.objects
+            .filter(obj => obj.transform.x >= width / 2)
+            .sort((a, b) => a.zIndex - b.zIndex)
+            .map(obj => renderObject(obj))}
+        </div>
       </div>
     </div>
   );

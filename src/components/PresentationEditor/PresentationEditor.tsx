@@ -3,9 +3,16 @@ import { EditorToolbar } from './EditorToolbar';
 import { SlideCanvas } from './SlideCanvas';
 import { PropertiesPanel } from './PropertiesPanel';
 import { SlidesPanel } from './SlidesPanel';
+import { EpisodeSelector } from './EpisodeSelector';
 import { usePresentationStore } from '@/store/presentationStore';
+import type { Novel } from '@/types/novel';
 
-export function PresentationEditor() {
+interface PresentationEditorProps {
+  novel?: Novel;
+  onNovelUpdate?: (novel: Novel) => void;
+}
+
+export function PresentationEditor({ novel, onNovelUpdate }: PresentationEditorProps) {
   const saveToHistory = usePresentationStore(s => s.saveToHistory);
 
   useEffect(() => {
@@ -85,6 +92,9 @@ export function PresentationEditor() {
 
   return (
     <div className="h-screen flex flex-col bg-background">
+      {novel && onNovelUpdate && (
+        <EpisodeSelector novel={novel} onNovelUpdate={onNovelUpdate} />
+      )}
       <EditorToolbar />
       
       <div className="flex-1 flex overflow-hidden">
