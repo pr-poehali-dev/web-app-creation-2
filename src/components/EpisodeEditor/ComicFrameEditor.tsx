@@ -57,6 +57,8 @@ interface ComicFrameEditorProps {
 
 function ComicFrameEditor({ frames, layout, defaultAnimation, subParagraphs, comicGroupSize, onFramesChange, onLayoutChange, onAnimationChange, onBothChange }: ComicFrameEditorProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState({ current: 0, total: 0 });
   const framesRef = useRef(frames);
   
   useEffect(() => {
@@ -215,12 +217,14 @@ function ComicFrameEditor({ frames, layout, defaultAnimation, subParagraphs, com
                 
                 ctx.drawImage(img, 0, 0, width, height);
                 
+                const isPNG = file.type === 'image/png';
+                const format = isPNG ? 'image/png' : 'image/jpeg';
                 let quality = 0.9;
-                let base64 = canvas.toDataURL('image/jpeg', quality).split(',')[1];
+                let base64 = canvas.toDataURL(format, quality).split(',')[1];
                 
                 while (base64.length > 4 * 1024 * 1024 * 1.37 && quality > 0.1) {
                   quality -= 0.1;
-                  base64 = canvas.toDataURL('image/jpeg', quality).split(',')[1];
+                  base64 = canvas.toDataURL(format, quality).split(',')[1];
                 }
                 
                 const response = await fetch('https://functions.poehali.dev/a0c6a23f-1d31-4d44-9ca4-fd04d7e97063', {
@@ -249,7 +253,17 @@ function ComicFrameEditor({ frames, layout, defaultAnimation, subParagraphs, com
       };
       
       try {
-        const urls = await Promise.all(Array.from(files).map(uploadImage));
+        setIsUploading(true);
+        const filesArray = Array.from(files);
+        setUploadProgress({ current: 0, total: filesArray.length });
+        
+        const urls: string[] = [];
+        for (let i = 0; i < filesArray.length; i++) {
+          const url = await uploadImage(filesArray[i]);
+          urls.push(url);
+          setUploadProgress({ current: i + 1, total: filesArray.length });
+        }
+        
         const currentFrames = [...framesRef.current];
         
         urls.forEach((url, idx) => {
@@ -268,6 +282,9 @@ function ComicFrameEditor({ frames, layout, defaultAnimation, subParagraphs, com
       } catch (error) {
         console.error('Bulk upload failed:', error);
         alert('Ошибка при загрузке изображений');
+      } finally {
+        setIsUploading(false);
+        setUploadProgress({ current: 0, total: 0 });
       }
     };
     
@@ -366,10 +383,11 @@ function ComicFrameEditor({ frames, layout, defaultAnimation, subParagraphs, com
               variant="outline"
               size="sm"
               onClick={handleBulkUpload}
+              disabled={isUploading}
               className="flex-1 h-8"
             >
-              <Icon name="Upload" size={14} className="mr-1" />
-              Загрузить изображения
+              <Icon name={isUploading ? "Loader2" : "Upload"} size={14} className={`mr-1 ${isUploading ? 'animate-spin' : ''}`} />
+              {isUploading ? `${uploadProgress.current}/${uploadProgress.total}` : 'Загрузить изображения'}
             </Button>
             <Button
               variant="outline"
