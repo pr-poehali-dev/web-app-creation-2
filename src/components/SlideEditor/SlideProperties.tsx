@@ -250,9 +250,9 @@ export default function SlideProperties({ paragraph, onUpdate }: SlideProperties
             <TabsContent value="frames" className="space-y-4 mt-4">
               {((paragraph.comicFrames && paragraph.comicFrames.length > 0) || 
                 (paragraph.type === 'image' && paragraph.imageFrames && paragraph.imageFrames.length > 0)) ? (
-                <div className="space-y-4">
-                  <div className="space-y-2 pb-4 border-b">
-                    <Label>Раскладка фреймов</Label>
+                <div className="space-y-3">
+                  <div className="space-y-2 p-3 bg-muted/50 rounded-lg">
+                    <Label className="text-xs font-medium">Раскладка галереи</Label>
                     <Select
                       value={(paragraph.type === 'image' ? paragraph.imageLayout : paragraph.frameLayout) || 'horizontal-3'}
                       onValueChange={(value: MergeLayoutType) => {
@@ -263,7 +263,7 @@ export default function SlideProperties({ paragraph, onUpdate }: SlideProperties
                         }
                       }}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="h-9">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -274,124 +274,208 @@ export default function SlideProperties({ paragraph, onUpdate }: SlideProperties
                         ))}
                       </SelectContent>
                     </Select>
+                    <p className="text-xs text-muted-foreground">
+                      Как будут расположены {(paragraph.type === 'image' && paragraph.imageFrames ? paragraph.imageFrames : paragraph.comicFrames || []).length} изображ.
+                    </p>
                   </div>
 
                   {(paragraph.type === 'image' && paragraph.imageFrames ? paragraph.imageFrames : paragraph.comicFrames || []).map((frame, index) => (
                     <div
                       key={frame.id}
-                      className="border rounded-lg p-3 space-y-3"
+                      className="group relative border rounded-lg overflow-hidden bg-card hover:border-primary/50 transition-colors"
                     >
-                      <div className="flex items-center justify-between">
-                        <h4 className="font-semibold text-sm">
-                          Фрейм #{index + 1}
-                        </h4>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-destructive"
-                          onClick={() => deleteFrame(frame.id)}
-                        >
-                          <Icon name="Trash2" size={16} />
-                        </Button>
-                      </div>
+                      {/* Превью изображения */}
+                      {frame.url && (
+                        <div className="relative h-32 bg-muted">
+                          <img
+                            src={frame.url}
+                            alt={frame.alt || `Фрейм ${index + 1}`}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
+                            }}
+                          />
+                          <div className="absolute top-2 left-2 bg-background/90 px-2 py-1 rounded text-xs font-medium">
+                            Фрейм {index + 1}
+                          </div>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                            onClick={() => deleteFrame(frame.id)}
+                          >
+                            <Icon name="Trash2" size={14} />
+                          </Button>
+                        </div>
+                      )}
+                      
+                      <div className="p-3 space-y-3">
+                        {!frame.url && (
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                              <div className="w-12 h-12 bg-muted rounded flex items-center justify-center">
+                                <Icon name="Image" size={20} className="text-muted-foreground" />
+                              </div>
+                              <div className="text-sm font-medium">
+                                Фрейм {index + 1}
+                              </div>
+                            </div>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => deleteFrame(frame.id)}
+                            >
+                              <Icon name="Trash2" size={14} />
+                            </Button>
+                          </div>
+                        )}
+                        
+                        <div className="space-y-2">
+                          <Label className="text-xs">URL изображения</Label>
+                          <Input
+                            value={frame.url}
+                            onChange={(e) =>
+                              updateFrame(frame.id, { url: e.target.value })
+                            }
+                            placeholder="https://example.com/image.jpg"
+                            className="text-sm"
+                          />
+                        </div>
 
-                      <div className="space-y-2">
-                        <Label>URL изображения</Label>
-                        <Input
-                          value={frame.url}
-                          onChange={(e) =>
-                            updateFrame(frame.id, { url: e.target.value })
-                          }
-                          placeholder="https://..."
-                        />
-                      </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div className="space-y-1.5">
+                            <Label className="text-xs">Вписывание</Label>
+                            <Select
+                              value={frame.objectFit || 'cover'}
+                              onValueChange={(value: 'cover' | 'contain' | 'fill') =>
+                                updateFrame(frame.id, { objectFit: value })
+                              }
+                            >
+                              <SelectTrigger className="text-sm h-9">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="cover">Cover</SelectItem>
+                                <SelectItem value="contain">Contain</SelectItem>
+                                <SelectItem value="fill">Fill</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
 
-                      <div className="space-y-2">
-                        <Label>Вписывание</Label>
-                        <Select
-                          value={frame.objectFit || 'cover'}
-                          onValueChange={(value: 'cover' | 'contain' | 'fill') =>
-                            updateFrame(frame.id, { objectFit: value })
-                          }
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="cover">Cover</SelectItem>
-                            <SelectItem value="contain">Contain</SelectItem>
-                            <SelectItem value="fill">Fill</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
+                          <div className="space-y-1.5">
+                            <Label className="text-xs">Позиция</Label>
+                            <Input
+                              value={frame.objectPosition || 'center'}
+                              onChange={(e) =>
+                                updateFrame(frame.id, {
+                                  objectPosition: e.target.value
+                                })
+                              }
+                              placeholder="center"
+                              className="text-sm h-9"
+                            />
+                          </div>
+                        </div>
 
-                      <div className="space-y-2">
-                        <Label>Позиция</Label>
-                        <Input
-                          value={frame.objectPosition || 'center'}
-                          onChange={(e) =>
-                            updateFrame(frame.id, {
-                              objectPosition: e.target.value
-                            })
-                          }
-                          placeholder="center, top, bottom"
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label>Анимация появления</Label>
-                        <Select
-                          value={frame.animation || 'fade'}
-                          onValueChange={(value: FrameAnimationType) =>
-                            updateFrame(frame.id, { animation: value })
-                          }
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {animations.map((anim) => (
-                              <SelectItem key={anim.value} value={anim.value}>
-                                {anim.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <div className="space-y-1.5">
+                          <Label className="text-xs">Анимация появления</Label>
+                          <Select
+                            value={frame.animation || 'fade'}
+                            onValueChange={(value: FrameAnimationType) =>
+                              updateFrame(frame.id, { animation: value })
+                            }
+                          >
+                            <SelectTrigger className="text-sm h-9">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {animations.map((anim) => (
+                                <SelectItem key={anim.value} value={anim.value}>
+                                  {anim.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
                       </div>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="space-y-4">
-                  <p className="text-sm text-muted-foreground text-center py-4">
-                    Нет фреймов
-                  </p>
-                  
-                  {paragraph.type === 'image' && paragraph.imageGroupId && (
-                    <Button
-                      onClick={() => {
-                        const newFrame: ComicFrame = {
-                          id: `frame-${Date.now()}`,
-                          type: 'image',
-                          url: '',
-                          alt: `Изображение ${(paragraph.imageFrames?.length || 0) + 1}`,
-                          paragraphTrigger: paragraph.imageFrames?.length || 0,
-                          animation: 'fade',
-                          objectFit: 'cover',
-                          objectPosition: 'center'
-                        };
-                        
-                        onUpdate({
-                          imageFrames: [...(paragraph.imageFrames || []), newFrame]
-                        });
-                      }}
-                      className="w-full"
-                    >
-                      <Icon name="Plus" size={16} className="mr-2" />
-                      Добавить фрейм изображения
-                    </Button>
-                  )}
+                <div className="space-y-4 text-center py-8">
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
+                      <Icon name="Images" size={28} className="text-muted-foreground" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium">Нет фреймов</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {paragraph.type === 'image' && paragraph.imageGroupId
+                          ? 'Добавьте изображения в галерею'
+                          : 'Создайте группу изображений'}
+                      </p>
+                    </div>
+                    
+                    {paragraph.type === 'image' && paragraph.imageGroupId && (
+                      <Button
+                        onClick={() => {
+                          const newFrame: ComicFrame = {
+                            id: `frame-${Date.now()}`,
+                            type: 'image',
+                            url: '',
+                            alt: `Изображение ${(paragraph.imageFrames?.length || 0) + 1}`,
+                            paragraphTrigger: paragraph.imageFrames?.length || 0,
+                            animation: 'fade',
+                            objectFit: 'cover',
+                            objectPosition: 'center'
+                          };
+                          
+                          onUpdate({
+                            imageFrames: [...(paragraph.imageFrames || []), newFrame]
+                          });
+                        }}
+                        className="mt-2"
+                      >
+                        <Icon name="Plus" size={16} className="mr-2" />
+                        Добавить изображение
+                      </Button>
+                    )}
+                  </div>
                 </div>
+              )}
+              
+              {/* Кнопка добавления нового фрейма внизу списка */}
+              {((paragraph.comicFrames?.length || 0) > 0 || (paragraph.type === 'image' && paragraph.imageFrames?.length)) && (
+                <Button
+                  onClick={() => {
+                    const existingFrames = paragraph.comicFrames || paragraph.imageFrames || [];
+                    const newFrame: ComicFrame = {
+                      id: `frame-${Date.now()}`,
+                      type: 'image',
+                      url: '',
+                      alt: `Изображение ${existingFrames.length + 1}`,
+                      paragraphTrigger: existingFrames.length,
+                      animation: 'fade',
+                      objectFit: 'cover',
+                      objectPosition: 'center'
+                    };
+                    
+                    if (paragraph.comicFrames) {
+                      onUpdate({
+                        comicFrames: [...paragraph.comicFrames, newFrame]
+                      });
+                    } else if (paragraph.type === 'image' && paragraph.imageGroupId) {
+                      onUpdate({
+                        imageFrames: [...(paragraph.imageFrames || []), newFrame]
+                      });
+                    }
+                  }}
+                  variant="outline"
+                  className="w-full"
+                >
+                  <Icon name="Plus" size={16} className="mr-2" />
+                  Добавить еще изображение
+                </Button>
               )}
             </TabsContent>
 
