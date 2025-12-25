@@ -248,7 +248,7 @@ function EpisodeEditor({ episode, novel, onUpdate, onNovelUpdate }: EpisodeEdito
     <div className="space-y-4">
       <EpisodeHeader episode={episode} novel={novel} onUpdate={onUpdate} onNovelUpdate={onNovelUpdate} />
 
-      <div className="flex items-center justify-between gap-4 p-3 bg-secondary/20 rounded-lg">
+      <div className="flex items-center justify-between gap-4 p-3 rounded-lg bg-[#151d28]">
         <div className="flex items-center gap-2">
           <Switch
             id="bulk-edit-mode"
