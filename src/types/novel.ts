@@ -1,4 +1,4 @@
-export type ParagraphType = 'text' | 'image' | 'choice' | 'item' | 'dialogue' | 'background';
+export type ParagraphType = 'text' | 'choice' | 'item' | 'dialogue';
 
 export type MergeLayoutType = 
   | 'single' // 1 фрейм на весь экран
@@ -86,13 +86,6 @@ export interface BaseParagraph {
   id: string;
   type: ParagraphType;
   order?: number;
-  comicFrames?: ComicFrame[]; // Фреймы комикса (только для comicGroupIndex === 0)
-  frameLayout?: MergeLayoutType; // Раскладка фреймов (только для comicGroupIndex === 0)
-  frameAnimation?: FrameAnimationType; // Общая анимация (только для comicGroupIndex === 0)
-  comicGroupId?: string; // ID группы комикса (одинаковый для всех параграфов в группе)
-  comicGroupIndex?: number; // Индекс параграфа внутри группы комикса (0, 1, 2...)
-  timeframes?: ('present' | 'retrospective')[];
-  pastelColor?: PastelColor; // Цвет для ретроспективы
   requiredPaths?: string[];
 }
 
@@ -101,24 +94,7 @@ export interface TextParagraph extends BaseParagraph {
   content: string;
 }
 
-export interface ImageParagraph extends BaseParagraph {
-  type: 'image';
-  url: string;
-  mobileUrl?: string;
-  alt?: string;
-  objectPosition?: string;
-  objectFit?: 'cover' | 'contain' | 'fill';
-  transform?: {
-    x: number;
-    y: number;
-    scale: number;
-    rotate: number;
-  };
-  imageFrames?: ComicFrame[]; // Несколько изображений в одной группе (только для imageGroupIndex === 0)
-  imageLayout?: MergeLayoutType; // Раскладка изображений (только для imageGroupIndex === 0)
-  imageGroupId?: string; // ID группы изображений (одинаковый для всех параграфов в группе)
-  imageGroupIndex?: number; // Индекс параграфа внутри группы изображений (0, 1, 2...)
-}
+
 
 export interface ChoiceParagraph extends BaseParagraph {
   type: 'choice';
@@ -152,28 +128,13 @@ export interface DialogueParagraph extends BaseParagraph {
   text: string;
 }
 
-export interface BackgroundParagraph extends BaseParagraph {
-  type: 'background';
-  url: string;
-  mobileUrl?: string;
-  alt?: string;
-  objectPosition?: string;
-  objectFit?: 'cover' | 'contain' | 'fill';
-  transform?: {
-    x: number; // Смещение по X (в процентах, -50 до 50)
-    y: number; // Смещение по Y (в процентах, -50 до 50)
-    scale: number; // Масштаб (0.5 до 2)
-    rotate: number; // Поворот в градусах (0-360)
-  };
-}
+
 
 export type Paragraph = 
   | TextParagraph 
-  | ImageParagraph 
   | ChoiceParagraph 
   | ItemParagraph 
-  | DialogueParagraph
-  | BackgroundParagraph;
+  | DialogueParagraph;
 
 export interface Episode {
   id: string;

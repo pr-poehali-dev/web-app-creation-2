@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Novel } from '@/types/novel';
-import SlideEditor from '@/components/SlideEditor/SlideEditor';
+import { VisualStory } from '@/types/visual-slide';
+import TextEditor from '@/components/TextEditor/TextEditor';
+import VisualEditor from '@/components/VisualEditor/VisualEditor';
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
 
@@ -15,22 +17,15 @@ const createDemoNovel = (): Novel => {
         position: { x: 0, y: 0 },
         paragraphs: [
           {
-            id: 'p1',
-            type: 'background',
-            url: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4',
-            objectFit: 'cover',
-            objectPosition: 'center'
-          },
-          {
             id: 'p2',
             type: 'text',
-            content: 'Добро пожаловать в редактор слайдов! Здесь вы можете создавать визуальные истории с текстом, диалогами и изображениями.'
+            content: 'Добро пожаловать в редактор слайдов! Здесь вы можете создавать визуальные истории с текстом, диалогами и выборами.'
           },
           {
             id: 'p3',
             type: 'dialogue',
             characterName: 'Проводник',
-            text: 'Я помогу вам разобраться с функционалом редактора. Каждый параграф — это отдельный слайд.',
+            text: 'Я помогу вам разобраться с функционалом редактора. Каждый параграф — это отдельный элемент истории.',
             characterImage: 'https://i.pravatar.cc/150?img=1'
           },
           {
@@ -40,27 +35,55 @@ const createDemoNovel = (): Novel => {
             options: [
               {
                 id: 'c1',
-                text: 'Как добавить фон?',
-                nextParagraphIndex: 5
+                text: 'Как создать текст?',
+                nextParagraphIndex: 3
               },
               {
                 id: 'c2',
                 text: 'Как создать диалог?',
-                nextParagraphIndex: 6
+                nextParagraphIndex: 4
               },
               {
                 id: 'c3',
-                text: 'Как добавить анимации?',
-                nextParagraphIndex: 7
+                text: 'Как добавить предметы?',
+                nextParagraphIndex: 5
               }
             ]
+          },
+          {
+            id: 'p5',
+            type: 'item',
+            name: 'Демо предмет',
+            description: 'Тестовый предмет для демонстрации',
+            itemType: 'collectible',
+            action: 'gain'
           }
         ]
       }
     ],
     library: {
-      items: [],
-      characters: [],
+      items: [
+        {
+          id: 'demo-item',
+          name: 'Демо предмет',
+          description: 'Тестовый предмет для демонстрации',
+          itemType: 'collectible'
+        }
+      ],
+      characters: [
+        {
+          id: 'guide',
+          name: 'Проводник',
+          defaultImage: 'https://i.pravatar.cc/150?img=1',
+          images: [
+            {
+              id: 'img1',
+              url: 'https://i.pravatar.cc/150?img=1',
+              name: 'default'
+            }
+          ]
+        }
+      ],
       choices: []
     }
   };
@@ -69,14 +92,60 @@ const createDemoNovel = (): Novel => {
 export default function SlideEditorDemo() {
   const [novel, setNovel] = useState<Novel>(createDemoNovel());
   const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [editorMode, setEditorMode] = useState<'text' | 'visual'>('text');
 
   if (isEditorOpen) {
     return (
-      <SlideEditor
-        novel={novel}
-        onUpdate={setNovel}
-        onClose={() => setIsEditorOpen(false)}
-      />
+      <div className="h-screen flex flex-col">
+        <div className="bg-card border-b p-4 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsEditorOpen(false)}
+            >
+              <Icon name="ArrowLeft" size={16} className="mr-2" />
+              Назад
+            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant={editorMode === 'text' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setEditorMode('text')}
+              >
+                <Icon name="Type" size={16} className="mr-2" />
+                Текстовый редактор
+              </Button>
+              <Button
+                variant={editorMode === 'visual' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setEditorMode('visual')}
+              >
+                <Icon name="Presentation" size={16} className="mr-2" />
+                Визуальный редактор
+              </Button>
+            </div>
+          </div>
+        </div>
+        <div className="flex-1 overflow-hidden">
+          {editorMode === 'text' ? (
+            <TextEditor
+              novel={novel}
+              onUpdate={setNovel}
+              onClose={() => setIsEditorOpen(false)}
+              onOpenVisualEditor={() => setEditorMode('visual')}
+            />
+          ) : (
+            <VisualEditor
+              novel={novel}
+              visualStory={null}
+              onUpdate={(story) => console.log('Visual story updated:', story)}
+              onClose={() => setIsEditorOpen(false)}
+              onBackToText={() => setEditorMode('text')}
+            />
+          )}
+        </div>
+      </div>
     );
   }
 
