@@ -309,7 +309,7 @@ function EpisodeEditorTab({
         </div>
       </div>
 
-      <div className="flex items-center justify-between gap-4 p-3 bg-secondary/20 rounded-lg">
+      <div className="flex items-center justify-between gap-4 p-3 rounded-lg bg-[#151d28]">
         <div className="flex items-center gap-2">
           <Switch
             id="bulk-edit-episodes"
