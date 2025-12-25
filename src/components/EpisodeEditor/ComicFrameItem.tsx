@@ -192,7 +192,10 @@ function ComicFrameItem({ frame, index, subParagraphs, comicGroupSize, onUpdate,
               </Button>
             </div>
             <div 
-              className="relative w-full aspect-square bg-muted rounded border border-border overflow-hidden cursor-pointer hover:border-primary/50 transition-colors"
+              className="relative w-full aspect-square rounded border border-border overflow-hidden cursor-pointer hover:border-primary/50 transition-colors"
+              style={{
+                backgroundImage: 'repeating-conic-gradient(hsl(var(--muted)) 0% 25%, transparent 0% 50%) 50% / 20px 20px'
+              }}
               onClick={() => setPreviewOpen(true)}
             >
               <img
@@ -211,7 +214,12 @@ function ComicFrameItem({ frame, index, subParagraphs, comicGroupSize, onUpdate,
             <DialogContent className="max-w-[80vw] max-h-[90vh] p-6">
               <div className="space-y-4">
                 <div className="text-sm font-medium">Как будет выглядеть фрейм</div>
-                <div className="relative w-full aspect-square bg-muted rounded border-2 border-border overflow-hidden">
+                <div 
+                  className="relative w-full aspect-square rounded border-2 border-border overflow-hidden"
+                  style={{
+                    backgroundImage: 'repeating-conic-gradient(hsl(var(--muted)) 0% 25%, transparent 0% 50%) 50% / 20px 20px'
+                  }}
+                >
                   <img
                     src={frame.url}
                     alt="Full Preview"
