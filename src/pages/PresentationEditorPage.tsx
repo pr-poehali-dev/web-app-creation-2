@@ -31,10 +31,16 @@ export default function PresentationEditorPage() {
 
   return (
     <div className="w-full h-screen">
-      <PresentationEditor 
-        novel={novel || undefined}
-        onNovelUpdate={novel ? handleNovelUpdate : undefined}
-      />
+      {novel ? (
+        <PresentationEditor 
+          novel={novel}
+          onNovelUpdate={handleNovelUpdate}
+        />
+      ) : (
+        <div className="flex items-center justify-center h-full">
+          <p className="text-muted-foreground">Загрузка...</p>
+        </div>
+      )}
     </div>
   );
 }
