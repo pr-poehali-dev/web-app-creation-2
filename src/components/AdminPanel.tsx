@@ -7,11 +7,6 @@ import LibraryManager from './LibraryManager';
 import HomePageEditor from './HomePageEditor';
 import PathsManager from './PathsManager';
 import BulkImportDialog from './BulkImportDialog';
-import SlideEditor from './SlideEditor/SlideEditor';
-import TextEditor from './TextEditor/TextEditor';
-import VisualEditor from './VisualEditor/VisualEditor';
-import { VisualStory } from '@/types/visual-slide';
-
 import BackgroundImagesEditor from './BackgroundImagesEditor';
 import AdminPanelHeader from './AdminPanel/AdminPanelHeader';
 import EpisodeEditorTab from './AdminPanel/EpisodeEditorTab';
@@ -32,10 +27,6 @@ function AdminPanel({ novel, onUpdate, onLogout }: AdminPanelProps) {
   const [activeTab, setActiveTab] = useState('home');
   const [bulkEditEpisodes, setBulkEditEpisodes] = useState(false);
   const [selectedEpisodes, setSelectedEpisodes] = useState<Set<string>>(new Set());
-  const [showSlideEditor, setShowSlideEditor] = useState(false);
-  const [showTextEditor, setShowTextEditor] = useState(false);
-  const [editorMode, setEditorMode] = useState<'text' | 'visual'>('text');
-  const [visualStory, setVisualStory] = useState<VisualStory | null>(null);
   const selectedEpisode = novel.episodes.find(ep => ep.id === selectedEpisodeId);
 
   const handleEpisodeClickFromVisualization = (episodeId: string) => {
@@ -201,49 +192,13 @@ function AdminPanel({ novel, onUpdate, onLogout }: AdminPanelProps) {
     if (!checked) setSelectedEpisodes(new Set());
   };
 
-  if (showSlideEditor) {
-    return (
-      <SlideEditor
-        novel={novel}
-        onUpdate={onUpdate}
-        onClose={() => setShowSlideEditor(false)}
-      />
-    );
-  }
 
-  if (showTextEditor) {
-    if (editorMode === 'text') {
-      return (
-        <TextEditor
-          novel={novel}
-          onUpdate={onUpdate}
-          onClose={() => setShowTextEditor(false)}
-          onOpenVisualEditor={() => setEditorMode('visual')}
-        />
-      );
-    } else {
-      return (
-        <VisualEditor
-          novel={novel}
-          visualStory={visualStory}
-          onUpdate={(story) => setVisualStory(story)}
-          onClose={() => setShowTextEditor(false)}
-          onBackToText={() => setEditorMode('text')}
-        />
-      );
-    }
-  }
 
   return (
     <div className="min-h-screen bg-background dark">
       <AdminPanelHeader 
         novelTitle={novel.title} 
         onLogout={onLogout}
-        onOpenSlideEditor={() => setShowSlideEditor(true)}
-        onOpenTextEditor={() => {
-          setEditorMode('text');
-          setShowTextEditor(true);
-        }}
       />
 
       <div className="container mx-auto px-4 py-8">
