@@ -14,9 +14,11 @@ import { useNovelDatabase } from './Index/useNovelDatabase';
 import { useAppHandlers } from './Index/useAppHandlers';
 import { useAuth } from '@/hooks/useAuth';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function Index() {
   const [showAdminLogin, setShowAdminLogin] = useState(false);
+  const navigate = useNavigate();
   const {
     novel,
     setNovel,
@@ -187,7 +189,7 @@ function Index() {
           }}
         />
         
-        <div className="fixed top-4 left-4 z-50">
+        <div className="fixed top-4 left-4 z-50 flex gap-2">
           <Button
             variant="ghost"
             size="icon"
@@ -196,6 +198,15 @@ function Index() {
             title="Список эпизодов"
           >
             <Icon name="List" size={20} />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="bg-[#151d28] text-white backdrop-blur-md hover:bg-[#1a2430] shadow-lg border border-border/50"
+            onClick={() => navigate('/presentation')}
+            title="Редактор презентаций"
+          >
+            <Icon name="Presentation" size={20} />
           </Button>
         </div>
         
