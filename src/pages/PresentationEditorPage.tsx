@@ -7,23 +7,16 @@ export default function PresentationEditorPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const loadNovel = async () => {
-      try {
-        await new Promise(resolve => setTimeout(resolve, 100));
-        const savedNovel = localStorage.getItem('novelData');
-        if (savedNovel) {
-          const parsed = JSON.parse(savedNovel);
-          console.log('Novel loaded:', parsed);
-          setNovel(parsed);
-        }
-      } catch (error) {
-        console.error('Error loading novel:', error);
-      } finally {
-        setIsLoading(false);
+    try {
+      const savedNovel = localStorage.getItem('novelData');
+      if (savedNovel) {
+        const parsed = JSON.parse(savedNovel);
+        setNovel(parsed);
       }
-    };
-
-    loadNovel();
+    } catch (error) {
+      console.error('Error loading novel:', error);
+    }
+    setIsLoading(false);
   }, []);
 
   const handleNovelUpdate = (updatedNovel: Novel) => {
