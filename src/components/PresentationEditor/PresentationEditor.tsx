@@ -92,9 +92,9 @@ export function PresentationEditor({ novel, onNovelUpdate }: PresentationEditorP
 
   return (
     <div className="h-screen flex flex-col bg-background">
-      {novel && onNovelUpdate && (
+      {novel && onNovelUpdate ? (
         <EpisodeSelector novel={novel} onNovelUpdate={onNovelUpdate} />
-      )}
+      ) : null}
       <EditorToolbar />
       
       <div className="flex-1 flex overflow-hidden">
