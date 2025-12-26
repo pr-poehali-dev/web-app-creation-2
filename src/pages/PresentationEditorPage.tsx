@@ -4,6 +4,7 @@ import type { Novel } from '@/types/novel';
 
 export default function PresentationEditorPage() {
   const [novel, setNovel] = useState<Novel | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const loadNovel = () => {
@@ -14,6 +15,8 @@ export default function PresentationEditorPage() {
         }
       } catch (error) {
         console.error('Error loading novel:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -29,18 +32,20 @@ export default function PresentationEditorPage() {
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-muted-foreground">Загрузка...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full h-screen">
-      {novel ? (
-        <PresentationEditor 
-          novel={novel}
-          onNovelUpdate={handleNovelUpdate}
-        />
-      ) : (
-        <div className="flex items-center justify-center h-full">
-          <p className="text-muted-foreground">Загрузка...</p>
-        </div>
-      )}
+      <PresentationEditor 
+        novel={novel || undefined}
+        onNovelUpdate={novel ? handleNovelUpdate : undefined}
+      />
     </div>
   );
 }
